@@ -1,3 +1,4 @@
+import os
 import json
 import warnings
 import jsonschema
@@ -5,11 +6,15 @@ import pandas as pd
 from nanoid import generate
 from dotty_dict import dotty
 from monty.json import jsanitize
-
-from db_infos import db_info
 from d3tales_api.D3database.db_connector import DBconnector
 from d3tales_api.D3database.schema2class import Schema2Class
 from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+
+db_file = os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
+if not db_file:
+    raise NameError("Environment variable DB_INFO_FILE not defined.")
+with open(db_file, "r") as f:
+    db_info = json.load(f)
 
 
 class D3Database:

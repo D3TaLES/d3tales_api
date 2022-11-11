@@ -4,7 +4,7 @@ from pymongo import MongoClient
 class DBconnector:
     """
     Class to retrieve a collection from a database and insert new entry.
-    Requires a db_infos.py file with credentials
+    Requires a db_infos.json file with credentials
     Copyright 2021, University of Kentucky
     """
 

@@ -11,7 +11,9 @@ from ocelot.routines.conformerparser import pmgmol_to_rdmol
 from d3tales_api.D3database.db_connector import DBconnector
 from d3tales_api.D3database.d3database import FrontDB, ParamsDB
 
-db_file = os.environ.get('UPLOAD_PASS') or os.getenv('UPLOAD_PASS')
+db_file = os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
+if not db_file:
+    raise NameError("Environment variable DB_INFO_FILE not defined.")
 with open(db_file, "r") as f:
     db_info = json.load(f)
 

@@ -1,5 +1,5 @@
 import setuptools
-from d3tales_api import __version__, __author__,__credits__
+from d3tales_api import __version__, __author__, __credits__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -20,7 +20,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/D3TaLES/d3tales_api/issues"
     },
     license=__credits__,
-    packages=['d3tales_api'],
+    packages=['d3tales_api', 'd3tales_api.Calculators', 'd3tales_api.D3database', 'd3tales_api.Processors'],
     install_requires=requirements,
 )
 
