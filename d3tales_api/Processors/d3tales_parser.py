@@ -4,17 +4,11 @@ import pint
 import uuid
 import json
 import hashlib
-import warnings
+from d3tales_api.database_info import db_info
 from d3tales_api.Processors.parser_cv import *
 from d3tales_api.Processors.parser_dft import *
 from d3tales_api.Processors.parser_uvvis import *
 from d3tales_api.D3database.db_connector import DBconnector
-
-db_file = os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
-if not db_file:
-    raise warnings.warn("Environment variable DB_INFO_FILE not defined.")
-with open(db_file, "r") as f:
-    db_info = json.load(f)
 
 
 class ProcessDFT:

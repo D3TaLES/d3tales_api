@@ -6,16 +6,11 @@ import numpy as np
 from rdkit.Chem import rdMolAlign
 from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
+from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
 from ocelot.routines.conformerparser import pmgmol_to_rdmol
 from d3tales_api.D3database.db_connector import DBconnector
 from d3tales_api.D3database.d3database import FrontDB, ParamsDB
-
-db_file = os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
-if not db_file:
-    raise NameError("Environment variable DB_INFO_FILE not defined.")
-with open(db_file, "r") as f:
-    db_info = json.load(f)
 
 
 class Gaus2FrontCharacterization:
