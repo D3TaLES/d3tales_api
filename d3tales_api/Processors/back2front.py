@@ -21,9 +21,9 @@ class Gaus2FrontCharacterization:
 
     def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False):
         # connect to databases
-        self.front_dbc = DBconnector(db_info("frontend"))
+        self.front_dbc = DBconnector(db_info.get("frontend"))
         self.front_coll = self.front_dbc.get_collection("base")
-        self.back_dbc = DBconnector(db_info("backend"))
+        self.back_dbc = DBconnector(db_info.get("backend"))
         self.back_coll = self.back_dbc.get_collection("computation")
         self.all_props = all_props
 
@@ -400,7 +400,7 @@ class Gaus2FrontCharacterization:
 
 
 if __name__ == "__main__":
-    back_dbc = DBconnector(db_info("backend"))
+    back_dbc = DBconnector(db_info.get("backend"))
     back_coll = back_dbc.get_collection("computation")
     _id = "502dc467c4780db94cc0c324a12c2b6b"
     data = back_coll.find_one({"_id": _id})

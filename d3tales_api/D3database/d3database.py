@@ -20,7 +20,7 @@ class D3Database:
         self.instance = {schema_layer: self.dot2dict(instance)} if schema_layer else self.dot2dict(instance)
         self.database = database
         self.public = public
-        self.dbc = DBconnector(db_info(self.database))
+        self.dbc = DBconnector(db_info.get(self.database))
         self.coll = self.dbc.get_collection(self.collection_name)
         schema_db = schema_db or database
 
