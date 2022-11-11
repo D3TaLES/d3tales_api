@@ -8,7 +8,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 with open("requirements.txt", "r", encoding="utf-8") as f:
     requirements = f.read().splitlines()
 if sys.version_info.major <=3 and sys.version_info.minor <=8:
-    requirements.append("pymatgen==2022.11.7")
+    pass
+#     requirements.append("pymatgen==2022.11.7")
 
 setuptools.setup(
     name='d3tales_api',
