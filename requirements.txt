@@ -1,7 +1,6 @@
 asgiref==3.5.2
 attrs==22.1.0
 backports.zoneinfo==0.2.1
-backports.zoneinfo;python_version<"3.9"
 cclib==1.7.2
 certifi==2022.9.24
 charset-normalizer==2.1.1
@@ -44,7 +43,7 @@ plotly==5.11.0
 PubChemPy==1.0.4
 pybtex==0.24.0
 pydantic==1.10.2
-pymatgen==2022.11.7
+# pymatgen==2022.11.7  # TODO figure out what to do with this
 pymongo==3.10.0
 pyparsing==3.0.9
 pyrsistent==0.19.2
