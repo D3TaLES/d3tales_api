@@ -4,6 +4,9 @@ from d3tales_api import __version__, __author__,__credits__
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requirements = f.read().splitlines()
+
 setuptools.setup(
     name='d3tales_api',
     version=__version__,
@@ -18,6 +21,6 @@ setuptools.setup(
     },
     license=__credits__,
     packages=['d3tales_api'],
-    install_requires=['requests'],
+    install_requires=requirements,
 )
 
