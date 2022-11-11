@@ -1,4 +1,4 @@
-# D<sup>3</sup>TaLES API [](D3TaLES_api_logo.png)
+# D<sup>3</sup>TaLES API ![](D3TaLES_api_logo.png)
 API designed for the [D<sup>3</sup>TaLES project](https://d3tales.as.uky.edu/). Includes data processing, database access functions, and property calculators.
 
 ## Installation 
