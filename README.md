@@ -1,5 +1,5 @@
 # D<sup>3</sup>TaLES API
-API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.
+API designed for the [D<sup>3</sup>TaLES project](https://d3tales.as.uky.edu/). Includes data processing, database access functions, and property calculators.
 
 ## Installation 
 
@@ -33,6 +33,8 @@ can be set in the same was as the `DB_INFO_FILE` variable.
 
 ## Modules 
 This API contains three modules: 
-* `D3database`: 
-* `Processors`: 
-* `Calculators`: 
+* `D3database`: Interface for interacting with the D<sup>3</sup>TaLES databases. Includes 
+queries, data insertion with validation, and a REST API interface.
+* `Processors`: Processing code for extracting data from computational and experimental
+data files as well as [ExpFlow](https://d3tales.as.uky.edu/expflow) run objects. 
+* `Calculators`: Property calculators and plotters for cyclic voltammetry

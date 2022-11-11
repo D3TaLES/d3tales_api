@@ -1,0 +1,126 @@
+{
+    "robotic_wf_uuid": "",
+    "author": "d3tales@gmail.com",
+    "name": "test1",
+    "experiments": [
+        {
+            "uuid" : "8374c08e-faae-4abe-a2d2-bba052c11722",
+            "name" : "run_test_1",
+            "experiment_uuid_id" : "192fc8c0-70e9-4292-9d47-ed9fcda4bfb0",
+            "experiment_name" : "BasicCV_QninoneWater",
+            "instruments" : [],
+            "reagents" : [
+                {
+                    "uuid" : "5bdd6127-4494-4f0c-b581-350161021344",
+                    "name" : "Quinone",
+                    "smiles" : "O=c1ccc(=O)cc1",
+                    "source" : "sigma_aldrich",
+                    "type" : "redox_molecule",
+                    "description" : "redox moleucule ",
+                    "notes" : "",
+                    "purity" : ""
+                },
+                {
+                    "uuid" : "86d0e1d8-dc05-46b7-8649-55f4cc655c9c",
+                    "name" : "Water",
+                    "smiles" : "O",
+                    "source" : "uk_lab",
+                    "type" : "solvent",
+                    "description" : "Solvent",
+                    "notes" : "",
+                    "purity" : ""
+                }
+            ],
+            "apparatus" : [
+                {
+                    "uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "type" : "beaker",
+                    "description" : "Mixing beaker",
+                    "reusable" : "on",
+                    "name" : "Mixing Beaker",
+                    "notes" : ""
+                }
+            ],
+            "workflow" : [
+                {
+                    "sequence" : "1",
+                    "description" : "Add redox molecule",
+                    "name" : "transfer_solid",
+                    "start_position" : "Quinone",
+                    "start_uuid" : "5bdd6127-4494-4f0c-b581-350161021344",
+                    "start_type" : "redox_molecule",
+                    "end_position" : "Mixing Beaker",
+                    "end_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type" : "beaker",
+                    "action_count" : 0,
+                    "parameters" : [
+                        {
+                            "description" : "mass",
+                            "value" : "1.0",
+                            "unit" : "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence" : "2",
+                    "description" : "Add solvent",
+                    "name" : "transfer_liquid",
+                    "start_position" : "Water",
+                    "start_uuid" : "86d0e1d8-dc05-46b7-8649-55f4cc655c9c",
+                    "start_type" : "solvent",
+                    "end_position" : "Mixing Beaker",
+                    "end_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type" : "beaker",
+                    "action_count" : 1,
+                    "parameters" : [
+                        {
+                            "description" : "volume",
+                            "value" : "10.0",
+                            "unit" : "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence" : "3",
+                    "description" : "Mix solution ",
+                    "name" : "heat_stir",
+                    "start_position" : "Mixing Beaker",
+                    "start_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "start_type" : "beaker",
+                    "end_position" : "Mixing Beaker",
+                    "end_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type" : "beaker",
+                    "action_count" : 2,
+                    "parameters" : [
+                        {
+                            "description" : "temperature",
+                            "value" : "298",
+                            "unit" : "K"
+                        },
+                        {
+                            "description" : "time",
+                            "value" : "60.0",
+                            "unit" : "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence" : "4",
+                    "description" : "Measure CV",
+                    "name" : "collect_cv_data",
+                    "start_position" : "Mixing Beaker",
+                    "start_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "start_type" : "beaker",
+                    "end_position" : "Mixing Beaker",
+                    "end_uuid" : "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type" : "beaker",
+                    "action_count" : 3,
+                    "data_type" : "cv"
+                }
+            ],
+            "submission_ids" : [],
+            "processing_ids" : [],
+            "date_modified" : "2022-04-28T16:30:02.922Z"
+        }
+    ]
+}

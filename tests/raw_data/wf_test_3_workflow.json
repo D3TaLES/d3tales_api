@@ -1,0 +1,118 @@
+{
+    "_id": "aa065371-2c7d-48f2-9617-7f88923a16ff",
+    "name": "wf_test_3",
+    "parent_uuid_id": "7c4f4824-0932-469c-8033-23cdac44b453",
+    "parent_name": "BasicCV",
+    "date_modified": "2022-05-02T16:57:32.824",
+    "author_id": 2,
+    "experiments": [
+        {
+            "_id": "b724907f-4dab-4d3f-aa17-f74b3d199751",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [],
+            "reagents": [
+                {
+                    "_id": null,
+                    "name": "Quinone",
+                    "smiles": "O=c1ccc(=O)cc1",
+                    "source": "sigma_aldrich",
+                    "type": null,
+                    "description": "redox moleucule ",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": null,
+                    "name": "Water",
+                    "smiles": "O",
+                    "source": "uk_lab",
+                    "type": null,
+                    "description": "Solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": null,
+                    "type": null,
+                    "description": "Mixing beaker",
+                    "reusable": null,
+                    "name": "Mixing Beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "Add redox molecule",
+                    "name": "transfer_solid",
+                    "start_position": "Quinone",
+                    "start_uuid": "5bdd6127-4494-4f0c-b581-350161021344",
+                    "start_type": "redox_molecule",
+                    "end_position": "Mixing Beaker",
+                    "end_uuid": "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type": "beaker",
+                    "action_count": 0,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "0.0",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "2",
+                    "description": "Add solvent",
+                    "name": "transfer_liquid",
+                    "start_position": "Water",
+                    "start_uuid": "86d0e1d8-dc05-46b7-8649-55f4cc655c9c",
+                    "start_type": "solvent",
+                    "end_position": "Mixing Beaker",
+                    "end_uuid": "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type": "beaker",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "Mix solution ",
+                    "name": "heat_stir",
+                    "start_position": "Mixing Beaker",
+                    "start_uuid": "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "start_type": "beaker",
+                    "end_position": "Mixing Beaker",
+                    "end_uuid": "80e8f264-15c6-41e8-bbfd-613511c561de",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "0.0",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "0.0",
+                            "unit": "s"
+                        }
+                    ]
+                }
+            ],
+            "author": null
+        }
+    ],
+    "variable_props": [
+        "Reagent--redox_moleucule_",
+        "Action1--Add_redox_molecule--mass"
+    ]
+}
