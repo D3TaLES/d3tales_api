@@ -13,6 +13,10 @@ This module can be installed with pip install by running the following code:
 pip install git+https://github.com/d3tales/d3tales_api.git
 ```
 
+**Note**: If your python version is greater than 3.8, then you will need to install 
+[pymatgen](https://pymatgen.org/) directly into the environment you are working in. It is best to use 
+[conda](https://anaconda.org/conda-forge/pymatgen) for this.
+
 ### Environment Variables
 Note that many operation require a `DB_INFO_FILE` environment variable. This environment variable
 should be a path to a JSON file containing connection information for the databases. The keys should 
