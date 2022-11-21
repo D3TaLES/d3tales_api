@@ -3,6 +3,7 @@ import os
 import time
 import pymongo
 import zipfile
+import paramiko
 import traceback
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
@@ -13,7 +14,7 @@ from fireworks.utilities.fw_utilities import explicit_serialize
 from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 
 # Copyright 2021, University of Kentucky
-TESTING = False
+TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
 
 @explicit_serialize
 class FileTransferTask(FiretaskBase):
@@ -50,7 +51,6 @@ class FileTransferTask(FiretaskBase):
         if skip_transfer:
             return None
 
-        import paramiko
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -166,7 +166,6 @@ class SendToStorage(FiretaskBase):
                 except IOError:
                     sftp.mkdir(dir_path)
 
-        import paramiko
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
