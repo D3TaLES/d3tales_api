@@ -1,6 +1,5 @@
 asgiref==3.5.2
 attrs==22.1.0
-backports.zoneinfo==0.2.1
 cclib==1.7.2
 certifi==2022.9.24
 charset-normalizer==2.1.1
