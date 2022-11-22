@@ -1,10 +1,5 @@
 import re
-import cclib
-import numpy as np
-
-from scipy.stats import norm
-import scipy.constants as cst
-from pymatgen.core.structure import Molecule
+from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
 from pymatgen.io.gaussian import GaussianOutput, GaussianInput
 
@@ -292,47 +287,17 @@ class ProcessGausLog(ProcessCCLIB):
 
     def parse_tddft(self, sigma=0.10, step=0.01):
         # read the log files
-        excitations = self.get_tddft_excitations(self.log_path)
+        self.tddft_excitations = self.get_tddft_excitations(self.log_path)
 
         # get descriptors
-        singlet_excitation_energy = excitations["Singlet"]
-        doublet_excitation_energy = excitations["Doublet"]
-        triplet_excitation_energy = excitations["Triplet"]
+        transitions = self.tddft_excitations["Singlet"] + self.tddft_excitations["Doublet"] + self.tddft_excitations["Triplet"]
 
-        # get absorption spectrum (pymatgen.io.gaussian Gaussian.get_spectre_plot truncated)
-        transitions = singlet_excitation_energy + doublet_excitation_energy + triplet_excitation_energy
         # clean out negative absorptions
         negative_absorptions = [transitions.pop(index) for index, val in enumerate(transitions) if val[0] < 0]
         if negative_absorptions:
             print("WARNING: {} calculation contained a negative excitation energy".format(self.calculation_type))
-        if not transitions:
-            return {"excitations": excitations}
 
-        minval = min([val[0] for val in transitions]) - 5.0 * sigma
-        maxval = max([val[0] for val in transitions]) + 5.0 * sigma
-        npts = int((maxval - minval) / step) + 1
-
-        eneval = np.linspace(minval, maxval, npts)  # in eV
-        lambdaval = [cst.h * cst.c / (val * cst.e) * 1.e9
-                     for val in eneval]  # in nm
-
-        # sum of gaussian functions
-        spectre = np.zeros(npts)
-        for trans in transitions:
-            spectre += trans[2] * norm.pdf(eneval, trans[0], sigma)
-        spectre /= spectre.max()
-        spectra_data = {"energies": list(eneval), "lambda": lambdaval, "xas": list(spectre)}
-
-        # for plotting in frontend
-        abs_plot = [{"x": [round(x, 0) for x in spectra_data["lambda"]],
-                     "y": spectra_data["xas"],
-                     "mode": 'lines',
-                     "name": "absorption",
-                     "line": {
-                         "color": "#003396",
-                         "width": 3
-                     }}]
-        spectra_data.update({"abs_plot": abs_plot})
-
-        self.tddft_excitations = excitations
-        self.tddft_spectra_data = spectra_data
+        # Get plot data
+        connector = {"transitions": "transitions", "sigma": "sigma", "step": "step"}
+        c_data = {"transitions": transitions, "sigma": sigma, "step": step}
+        self.tddft_spectra_data = DFTSpecPlotter(connector=connector).calculate(c_data)
