@@ -1,43 +1,5 @@
-import abc
-import json
-import functools
 import matplotlib.pyplot as plt
-
-
-def rgetattr(obj, attr, *args):
-    def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
-
-    return functools.reduce(_getattr, [obj] + attr.split('.'))
-
-
-class D3Plotter(abc.ABC):
-    def __init__(self, connector=None):
-        self.connector(key_pairs=connector)
-
-    def connector(self, key_pairs=None):
-        if key_pairs:
-            self.key_pairs = key_pairs
-            return self.key_pairs
-        else:
-            with open("connector.json") as f:
-                connectors = json.load(f)
-            self.key_pairs = connectors[self.__class__.__name__]
-
-    def make_connections(self, obj):
-        d = {}
-        for key, connection in self.key_pairs.items():
-            try:
-                d.update({key: rgetattr(obj, connection)})
-            except:
-                d.update({key: obj[connection]})
-        return d
-
-    def plot_data(self, data):
-        pass
-
-    def description(self):
-        print(self.__class__.__name__)
+from d3tales_api.Calculators.utils import *
 
 
 class CVPlotter(D3Plotter):

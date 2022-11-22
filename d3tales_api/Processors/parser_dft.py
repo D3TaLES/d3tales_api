@@ -1,13 +1,12 @@
 import re
 import cclib
 import numpy as np
-import pandas as pd
-import dbstep.Dbstep as db
+
 from scipy.stats import norm
 import scipy.constants as cst
 from pymatgen.core.structure import Molecule
+from d3tales_api.Calculators.calculators import *
 from pymatgen.io.gaussian import GaussianOutput, GaussianInput
-from d3tales_api.Processors.periodic_table import periodictable
 
 
 class ProcessCCLIB:
@@ -72,22 +71,11 @@ class ProcessCCLIB:
             return []
 
     def get_radical_stability_score(self, spin_type="mulliken"):
-        self.cclib_parse()
-        spins = self.cmol.atomspins[spin_type]
-        atoms = self.cmol.atomnos
-        all_data = pd.DataFrame({"atoms": atoms, "spin_density": spins})
-        all_data["atom_sym"] = all_data.apply(lambda x: periodictable[int(x.atoms)], axis=1)
-        all_data["atom_idx"] = all_data.index
-        all_data["atom_idx"] = all_data.apply(lambda x: x.atom_idx + 1, axis=1)
-        all_data = all_data[all_data.atom_sym != "H"]
-        all_data["fractional_spin"] = all_data["spin_density"].abs() / all_data["spin_density"].abs().sum()
-
-        max_cdf = all_data.loc[all_data["fractional_spin"].idxmax()]
-        rad_bur_vol = float(db.dbstep(self.log_path, atom1=max_cdf["atom_idx"], volume=True).bur_vol)
-        rss = rad_bur_vol + 50 * (1 - max_cdf["fractional_spin"])
-        return dict(radical_buried_vol={"value": round(rad_bur_vol, 3), "unit": "A^3"},
-                    radical_spin={"value": round(max_cdf["fractional_spin"], 3)},
-                    radical_stability_score={"value": round(rss, 3)})
+        c_data = {"log_file": self.log_path, "spin_type": spin_type}
+        connector = {"log_file": "log_file", "spin_type": "spin_type"}
+        return dict(radical_buried_vol={"value": RadBuriedVolCalc(connector=connector).calculate(c_data), "unit": "A^3"},
+                    radical_spin={"value": RadicalSpinCalc(connector=connector).calculate(c_data)},
+                    radical_stability_score={"value": RSSCalc(connector=connector).calculate(c_data)})
 
 
 class ProcessGausLog(ProcessCCLIB):
