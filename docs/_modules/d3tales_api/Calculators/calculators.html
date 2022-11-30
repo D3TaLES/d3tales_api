@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Calculators.calculators &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Calculators.calculators</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Calculators.calculators</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">d3tales_api.Calculators.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators_dft</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="ConcentrationCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ConcentrationCalculator">[docs]</a><span class="k">class</span> <span class="nc">ConcentrationCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ConcentrationCalculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ConcentrationCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Diffusion constatnt using Randles-Scidwick equation</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;smiles&quot;: &quot;SMILES string&quot;,</span>
+<span class="sd">        &quot;volume&quot;: &quot;Volume&quot;,</span>
+<span class="sd">        &quot;weight&quot;: &quot;actual weight&quot;</span>
+
+<span class="sd">        &quot;solv_density&quot;: &quot;density for solvent&quot;</span>
+<span class="sd">        &quot;redox_density&quot;: &quot;density for redox-active molecule&quot;</span>
+
+<span class="sd">        :return: concentrations eV</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">solv_density</span> <span class="o">=</span> <span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solv_density&quot;</span><span class="p">)</span>
+        <span class="n">redox_density</span> <span class="o">=</span> <span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;redox_density&quot;</span><span class="p">)</span>
+        <span class="n">mol_weight</span> <span class="o">=</span> <span class="n">ExactMolWt</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">]))</span>
+        <span class="n">concentration</span> <span class="o">=</span> <span class="p">((</span><span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">redox_density</span><span class="p">)</span> <span class="o">/</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">mol_weight</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;g/mol&#39;</span><span class="p">))</span> <span class="o">/</span>
+                         <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;volume&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">solv_density</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">concentration</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CVDescriptorCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator">[docs]</a><span class="k">class</span> <span class="nc">CVDescriptorCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.peaks"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks">[docs]</a>    <span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CV peaks</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;scan_data&quot; : scanned data from CV file</span>
+
+<span class="sd">        :return: dictionary containing list of forward peaks and list of reverse peaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">scan_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">data_list</span> <span class="ow">in</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">]:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+                <span class="n">peaks_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="n">scan_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;forward&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">peaks_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="o">-</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="n">scan_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)})</span>
+        <span class="k">return</span> <span class="n">scan_dict</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.reversibility"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.reversibility">[docs]</a>    <span class="k">def</span> <span class="nf">reversibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rev_upperbound</span><span class="o">=</span><span class="mi">63</span><span class="p">,</span> <span class="n">quasi_rev_upperbound</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Categorization of CV reversibility</span>
+
+<span class="sd">        :rev_upperbound : upperbound for reversibility (mV)</span>
+<span class="sd">        :quasi_rev_upperbound : upperbound for quasi reversibility (mV)</span>
+<span class="sd">        connection points</span>
+<span class="sd">        &quot;scan_data&quot; : scanned data from CV file (potentials in V)</span>
+<span class="sd">        &quot;sample_interval&quot; : sample interval value (V)</span>
+<span class="sd">        &quot;low_e&quot; : lowest energy value (V)</span>
+
+<span class="sd">        :return: list of reversibility categorizations for peaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># If there are not the same number of forward and reverse peaks, default to irreversible.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_peaks</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;irreversible&#39;</span><span class="p">]</span>
+        <span class="n">peaks_reversibility</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
+            <span class="n">delta_e</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f_peak</span> <span class="o">-</span> <span class="n">r_peak</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">delta_e</span> <span class="o">&lt;=</span> <span class="n">rev_upperbound</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="n">peaks_reversibility</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;reversible&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">rev_upperbound</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">&lt;=</span> <span class="n">delta_e</span> <span class="o">&lt;=</span> <span class="n">quasi_rev_upperbound</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="n">peaks_reversibility</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;quasi-reversible&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">peaks_reversibility</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;irreversible&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">peaks_reversibility</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.e_half"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.e_half">[docs]</a>    <span class="k">def</span> <span class="nf">e_half</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CV E 1/2</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;scan_data&quot; : scanned data from CV file (potentials in V)</span>
+<span class="sd">        &quot;sample_interval&quot; : sample interval value (V)</span>
+<span class="sd">        &quot;low_e&quot; : lowest energy value (V)</span>
+
+<span class="sd">        :return: list of E 1/2 for peaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">e_halfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
+            <span class="n">e_halfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">f_peak</span> <span class="o">+</span> <span class="n">r_peak</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">e_halfs</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.peak_splittings"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peak_splittings">[docs]</a>    <span class="k">def</span> <span class="nf">peak_splittings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CV peak splitting</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;scan_data&quot; : scanned data from CV file (potentials in V)</span>
+<span class="sd">        &quot;sample_interval&quot; : sample interval value (V)</span>
+<span class="sd">        &quot;low_e&quot; : lowest energy value (V)</span>
+
+<span class="sd">        :return: list of peak splittings for peaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">splittings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
+            <span class="n">splittings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">f_peak</span> <span class="o">-</span> <span class="n">r_peak</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">splittings</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.middle_sweep"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.middle_sweep">[docs]</a>    <span class="k">def</span> <span class="nf">middle_sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CV middle sweep</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;scan_data&quot; : scanned data from CV file (potentials in V)</span>
+
+<span class="sd">        :return: middle sweep from the CV</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">middle_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">middle_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">middle_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.prominent_peaks"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.prominent_peaks">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">orig_data</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.0999</span><span class="p">):</span>
+        <span class="n">prominences</span> <span class="o">=</span> <span class="n">peaks_data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;prominences&quot;</span><span class="p">]</span>
+        <span class="n">peaks_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">prominences</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">prominences</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">cutoff</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">peaks_list</span><span class="p">:</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">orig_data</span><span class="p">[[</span><span class="n">peaks_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]],</span> <span class="p">:][</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">values</span></div></div>
+
+
+<div class="viewcode-block" id="CVDiffusionCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculator">[docs]</a><span class="k">class</span> <span class="nc">CVDiffusionCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CVDiffusionCalculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sci_notation</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Diffusion constant using Randles-Scidwick equation</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;i_p&quot; : peak current (default = A)</span>
+<span class="sd">        &quot;A&quot; : electrode area (default = cm^2)</span>
+<span class="sd">        &quot;v&quot; : scan rate (default = V/s)</span>
+<span class="sd">        &quot;n&quot; : number of electrons</span>
+<span class="sd">        &quot;C&quot; : concentration of the solution (default = mol/cm^3)</span>
+
+<span class="sd">        :return: average diffusion constant for single redox event, cm^2/s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+        <span class="n">diffusion_constants</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="n">i_ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
+            <span class="n">i_p</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;i_p&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;cm^2&#39;</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;V/s&#39;</span><span class="p">)</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;mol/cm^3&#39;</span><span class="p">)</span>
+            <span class="n">i_ps</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">i_p</span>
+            <span class="n">vs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">diffusion_constants</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">i_p</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.692e5</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">i_ps</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># vs = vs[:, np.newaxis]</span>
+        <span class="c1"># slope = np.linalg.lstsq(vs, i_ps, rcond=None)[0][0]</span>
+        <span class="n">diffusion_fitted</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">slope</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.692e5</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">diffusion_constants</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">),</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">diffusion_fitted</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">results</span> <span class="k">if</span> <span class="n">sci_notation</span> <span class="k">else</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="CVChargeTransferCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVChargeTransferCalculator">[docs]</a><span class="k">class</span> <span class="nc">CVChargeTransferCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CVChargeTransferCalculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVChargeTransferCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sci_notation</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Charge tranfer rate calculation</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;T&quot; : Temperature (default = 293 K)</span>
+<span class="sd">        &quot;D&quot; : Diffusion constant (default = cm^2/s)</span>
+<span class="sd">        &quot;v&quot; : scan rate (default = V/s)</span>
+<span class="sd">        &quot;n&quot; : number of electrons</span>
+<span class="sd">        &quot;X&quot; : peak shift (default = V)</span>
+
+<span class="sd">        :return: array[[&quot;scan_rate&quot;, &quot;k_0_i&quot;]] for ith CV, cm/s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+
+        <span class="n">psis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">long_terms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;V&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># convert to mV</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;cm^2/s&#39;</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;V/s&#39;</span><span class="p">)</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">298</span>
+            <span class="n">psis</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="mf">0.6288</span> <span class="o">+</span> <span class="mf">0.0021</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.017</span> <span class="o">*</span> <span class="n">X</span><span class="p">))</span>
+            <span class="n">long_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">pow</span><span class="p">((</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">96485.34</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">8.3145</span> <span class="o">*</span> <span class="n">T</span><span class="p">),</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">chargetranfer_rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">long_terms</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">chargetranfer_rate</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">sci_notation</span> <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">precision</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AvgEHalfCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.AvgEHalfCalculator">[docs]</a><span class="k">class</span> <span class="nc">AvgEHalfCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AvgEHalfCalculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.AvgEHalfCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sci_notation</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Charge tranfer rate calculation</span>
+
+<span class="sd">        :connection points</span>
+<span class="sd">        &quot;e&quot; : E1/2 (default = V)</span>
+
+<span class="sd">        :return: average E1/2 in units V</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+
+        <span class="n">e_halfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;V&#39;</span><span class="p">)</span>
+            <span class="n">e_halfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+        <span class="n">avg_e_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">e_halfs</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">avg_e_half</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">sci_notation</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

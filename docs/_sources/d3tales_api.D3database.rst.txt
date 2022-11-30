@@ -1,0 +1,69 @@
+d3tales\_api.D3database package
+===============================
+
+Submodules
+----------
+
+d3tales\_api.D3database.d3database module
+-----------------------------------------
+
+.. automodule:: d3tales_api.D3database.d3database
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.db\_connector module
+--------------------------------------------
+
+.. automodule:: d3tales_api.D3database.db_connector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.dft\_calculation\_list module
+-----------------------------------------------------
+
+.. automodule:: d3tales_api.D3database.dft_calculation_list
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.info\_from\_smiles module
+-------------------------------------------------
+
+.. automodule:: d3tales_api.D3database.info_from_smiles
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.restapi module
+--------------------------------------
+
+.. automodule:: d3tales_api.D3database.restapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.schema2class module
+-------------------------------------------
+
+.. automodule:: d3tales_api.D3database.schema2class
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.D3database.schema2model module
+-------------------------------------------
+
+.. automodule:: d3tales_api.D3database.schema2model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: d3tales_api.D3database
+   :members:
+   :undoc-members:
+   :show-inheritance:

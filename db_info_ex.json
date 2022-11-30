@@ -1,0 +1,12 @@
+{
+    "frontend":
+        {
+            "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend",
+            "database": "ui"
+        },
+    "backend":
+        {
+            "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/backend",
+            "database": "backend"
+        }
+}

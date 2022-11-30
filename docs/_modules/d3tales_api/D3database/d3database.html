@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.D3database.d3database &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.D3database.d3database</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.D3database.d3database</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">jsonschema</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">nanoid</span> <span class="kn">import</span> <span class="n">generate</span>
+<span class="kn">from</span> <span class="nn">dotty_dict</span> <span class="kn">import</span> <span class="n">dotty</span>
+<span class="kn">from</span> <span class="nn">monty.json</span> <span class="kn">import</span> <span class="n">jsanitize</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.db_connector</span> <span class="kn">import</span> <span class="n">DBconnector</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.schema2class</span> <span class="kn">import</span> <span class="n">Schema2Class</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.info_from_smiles</span> <span class="kn">import</span> <span class="n">GenerateMolInfo</span>
+
+
+<div class="viewcode-block" id="D3Database"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database">[docs]</a><span class="k">class</span> <span class="nc">D3Database</span><span class="p">:</span>
+    <span class="c1"># Copyright 2021, University of Kentucky</span>
+<div class="viewcode-block" id="D3Database.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema_layer</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">public</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema_db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate_schema</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_name</span> <span class="o">=</span> <span class="n">collection_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="p">{</span><span class="n">schema_layer</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot2dict</span><span class="p">(</span><span class="n">instance</span><span class="p">)}</span> <span class="k">if</span> <span class="n">schema_layer</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot2dict</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public</span> <span class="o">=</span> <span class="n">public</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection_name</span><span class="p">)</span>
+        <span class="n">schema_db</span> <span class="o">=</span> <span class="n">schema_db</span> <span class="ow">or</span> <span class="n">database</span>
+
+        <span class="c1"># validate</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">and</span> <span class="n">validate_schema</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">default_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s2c</span> <span class="o">=</span> <span class="n">Schema2Class</span><span class="p">(</span><span class="n">schema_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">schema_db</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="n">schema_directory</span><span class="p">)</span>
+            <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s2c</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="D3Database.insert"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_public</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upserts a dictionary into a frontend collection</span>
+<span class="sd">        :param _id: str, _id for insertion</span>
+<span class="sd">        :param nested: bool,</span>
+<span class="sd">        :param update_public: bool,</span>
+<span class="sd">        :param instance: dict,</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">jsanitize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="n">allow_bson</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Update public status</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="n">update_public</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;public&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">public</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">nested</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">nest_k</span><span class="p">,</span> <span class="n">nest_v</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">new_path</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">nest_k</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_public</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span><span class="n">new_path</span><span class="p">:</span> <span class="n">nest_v</span><span class="p">})</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">array_checker</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$addToSet&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">v</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> inserted into the </span><span class="si">{}</span><span class="s2"> database.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="D3Database.path_insert"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.path_insert">[docs]</a>    <span class="k">def</span> <span class="nf">path_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_checker</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$addToSet&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">value</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="D3Database.dot2dict"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.dot2dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dot2dict</span><span class="p">(</span><span class="n">dot_dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dot_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dot_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dot</span> <span class="o">=</span> <span class="n">dotty</span><span class="p">()</span>
+                    <span class="n">dot</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                    <span class="n">dot_dict</span> <span class="o">=</span> <span class="n">dot</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                    <span class="n">final_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dot_dict</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">final_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">return</span> <span class="n">final_dict</span>
+        <span class="k">return</span> <span class="n">dot_dict</span></div>
+
+<div class="viewcode-block" id="D3Database.array_checker"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.array_checker">[docs]</a>    <span class="k">def</span> <span class="nf">array_checker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_path</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create empty array in filed if this field does not already exists. Prepare for set insertion (avoid duplicates)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">field_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="n">field_path</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">field_path</span><span class="p">:</span> <span class="p">[]}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="D3Database.checker"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.checker">[docs]</a>    <span class="k">def</span> <span class="nf">checker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param entry: value</span>
+<span class="sd">        :param field: field name</span>
+<span class="sd">        :return: {} or the match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="n">field</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="D3Database.make_query"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.make_query">[docs]</a>    <span class="k">def</span> <span class="nf">make_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;pandas&quot;</span><span class="p">,</span> <span class="n">multi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make MongoDB database query</span>
+<span class="sd">        :param query: dict,</span>
+<span class="sd">        :param projection: dict,</span>
+<span class="sd">        :param output: str, output type</span>
+<span class="sd">        :param multi: bool,</span>
+<span class="sd">        :param limit: int, limit to the number of responses the query will return</span>
+<span class="sd">        :return: 1) A dataframe if output=&quot;pandas&quot;</span>
+<span class="sd">                 2) A list if multi=False and a pymongo dursor if multi=True; output != &quot;pandas</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">projection</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">multi</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">projection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">projection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;pandas&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">),</span> <span class="p">))</span>
+            <span class="k">return</span> <span class="n">json_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FrontDB"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB">[docs]</a><span class="k">class</span> <span class="nc">FrontDB</span><span class="p">(</span><span class="n">D3Database</span><span class="p">):</span>
+    <span class="c1"># Copyright 2021, University of Kentucky</span>
+<div class="viewcode-block" id="FrontDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span>
+                 <span class="n">generate_mol</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">schema_layer</span><span class="o">=</span><span class="n">schema_layer</span><span class="p">,</span>
+                         <span class="n">public</span><span class="o">=</span><span class="n">public</span><span class="p">,</span> <span class="n">default_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">validate_schema</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_molecule</span> <span class="o">=</span> <span class="n">generate_mol</span>
+
+        <span class="c1"># Identifier properties: must have either id or smiles and group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">smiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_molecule</span> <span class="ow">and</span> <span class="n">schema_layer</span> <span class="o">!=</span> <span class="s2">&quot;mol_info&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public</span> <span class="o">=</span> <span class="n">public</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">GenerateMolInfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">)</span><span class="o">.</span><span class="n">mol_info_dict</span>
+            <span class="n">FrontDB</span><span class="p">(</span><span class="n">schema_layer</span><span class="o">=</span><span class="s1">&#39;mol_info&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FrontDB.check_if_in_db"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB.check_if_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;mol_info.smiles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">})</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;mol_info.smiles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">})[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If no smiles is given, molecule smiles must be given&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FrontDB.generate_id"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB.generate_id">[docs]</a>    <span class="k">def</span> <span class="nf">generate_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">group_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;unknown&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Eaton&quot;</span><span class="p">:</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Robotics&quot;</span><span class="p">:</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Ganapathysubramanian&quot;</span><span class="p">:</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Jenkins&quot;</span><span class="p">:</span> <span class="s1">&#39;03&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Mason&quot;</span><span class="p">:</span> <span class="s1">&#39;04&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom_Hussein&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom_Aman&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko&quot;</span><span class="p">:</span> <span class="s1">&#39;06&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Sarkar&quot;</span><span class="p">:</span> <span class="s1">&#39;07&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Shaw&quot;</span><span class="p">:</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Teague&quot;</span><span class="p">:</span> <span class="s1">&#39;09&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Csd&quot;</span><span class="p">:</span> <span class="s1">&#39;80&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Zinc&quot;</span><span class="p">:</span> <span class="s1">&#39;81&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Benchmark&quot;</span><span class="p">:</span> <span class="s1">&#39;90&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Diheds&quot;</span><span class="p">:</span> <span class="s1">&#39;91&#39;</span>
+        <span class="p">}</span>
+        <span class="n">id_chars</span> <span class="o">=</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span>
+            <span class="n">group_num</span> <span class="o">=</span> <span class="n">group_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="s1">&#39;10&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;mol_info.smiles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">})</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_molecule</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">rand</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">id_chars</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                <span class="n">_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">group_num</span><span class="p">,</span> <span class="n">rand</span><span class="p">])</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">rand</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">id_chars</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+                    <span class="n">_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">group_num</span><span class="p">,</span> <span class="n">rand</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;mol_info.smiles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">})[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If no id is given, molecule smiles and origin group must be given&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BackDB"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB">[docs]</a><span class="k">class</span> <span class="nc">BackDB</span><span class="p">(</span><span class="n">D3Database</span><span class="p">):</span>
+    <span class="c1"># Copyright 2021, University of Kentucky</span>
+<div class="viewcode-block" id="BackDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_hash</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="c1"># Identifier properties: must have id and frontend instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">create_hash</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Hash ID is required for backend database insertion. Create an instance in the &quot;</span>
+                              <span class="s2">&quot;frontend database first.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BackDB.get_geometry"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.get_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">get_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hash_id</span><span class="p">):</span>
+        <span class="n">array_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">hash_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;characterization.geometry&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+                                        <span class="p">)[</span><span class="s2">&quot;characterization&quot;</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">array_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;source_hash_ids&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">hash_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;sites&quot;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="ParamsDB"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB">[docs]</a><span class="k">class</span> <span class="nc">ParamsDB</span><span class="p">(</span><span class="n">D3Database</span><span class="p">):</span>
+    <span class="c1"># Copyright 2021, University of Kentucky</span>
+<div class="viewcode-block" id="ParamsDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;frontend&#39;</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="n">schema_directory</span><span class="p">,</span> <span class="n">schema_db</span><span class="o">=</span><span class="s1">&#39;frontend&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span> <span class="o">=</span> <span class="n">update</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="c1"># Identifier properties: must have id and frontend instance</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">id_to_check</span> <span class="o">=</span> <span class="n">_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_id</span><span class="p">(</span><span class="n">id_to_check</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Parameter ID (common name) is required for parameter database insertion.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ParamsDB.check_id"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.check_id">[docs]</a>    <span class="k">def</span> <span class="nf">check_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_to_check</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">id_to_check</span><span class="p">})</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                    <span class="s2">&quot;There exists no parameter entry with the id </span><span class="si">{}</span><span class="s2">. Insert a new entry or change update to False.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">id_to_check</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">id_to_check</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">:</span>
+                <span class="n">id_addon</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">_id</span> <span class="o">=</span> <span class="n">id_to_check</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">_id</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">id_to_check</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_addon</span><span class="p">)])</span>
+                    <span class="n">id_addon</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;A parameter already exists with the id </span><span class="si">{}</span><span class="s2">. A new entry was created with the id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">id_to_check</span><span class="p">,</span> <span class="n">_id</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">_id</span>
+            <span class="k">return</span> <span class="n">id_to_check</span></div></div>
+
+
+<div class="viewcode-block" id="Expflow"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow">[docs]</a><span class="k">class</span> <span class="nc">Expflow</span><span class="p">(</span><span class="n">D3Database</span><span class="p">):</span>
+    <span class="c1"># Copyright 2021, University of Kentucky</span>
+<div class="viewcode-block" id="Expflow.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="s1">&#39;experimentation&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_hash</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;expflow&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">schema_db</span><span class="o">=</span><span class="s1">&#39;backend&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="c1"># Identifier properties: must have id and frontend instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">create_hash</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Hash ID is required for database insertion. Be sure to create an instance in the &quot;</span>
+                              <span class="s2">&quot;molecule database first.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="QueryDB"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB">[docs]</a><span class="k">class</span> <span class="nc">QueryDB</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to query the database. Use mongoDB style query and projections.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QueryDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;pandas&quot;</span><span class="p">,</span>
+                 <span class="n">multi</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_name</span> <span class="o">=</span> <span class="n">collection_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">projection</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi</span> <span class="o">=</span> <span class="n">multi</span></div>
+
+<div class="viewcode-block" id="QueryDB.make_query"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.make_query">[docs]</a>    <span class="k">def</span> <span class="nf">make_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return: 1) A dataframe if output=&quot;pandas&quot;</span>
+<span class="sd">                 2) A list if multi=False and a pymongo dursor if multi=True; output != &quot;pandas</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="p">[</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="p">[</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;pandas&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cursor</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">FrontDB</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;experiment_data.experiment_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]},</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;06TNKR&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+d3tales\_api.Calculators package
+================================
+
+Submodules
+----------
+
+d3tales\_api.Calculators.calculators module
+-------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.calculators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.calculators\_dft module
+------------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.calculators_dft
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.generate\_class module
+-----------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.generate_class
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.periodic\_table module
+-----------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.periodic_table
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.plotters module
+----------------------------------------
+
+.. automodule:: d3tales_api.Calculators.plotters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.utils module
+-------------------------------------
+
+.. automodule:: d3tales_api.Calculators.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: d3tales_api.Calculators
+   :members:
+   :undoc-members:
+   :show-inheritance:
