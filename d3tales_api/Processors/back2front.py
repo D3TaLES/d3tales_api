@@ -4,8 +4,8 @@ from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.D3database.d3database import DBconnector
 from ocelot.routines.conformerparser import pmgmol_to_rdmol
-from d3tales_api.D3database.db_connector import DBconnector
 
 
 class Gaus2FrontCharacterization:
@@ -15,6 +15,16 @@ class Gaus2FrontCharacterization:
     """
 
     def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False):
+        """
+        
+        :param _id: str, molecule ID
+        :param calculation_type: str, calculation type
+        :param conditions: dict, calculation conditions 
+        :param charge: int, charge
+        :param data: dict, calculation data
+        :param insert: bool, insert generated data to the frontend D3TaLES database if True
+        :param all_props: bool, calculate all properties for the molecule if True 
+        """
         # connect to databases
         self.front_dbc = DBconnector(db_info.get("frontend"))
         self.front_coll = self.front_dbc.get_collection("base")
@@ -69,6 +79,7 @@ class Gaus2FrontCharacterization:
 
     @property
     def species_descriptors(self):
+        """Descriptor dict for species descriptors"""
         if "wtuning" in self.calculation_type:
             self.character_dict.update(
                 self.return_descriptor_dict(self.data.get("omega"), name="omega", hashes=[self._hash]))
@@ -164,6 +175,12 @@ class Gaus2FrontCharacterization:
 
     @classmethod
     def from_data(cls, processing_data):
+        """
+        Generate data class from data dict
+        
+        :param processing_data: dict, data dict 
+        :return: data class
+        """
         _id = processing_data.get("mol_id")
         calculation_type = processing_data.get("calculation_type")
         data = processing_data.get("data", {})
@@ -172,6 +189,17 @@ class Gaus2FrontCharacterization:
         return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data)
 
     def return_descriptor_dict(self, value, unit="", hashes=None, name="", order=1, condition_addition=None):
+        """
+        Generate descriptor dictionary in accordance with D3TaLES schema
+
+        :param value: data value
+        :param unit: str, unit
+        :param hashes: list, hash ids
+        :param name: str, property name
+        :param order: int, property order
+        :param condition_addition: dict, additional data to add to conditions
+        :return: descriptor dictionary
+        """
         cond = copy.deepcopy(self.conditions)
         if condition_addition:
             cond.update(condition_addition)
@@ -186,163 +214,14 @@ class Gaus2FrontCharacterization:
                 }]
         }
 
-    def solvation_energy(self, species):
-        species_abbrev_dict = {"anion2": "a2", "anion1": "a1", "groundState": "gs", "cation1": "c1", "cation2": "c2"}
-        species_abbrev = species_abbrev_dict.get(species)
-        gas_phase = "opt_{}".format(species)
-        solv = "solv_energy_{}{}".format(species_abbrev, species_abbrev)
-
-        h_ids, c_data = self.get_data([gas_phase, solv])
-        connector = {"energy_final": f"{solv}.scf_total_energy.value",
-                     "energy_inital":  f"{gas_phase}.scf_total_energy.value"}
-        solv_eng = EnergyDiffCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(solv_eng, unit='eV', hashes=h_ids, name="solvation_energy")
-
-    def hole_reorganization_energy(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc1", "opt_cation1", "energy_c1gs"])
-        connector = {"gs_opt": "opt_groundState.scf_total_energy.value",
-                     "ion_opt":  "opt_cation1.scf_total_energy.value",
-                     "gs_energy":  "energy_c1gs.scf_total_energy.value",
-                     "ion_energy":  "energy_gsc1.scf_total_energy.value"}
-        energy = ReorganizationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="hole_reorganization_energy")
-
-    def electron_reorganization_energy(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa1", "opt_anion1", "energy_a1gs"])
-        connector = {"gs_opt": "opt_groundState.scf_total_energy.value",
-                     "ion_opt":  "opt_anion1.scf_total_energy.value",
-                     "gs_energy":  "energy_a1gs.scf_total_energy.value",
-                     "ion_energy":  "energy_gsa1.scf_total_energy.value"}
-        energy = ReorganizationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="electron_reorganization_energy")
-
-    def relaxation_groundState_cation1(self):
-        h_ids, c_data = self.get_data(["energy_gsc1", "opt_cation1"])
-        connector = {"opt_energy": "opt_cation1.scf_total_energy.value",
-                     "energy": "energy_gsc1.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_groundState_cation1")
-
-    def relaxation_cation1_groundState(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_c1gs"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_c1gs.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_cation1_groundState")
-
-    def relaxation_groundState_anion1(self):
-        h_ids, c_data = self.get_data(["energy_gsa1", "opt_anion1"])
-        connector = {"opt_energy": "opt_anion1.scf_total_energy.value",
-                     "energy": "energy_gsa1.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_groundState_anion1")
-
-    def relaxation_anion1_groundState(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_a1gs"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_a1gs.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_anion1_groundState")
-
-    def vertical_ionization_energy(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc1"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_gsc1.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_ionization_energy")
-
-    def vertical_electron_affinity(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa1"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_gsa1.scf_total_energy.value"}
-        energy = RelaxationCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_electron_affinity")
-
-    def adiabatic_ionization_energy(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "opt_cation1"])
-        connector = {"energy_final":   "opt_cation1.scf_total_energy.value",
-                     "energy_inital":  "opt_groundState.scf_total_energy.value"}
-        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_ionization_energy")
-
-    def adiabatic_ionization_energy_2(self):
-        h_ids, c_data = self.get_data(["opt_cation1", "opt_cation2"])
-        connector = {"energy_final":   "opt_cation2.scf_total_energy.value",
-                     "energy_inital":  "opt_cation1.scf_total_energy.value"}
-        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_ionization_energy_2")
-
-    def adiabatic_electron_affinity(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "opt_anion1"])
-        connector = {"energy_final":   "opt_anion1.scf_total_energy.value",
-                     "energy_inital":  "opt_groundState.scf_total_energy.value"}
-        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_electron_affinity")
-
-    def adiabatic_electron_affinity_2(self):
-        h_ids, c_data = self.get_data(["opt_anion1", "opt_anion2"])
-        connector = {"energy_final":   "opt_anion2.scf_total_energy.value",
-                     "energy_inital":  "opt_anion1.scf_total_energy.value"}
-        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_electron_affinity_2")
-
-    def rmsd_groundState_cation1(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "opt_cation1"])
-        connector = {"geom_inital":   "opt_groundState.geometry",
-                     "geom_final":  "opt_cation1.geometry"}
-        dist = RMSECalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_cation1")
-
-    def rmsd_cation1_cation2(self):
-        h_ids, c_data = self.get_data(["opt_cation2", "opt_cation1"])
-        connector = {"geom_inital":   "opt_cation1.geometry",
-                     "geom_final":  "opt_cation2.geometry"}
-        dist = RMSECalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_cation1")
-
-    def rmsd_groundState_anion1(self):
-        h_ids, c_data = self.get_data(["opt_groundState", "opt_anion1"])
-        connector = {"geom_inital":   "opt_groundState.geometry",
-                     "geom_final":  "opt_anion1.geometry"}
-        dist = RMSECalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_anion1")
-
-    def rmsd_anion1_anion2(self):
-        h_ids, c_data = self.get_data(["opt_anion1", "opt_anion2"])
-        connector = {"geom_inital":   "opt_anion1.geometry",
-                     "geom_final":  "opt_anion2.geometry"}
-        dist = RMSECalc(connector=connector).calculate(c_data)
-        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_anion1")
-
-    def oxidation_potential(self, electrode="standard_hydrogen_electrode", num_electrons=1):
-        h_ids, c_data = self.get_data(["opt_groundState", "freq_groundState", "solv_energy_gsgs", "opt_cation1", "freq_cation1", "solv_energy_c1c1"])
-        c_data.update({"electrode": electrode, "num_electrons": num_electrons})
-        connector = {"init_eng": "opt_groundState.scf_total_energy.value",
-                     "init_corr": "freq_groundState.gibbs_correction.value",
-                     "init_eng_solv": "solv_energy_gsgs.scf_total_energy.value",
-                     "fin_eng": "opt_cation1.scf_total_energy.value",
-                     "fin_corr": "freq_cation1.gibbs_correction.value",
-                     "fin_eng_solv": "solv_energy_c1c1.scf_total_energy.value",
-                     "electrode": "electrode", "num_electrons": "num_electrons"}
-        energy = -RedoxPotentialCalc(connector=connector).calculate(c_data)
-        print('ox', energy)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="oxidation_potential", condition_addition={"reference_electrode": electrode})
-
-    def reduction_potential(self, electrode="standard_hydrogen_electrode", num_electrons=1):
-        h_ids, c_data = self.get_data(["opt_groundState", "freq_groundState", "solv_energy_gsgs", "opt_anion1", "freq_anion1", "solv_energy_a1a1"])
-        c_data.update({"electrode": electrode, "num_electrons": num_electrons})
-        connector = {"init_eng": "opt_groundState.scf_total_energy.value",
-                     "init_corr": "freq_groundState.gibbs_correction.value",
-                     "init_eng_solv": "solv_energy_gsgs.scf_total_energy.value",
-                     "fin_eng": "opt_anion1.scf_total_energy.value",
-                     "fin_corr": "freq_anion1.gibbs_correction.value",
-                     "fin_eng_solv": "solv_energy_a1a1.scf_total_energy.value",
-                     "electrode": "electrode", "num_electrons": "num_electrons"}
-        energy = RedoxPotentialCalc(connector=connector).calculate(c_data)
-        print('red', energy)
-        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="reduction_potential", condition_addition={"reference_electrode": electrode})
-
     def find_data(self, calc_type, solvent=None):
+        """
+        Find calculation data
+
+        :param calc_type: str, calculation type
+        :param solvent: str, solvent
+        :return: [data dict, hash ID]
+        """
         if solvent:
             data_conditions = copy.deepcopy(self.conditions)
             data_conditions["solvent"] = solvent.get("solvent", )
@@ -357,6 +236,12 @@ class Gaus2FrontCharacterization:
             return [None, _hash]
 
     def get_data(self, calculations):
+        """
+        Get all data from a list of calculations
+
+        :param calculations: list, list of calculation names
+        :return: [list of hash IDs, dict of calculation name with associated data]
+        """
         if self.calculation_type not in calculations and not self.all_props:
             raise ValueError("Calculation does not use this calculation type")
         calcs_data = [getattr(self, c) for c in calculations]
@@ -369,6 +254,14 @@ class Gaus2FrontCharacterization:
 
     @staticmethod
     def hash_id(_id, calc_type, gaus_conditions):
+        """
+        Generate hash ID
+
+        :param _id: str, molecule ID
+        :param calc_type: str, calculation type
+        :param gaus_conditions: dict, calculation conditions
+        :return:
+        """
         hash_dict = {
             "_id": _id,
             "calculation_type": calc_type,
@@ -378,6 +271,181 @@ class Gaus2FrontCharacterization:
         encoded = json.dumps(hash_dict, sort_keys=True).encode()
         dhash.update(encoded)
         return dhash.hexdigest()
+
+    def solvation_energy(self, species):
+        """Descriptor dict for the solvation energy"""
+        species_abbrev_dict = {"anion2": "a2", "anion1": "a1", "groundState": "gs", "cation1": "c1", "cation2": "c2"}
+        species_abbrev = species_abbrev_dict.get(species)
+        gas_phase = "opt_{}".format(species)
+        solv = "solv_energy_{}{}".format(species_abbrev, species_abbrev)
+
+        h_ids, c_data = self.get_data([gas_phase, solv])
+        connector = {"energy_final": f"{solv}.scf_total_energy.value",
+                     "energy_initial":  f"{gas_phase}.scf_total_energy.value"}
+        solv_eng = EnergyDiffCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(solv_eng, unit='eV', hashes=h_ids, name="solvation_energy")
+
+    def hole_reorganization_energy(self):
+        """Descriptor dict for the hole reorganization energy"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc1", "opt_cation1", "energy_c1gs"])
+        connector = {"gs_opt": "opt_groundState.scf_total_energy.value",
+                     "ion_opt":  "opt_cation1.scf_total_energy.value",
+                     "gs_energy":  "energy_c1gs.scf_total_energy.value",
+                     "ion_energy":  "energy_gsc1.scf_total_energy.value"}
+        energy = ReorganizationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="hole_reorganization_energy")
+
+    def electron_reorganization_energy(self):
+        """Descriptor dict for the electron reorganization energy"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa1", "opt_anion1", "energy_a1gs"])
+        connector = {"gs_opt": "opt_groundState.scf_total_energy.value",
+                     "ion_opt":  "opt_anion1.scf_total_energy.value",
+                     "gs_energy":  "energy_a1gs.scf_total_energy.value",
+                     "ion_energy":  "energy_gsa1.scf_total_energy.value"}
+        energy = ReorganizationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="electron_reorganization_energy")
+
+    def relaxation_groundState_cation1(self):
+        """Descriptor dict for the relaxation energy of the ground state geometry to the +1 cation geometry"""
+        h_ids, c_data = self.get_data(["energy_gsc1", "opt_cation1"])
+        connector = {"opt_energy": "opt_cation1.scf_total_energy.value",
+                     "energy": "energy_gsc1.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_groundState_cation1")
+
+    def relaxation_cation1_groundState(self):
+        """Descriptor dict for the relaxation energy of the +1 cation geometry to the ground state geometry"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_c1gs"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_c1gs.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_cation1_groundState")
+
+    def relaxation_groundState_anion1(self):
+        """Descriptor dict for the relaxation energy of the ground state geometry to the -1 anion geometry"""
+        h_ids, c_data = self.get_data(["energy_gsa1", "opt_anion1"])
+        connector = {"opt_energy": "opt_anion1.scf_total_energy.value",
+                     "energy": "energy_gsa1.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_groundState_anion1")
+
+    def relaxation_anion1_groundState(self):
+        """Descriptor dict for the relaxation energy of the ground -1 anion to the ground state geometry"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_a1gs"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_a1gs.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="relaxation_anion1_groundState")
+
+    def vertical_ionization_energy(self):
+        """Descriptor dict for the vertical ionization energy"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc1"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_gsc1.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_ionization_energy")
+
+    def vertical_electron_affinity(self):
+        """Descriptor dict for the """
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa1"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_gsa1.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_electron_affinity")
+
+    def adiabatic_ionization_energy(self):
+        """Descriptor dict for the adiabatic ionization energy"""
+        h_ids, c_data = self.get_data(["opt_groundState", "opt_cation1"])
+        connector = {"energy_final":   "opt_cation1.scf_total_energy.value",
+                     "energy_initial":  "opt_groundState.scf_total_energy.value"}
+        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_ionization_energy")
+
+    def adiabatic_ionization_energy_2(self):
+        """Descriptor dict for the second adiabatic ionization energy"""
+        h_ids, c_data = self.get_data(["opt_cation1", "opt_cation2"])
+        connector = {"energy_final":   "opt_cation2.scf_total_energy.value",
+                     "energy_initial":  "opt_cation1.scf_total_energy.value"}
+        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_ionization_energy_2")
+
+    def adiabatic_electron_affinity(self):
+        """Descriptor dict for the adiabatic electron affinity"""
+        h_ids, c_data = self.get_data(["opt_groundState", "opt_anion1"])
+        connector = {"energy_final":   "opt_anion1.scf_total_energy.value",
+                     "energy_initial":  "opt_groundState.scf_total_energy.value"}
+        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_electron_affinity")
+
+    def adiabatic_electron_affinity_2(self):
+        """Descriptor dict for the second adiabatic electron affinity"""
+        h_ids, c_data = self.get_data(["opt_anion1", "opt_anion2"])
+        connector = {"energy_final":   "opt_anion2.scf_total_energy.value",
+                     "energy_initial":  "opt_anion1.scf_total_energy.value"}
+        energy = EnergyDiffCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="adiabatic_electron_affinity_2")
+
+    def rmsd_groundState_cation1(self):
+        """Descriptor dict for the RMSD between the ground state and +1 cation geometries"""
+        h_ids, c_data = self.get_data(["opt_groundState", "opt_cation1"])
+        connector = {"geom_initial":   "opt_groundState.geometry",
+                     "geom_final":  "opt_cation1.geometry"}
+        dist = RMSDCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_cation1")
+
+    def rmsd_cation1_cation2(self):
+        """Descriptor dict for the RMSD between the +1 cation and +2 cation geometries"""
+        h_ids, c_data = self.get_data(["opt_cation2", "opt_cation1"])
+        connector = {"geom_initial":   "opt_cation1.geometry",
+                     "geom_final":  "opt_cation2.geometry"}
+        dist = RMSDCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_cation1")
+
+    def rmsd_groundState_anion1(self):
+        """Descriptor dict for the RMSD between the ground state and -1 anion geometries"""
+        h_ids, c_data = self.get_data(["opt_groundState", "opt_anion1"])
+        connector = {"geom_initial":   "opt_groundState.geometry",
+                     "geom_final":  "opt_anion1.geometry"}
+        dist = RMSDCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_anion1")
+
+    def rmsd_anion1_anion2(self):
+        """Descriptor dict for the RMSD between the -1 anion and -2 anion geometries"""
+        h_ids, c_data = self.get_data(["opt_anion1", "opt_anion2"])
+        connector = {"geom_initial":   "opt_anion1.geometry",
+                     "geom_final":  "opt_anion2.geometry"}
+        dist = RMSDCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(dist, unit='A', hashes=h_ids, name="rmsd_groundState_anion1")
+
+    def oxidation_potential(self, electrode="standard_hydrogen_electrode", num_electrons=1):
+        """Descriptor dict for the oxidation potential"""
+        h_ids, c_data = self.get_data(["opt_groundState", "freq_groundState", "solv_energy_gsgs", "opt_cation1", "freq_cation1", "solv_energy_c1c1"])
+        c_data.update({"electrode": electrode, "num_electrons": num_electrons})
+        connector = {"init_eng": "opt_groundState.scf_total_energy.value",
+                     "init_corr": "freq_groundState.gibbs_correction.value",
+                     "init_eng_solv": "solv_energy_gsgs.scf_total_energy.value",
+                     "fin_eng": "opt_cation1.scf_total_energy.value",
+                     "fin_corr": "freq_cation1.gibbs_correction.value",
+                     "fin_eng_solv": "solv_energy_c1c1.scf_total_energy.value",
+                     "electrode": "electrode", "num_electrons": "num_electrons"}
+        energy = -RedoxPotentialCalc(connector=connector).calculate(c_data)
+        print('ox', energy)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="oxidation_potential", condition_addition={"reference_electrode": electrode})
+
+    def reduction_potential(self, electrode="standard_hydrogen_electrode", num_electrons=1):
+        """Descriptor dict for the reduction potential"""
+        h_ids, c_data = self.get_data(["opt_groundState", "freq_groundState", "solv_energy_gsgs", "opt_anion1", "freq_anion1", "solv_energy_a1a1"])
+        c_data.update({"electrode": electrode, "num_electrons": num_electrons})
+        connector = {"init_eng": "opt_groundState.scf_total_energy.value",
+                     "init_corr": "freq_groundState.gibbs_correction.value",
+                     "init_eng_solv": "solv_energy_gsgs.scf_total_energy.value",
+                     "fin_eng": "opt_anion1.scf_total_energy.value",
+                     "fin_corr": "freq_anion1.gibbs_correction.value",
+                     "fin_eng_solv": "solv_energy_a1a1.scf_total_energy.value",
+                     "electrode": "electrode", "num_electrons": "num_electrons"}
+        energy = RedoxPotentialCalc(connector=connector).calculate(c_data)
+        print('red', energy)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="reduction_potential", condition_addition={"reference_electrode": electrode})
 
 
 if __name__ == "__main__":

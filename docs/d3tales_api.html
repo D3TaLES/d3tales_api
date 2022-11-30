@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="d3tales_api.Calculators package" href="d3tales_api.Calculators.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="prev" title="Processors" href="Processors.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,8 +44,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">d3tales_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -54,7 +57,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api.database_info">d3tales_api.database_info module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api.database_info">d3tales_api.database_info module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api">Module contents</a></li>
 </ul>
 </li>
@@ -118,43 +124,48 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ConcentrationCalculator.calculate"><code class="docutils literal notranslate"><span class="pre">ConcentrationCalculator.calculate()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator"><code class="docutils literal notranslate"><span class="pre">D3Calculator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.__init__"><code class="docutils literal notranslate"><span class="pre">D3Calculator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.calculate"><code class="docutils literal notranslate"><span class="pre">D3Calculator.calculate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.connector"><code class="docutils literal notranslate"><span class="pre">D3Calculator.connector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.description"><code class="docutils literal notranslate"><span class="pre">D3Calculator.description()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.make_connections"><code class="docutils literal notranslate"><span class="pre">D3Calculator.make_connections()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.calculators_dft">d3tales_api.Calculators.calculators_dft module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.DeltaGSolvCalc"><code class="docutils literal notranslate"><span class="pre">DeltaGSolvCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.DeltaGSolvCalc.calculate"><code class="docutils literal notranslate"><span class="pre">DeltaGSolvCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DeltaGSolvCalc"><code class="docutils literal notranslate"><span class="pre">DeltaGSolvCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DeltaGSolvCalc.calculate"><code class="docutils literal notranslate"><span class="pre">DeltaGSolvCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.EnergyDiffCalc"><code class="docutils literal notranslate"><span class="pre">EnergyDiffCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.EnergyDiffCalc.calculate"><code class="docutils literal notranslate"><span class="pre">EnergyDiffCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.EnergyDiffCalc"><code class="docutils literal notranslate"><span class="pre">EnergyDiffCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.EnergyDiffCalc.calculate"><code class="docutils literal notranslate"><span class="pre">EnergyDiffCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RMSECalc"><code class="docutils literal notranslate"><span class="pre">RMSECalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RMSECalc.calculate"><code class="docutils literal notranslate"><span class="pre">RMSECalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RMSDCalc"><code class="docutils literal notranslate"><span class="pre">RMSDCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RMSDCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RMSDCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RSSCalc"><code class="docutils literal notranslate"><span class="pre">RSSCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RSSCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RSSCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RSSCalc"><code class="docutils literal notranslate"><span class="pre">RSSCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RSSCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RSSCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadBuriedVolCalc"><code class="docutils literal notranslate"><span class="pre">RadBuriedVolCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadBuriedVolCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RadBuriedVolCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadBuriedVolCalc"><code class="docutils literal notranslate"><span class="pre">RadBuriedVolCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadBuriedVolCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RadBuriedVolCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadicalSpinCalc"><code class="docutils literal notranslate"><span class="pre">RadicalSpinCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadicalSpinCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RadicalSpinCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadicalSpinCalc"><code class="docutils literal notranslate"><span class="pre">RadicalSpinCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadicalSpinCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RadicalSpinCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RedoxPotentialCalc"><code class="docutils literal notranslate"><span class="pre">RedoxPotentialCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RedoxPotentialCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RedoxPotentialCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RedoxPotentialCalc"><code class="docutils literal notranslate"><span class="pre">RedoxPotentialCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RedoxPotentialCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RedoxPotentialCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RelaxationCalc"><code class="docutils literal notranslate"><span class="pre">RelaxationCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RelaxationCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RelaxationCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RelaxationCalc"><code class="docutils literal notranslate"><span class="pre">RelaxationCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RelaxationCalc.calculate"><code class="docutils literal notranslate"><span class="pre">RelaxationCalc.calculate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.ReorganizationCalc"><code class="docutils literal notranslate"><span class="pre">ReorganizationCalc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.ReorganizationCalc.calculate"><code class="docutils literal notranslate"><span class="pre">ReorganizationCalc.calculate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ReorganizationCalc"><code class="docutils literal notranslate"><span class="pre">ReorganizationCalc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ReorganizationCalc.calculate"><code class="docutils literal notranslate"><span class="pre">ReorganizationCalc.calculate()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -164,11 +175,14 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.generate_class.json2obj"><code class="docutils literal notranslate"><span class="pre">json2obj()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.periodic_table">d3tales_api.Calculators.periodic_table module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter"><code class="docutils literal notranslate"><span class="pre">CVPlotter</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot"><code class="docutils literal notranslate"><span class="pre">CVPlotter.live_plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.plot_data"><code class="docutils literal notranslate"><span class="pre">CVPlotter.plot_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter"><code class="docutils literal notranslate"><span class="pre">D3Plotter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter.plot_data"><code class="docutils literal notranslate"><span class="pre">D3Plotter.plot_data()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter"><code class="docutils literal notranslate"><span class="pre">DFTSpecPlotter</span></code></a><ul>
@@ -179,19 +193,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.utils">d3tales_api.Calculators.utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator"><code class="docutils literal notranslate"><span class="pre">D3Calculator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.__init__"><code class="docutils literal notranslate"><span class="pre">D3Calculator.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.calculate"><code class="docutils literal notranslate"><span class="pre">D3Calculator.calculate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.connector"><code class="docutils literal notranslate"><span class="pre">D3Calculator.connector()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.description"><code class="docutils literal notranslate"><span class="pre">D3Calculator.description()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.make_connections"><code class="docutils literal notranslate"><span class="pre">D3Calculator.make_connections()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter"><code class="docutils literal notranslate"><span class="pre">D3Plotter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter.plot_data"><code class="docutils literal notranslate"><span class="pre">D3Plotter.plot_data()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_electrode_potential"><code class="docutils literal notranslate"><span class="pre">get_electrode_potential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_periodic_table"><code class="docutils literal notranslate"><span class="pre">get_periodic_table()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.rgetattr"><code class="docutils literal notranslate"><span class="pre">rgetattr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.rgetkeys"><code class="docutils literal notranslate"><span class="pre">rgetkeys()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.unit_conversion"><code class="docutils literal notranslate"><span class="pre">unit_conversion()</span></code></a></li>
@@ -211,11 +214,17 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database"><code class="docutils literal notranslate"><span class="pre">D3Database</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.__init__"><code class="docutils literal notranslate"><span class="pre">D3Database.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.array_checker"><code class="docutils literal notranslate"><span class="pre">D3Database.array_checker()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.checker"><code class="docutils literal notranslate"><span class="pre">D3Database.checker()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.dot2dict"><code class="docutils literal notranslate"><span class="pre">D3Database.dot2dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.field_checker"><code class="docutils literal notranslate"><span class="pre">D3Database.field_checker()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.insert"><code class="docutils literal notranslate"><span class="pre">D3Database.insert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.make_query"><code class="docutils literal notranslate"><span class="pre">D3Database.make_query()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.path_insert"><code class="docutils literal notranslate"><span class="pre">D3Database.path_insert()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_collection"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_database"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_database()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow"><code class="docutils literal notranslate"><span class="pre">Expflow</span></code></a><ul>
@@ -236,15 +245,6 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB"><code class="docutils literal notranslate"><span class="pre">QueryDB</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.__init__"><code class="docutils literal notranslate"><span class="pre">QueryDB.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.make_query"><code class="docutils literal notranslate"><span class="pre">QueryDB.make_query()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.db_connector">d3tales_api.D3database.db_connector module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.get_collection"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_collection()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.get_database"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_database()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -412,6 +412,10 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.tuning_parameter"><code class="docutils literal notranslate"><span class="pre">ProcessGausLog.tuning_parameter</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log"><code class="docutils literal notranslate"><span class="pre">ProcessPsi4Log</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessPsi4Log.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_ir">d3tales_api.Processors.parser_ir module</a></li>
@@ -472,6 +476,23 @@
 </section>
 <section id="module-d3tales_api.database_info">
 <span id="d3tales-api-database-info-module"></span><h2>d3tales_api.database_info module<a class="headerlink" href="#module-d3tales_api.database_info" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.database_info.db_info_generator">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.db_info_generator" title="Permalink to this definition"></a></dt>
+<dd><p>Get information about database connections. This function requires either a db_file argument
+or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
+to a JSON file containing connection information for the databases. The keys should be the database
+names such as <cite>frontend</cite>, <cite>backend</cite>, <cite>expflow</cite>, and <cite>fireworks</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db_file</strong> – str, path to database info JSON file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON object containing information about database connections</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-d3tales_api">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api" title="Permalink to this heading"></a></h2>
@@ -484,7 +505,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Processors.html" class="btn btn-neutral float-left" title="Processors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="d3tales_api.Calculators.html" class="btn btn-neutral float-right" title="d3tales_api.Calculators package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

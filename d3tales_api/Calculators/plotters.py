@@ -1,7 +1,17 @@
+import numpy as np
 from scipy.stats import norm
 import scipy.constants as cst
 import matplotlib.pyplot as plt
-from d3tales_api.Calculators.utils import *
+from d3tales_api.Calculators.calculators import D3Calculator
+
+
+class D3Plotter(D3Calculator):
+    """    
+    D3Plotters base class, based on D3Calculators base class
+    """
+
+    def plot_data(self, data):
+        pass
 
 
 class CVPlotter(D3Plotter):
@@ -10,8 +20,11 @@ class CVPlotter(D3Plotter):
         """
         CV plot data for plotly
 
-        :connection points
-        "scan_data" : scanned data from CV file
+        Connection Points:
+            :scan_data: scanned data from CV file
+
+        :param data: data for calculation
+        :type data: dict
 
         :return: plot data for plotly
         """
@@ -38,6 +51,17 @@ class CVPlotter(D3Plotter):
         return plotting_data
 
     def live_plot(self, data):
+        """
+        Live Matplotlib plot for data
+
+        Connection Points:
+            :scan_data: scanned data from CV file
+
+        :param data: data for calculation
+        :type data: dict
+
+        :return: shows matplotlib plot
+        """
         self.data = data
         conns = self.make_connections(data)
         scan_data = conns["scan_data"]
@@ -53,11 +77,14 @@ class DFTSpecPlotter(D3Plotter):
         """
         Spectrum plot data for plotly
 
-        :connection points
-        "transitions" : A list of tuple for each transition such as
-                        [(energy (eV), lambda (nm), oscillatory strength), ... ]
-        "sigma" : (default = 0.10)
-        "step" : (default = 0.01)
+        Connection Points:
+            :transitions: A list of tuple for each transition such as
+                            [(energy (eV), lambda (nm), oscillatory strength), ... ]
+            :sigma: (default = 0.10)
+            :step: (default = 0.01)
+
+        :param data: data for calculation
+        :type data: dict
 
         :return: plot data for plotly
         """
@@ -100,6 +127,20 @@ class DFTSpecPlotter(D3Plotter):
         return spectra_data
 
     def live_plot(self, data):
+        """
+        Live Matplotlib plot for data
+
+        Connection Points:
+            :transitions: A list of tuple for each transition such as
+                            [(energy (eV), lambda (nm), oscillatory strength), ... ]
+            :sigma: (default = 0.10)
+            :step: (default = 0.01)
+
+        :param data: data for calculation
+        :type data: dict
+
+        :return: shows matplotlib plot
+        """
         spectra_data = self.calculate(data)
         plt.plot(spectra_data["lambda"], spectra_data["xas"], color="red")
 

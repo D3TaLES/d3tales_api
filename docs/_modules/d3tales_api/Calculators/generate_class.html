@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -75,7 +78,16 @@
 <span class="kn">from</span> <span class="nn">monty.serialization</span> <span class="kn">import</span> <span class="n">loadfn</span>
 
 
-<div class="viewcode-block" id="dict2obj"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.generate_class.dict2obj">[docs]</a><span class="k">def</span> <span class="nf">dict2obj</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">master_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dict2obj"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.generate_class.dict2obj">[docs]</a><span class="k">def</span> <span class="nf">dict2obj</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">master_obj</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a dictionary to a base object if `mater_obj` is specified, else generic object</span>
+
+<span class="sd">    :param d: dictionary to be converted</span>
+<span class="sd">    :param master_obj: base object to which to convert the dictionary</span>
+<span class="sd">    :type d: dict</span>
+<span class="sd">    :type master_obj: object</span>
+<span class="sd">    :return: object from dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># checking whether object d is an instance of class list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">dict2obj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
@@ -98,9 +110,15 @@
     <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="json2obj"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.generate_class.json2obj">[docs]</a><span class="k">def</span> <span class="nf">json2obj</span><span class="p">(</span><span class="n">json_file</span><span class="p">):</span>
+<div class="viewcode-block" id="json2obj"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.generate_class.json2obj">[docs]</a><span class="k">def</span> <span class="nf">json2obj</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply `dict2obj` to contents of a JSON file</span>
+<span class="sd">    :param json_file: path to JSON file</span>
+<span class="sd">    :type json_file: str</span>
+<span class="sd">    :return: object from dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dict2obj</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dict2obj</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -71,10 +74,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Calculators.plotters</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 <span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">cst</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">D3Calculator</span>
+
+
+<div class="viewcode-block" id="D3Plotter"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter">[docs]</a><span class="k">class</span> <span class="nc">D3Plotter</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    D3Plotters base class, based on D3Calculators base class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="D3Plotter.plot_data"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="CVPlotter"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter">[docs]</a><span class="k">class</span> <span class="nc">CVPlotter</span><span class="p">(</span><span class="n">D3Plotter</span><span class="p">):</span>
@@ -83,8 +96,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        CV plot data for plotly</span>
 
-<span class="sd">        :connection points</span>
-<span class="sd">        &quot;scan_data&quot; : scanned data from CV file</span>
+<span class="sd">        Connection Points:</span>
+<span class="sd">            :scan_data: scanned data from CV file</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
 
 <span class="sd">        :return: plot data for plotly</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -111,6 +127,17 @@
         <span class="k">return</span> <span class="n">plotting_data</span></div>
 
 <div class="viewcode-block" id="CVPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Live Matplotlib plot for data</span>
+
+<span class="sd">        Connection Points:</span>
+<span class="sd">            :scan_data: scanned data from CV file</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
+
+<span class="sd">        :return: shows matplotlib plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">scan_data</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">]</span>
@@ -126,11 +153,14 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Spectrum plot data for plotly</span>
 
-<span class="sd">        :connection points</span>
-<span class="sd">        &quot;transitions&quot; : A list of tuple for each transition such as</span>
-<span class="sd">                        [(energy (eV), lambda (nm), oscillatory strength), ... ]</span>
-<span class="sd">        &quot;sigma&quot; : (default = 0.10)</span>
-<span class="sd">        &quot;step&quot; : (default = 0.01)</span>
+<span class="sd">        Connection Points:</span>
+<span class="sd">            :transitions: A list of tuple for each transition such as</span>
+<span class="sd">                            [(energy (eV), lambda (nm), oscillatory strength), ... ]</span>
+<span class="sd">            :sigma: (default = 0.10)</span>
+<span class="sd">            :step: (default = 0.01)</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
 
 <span class="sd">        :return: plot data for plotly</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -173,6 +203,20 @@
         <span class="k">return</span> <span class="n">spectra_data</span></div>
 
 <div class="viewcode-block" id="DFTSpecPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Live Matplotlib plot for data</span>
+
+<span class="sd">        Connection Points:</span>
+<span class="sd">            :transitions: A list of tuple for each transition such as</span>
+<span class="sd">                            [(energy (eV), lambda (nm), oscillatory strength), ... ]</span>
+<span class="sd">            :sigma: (default = 0.10)</span>
+<span class="sd">            :step: (default = 0.01)</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
+
+<span class="sd">        :return: shows matplotlib plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">spectra_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectra_data</span><span class="p">[</span><span class="s2">&quot;lambda&quot;</span><span class="p">],</span> <span class="n">spectra_data</span><span class="p">[</span><span class="s2">&quot;xas&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
 

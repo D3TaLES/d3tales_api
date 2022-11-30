@@ -12,6 +12,7 @@ import inflection
 def determine_model_name(model_id=None, filename=None):
     """
     Get the model name
+
     :param model_id: str, model id
     :param filename: str, filename
     :return: str, model name
@@ -34,6 +35,7 @@ def determine_model_name(model_id=None, filename=None):
 def get_required_string(key_name, required_fields, field_type='string', is_pk_field=False):
     """
     Gets the required portion of model field
+
     :param is_pk_field:
     :param field_type:
     :param key_name:
@@ -54,7 +56,13 @@ def get_required_string(key_name, required_fields, field_type='string', is_pk_fi
 
 
 def parse_model(json_model, filename):
-    # Make sure not list, but object
+    """
+    Convert JSON object into Django model
+
+    :param json_model: json object containing model
+    :param filename: filename of model
+    :return: str containing Django model
+    """
     if json_model['type'] != 'object':
         print("Model type has to be object to convert to model, got {}".format(json_model['type']))
 

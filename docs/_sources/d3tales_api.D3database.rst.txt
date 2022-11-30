@@ -12,14 +12,6 @@ d3tales\_api.D3database.d3database module
    :undoc-members:
    :show-inheritance:
 
-d3tales\_api.D3database.db\_connector module
---------------------------------------------
-
-.. automodule:: d3tales_api.D3database.db_connector
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 d3tales\_api.D3database.dft\_calculation\_list module
 -----------------------------------------------------
 

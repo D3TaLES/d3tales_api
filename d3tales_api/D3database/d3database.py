@@ -1,4 +1,3 @@
-import os
 import json
 import warnings
 import jsonschema
@@ -7,15 +6,85 @@ from nanoid import generate
 from dotty_dict import dotty
 from monty.json import jsanitize
 from d3tales_api.database_info import db_info
-from d3tales_api.D3database.db_connector import DBconnector
 from d3tales_api.D3database.schema2class import Schema2Class
 from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 
+from pymongo import MongoClient
+
+
+class DBconnector:
+    """
+    Class to retrieve a collection from a database and insert new entry.
+    Requires a db_infos.json file with credentials
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, db_information: dict):
+        """
+        :param db_information: dictionary of database info
+        """
+
+        self.host = db_information.get("host", )
+        self.password = db_information.get("admin_password", )
+        self.user = db_information.get("admin_user", )
+        self.port = int(db_information.get("port", 0))
+        self.database = db_information.get("database", )
+        self.collection = db_information.get("collection", )
+
+    def get_database(self, **kwargs):
+        """
+        Returns a database object
+
+        :return: a database object
+        """
+        try:
+            if "@" in self.host:
+                conn = MongoClient(self.host)
+            else:
+                conn = MongoClient(host=self.host, port=self.port,
+                                   username=self.user,
+                                   password=self.password, **kwargs)
+
+            db = conn[self.database]
+        except:
+            raise Exception
+
+        return db
+
+    def get_collection(self, coll_name=None):
+        """
+        Returns a collection from the database
+
+        :param coll_name: name of collection
+        :return: db.collection
+        """
+        db = self.get_database()
+        if not coll_name:
+            coll_name = self.collection
+            if not coll_name:
+                raise IOError("No collection specified")
+
+        return db[coll_name]
+
 
 class D3Database:
-    # Copyright 2021, University of Kentucky
+    """
+    Base class for connecting to a database
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, database=None, collection_name=None, instance=None, schema_layer="", schema_directory=None,
                  public=None, schema_db=None, default_id=None, validate_schema=True):
+        """
+        :param database: str, name of database (should be a key in the DB_INFO_FILE)
+        :param collection_name: str, name of collection
+        :param instance: dict, instance to insert or validate
+        :param schema_layer: str, schema layer
+        :param schema_directory: str, schema directory
+        :param public: bool, instance is marked as public if True
+        :param schema_db: str, database containing schema
+        :param default_id: str, default instance ID
+        :param validate_schema: bool, validate schema if True
+        """
         self.collection_name = collection_name
         self.instance = {schema_layer: self.dot2dict(instance)} if schema_layer else self.dot2dict(instance)
         self.database = database
@@ -32,13 +101,12 @@ class D3Database:
 
     def insert(self, _id, nested=False, update_public=True, instance=None):
         """
-        Upserts a dictionary into a frontend collection
-        :param _id: str, _id for insertion
-        :param nested: bool,
-        :param update_public: bool,
-        :param instance: dict,
+        Upserts a dictionary into a collection
 
-        :return: None
+        :param _id: str, _id for insertion
+        :param nested: bool, insert nested attributes if True
+        :param update_public: bool, update the public status if true
+        :param instance: dict, instance to be inserted
         """
         if not instance:
             instance = jsanitize(self.instance, allow_bson=True)
@@ -62,37 +130,33 @@ class D3Database:
         print("{} inserted into the {} database.".format(_id, self.database))
 
     def path_insert(self, _id, path, value):
+        """
+        Insert a piece of data to a specific path, updating array if the path leads to an array
+
+        :param _id: str, instance ID
+        :param path: str, path to insertion
+        :param value: value to insert
+        """
         if isinstance(value, list):
             self.array_checker(path, _id)
             self.coll.update_one({"_id": _id}, {"$addToSet": {path: {"$each": value}}}, upsert=True)
         else:
             self.coll.update_one({"_id": _id}, {"$set": {path: value}}, upsert=True)
 
-    @staticmethod
-    def dot2dict(dot_dict):
-        if isinstance(dot_dict, dict):
-            final_dict = {}
-            for k, v in dot_dict.items():
-                if isinstance(k, str) and len(k.split(".")) > 1:
-                    dot = dotty()
-                    dot[k] = v
-                    dot_dict = dot.to_dict()
-                    final_dict.update(dot_dict)
-                else:
-                    final_dict[k] = v
-            return final_dict
-        return dot_dict
-
     def array_checker(self, field_path, _id):
         """
         Create empty array in filed if this field does not already exists. Prepare for set insertion (avoid duplicates)
+
+        :param field_path: str, path to check
+        :param _id: str, instance ID
         """
         print(_id, field_path)
         if not self.coll.count_documents({"_id": _id, field_path: {"$exists": True}}):
             self.coll.update_one({"_id": _id}, {"$set": {field_path: []}}, upsert=True)
 
-    def checker(self, entry, field):
+    def field_checker(self, entry, field):
         """
+        Check if field exists and return result or {}
 
         :param entry: value
         :param field: field name
@@ -104,10 +168,11 @@ class D3Database:
     def make_query(self, query: dict = None, projection: dict = None, output="pandas", multi=True, limit=200):
         """
         Make MongoDB database query
-        :param query: dict,
-        :param projection: dict,
+
+        :param query: dict, query
+        :param projection: dict, projection
         :param output: str, output type
-        :param multi: bool,
+        :param multi: bool, return multiple query responses if True
         :param limit: int, limit to the number of responses the query will return
         :return: 1) A dataframe if output="pandas"
                  2) A list if multi=False and a pymongo dursor if multi=True; output != "pandas
@@ -134,11 +199,45 @@ class D3Database:
         else:
             return list(cursor)
 
+    @staticmethod
+    def dot2dict(dot_dict):
+        """
+        Convert a dotted dictionary to a nested dictionary
+
+        :param dot_dict: dotted dictionary
+        :return: nested final dictionary
+        """
+        if isinstance(dot_dict, dict):
+            final_dict = {}
+            for k, v in dot_dict.items():
+                if isinstance(k, str) and len(k.split(".")) > 1:
+                    dot = dotty()
+                    dot[k] = v
+                    dot_dict = dot.to_dict()
+                    final_dict.update(dot_dict)
+                else:
+                    final_dict[k] = v
+            return final_dict
+        return dot_dict
+
 
 class FrontDB(D3Database):
-    # Copyright 2021, University of Kentucky
+    """
+    Class for accessing the frontend D3TaLES database
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base",
                  generate_mol=False, public=None):
+        """
+        :param schema_layer: str, schema layer
+        :param instance: dict, instance to insert or validate
+        :param _id: str, default instance ID
+        :param collection_name: str, name of collection
+        :param public: bool, instance is marked as public if True
+        :param smiles: str, SMILES string for a new molecule
+        :param group: str, origin group for instance
+        :param generate_mol: bool, generate new molecule instance if True
+        """
         super().__init__("frontend", collection_name=collection_name, instance=instance, schema_layer=schema_layer,
                          public=public, default_id=_id, validate_schema=True if _id else False)
         self.new_molecule = generate_mol
@@ -158,6 +257,11 @@ class FrontDB(D3Database):
             FrontDB(schema_layer='mol_info', instance=instance, _id=self.id)
 
     def check_if_in_db(self):
+        """
+        Check if molecule with object SMILES string exists in the database
+
+        :return: molecule ID if exists, else False
+        """
         if self.smiles:
             if self.coll.count_documents({"mol_info.smiles": self.smiles}) == 0:
                 return False
@@ -168,6 +272,11 @@ class FrontDB(D3Database):
             raise TypeError("If no smiles is given, molecule smiles must be given")
 
     def generate_id(self):
+        """
+        Generate a new molecule ID with origin group
+
+        :return: new molecule ID
+        """
         group_dict = {
             "": '00',
             "unknown": '00',
@@ -207,8 +316,16 @@ class FrontDB(D3Database):
 
 
 class BackDB(D3Database):
-    # Copyright 2021, University of Kentucky
+    """
+    Class for accessing the backend D3TaLES database
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, collection_name=None, instance=None, create_hash=False):
+        """
+        :param collection_name: str, name of collection
+        :param instance: dict, instance to insert or validate
+        :param create_hash: bool, generate new instance hash id if True
+        """
         super().__init__("backend", collection_name, instance)
 
         if instance:
@@ -220,6 +337,12 @@ class BackDB(D3Database):
             self.insert(self.id)
 
     def get_geometry(self, hash_id):
+        """
+        Get molecule geometry form hash ID
+
+        :param hash_id: ID
+        :return: molecule geometry sites
+        """
         array_data = self.coll.find_one({"_id": hash_id}, {"characterization.geometry": 1}
                                         )["characterization"]['geometry']
         for i in array_data:
@@ -228,9 +351,20 @@ class BackDB(D3Database):
 
 
 class ParamsDB(D3Database):
-    # Copyright 2021, University of Kentucky
+    """
+    Class for accessing the parameters D3TaLES database
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, database='frontend', collection_name=None, instance=None, schema_directory=None, _id=None,
                  update=False):
+        """
+        :param database: str, name of database (should be a key in the DB_INFO_FILE)
+        :param collection_name: str, name of collection
+        :param instance: dict, instance to insert or validate
+        :param schema_directory: str, schema directory
+        :param _id: str, parameter ID
+        :param update: bool, create new parameter ID if False
+        """
         super().__init__(database, collection_name, instance, schema_directory=schema_directory, schema_db='frontend')
         self.update = update
         if instance:
@@ -244,6 +378,13 @@ class ParamsDB(D3Database):
             self.insert(self.id)
 
     def check_id(self, id_to_check):
+        """
+        Check if parameter ID already exists, create new one if it already exists and object is not set to update
+        Copyright 2021, University of Kentucky
+
+        :param id_to_check: parameter ID to check
+        :return: parameter ID (checked ID or new ID)
+        """
         if self.coll.count_documents({"_id": id_to_check}) == 0:
             if self.update:
                 raise IOError(
@@ -265,8 +406,16 @@ class ParamsDB(D3Database):
 
 
 class Expflow(D3Database):
-    # Copyright 2021, University of Kentucky
+    """
+    Class for accessing the ExpFlow experimental database
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, collection_name='experimentation', instance=None, create_hash=False):
+        """
+        :param collection_name: str, name of collection
+        :param instance: dict, instance to insert or validate
+        :param create_hash: bool, generate new instance hash id if True
+        """
         super().__init__("expflow", collection_name, instance, schema_db='backend')
         if instance:
             # Identifier properties: must have id and frontend instance
@@ -279,12 +428,19 @@ class Expflow(D3Database):
 
 class QueryDB:
     """
-    class to query the database. Use mongoDB style query and projections.
+    Class to query the database. Use mongoDB style query and projections.
     Copyright 2021, University of Kentucky
     """
 
     def __init__(self, query: dict = None, projection: dict = None, collection_name=None, db_file=None, output="pandas",
                  multi=True):
+        """
+        :param query: dict, query
+        :param projection: dict, projection
+        :param collection_name: str, name of collection
+        :param db_file: str, database info file
+        :param output: str, output type
+        """
         self.dbc = DBconnector(db_file)
         self.query = query or {}
         self.collection_name = collection_name

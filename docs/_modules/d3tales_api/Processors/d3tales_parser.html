@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -71,26 +74,30 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Processors.d3tales_parser</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pint</span>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_cv</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_dft</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_uvvis</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">d3tales_api.D3database.db_connector</span> <span class="kn">import</span> <span class="n">DBconnector</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">DBconnector</span>
 
 
 <div class="viewcode-block" id="ProcessDFT"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT">[docs]</a><span class="k">class</span> <span class="nc">ProcessDFT</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to process Gaussian logfiles.</span>
+<span class="sd">    Class to process molecular DFT output files.</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProcessDFT.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessDFT.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission information</span>
+<span class="sd">        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ProcessGausLog, ProcessCCLIB, or ProcessPsi4Log)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">submission_info</span> <span class="o">=</span> <span class="n">submission_info</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parsing_class</span> <span class="o">=</span> <span class="n">parsing_class</span>
@@ -100,6 +107,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span> <span class="o">==</span> <span class="s1">&#39;wtuning&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> parsing class is not a WTuning parsing class.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsing_class</span><span class="p">))</span>
@@ -177,6 +187,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hash_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hash ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hash_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">,</span>
@@ -189,6 +202,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;dft&#39;</span><span class="p">,</span>
             <span class="s2">&quot;code_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">code_name</span><span class="p">,</span>
@@ -208,6 +224,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary containing basic molecule information using the ID from the D3TalES database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">base_coll</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
         <span class="n">document</span> <span class="o">=</span> <span class="n">base_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">document</span><span class="p">:</span>
@@ -218,6 +237,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_groundState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        True if current species is the ground state, else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mol_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_info</span>
         <span class="k">if</span> <span class="s1">&#39;groundState_charge&#39;</span> <span class="ow">in</span> <span class="n">mol_info</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">gs_charge</span> <span class="o">=</span> <span class="n">mol_info</span><span class="p">[</span><span class="s1">&#39;groundState_charge&#39;</span><span class="p">]</span>
@@ -232,10 +254,18 @@
 <span class="sd">    Copyright 2021, University of Kentucky</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProcessCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission info</span>
+<span class="sd">        :param metadata: dict, metadata</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">filepath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">filepath</span> <span class="ow">or</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span> <span class="o">=</span> <span class="n">submission_info</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -257,6 +287,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">cv_data</span>
         <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peaks&quot;</span><span class="p">))</span>
         <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_conditions</span><span class="p">,</span>
@@ -272,12 +305,14 @@
             <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
             <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">cv_data</span>
         <span class="p">}</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CV conditions: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_conditions</span><span class="p">)</span>
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary containing basic molecule information using the ID from the D3TalES database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">base_coll</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
         <span class="n">document</span> <span class="o">=</span> <span class="n">base_coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">document</span><span class="p">:</span>
@@ -289,6 +324,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cv_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">conditions_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">conditions_data</span>
         <span class="n">conditions_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;cv&#39;</span><span class="p">,</span>
@@ -308,6 +346,13 @@
 
 <div class="viewcode-block" id="ProcessCV.reagent_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reagent_format</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">purity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert reagent data to D3TaLES schema format</span>
+
+<span class="sd">        :param reagents: reagent data or list of reagent data</span>
+<span class="sd">        :param purity: default purity value</span>
+<span class="sd">        :return: formatted reagent data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">format_i</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">r_dict</span> <span class="o">=</span> <span class="n">r</span>
@@ -316,16 +361,24 @@
                 <span class="k">if</span> <span class="n">purity</span><span class="p">:</span>
                     <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;purity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">purity</span>
             <span class="k">return</span> <span class="n">r_dict</span>
+
         <span class="k">return</span> <span class="p">[</span><span class="n">format_i</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">format_i</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProcessCV.data_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">data_format</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format measurement data</span>
+
+<span class="sd">        :param data: measurement data</span>
+<span class="sd">        :return: formatted measurement data, EX: {&quot;value&quot;: 0.5, &quot;unit&quot;: &quot;V&quot;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)}</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">}</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                                                                         <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">)}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
@@ -337,14 +390,15 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to process UV-Vis data files.</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
-<span class="sd">    Args:</span>
-<span class="sd">        filepath (str) : filepath to data file</span>
-<span class="sd">        mol_id (str) : identifier for the molecule this data belongs to</span>
-<span class="sd">        metadata (dict) : dictionary containing any metadata for this molecule, e.g., {&quot;solvent&quot;: &quot;acetonitrile&quot;}</span>
-<span class="sd">        parsing_class (class) : a UV-Vis parsing class with which to parse the data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProcessUvVis.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">mol_id</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseExcel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to data file</span>
+<span class="sd">        :param mol_id: str, molecule ID</span>
+<span class="sd">        :param metadata: dict, dictionary containing any metadata for this molecule, e.g., {&quot;solvent&quot;: &quot;acetonitrile&quot;}</span>
+<span class="sd">        :param parsing_class: class, a UV-Vis parsing class with which to parse the data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span> <span class="o">=</span> <span class="n">mol_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
@@ -357,7 +411,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">no_sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns UV-Vis information in a dictionary that matches the No-SQL schema</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the No-SQL schema</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;date_recorded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">date_recorded</span><span class="p">,</span>
@@ -372,7 +426,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sql_absorbance_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">absorbance_data</span>
         <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;uvvis_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
@@ -384,7 +438,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns UV-Vis information in a dictionary that matches the SQL UVVisData Table schema</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL UVVisData Table schema</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;uvvis_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>

@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -71,15 +74,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Calculators.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pint</span>
+<span></span><span class="kn">import</span> <span class="nn">pint</span>
 <span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
-<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">find_peaks</span>
-<span class="kn">from</span> <span class="nn">rdkit.Chem.Descriptors</span> <span class="kn">import</span> <span class="n">ExactMolWt</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">ParamsDB</span>
 
 
@@ -101,7 +97,17 @@
     <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">_getkey</span><span class="p">,</span> <span class="p">[</span><span class="n">_dict</span><span class="p">]</span> <span class="o">+</span> <span class="n">keys</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="unit_conversion"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.unit_conversion">[docs]</a><span class="k">def</span> <span class="nf">unit_conversion</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="unit_conversion"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.unit_conversion">[docs]</a><span class="k">def</span> <span class="nf">unit_conversion</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a measurement into a default unit using pint. </span>
+<span class="sd">    </span>
+<span class="sd">    :param measurement: Measurements can be pint object, int or float(in which case it will be assumed to already be in the default unit), string of magnitude and unit, or a measurement dictionary (EX: {&quot;value&quot;: 0.5, &quot;unit&quot;: &quot;eV&quot;}</span>
+<span class="sd">    :param default_unit: default unit / unit to be converted to</span>
+<span class="sd">    :param density: molecular density (in case needed for conversion)  </span>
+<span class="sd">    :type default_unit: str</span>
+<span class="sd">    :type density: str</span>
+<span class="sd">    :return: float magnitude for the converted measurement </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">measurement</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="c1"># Set context in case conversion include mass--&gt;volume or volume--&gt;mass</span>
@@ -123,9 +129,15 @@
     <span class="n">pint_unit</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">pint_unit</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">default_unit</span><span class="p">,</span> <span class="s1">&#39;mol_density&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span></div>
 
+
 <div class="viewcode-block" id="get_electrode_potential"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_electrode_potential">[docs]</a><span class="k">def</span> <span class="nf">get_electrode_potential</span><span class="p">(</span><span class="n">electrode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get electrode potential by searching the D3TaLES electrode parameters database</span>
+<span class="sd">    :param electrode: name of an electrode or the electrode potential</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">electrode</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">fload</span><span class="p">(</span><span class="n">electrode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">electrode</span><span class="p">)</span>
     <span class="n">params_db</span> <span class="o">=</span> <span class="n">ParamsDB</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;electrode&quot;</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="s2">&quot;materials&quot;</span><span class="p">)</span>
     <span class="n">electrode_data</span> <span class="o">=</span> <span class="n">params_db</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">electrode</span><span class="p">})</span>
     <span class="n">abs_potential</span> <span class="o">=</span> <span class="n">electrode_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;absolute_potential&quot;</span><span class="p">)</span>
@@ -134,39 +146,23 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Electrode </span><span class="si">{</span><span class="n">electrode</span><span class="si">}</span><span class="s2"> note found in the D3TaLES prameters database&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="D3Calculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator">[docs]</a><span class="k">class</span> <span class="nc">D3Calculator</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-<div class="viewcode-block" id="D3Calculator.__init__"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connector</span><span class="p">(</span><span class="n">key_pairs</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="D3Calculator.connector"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.connector">[docs]</a>    <span class="k">def</span> <span class="nf">connector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_pairs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key_pairs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">key_pairs</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;connector.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">connectors</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">connectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="D3Calculator.make_connections"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.make_connections">[docs]</a>    <span class="k">def</span> <span class="nf">make_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">connection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connection</span><span class="p">)})</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">rgetkeys</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connection</span><span class="p">)})</span>
-        <span class="k">return</span> <span class="n">d</span></div>
-
-<div class="viewcode-block" id="D3Calculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="D3Calculator.description"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="get_periodic_table"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_periodic_table">[docs]</a><span class="k">def</span> <span class="nf">get_periodic_table</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List elements in the periodic table</span>
+<span class="sd">    :return: List of element abbreviations for elements in the periodic table </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;He&quot;</span><span class="p">,</span> <span class="s2">&quot;Li&quot;</span><span class="p">,</span> <span class="s2">&quot;Be&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;Ne&quot;</span><span class="p">,</span> <span class="s2">&quot;Na&quot;</span><span class="p">,</span> <span class="s2">&quot;Mg&quot;</span><span class="p">,</span> <span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;Cl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Ar&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;Ca&quot;</span><span class="p">,</span> <span class="s2">&quot;Sc&quot;</span><span class="p">,</span> <span class="s2">&quot;Ti&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;Cr&quot;</span><span class="p">,</span> <span class="s2">&quot;Mn&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="s2">&quot;Zn&quot;</span><span class="p">,</span> <span class="s2">&quot;Ga&quot;</span><span class="p">,</span> <span class="s2">&quot;Ge&quot;</span><span class="p">,</span> <span class="s2">&quot;As&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Se&quot;</span><span class="p">,</span> <span class="s2">&quot;Br&quot;</span><span class="p">,</span> <span class="s2">&quot;Kr&quot;</span><span class="p">,</span> <span class="s2">&quot;Rb&quot;</span><span class="p">,</span> <span class="s2">&quot;Sr&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Zr&quot;</span><span class="p">,</span> <span class="s2">&quot;Nb&quot;</span><span class="p">,</span> <span class="s2">&quot;Mo&quot;</span><span class="p">,</span> <span class="s2">&quot;Tc&quot;</span><span class="p">,</span> <span class="s2">&quot;Ru&quot;</span><span class="p">,</span> <span class="s2">&quot;Rh&quot;</span><span class="p">,</span> <span class="s2">&quot;Pd&quot;</span><span class="p">,</span> <span class="s2">&quot;Ag&quot;</span><span class="p">,</span> <span class="s2">&quot;Cd&quot;</span><span class="p">,</span> <span class="s2">&quot;In&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Sn&quot;</span><span class="p">,</span> <span class="s2">&quot;Sb&quot;</span><span class="p">,</span> <span class="s2">&quot;Te&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;Xe&quot;</span><span class="p">,</span> <span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="s2">&quot;Ba&quot;</span><span class="p">,</span> <span class="s2">&quot;La&quot;</span><span class="p">,</span> <span class="s2">&quot;Ce&quot;</span><span class="p">,</span> <span class="s2">&quot;Pr&quot;</span><span class="p">,</span> <span class="s2">&quot;Nd&quot;</span><span class="p">,</span> <span class="s2">&quot;Pm&quot;</span><span class="p">,</span> <span class="s2">&quot;Sm&quot;</span><span class="p">,</span> <span class="s2">&quot;Eu&quot;</span><span class="p">,</span> <span class="s2">&quot;Gd&quot;</span><span class="p">,</span> <span class="s2">&quot;Tb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Dy&quot;</span><span class="p">,</span> <span class="s2">&quot;Ho&quot;</span><span class="p">,</span> <span class="s2">&quot;Er&quot;</span><span class="p">,</span> <span class="s2">&quot;Tm&quot;</span><span class="p">,</span> <span class="s2">&quot;Yb&quot;</span><span class="p">,</span> <span class="s2">&quot;Lu&quot;</span><span class="p">,</span> <span class="s2">&quot;Hf&quot;</span><span class="p">,</span> <span class="s2">&quot;Ta&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Re&quot;</span><span class="p">,</span> <span class="s2">&quot;Os&quot;</span><span class="p">,</span> <span class="s2">&quot;Ir&quot;</span><span class="p">,</span> <span class="s2">&quot;Pt&quot;</span><span class="p">,</span> <span class="s2">&quot;Au&quot;</span><span class="p">,</span> <span class="s2">&quot;Hg&quot;</span><span class="p">,</span> <span class="s2">&quot;Tl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Pb&quot;</span><span class="p">,</span> <span class="s2">&quot;Bi&quot;</span><span class="p">,</span> <span class="s2">&quot;Po&quot;</span><span class="p">,</span> <span class="s2">&quot;At&quot;</span><span class="p">,</span> <span class="s2">&quot;Rn&quot;</span><span class="p">,</span> <span class="s2">&quot;Fr&quot;</span><span class="p">,</span> <span class="s2">&quot;Ra&quot;</span><span class="p">,</span> <span class="s2">&quot;Ac&quot;</span><span class="p">,</span> <span class="s2">&quot;Th&quot;</span><span class="p">,</span> <span class="s2">&quot;Pa&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s2">&quot;Np&quot;</span><span class="p">,</span> <span class="s2">&quot;Pu&quot;</span><span class="p">,</span> <span class="s2">&quot;Am&quot;</span><span class="p">,</span> <span class="s2">&quot;Cm&quot;</span><span class="p">,</span> <span class="s2">&quot;Bk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cf&quot;</span><span class="p">,</span> <span class="s2">&quot;Es&quot;</span><span class="p">,</span> <span class="s2">&quot;Fm&quot;</span><span class="p">,</span> <span class="s2">&quot;Md&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span> <span class="s2">&quot;Lr&quot;</span><span class="p">,</span> <span class="s2">&quot;Rf&quot;</span><span class="p">,</span> <span class="s2">&quot;Db&quot;</span><span class="p">,</span> <span class="s2">&quot;Sg&quot;</span><span class="p">,</span> <span class="s2">&quot;Bh&quot;</span><span class="p">,</span> <span class="s2">&quot;Hs&quot;</span><span class="p">,</span> <span class="s2">&quot;Mt&quot;</span><span class="p">,</span> <span class="s2">&quot;Ds&quot;</span><span class="p">,</span> <span class="s2">&quot;Rg&quot;</span><span class="p">,</span> <span class="s2">&quot;Uub&quot;</span><span class="p">,</span> <span class="s2">&quot;Uut&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Uuq&quot;</span><span class="p">,</span> <span class="s2">&quot;Uup&quot;</span><span class="p">,</span> <span class="s2">&quot;Uuh&quot;</span><span class="p">,</span> <span class="s2">&quot;Uus&quot;</span><span class="p">,</span> <span class="s2">&quot;Uuo&quot;</span><span class="p">,</span> <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="D3Plotter"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter">[docs]</a><span class="k">class</span> <span class="nc">D3Plotter</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
-
-<div class="viewcode-block" id="D3Plotter.plot_data"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">pass</span></div></div>
+<span class="n">periodictable</span> <span class="o">=</span> <span class="n">get_periodic_table</span><span class="p">()</span>
 </pre></div>
 
            </div>

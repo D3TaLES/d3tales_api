@@ -5,6 +5,9 @@
 
 Welcome to the |D3TaLES| API documentation!
 ===========================================
+.. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
+
+API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.
 
 .. toctree::
    :maxdepth: 4
@@ -12,6 +15,9 @@ Welcome to the |D3TaLES| API documentation!
 
    introduction
    installation
+   Calculators
+   D3database
+   Processors
    d3tales_api
 
 

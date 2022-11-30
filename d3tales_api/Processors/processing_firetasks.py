@@ -16,22 +16,22 @@ from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
 
+
 @explicit_serialize
 class FileTransferTask(FiretaskBase):
     """
     A Firetask to Transfer files. Note that
-    Required params:
-        - mode: (str) - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer
-        - files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing
-                'src' and 'dest' keys
-    Optional params:
-        - dest: (str) destination directory, if not specified within files parameter (else optional)
-        - server: (str) server host for remote transfer
-        - user: (str) user to authenticate with on remote server
-        - key_filename: (str) optional SSH key location for remote transfer
-        - max_retry: (int) number of times to retry failed transfers; defaults to `0` (no retries)
-        - retry_delay: (int) number of seconds to wait between retries; defaults to `10`
-        - ignore_errors (bool): Optional. Whether to ignore errors. Defaults to False.
+
+    :param mode: str, - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer
+    :param files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing 'src' and 'dest' keys
+
+    :param dest: str, optional, destination directory, if not specified within files parameter (else optional)
+    :param server: str, optional, server host for remote transfer
+    :param user: str, optional, user to authenticate with on remote server
+    :param key_filename: str, optional, optional SSH key location for remote transfer
+    :param max_retry: int, optional, number of times to retry failed transfers; defaults to `0` (no retries)
+    :param retry_delay: int, optional, number of seconds to wait between retries; defaults to `10`
+    :param ignore_errors: bool, optional, Whether to ignore errors. Defaults to False.
     """
     _fw_name = 'FileTransferTask'
 
@@ -46,7 +46,7 @@ class FileTransferTask(FiretaskBase):
         remote_server["key_filename"] = key_file
 
         if TESTING:
-            skip_transfer=True
+            skip_transfer = True
 
         if skip_transfer:
             return None
@@ -86,6 +86,9 @@ class FileTransferTask(FiretaskBase):
 
 @explicit_serialize
 class ProcessFile(FiretaskBase):
+    """
+    Process a data File
+    """
     _fw_name = "ProcessFile"
 
     def run_task(self, fw_spec):
@@ -134,6 +137,9 @@ class ProcessFile(FiretaskBase):
 
 @explicit_serialize
 class SendToStorage(FiretaskBase):
+    """
+    Send data file to D3TaLES storage
+    """
     _fw_name = "SendToStorage"
 
     def run_task(self, fw_spec):
@@ -152,7 +158,8 @@ class SendToStorage(FiretaskBase):
         submission_data = fw_spec["submission_data"]
         data_category = submission_data["data_category"]
         data_type = submission_data["data_type"]
-        destination_path = "{}/d3tales/{}/{}/{}".format(storage_base_loc, fw_spec.get("mol_id"), data_category, data_type)
+        destination_path = "{}/d3tales/{}/{}/{}".format(storage_base_loc, fw_spec.get("mol_id"), data_category,
+                                                        data_type)
         destination = os.path.join(destination_path, filepath.split("/")[-1]).replace("//", "/")
 
         def mkdir_p(sftp, remote_directory):
@@ -215,6 +222,9 @@ class SendToStorage(FiretaskBase):
 
 @explicit_serialize
 class UpdateBackendDB(FiretaskBase):
+    """
+    Update the backend D3TaLES database with parsed data
+    """
     _fw_name = "UpdateBackendDB"
 
     def run_task(self, fw_spec):
@@ -226,6 +236,9 @@ class UpdateBackendDB(FiretaskBase):
 
 @explicit_serialize
 class UpdateUserDB(FiretaskBase):
+    """
+    Update the D3TaLES website user database approved status
+    """
     _fw_name = "UpdateUserDB"
 
     def run_task(self, fw_spec):
@@ -249,6 +262,9 @@ class UpdateUserDB(FiretaskBase):
 
 @explicit_serialize
 class UpdateApprovalStatus(FiretaskBase):
+    """
+    Update the backend D3TaLES database approved status
+    """
     _fw_name = "UpdateApprovalStatus"
 
     def run_task(self, fw_spec):
@@ -266,6 +282,9 @@ class UpdateApprovalStatus(FiretaskBase):
 
 @explicit_serialize
 class UpdateFrontendDB(FiretaskBase):
+    """
+    Update the frontend D3TaLES database with parsed data
+    """
     _fw_name = "UpdateFrontendDB"
 
     def run_task(self, fw_spec):
@@ -289,6 +308,9 @@ class UpdateFrontendDB(FiretaskBase):
 
 @explicit_serialize
 class ApproveJobs(FiretaskBase):
+    """
+    Approve multiple processing jobs
+    """
     _fw_name = "ApproveJobs"
 
     def run_task(self, fw_spec):
@@ -313,4 +335,3 @@ class ApproveJobs(FiretaskBase):
                 print("Hash id {} approved".format(h_id))
             except Exception:
                 print("ERROR approving hash id {}".format(h_id))
-

@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -78,7 +81,13 @@
 
 
 <div class="viewcode-block" id="ParseChiCV"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV">[docs]</a><span class="k">class</span> <span class="nc">ParseChiCV</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract data from raw Chi CV experiment files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ParseChiCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param file_path: str, filepath to experiment data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -161,6 +170,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_interval_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_interval</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ParseChiCV.calculate_prop"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_prop">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate a given property using the D3TaLES CV Calculators</span>
+
+<span class="sd">        :param prop_name: str, property name</span>
+<span class="sd">        :param return_type: str, datatype to return</span>
+<span class="sd">        :return: property or empty datatype</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;intv&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_interval_value&quot;</span><span class="p">,</span>
             <span class="s2">&quot;low_e&quot;</span><span class="p">:</span> <span class="s2">&quot;low_e_value&quot;</span><span class="p">,</span>
@@ -174,6 +190,13 @@
             <span class="k">return</span> <span class="n">return_type</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ParseChiCV.calculate_plotting"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_plotting">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_plotting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate a given plotting property using the D3TaLES Plotters</span>
+
+<span class="sd">        :param prop_name: str, property name</span>
+<span class="sd">        :param return_type: str, datatype to return</span>
+<span class="sd">        :return: plotting property or empty datatype</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="s2">&quot;scan_data&quot;</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">CVPlotter</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">),</span> <span class="n">prop_name</span><span class="p">)</span>
@@ -184,6 +207,15 @@
 
 <div class="viewcode-block" id="ParseChiCV.extract_value_unit"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.extract_value_unit">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract data value and unit from a Chi CV data line</span>
+
+<span class="sd">        :param line: str, data line</span>
+<span class="sd">        :param value_break: str, type of character which breaks the line</span>
+<span class="sd">        :param value_type: str, value datatype</span>
+<span class="sd">        :param return_dict: bool, return data dict if True</span>
+<span class="sd">        :return: value or data dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">value_break</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">elif</span> <span class="n">value_type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>

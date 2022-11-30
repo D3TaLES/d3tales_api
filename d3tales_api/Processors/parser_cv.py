@@ -5,7 +5,13 @@ from d3tales_api.Calculators.calculators import CVDescriptorCalculator
 
 
 class ParseChiCV:
+    """
+    Extract data from raw Chi CV experiment files
+    """
     def __init__(self, file_path):
+        """
+        :param file_path: str, filepath to experiment data file
+        """
         self.file_path = file_path
 
         with open(self.file_path, "r") as f:
@@ -88,6 +94,13 @@ class ParseChiCV:
         self.sample_interval_value = self.sample_interval.get("value")
 
     def calculate_prop(self, prop_name, return_type=dict):
+        """
+        Calculate a given property using the D3TaLES CV Calculators
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: property or empty datatype
+        """
         connector = {
             "intv": "sample_interval_value",
             "low_e": "low_e_value",
@@ -101,6 +114,13 @@ class ParseChiCV:
             return return_type()
 
     def calculate_plotting(self, prop_name, return_type=dict):
+        """
+        Calculate a given plotting property using the D3TaLES Plotters
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: plotting property or empty datatype
+        """
         connector = {"scan_data": "scan_data"}
         try:
             func = getattr(CVPlotter(connector=connector), prop_name)
@@ -111,6 +131,15 @@ class ParseChiCV:
 
     @staticmethod
     def extract_value_unit(line, value_break="=", value_type='str', return_dict=False):
+        """
+        Extract data value and unit from a Chi CV data line
+
+        :param line: str, data line
+        :param value_break: str, type of character which breaks the line
+        :param value_type: str, value datatype
+        :param return_dict: bool, return data dict if True
+        :return: value or data dict
+        """
         if value_type == 'float':
             value = float("".join(line.split(value_break)[1:]).strip())
         elif value_type == 'int':

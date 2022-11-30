@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -85,6 +88,7 @@
 <div class="viewcode-block" id="determine_model_name"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.determine_model_name">[docs]</a><span class="k">def</span> <span class="nf">determine_model_name</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the model name</span>
+
 <span class="sd">    :param model_id: str, model id</span>
 <span class="sd">    :param filename: str, filename</span>
 <span class="sd">    :return: str, model name</span>
@@ -107,6 +111,7 @@
 <div class="viewcode-block" id="get_required_string"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.get_required_string">[docs]</a><span class="k">def</span> <span class="nf">get_required_string</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_fields</span><span class="p">,</span> <span class="n">field_type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="n">is_pk_field</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the required portion of model field</span>
+
 <span class="sd">    :param is_pk_field:</span>
 <span class="sd">    :param field_type:</span>
 <span class="sd">    :param key_name:</span>
@@ -127,7 +132,13 @@
 
 
 <div class="viewcode-block" id="parse_model"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.parse_model">[docs]</a><span class="k">def</span> <span class="nf">parse_model</span><span class="p">(</span><span class="n">json_model</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-    <span class="c1"># Make sure not list, but object</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert JSON object into Django model</span>
+
+<span class="sd">    :param json_model: json object containing model</span>
+<span class="sd">    :param filename: filename of model</span>
+<span class="sd">    :return: str containing Django model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model type has to be object to convert to model, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]))</span>
 

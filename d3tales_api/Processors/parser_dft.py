@@ -11,11 +11,17 @@ class ProcessCCLIB:
     """
 
     def __init__(self, metadata=None):
+        """
+        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
+        """
         self.log_path = metadata.get('mol_file', )
         self.wtuning_output = metadata.get('wtuning_output', '')
         self.calculation_type = metadata.get('calculation_type', )
 
     def cclib_parse(self):
+        """
+        Use CCLIB to parse data file
+        """
         if not self.wtuning_output:
             self.cmol = cclib.io.ccopen(self.log_path).parse()
             # self.functional = self.cmol.functional  # TODO basis set
@@ -41,7 +47,8 @@ class ProcessCCLIB:
     @staticmethod
     def get_sites_dict(cmol):
         """
-        Get a pymatgen sites dictionary from a cclib moleucle object
+        Get a pymatgen sites dictionary list from a cclib molecule object
+        :return: list of atom site dicts
         """
         coords = cmol.atomcoords[-1]
         atomic_nums = cmol.atomnos
@@ -52,7 +59,8 @@ class ProcessCCLIB:
     @staticmethod
     def get_freq_dicts(cmol):
         """
-        Get a pymatgen sites dictionary from a cclib moleucle object
+        Get a pymatgen frequency dictionary list from a cclib molecule object
+        :return: list of frequency dicts
         """
         try:
             freqs = cmol.vibfreqs
@@ -66,11 +74,28 @@ class ProcessCCLIB:
             return []
 
     def get_radical_stability_score(self, spin_type="mulliken"):
+        """
+        Get radical stability score
+        :param spin_type: str, type of spin to use
+        :return: dictionary of radical stability score and its components
+        """
         c_data = {"log_file": self.log_path, "spin_type": spin_type}
         connector = {"log_file": "log_file", "spin_type": "spin_type"}
         return dict(radical_buried_vol={"value": RadBuriedVolCalc(connector=connector).calculate(c_data), "unit": "A^3"},
                     radical_spin={"value": RadicalSpinCalc(connector=connector).calculate(c_data)},
                     radical_stability_score={"value": RSSCalc(connector=connector).calculate(c_data)})
+
+
+class ProcessPsi4Log(ProcessCCLIB):
+    """
+    Class to process Psi4 logfiles.
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, metadata=None):
+        super().__init__(metadata=metadata)
+
+        # TODO finish
 
 
 class ProcessGausLog(ProcessCCLIB):
@@ -80,6 +105,9 @@ class ProcessGausLog(ProcessCCLIB):
     """
 
     def __init__(self, metadata=None):
+        """
+        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
+        """
         super().__init__(metadata=metadata)
 
         self.log_path = metadata.get('mol_file', )
@@ -111,6 +139,12 @@ class ProcessGausLog(ProcessCCLIB):
 
     @staticmethod
     def get_pmgmol(file):
+        """
+        Get Pymatgen molecule object from file
+
+        :param file: str, file path
+        :return: Pymatgen molecule object
+        """
         file_extension = file.split('.')[-1]
         if file_extension == 'gjf' or file_extension == 'com':
             mol = GaussianInput.from_file(file)
@@ -123,9 +157,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def runtime(self):
-        """
-        Collects runtime in core hours from a logfile
-        """
+        """Runtime in core hours from a logfile"""
         time_patt = re.compile(r"\d+\.d+|\d+")
         time_data = []
         with open(self.log_path, "r") as f:
@@ -145,17 +177,15 @@ class ProcessGausLog(ProcessCCLIB):
     def get_tddft_excitations(log_path):
         """
         Read excitation energies after a TD-DFT calculation.
-        Returns:
-            A list: A list of tuple for each transition such as
-                    [(energy (eV), lambda (nm), oscillatory strength), ... ]
-        """
 
+        :param log_path: str, filepath to log file
+        :return: A list of tuple for each transition such as [(energy (eV), lambda (nm), oscillatory strength), ... ]
+        """
         float_patt = re.compile(r"\s*([+-]?\d+\.\d+)")
         state_patt = re.compile(r"[a-zA-Z]*let")
         transitions = {"Singlet": [],
                        "Doublet": [],
-                       "Triplet": [],
-                       }
+                       "Triplet": []}
 
         # read in file
         with open(log_path, "r") as f:
@@ -187,12 +217,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def dipole_moments(self):
-        """
-        Read a dipole moment after Gaussian calculation.
-        Returns:
-            A list: A list of tuples, each containing teh (X, Y, Z) coordinate for a dipole moment such as
-                    [(X1, Y1, Z1), (X2, Y2, Z2)... ]
-        """
+        """A list of tuples, each containing teh (X, Y, Z) coordinate for a dipole moment such as [(X1, Y1, Z1), (X2, Y2, Z2)... ]"""
 
         coord_patt = re.compile(r"[A-Z]+=\s+[+-]?[0-9]*\.[0-9]+")
         dipole_moments = []
@@ -220,10 +245,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def pcm_info(self):
-        """
-        Get solvent and dielectric constant from Gaussian logfile
-        :return: [solvent_name, dielectric_constant] - list containing solvent name and dielectric constant]
-        """
+        """Solvent and dielectric constant from Gaussian logfile:  [solvent_name, dielectric_constant] - list containing solvent name and dielectric constant]"""
         name_patt = re.compile(r":(.*?),\s*Eps")
         dc_patt = re.compile(r"Eps=\s*(.*?)\s*Eps")
         with open(self.log_path, "r") as f:
@@ -241,10 +263,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def homo_lumo(self):
-        """
-        Get homo and lumo energies from a Gaussian molecule
-        :return: [homo, lumo] - list containing homo then lumo in eV
-        """
+        """HOMO and LUMO energies from a Gaussian molecule: [homo, lumo] - list containing homo then lumo in eV"""
         num_electrons = self.pmgmol.electrons[0]
         eigens = list(self.pmgmol.eigenvalues.values())[0]
         homo = eigens[num_electrons - 1] * 27.2114  # convert to eV
@@ -254,8 +273,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def omega(self):
-        """
-        """
+        """Omega value from w-tuning output file (generated with the OCELOT w-tuning module)"""
         try:
             with open(self.wtuning_output, 'r') as fn:
                 w_data = fn.readlines()[-2].split()[1]
@@ -265,6 +283,7 @@ class ProcessGausLog(ProcessCCLIB):
 
     @property
     def tuning_parameter(self):
+        """Omega value from Pymatgen molecule object"""
         route_params = self.pmgmol.route_parameters
         route_params = {k.lower(): v for k, v in route_params.items()}
         try:
@@ -278,6 +297,9 @@ class ProcessGausLog(ProcessCCLIB):
                 return None
 
     def get_solvent_info(self):
+        """
+        Get solvent information
+        """
         try:
             if self.pmgmol.is_pcm:
                 self.solvent = self.pcm_info[0]
@@ -286,6 +308,12 @@ class ProcessGausLog(ProcessCCLIB):
             return None
 
     def parse_tddft(self, sigma=0.10, step=0.01):
+        """
+        Parse TDDFT data
+
+        :param sigma:
+        :param step:
+        """
         # read the log files
         self.tddft_excitations = self.get_tddft_excitations(self.log_path)
 

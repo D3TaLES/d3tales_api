@@ -1,4 +1,4 @@
-# D<sup>3</sup>TaLES API 
+# Introduction
 ![](D3TaLES_api_logo.png)
 
 

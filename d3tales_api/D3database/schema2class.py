@@ -4,8 +4,18 @@ import json
 
 
 class Schema2Class:
-    # Copyright 2021, University of Kentucky
+    """
+    Get D3TaLES schema from GitHub and load it to a class
+    Copyright 2021, University of Kentucky
+    """
     def __init__(self, database=None, schema_name=None, schema_directory=None, named_only=False):
+        """
+
+        :param database: str, database name
+        :param schema_name: str, schema name
+        :param schema_directory: str, schema directory
+        :param named_only: If true, only properties with an actual title attribute will be included in the resulting namespace
+        """
 
         # fetch schema
         self.database = database
@@ -33,6 +43,12 @@ class Schema2Class:
             self.required = None
 
     def md_table(self, prop_level="properties"):
+        """
+        Generate Markdown table for properties in a schema level
+
+        :param prop_level: str, schema layer from which to extract table
+        :return: text for Markdown table
+        """
         out_text = "| <div style='width:250px'>Property</div> | Description |  Data Type  |\n| :---------- | :------------- | :------------- |\n"
         props = self.schema.get(prop_level, {})
         for prop, prop_specifications in props.items():

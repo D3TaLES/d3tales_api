@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -77,8 +80,18 @@
 
 
 <div class="viewcode-block" id="Schema2Class"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2class.Schema2Class">[docs]</a><span class="k">class</span> <span class="nc">Schema2Class</span><span class="p">:</span>
-    <span class="c1"># Copyright 2021, University of Kentucky</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get D3TaLES schema from GitHub and load it to a class</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Schema2Class.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2class.Schema2Class.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">named_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param database: str, database name</span>
+<span class="sd">        :param schema_name: str, schema name</span>
+<span class="sd">        :param schema_directory: str, schema directory</span>
+<span class="sd">        :param named_only: If true, only properties with an actual title attribute will be included in the resulting namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># fetch schema</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
@@ -106,6 +119,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Schema2Class.md_table"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2class.Schema2Class.md_table">[docs]</a>    <span class="k">def</span> <span class="nf">md_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_level</span><span class="o">=</span><span class="s2">&quot;properties&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate Markdown table for properties in a schema level</span>
+
+<span class="sd">        :param prop_level: str, schema layer from which to extract table</span>
+<span class="sd">        :return: text for Markdown table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">out_text</span> <span class="o">=</span> <span class="s2">&quot;| &lt;div style=&#39;width:250px&#39;&gt;Property&lt;/div&gt; | Description |  Data Type  |</span><span class="se">\n</span><span class="s2">| :---------- | :------------- | :------------- |</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop_level</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">prop_specifications</span> <span class="ow">in</span> <span class="n">props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

@@ -1,21 +1,80 @@
 from d3tales_api.Calculators.utils import *
-from d3tales_api.Calculators.calculators_dft import *
+from d3tales_api.Calculators.utils import periodictable
+import cclib
+import abc
+import json
+import math
+import numpy as np
+import pandas as pd
+from rdkit import Chem
+import dbstep.Dbstep as db
+from rdkit.Chem import rdMolAlign
+from scipy.signal import find_peaks
+from pymatgen.core.sites import Site
+from pymatgen.core.structure import Molecule
+from rdkit.Chem.Descriptors import ExactMolWt
+from ocelot.routines.conformerparser import pmgmol_to_rdmol
 
+
+class D3Calculator(abc.ABC):
+    """
+    D3Calculators base class
+
+    :param connector: dictionary describing connections between calculator variables (keys) and location in `data`
+    variable. EX: {"smiles": "mol_info.smiles", "volume": "experimental_data.volume"}. If no connector is provided,
+    the connections default to the connections found in `default_connector.json`.
+    """
+
+    def __init__(self, connector=None):
+        self.connector(key_pairs=connector)
+        self.key_pairs = None
+        self.data = None
+
+    def connector(self, key_pairs=None):
+        if key_pairs:
+            self.key_pairs = key_pairs
+            return self.key_pairs
+        else:
+            with open("default_connector.json") as f:
+                connectors = json.load(f)
+            self.key_pairs = connectors[self.__class__.__name__]
+
+    def make_connections(self, obj):
+        d = {}
+        for key, connection in self.key_pairs.items():
+            try:
+                d.update({key: rgetattr(obj, connection)})
+            except:
+                d.update({key: rgetkeys(obj, connection)})
+        return d
+
+    def calculate(self, data):
+        pass
+
+    def description(self):
+        print(self.__class__.__name__)
+
+
+# ----------------------- Cyclic Voltammetry Calculators ------------------------------
 class ConcentrationCalculator(D3Calculator):
 
-    def calculate(self, data, precision=3):
+    def calculate(self, data: dict, precision: int = 3):
         """
-        Diffusion constatnt using Randles-Scidwick equation
+        Diffusion constant using Randles-Scidwick equation
 
-        :connection points
-        "smiles": "SMILES string",
-        "volume": "Volume",
-        "weight": "actual weight"
+        Connection Points:
+            :smiles: SMILES string
+            :volume: Volume
+            :weight: actual weight
+            :solv_density: density for solvent
+            :redox_density: density for redox-active molecule
 
-        "solv_density": "density for solvent"
-        "redox_density": "density for redox-active molecule"
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
 
-        :return: concentrations eV
+        :return: concentrations (eV)
         """
         self.data = data
 
@@ -23,19 +82,25 @@ class ConcentrationCalculator(D3Calculator):
         solv_density = conns.get("solv_density")
         redox_density = conns.get("redox_density")
         mol_weight = ExactMolWt(Chem.MolFromSmiles(conns["smiles"]))
-        concentration = ((unit_conversion(conns["weight"], default_unit='g', density=redox_density) / unit_conversion(mol_weight, default_unit='g/mol')) /
+        concentration = ((unit_conversion(conns["weight"], default_unit='g', density=redox_density) / unit_conversion(
+            mol_weight, default_unit='g/mol')) /
                          unit_conversion(conns["volume"], default_unit='L', density=solv_density))
         return float(np.format_float_scientific(concentration, precision=precision))
 
 
 class CVDescriptorCalculator(D3Calculator):
 
-    def peaks(self, data, width=10):
+    def peaks(self, data: dict, width: float = 10):
         """
-        CV peaks
+        Gather CV peaks
 
-        :connection points
-        "scan_data" : scanned data from CV file
+        Connection Points:
+            :scan_data: scanned data from CV file
+        
+        :param data: data for calculation
+        :param width: required width of peaks to identify
+        :type data: dict
+        :type width: float
 
         :return: dictionary containing list of forward peaks and list of reverse peaks
         """
@@ -55,17 +120,22 @@ class CVDescriptorCalculator(D3Calculator):
                     {"reverse": self.prominent_peaks(peaks_data, data)})
         return scan_dict
 
-    def reversibility(self, data, rev_upperbound=63, quasi_rev_upperbound=200, **kwargs):
+    def reversibility(self, data: dict, rev_upperbound: float = 63, quasi_rev_upperbound: float = 200, **kwargs):
         """
         Categorization of CV reversibility
 
-        :rev_upperbound : upperbound for reversibility (mV)
-        :quasi_rev_upperbound : upperbound for quasi reversibility (mV)
-        connection points
-        "scan_data" : scanned data from CV file (potentials in V)
-        "sample_interval" : sample interval value (V)
-        "low_e" : lowest energy value (V)
-
+        Connection Points:
+            :scan_data: scanned data from CV file (potentials in V)
+            :sample_interval: sample interval value (V)
+            :low_e: lowest energy value (V)
+            
+        :param data: data for calculation
+        :param rev_upperbound : upperbound for reversibility (mV)
+        :param quasi_rev_upperbound : upperbound for quasi reversibility (mV)
+        :type data: dict
+        :type rev_upperbound: float
+        :type quasi_rev_upperbound: float
+        
         :return: list of reversibility categorizations for peaks
         """
 
@@ -88,20 +158,22 @@ class CVDescriptorCalculator(D3Calculator):
                 peaks_reversibility.append('irreversible')
         return peaks_reversibility
 
-    def e_half(self, data, **kwargs):
+    def e_half(self, data: dict, **kwargs):
         """
-        CV E 1/2
+        Get CV E 1/2
 
-        :connection points
-        "scan_data" : scanned data from CV file (potentials in V)
-        "sample_interval" : sample interval value (V)
-        "low_e" : lowest energy value (V)
+        Connection Points:
+            :scan_data: scanned data from CV file (potentials in V)
+            :sample_interval: sample interval value (V)
+            :low_e: lowest energy value (V)
+        
+        :param data: data for calculation
+        :type data: dict
 
         :return: list of E 1/2 for peaks
         """
 
         self.data = data
-        conns = self.make_connections(data)
 
         peaks = self.peaks(data, **kwargs)
         forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
@@ -111,15 +183,18 @@ class CVDescriptorCalculator(D3Calculator):
             e_halfs.append(round((f_peak + r_peak) / 2, 3))
         return e_halfs
 
-    def peak_splittings(self, data, **kwargs):
+    def peak_splittings(self, data: dict, **kwargs):
         """
         CV peak splitting
 
-        :connection points
-        "scan_data" : scanned data from CV file (potentials in V)
-        "sample_interval" : sample interval value (V)
-        "low_e" : lowest energy value (V)
+        Connection Points:
+            :scan_data: scanned data from CV file (potentials in V)
+            :sample_interval: sample interval value (V)
+            :low_e: lowest energy value (V)
 
+        :param data: data for calculation
+        :type data: dict
+        
         :return: list of peak splittings for peaks
         """
 
@@ -137,9 +212,12 @@ class CVDescriptorCalculator(D3Calculator):
         """
         CV middle sweep
 
-        :connection points
-        "scan_data" : scanned data from CV file (potentials in V)
+        Connection Points:
+            :scan_data: scanned data from CV file (potentials in V)
 
+        :param data: data for calculation
+        :type data: dict
+        
         :return: middle sweep from the CV
         """
 
@@ -150,7 +228,17 @@ class CVDescriptorCalculator(D3Calculator):
         return conns["scan_data"][int(middle_idx - 1):int(middle_idx + 1)]
 
     @staticmethod
-    def prominent_peaks(peaks_data, orig_data, cutoff=0.0999):
+    def prominent_peaks(peaks_data: list, orig_data: dict, cutoff: float = 0.0999):
+        """
+        Get prominent peaks from the CV data
+        :param peaks_data: output data from scipy peak `find_peaks` function 
+        :param orig_data: original peak data
+        :param cutoff: percentage as decimal for peaks to disregard
+        :type peaks_data: list
+        :type orig_data: dict
+        :type cutoff: float
+        :return: 
+        """
         prominences = peaks_data[1]["prominences"]
         peaks_list = list(np.where(prominences / max(prominences) > cutoff)[0])
         values = []
@@ -161,18 +249,25 @@ class CVDescriptorCalculator(D3Calculator):
 
 class CVDiffusionCalculator(D3Calculator):
 
-    def calculate(self, data, precision=3, sci_notation=False):
+    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
         """
         Diffusion constant using Randles-Scidwick equation
 
-        :connection points
-        "i_p" : peak current (default = A)
-        "A" : electrode area (default = cm^2)
-        "v" : scan rate (default = V/s)
-        "n" : number of electrons
-        "C" : concentration of the solution (default = mol/cm^3)
-
-        :return: average diffusion constant for single redox event, cm^2/s
+        Connection Points:
+            :i_p: peak current (default = A)
+            :A: electrode area (default = cm^2)
+            :v: scan rate (default = V/s)
+            :n: number of electrons
+            :C: concentration of the solution (default = mol/cm^3)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :param sci_notation: return in scientific notation if True
+        :type data: dict
+        :type precision: int
+        :type sci_notation: bool
+        
+        :return: average diffusion constant for single redox event (cm^2/s)
         """
         self.data = data
         self.n = data.__len__()
@@ -188,7 +283,7 @@ class CVDiffusionCalculator(D3Calculator):
             v = unit_conversion(conns["v"], default_unit='V/s')
             C = unit_conversion(conns["C"], default_unit='mol/cm^3')
             i_ps[idx] = i_p
-            vs[idx] = pow(v, 1/2)
+            vs[idx] = pow(v, 1 / 2)
             diffusion_constants[idx] = (pow(i_p / (2.692e5 * pow(conns["n"], 3 / 2) * A * C * pow(v, 1 / 2)), 2))
         slope = np.polyfit(vs, i_ps, 1)[0]
         # vs = vs[:, np.newaxis]
@@ -202,18 +297,25 @@ class CVDiffusionCalculator(D3Calculator):
 
 class CVChargeTransferCalculator(D3Calculator):
 
-    def calculate(self, data, precision=3, sci_notation=False):
+    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
         """
-        Charge tranfer rate calculation
+        Charge transfer rate calculation
 
-        :connection points
-        "T" : Temperature (default = 293 K)
-        "D" : Diffusion constant (default = cm^2/s)
-        "v" : scan rate (default = V/s)
-        "n" : number of electrons
-        "X" : peak shift (default = V)
+        Connection Points:
+            :T: Temperature (default = 293 K)
+            :D: Diffusion constant (default = cm^2/s)
+            :v: scan rate (default = V/s)
+            :n: number of electrons
+            :X: peak shift (default = V)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :param sci_notation: return in scientific notation if True
+        :type data: dict
+        :type precision: int
+        :type sci_notation: bool
 
-        :return: array[["scan_rate", "k_0_i"]] for ith CV, cm/s
+        :return: array[["scan_rate", "k_0_i"]] for ith CV (cm/s)
         """
         self.data = data
         self.n = data.__len__()
@@ -236,14 +338,21 @@ class CVChargeTransferCalculator(D3Calculator):
 
 class AvgEHalfCalculator(D3Calculator):
 
-    def calculate(self, data, precision=3, sci_notation=False):
+    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
         """
-        Charge tranfer rate calculation
+        Charge transfer rate calculation
 
-        :connection points
-        "e" : E1/2 (default = V)
+        Connection Points
+            :e: E1/2 (default = V)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :param sci_notation: return in scientific notation if True
+        :type data: dict
+        :type precision: int
+        :type sci_notation: bool
 
-        :return: average E1/2 in units V
+        :return: average E1/2 (in units V)
         """
         self.data = data
         self.n = data.__len__()
@@ -257,3 +366,264 @@ class AvgEHalfCalculator(D3Calculator):
 
         result = np.format_float_scientific(avg_e_half, precision=precision)
         return result if sci_notation else float(result)
+
+
+# ------------------------- Molecular DFT Calculators --------------------------------
+
+
+class EnergyDiffCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Solvation energy calculation
+
+        Connection Points:
+            :energy_final: energy final (default = eV)
+            :energy_initial: energy initial (default = eV)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: solvation energy in units eV
+        """
+        conns = self.make_connections(data)
+        energy = (unit_conversion(conns["energy_final"], default_unit='eV') - unit_conversion(conns["energy_initial"],
+                                                                                              default_unit='eV'))
+        return float(np.format_float_scientific(energy, precision=precision))
+
+
+class ReorganizationCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Solvation energy calculation
+
+        Connection Points:
+            :gs_opt: ground state optimized energy (default = eV)
+            :ion_opt: ion optimized energy (default = eV)
+            :gs_energy: ground state energy at ion geometry (default = eV)
+            :ion_energy: ion energy at ground state geometry (default = eV)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: reorganization energy (in units eV)
+        """
+        conns = self.make_connections(data)
+        lambda1 = (unit_conversion(conns["ion_energy"], default_unit='eV') - unit_conversion(conns["ion_opt"],
+                                                                                             default_unit='eV'))
+        lambda2 = (unit_conversion(conns["gs_energy"], default_unit='eV') - unit_conversion(conns["gs_opt"],
+                                                                                            default_unit='eV'))
+        return float(np.format_float_scientific(lambda1 + lambda2, precision=precision))
+
+
+class RelaxationCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Relaxation energy calculation from high energy geometry to optimized geometry
+
+        Connection Points:
+            :opt_energy: optimized energy (default = eV)
+            :energy: energy another geometry (default = eV)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: relaxation energy (in units eV)
+        """
+        conns = self.make_connections(data)
+        lambdax = unit_conversion(conns["energy"], default_unit='eV') - unit_conversion(conns["opt_energy"],
+                                                                                        default_unit='eV')
+        return float(np.format_float_scientific(lambdax, precision=precision))
+
+
+class RMSDCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Root mean squared error calculator
+
+        Connection Points:
+            :geom_final: geometry final (default = A)
+            :geom_initial: geometry initial (default = A)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: RMSD (in units A)
+        """
+        conns = self.make_connections(data)
+        geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
+        geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
+        try:
+            rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
+        except:
+            raise ValueError("Error finding RMSD")
+        return float(np.format_float_scientific(rmsd, precision=precision))
+
+
+class DeltaGSolvCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Change in Gibbs energy for solvation calculator
+
+        Connection Points:
+            :init_eng: initial energy (default = eV)
+            :init_corr: initial entropy correction (default = eV)
+            :init_eng_solv: initial energy of solvation (default = eV)
+            :fin_eng: final energy (default = eV)
+            :fin_corr: final entropy correction (default = eV)
+            :fin_eng_solv: final energy of solvation (default = eV)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: delta G solv  (in units A)
+        """
+        conns = self.make_connections(data)
+
+        g_gas_init = unit_conversion(conns["init_eng"], default_unit='eV') + unit_conversion(conns["init_corr"],
+                                                                                             default_unit='eV')
+        g_gas_fin = unit_conversion(conns["fin_eng"], default_unit='eV') + unit_conversion(conns["fin_corr"],
+                                                                                           default_unit='eV')
+
+        # entropy correction cancels out because the species are the same
+        delta_g_init_solv = unit_conversion(conns["init_eng_solv"], default_unit='eV') - unit_conversion(
+            conns["init_eng"], default_unit='eV')
+        delta_g_fin_solv = unit_conversion(conns["fin_eng_solv"], default_unit='eV') - unit_conversion(conns["fin_eng"],
+                                                                                                       default_unit='eV')
+
+        delta_g = g_gas_fin - g_gas_init + delta_g_fin_solv - delta_g_init_solv
+
+        return float(np.format_float_scientific(delta_g, precision=precision))
+
+
+class RedoxPotentialCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Redox potential calculator
+
+        Connection Points:
+            :init_eng: initial energy (default = eV)
+            :init_corr: initial entropy correction (default = eV)
+            :init_eng_solv: initial energy of solvation (default = eV)
+            :fin_eng: final energy (default = eV)
+            :fin_corr: final entropy correction (default = eV)
+            :fin_eng_solv: final energy of solvation (default = eV)
+    
+            :num_electrons: number of electrons (default = 1)
+            :electrode: electrode name as str or potential as float (default = standard_hydrogen_electrode)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: redox potential (in units A)
+        """
+        conns = self.make_connections(data)
+        delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
+
+        potential = -delta_g / conns.get("num_electrons", 1) + get_electrode_potential(
+            conns.get("electrode", "standard_hydrogen_electrode"))
+
+        return float(np.format_float_scientific(potential, precision=precision))
+
+
+class RadBuriedVolCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Radical buried volume for the atom with the atom with the highest portion
+        of spin. Uses DBSTEP.
+
+        Connection Points:
+            :log_file: calculation output file. Must be readable with CCLIB
+            :spin_type: type of CCLIB spin to extract (default = Mulliken)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: radical buried volume (in units A^3)
+        """
+        conns = self.make_connections(data)
+
+        cmol = cclib.io.ccopen(conns["log_file"]).parse()
+        spins = cmol.atomspins[conns.get("spin_type", "mulliken")]
+        all_data = pd.DataFrame({"atoms": cmol.atomnos, "spin_density": spins})
+        all_data["atom_sym"] = all_data.apply(lambda x: periodictable[int(x.atoms)], axis=1)
+        all_data["atom_idx"] = all_data.index
+        all_data["atom_idx"] = all_data.apply(lambda x: x.atom_idx + 1, axis=1)
+        all_data = all_data[all_data.atom_sym != "H"]
+        all_data["fractional_spin"] = all_data["spin_density"].abs() / all_data["spin_density"].abs().sum()
+
+        self.max_cdf = all_data.loc[all_data["fractional_spin"].idxmax()]
+        rad_bur_vol = float(db.dbstep(conns["log_file"], atom1=self.max_cdf["atom_idx"], volume=True).bur_vol)
+
+        return float(np.format_float_scientific(rad_bur_vol, precision=precision))
+
+
+class RadicalSpinCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Radical spin density. Uses DBSTEP.
+
+        Connection Points:
+            :log_file: calculation output file. Must be readable with CCLIB
+            :spin_type: type of CCLIB spin to extract (default = Mulliken)
+        
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: radical stability score
+        """
+        self.make_connections(data)
+        rad_bur_obj = RadBuriedVolCalc(connector=self.key_pairs)
+        rad_bur_obj.calculate(data)
+        max_cdf = rad_bur_obj.max_cdf
+
+        return float(np.format_float_scientific(max_cdf["fractional_spin"], precision=precision))
+
+
+class RSSCalc(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3):
+        """
+        Radical stability score. Uses DBSTEP.
+
+        Connection Points:
+            :log_file: calculation output file. Must be readable with CCLIB
+            :spin_type: type of CCLIB spin to extract (default = Mulliken)
+
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :type data: dict
+        :type precision: int
+
+        :return: radical stability score
+        """
+        self.make_connections(data)
+        rad_bur_obj = RadBuriedVolCalc(connector=self.key_pairs)
+        rad_bur_vol = rad_bur_obj.calculate(data)
+        max_cdf = rad_bur_obj.max_cdf
+        rss = rad_bur_vol + 50 * (1 - max_cdf["fractional_spin"])
+
+        return float(np.format_float_scientific(rss, precision=precision))

@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -72,6 +75,11 @@
              
   <h1>Source code for d3tales_api.D3database.dft_calculation_list</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="calculation_list"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.dft_calculation_list.calculation_list">[docs]</a><span></span><span class="k">def</span> <span class="nf">calculation_list</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get list of D3TaLES workflow calculation names</span>
+
+<span class="sd">    :return: list of calculations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;wtuning&#39;</span><span class="p">,</span>
             <span class="s1">&#39;opt_mol&#39;</span><span class="p">,</span>
 
@@ -120,6 +128,11 @@
 
 
 <div class="viewcode-block" id="calc_tuple_list"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.dft_calculation_list.calc_tuple_list">[docs]</a><span class="k">def</span> <span class="nf">calc_tuple_list</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get list of tuples for Django website dropdowns</span>
+
+<span class="sd">    :return: list of tuples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">calc</span> <span class="ow">in</span> <span class="n">calculation_list</span><span class="p">():</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">calc</span><span class="p">,</span> <span class="n">calc</span><span class="p">))</span>

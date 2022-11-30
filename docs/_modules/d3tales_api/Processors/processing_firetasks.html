@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -89,22 +92,22 @@
 <span class="c1"># Copyright 2021, University of Kentucky</span>
 <span class="n">TESTING</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">False</span>
 
+
 <div class="viewcode-block" id="FileTransferTask"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">FileTransferTask</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Firetask to Transfer files. Note that</span>
-<span class="sd">    Required params:</span>
-<span class="sd">        - mode: (str) - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer</span>
-<span class="sd">        - files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing</span>
-<span class="sd">                &#39;src&#39; and &#39;dest&#39; keys</span>
-<span class="sd">    Optional params:</span>
-<span class="sd">        - dest: (str) destination directory, if not specified within files parameter (else optional)</span>
-<span class="sd">        - server: (str) server host for remote transfer</span>
-<span class="sd">        - user: (str) user to authenticate with on remote server</span>
-<span class="sd">        - key_filename: (str) optional SSH key location for remote transfer</span>
-<span class="sd">        - max_retry: (int) number of times to retry failed transfers; defaults to `0` (no retries)</span>
-<span class="sd">        - retry_delay: (int) number of seconds to wait between retries; defaults to `10`</span>
-<span class="sd">        - ignore_errors (bool): Optional. Whether to ignore errors. Defaults to False.</span>
+
+<span class="sd">    :param mode: str, - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer</span>
+<span class="sd">    :param files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing &#39;src&#39; and &#39;dest&#39; keys</span>
+
+<span class="sd">    :param dest: str, optional, destination directory, if not specified within files parameter (else optional)</span>
+<span class="sd">    :param server: str, optional, server host for remote transfer</span>
+<span class="sd">    :param user: str, optional, user to authenticate with on remote server</span>
+<span class="sd">    :param key_filename: str, optional, optional SSH key location for remote transfer</span>
+<span class="sd">    :param max_retry: int, optional, number of times to retry failed transfers; defaults to `0` (no retries)</span>
+<span class="sd">    :param retry_delay: int, optional, number of seconds to wait between retries; defaults to `10`</span>
+<span class="sd">    :param ignore_errors: bool, optional, Whether to ignore errors. Defaults to False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s1">&#39;FileTransferTask&#39;</span>
 
@@ -119,7 +122,7 @@
         <span class="n">remote_server</span><span class="p">[</span><span class="s2">&quot;key_filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_file</span>
 
         <span class="k">if</span> <span class="n">TESTING</span><span class="p">:</span>
-            <span class="n">skip_transfer</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">skip_transfer</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">skip_transfer</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -159,6 +162,9 @@
 
 <div class="viewcode-block" id="ProcessFile"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ProcessFile">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">ProcessFile</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a data File</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;ProcessFile&quot;</span>
 
 <div class="viewcode-block" id="ProcessFile.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ProcessFile.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -207,6 +213,9 @@
 
 <div class="viewcode-block" id="SendToStorage"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.SendToStorage">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">SendToStorage</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send data file to D3TaLES storage</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;SendToStorage&quot;</span>
 
 <div class="viewcode-block" id="SendToStorage.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.SendToStorage.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -225,7 +234,8 @@
         <span class="n">submission_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;submission_data&quot;</span><span class="p">]</span>
         <span class="n">data_category</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span>
         <span class="n">data_type</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
-        <span class="n">destination_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/d3tales/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_base_loc</span><span class="p">,</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_id&quot;</span><span class="p">),</span> <span class="n">data_category</span><span class="p">,</span> <span class="n">data_type</span><span class="p">)</span>
+        <span class="n">destination_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/d3tales/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_base_loc</span><span class="p">,</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_id&quot;</span><span class="p">),</span> <span class="n">data_category</span><span class="p">,</span>
+                                                        <span class="n">data_type</span><span class="p">)</span>
         <span class="n">destination</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">remote_directory</span><span class="p">):</span>
@@ -288,6 +298,9 @@
 
 <div class="viewcode-block" id="UpdateBackendDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateBackendDB">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">UpdateBackendDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the backend D3TaLES database with parsed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateBackendDB&quot;</span>
 
 <div class="viewcode-block" id="UpdateBackendDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateBackendDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -299,6 +312,9 @@
 
 <div class="viewcode-block" id="UpdateUserDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateUserDB">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">UpdateUserDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the D3TaLES website user database approved status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateUserDB&quot;</span>
 
 <div class="viewcode-block" id="UpdateUserDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateUserDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -322,6 +338,9 @@
 
 <div class="viewcode-block" id="UpdateApprovalStatus"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">UpdateApprovalStatus</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the backend D3TaLES database approved status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateApprovalStatus&quot;</span>
 
 <div class="viewcode-block" id="UpdateApprovalStatus.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -339,6 +358,9 @@
 
 <div class="viewcode-block" id="UpdateFrontendDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">UpdateFrontendDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the frontend D3TaLES database with parsed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateFrontendDB&quot;</span>
 
 <div class="viewcode-block" id="UpdateFrontendDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -362,6 +384,9 @@
 
 <div class="viewcode-block" id="ApproveJobs"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ApproveJobs">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">ApproveJobs</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Approve multiple processing jobs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;ApproveJobs&quot;</span>
 
 <div class="viewcode-block" id="ApproveJobs.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ApproveJobs.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
@@ -386,7 +411,6 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hash id </span><span class="si">{}</span><span class="s2"> approved&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h_id</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR approving hash id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h_id</span><span class="p">))</span></div></div>
-
 </pre></div>
 
            </div>

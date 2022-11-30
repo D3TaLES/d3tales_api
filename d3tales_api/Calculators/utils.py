@@ -1,12 +1,5 @@
-import abc
-import math
-import json
 import pint
 import functools
-import numpy as np
-from rdkit import Chem
-from scipy.signal import find_peaks
-from rdkit.Chem.Descriptors import ExactMolWt
 from d3tales_api.D3database.d3database import ParamsDB
 
 
@@ -28,7 +21,17 @@ def rgetkeys(_dict, keys, *args):
     return functools.reduce(_getkey, [_dict] + keys.split('.'))
 
 
-def unit_conversion(measurement, default_unit, density=None):
+def unit_conversion(measurement, default_unit: str, density=None):
+    """
+    Convert a measurement into a default unit using pint. 
+    
+    :param measurement: Measurements can be pint object, int or float(in which case it will be assumed to already be in the default unit), string of magnitude and unit, or a measurement dictionary (EX: {"value": 0.5, "unit": "eV"}
+    :param default_unit: default unit / unit to be converted to
+    :param density: molecular density (in case needed for conversion)  
+    :type default_unit: str
+    :type density: str
+    :return: float magnitude for the converted measurement 
+    """
     if not measurement:
         return None
     # Set context in case conversion include mass-->volume or volume-->mass
@@ -50,9 +53,15 @@ def unit_conversion(measurement, default_unit, density=None):
     pint_unit = ureg("{}{}".format(value, unit))
     return pint_unit.to(default_unit, 'mol_density').magnitude
 
+
 def get_electrode_potential(electrode):
+    """
+    Get electrode potential by searching the D3TaLES electrode parameters database
+    :param electrode: name of an electrode or the electrode potential
+    :return:
+    """
     if str(electrode).isdigit():
-        return fload(electrode)
+        return float(electrode)
     params_db = ParamsDB(collection_name="electrode", schema_directory="materials")
     electrode_data = params_db.coll.find_one({"_id": electrode})
     abs_potential = electrode_data.get("absolute_potential")
@@ -61,36 +70,20 @@ def get_electrode_potential(electrode):
     else:
         raise ValueError(f"Electrode {electrode} note found in the D3TaLES prameters database")
 
-class D3Calculator(abc.ABC):
-    def __init__(self, connector=None):
-        self.connector(key_pairs=connector)
 
-    def connector(self, key_pairs=None):
-        if key_pairs:
-            self.key_pairs = key_pairs
-            return self.key_pairs
-        else:
-            with open("connector.json") as f:
-                connectors = json.load(f)
-            self.key_pairs = connectors[self.__class__.__name__]
-
-    def make_connections(self, obj):
-        d = {}
-        for key, connection in self.key_pairs.items():
-            try:
-                d.update({key: rgetattr(obj, connection)})
-            except:
-                d.update({key: rgetkeys(obj, connection)})
-        return d
-
-    def calculate(self, data):
-        pass
-
-    def description(self):
-        print(self.__class__.__name__)
+def get_periodic_table():
+    """
+    List elements in the periodic table
+    :return: List of element abbreviations for elements in the periodic table 
+    """
+    return ["H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl",
+            "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As",
+            "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In",
+            "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb",
+            "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl",
+            "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk",
+            "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Uub", "Uut",
+            "Uuq", "Uup", "Uuh", "Uus", "Uuo", ]
 
 
-class D3Plotter(D3Calculator):
-
-    def plot_data(self, data):
-        pass
+periodictable = get_periodic_table()

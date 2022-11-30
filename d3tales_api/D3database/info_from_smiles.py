@@ -15,13 +15,14 @@ from rdkit.Chem.rdMolDescriptors import CalcMolFormula, CalcExactMolWt
 
 class GenerateMolInfo:
     """
-        Generate json object for insertion from smiles string
-        :param names: list of names for molecule
-        :param smiles: smiles string
-        :param origin_group: which group the molecule comes from
-        :return: mol_info class object
-        Copyright 2021, University of Kentucky
-        """
+    Generate json object for insertion from smiles string
+    Copyright 2021, University of Kentucky
+
+    :param names: list of names for molecule
+    :param smiles: smiles string
+    :param origin_group: which group the molecule comes from
+    :return: mol_info class object
+    """
     def __init__(self, smiles, origin_group="", names=[], extra_info=True, database='frontend', schema_name="mol_info"):
         self.smiles = smiles
         self.origin_group = origin_group
@@ -32,6 +33,11 @@ class GenerateMolInfo:
         self.mol_info_dict = self.get_mol_info()
 
     def get_mol_info(self):
+        """
+        Get molecule information
+
+        :return: mol_info as dict
+        """
         # Fetch schema and build class
         s2c = Schema2Class(schema_name=self.schema_name, database=self.database)
         mol_info = s2c.MolInfo()
@@ -68,10 +74,11 @@ class GenerateMolInfo:
     @staticmethod
     def image_to_base64(img):
         """
-                Produce base 64 string representation of image
-                :param img: python Image object
-                :return: str representing the image
-                """
+        Produce base 64 string representation of image
+
+        :param img: python Image object
+        :return: str representing the image
+        """
         output_buffer = BytesIO()
         img.save(output_buffer, format='PNG')
         byte_data = output_buffer.getvalue()
@@ -82,6 +89,7 @@ class GenerateMolInfo:
     def base64_to_image(base64_str, image_path=None):
         """
         Produce python Image object from base 64 string representation of image
+
         :param base64_str: base64 string representing image
         :param image_path: path for image to be saved (optional)
         :return: python Image object

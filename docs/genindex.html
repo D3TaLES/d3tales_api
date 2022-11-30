@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -100,12 +103,14 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.__init__">__init__() (d3tales_api.Calculators.utils.D3Calculator method)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.__init__">__init__() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
 
       <ul>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.__init__">(d3tales_api.D3database.d3database.BackDB method)</a>
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.__init__">(d3tales_api.D3database.d3database.D3Database method)</a>
+</li>
+        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.__init__">(d3tales_api.D3database.d3database.DBconnector method)</a>
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow.__init__">(d3tales_api.D3database.d3database.Expflow method)</a>
 </li>
@@ -114,8 +119,6 @@
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.__init__">(d3tales_api.D3database.d3database.ParamsDB method)</a>
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.__init__">(d3tales_api.D3database.d3database.QueryDB method)</a>
-</li>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.__init__">(d3tales_api.D3database.db_connector.DBconnector method)</a>
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.__init__">(d3tales_api.D3database.info_from_smiles.GenerateMolInfo method)</a>
 </li>
@@ -138,6 +141,8 @@
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.__init__">(d3tales_api.Processors.parser_dft.ProcessCCLIB method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.__init__">(d3tales_api.Processors.parser_dft.ProcessGausLog method)</a>
+</li>
+        <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log.__init__">(d3tales_api.Processors.parser_dft.ProcessPsi4Log method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.__init__">(d3tales_api.Processors.parser_uvvis.ParseExcel method)</a>
 </li>
@@ -197,25 +202,25 @@
 </li>
         <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculator.calculate">(d3tales_api.Calculators.calculators.CVDiffusionCalculator method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.DeltaGSolvCalc.calculate">(d3tales_api.Calculators.calculators_dft.DeltaGSolvCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.calculate">(d3tales_api.Calculators.calculators.D3Calculator method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.EnergyDiffCalc.calculate">(d3tales_api.Calculators.calculators_dft.EnergyDiffCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DeltaGSolvCalc.calculate">(d3tales_api.Calculators.calculators.DeltaGSolvCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadBuriedVolCalc.calculate">(d3tales_api.Calculators.calculators_dft.RadBuriedVolCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.EnergyDiffCalc.calculate">(d3tales_api.Calculators.calculators.EnergyDiffCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadicalSpinCalc.calculate">(d3tales_api.Calculators.calculators_dft.RadicalSpinCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadBuriedVolCalc.calculate">(d3tales_api.Calculators.calculators.RadBuriedVolCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RedoxPotentialCalc.calculate">(d3tales_api.Calculators.calculators_dft.RedoxPotentialCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadicalSpinCalc.calculate">(d3tales_api.Calculators.calculators.RadicalSpinCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RelaxationCalc.calculate">(d3tales_api.Calculators.calculators_dft.RelaxationCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RedoxPotentialCalc.calculate">(d3tales_api.Calculators.calculators.RedoxPotentialCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.ReorganizationCalc.calculate">(d3tales_api.Calculators.calculators_dft.ReorganizationCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RelaxationCalc.calculate">(d3tales_api.Calculators.calculators.RelaxationCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RMSECalc.calculate">(d3tales_api.Calculators.calculators_dft.RMSECalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ReorganizationCalc.calculate">(d3tales_api.Calculators.calculators.ReorganizationCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RSSCalc.calculate">(d3tales_api.Calculators.calculators_dft.RSSCalc method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RMSDCalc.calculate">(d3tales_api.Calculators.calculators.RMSDCalc method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.calculate">(d3tales_api.Calculators.utils.D3Calculator method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RSSCalc.calculate">(d3tales_api.Calculators.calculators.RSSCalc method)</a>
 </li>
       </ul></li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_plotting">calculate_plotting() (d3tales_api.Processors.parser_cv.ParseChiCV method)</a>
@@ -232,13 +237,11 @@
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB.check_if_in_db">check_if_in_db() (d3tales_api.D3database.d3database.FrontDB method)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.checker">checker() (d3tales_api.D3database.d3database.D3Database method)</a>
-</li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ConcentrationCalculator">ConcentrationCalculator (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.conditions">conditions (d3tales_api.Processors.d3tales_parser.ProcessDFT property)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.connector">connector() (d3tales_api.Calculators.utils.D3Calculator method)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.connector">connector() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.cookies">cookies (d3tales_api.D3database.restapi.RESTAPI property)</a>
 </li>
@@ -262,11 +265,11 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator">D3Calculator (class in d3tales_api.Calculators.utils)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator">D3Calculator (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database">D3Database (class in d3tales_api.D3database.d3database)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter">D3Plotter (class in d3tales_api.Calculators.utils)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter">D3Plotter (class in d3tales_api.Calculators.plotters)</a>
 </li>
       <li>
     d3tales_api
@@ -290,24 +293,10 @@
 </li>
       </ul></li>
       <li>
-    d3tales_api.Calculators.calculators_dft
-
-      <ul>
-        <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.calculators_dft">module</a>
-</li>
-      </ul></li>
-      <li>
     d3tales_api.Calculators.generate_class
 
       <ul>
         <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.generate_class">module</a>
-</li>
-      </ul></li>
-      <li>
-    d3tales_api.Calculators.periodic_table
-
-      <ul>
-        <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.periodic_table">module</a>
 </li>
       </ul></li>
       <li>
@@ -339,13 +328,6 @@
 </li>
       </ul></li>
       <li>
-    d3tales_api.D3database.db_connector
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database.db_connector">module</a>
-</li>
-      </ul></li>
-      <li>
     d3tales_api.D3database.dft_calculation_list
 
       <ul>
@@ -373,8 +355,6 @@
         <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database.schema2class">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.D3database.schema2model
 
@@ -389,6 +369,8 @@
         <li><a href="d3tales_api.html#module-d3tales_api.database_info">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.Processors
 
@@ -462,11 +444,13 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.date_recorded">date_recorded (d3tales_api.Processors.parser_uvvis.ParseExcel property)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector">DBconnector (class in d3tales_api.D3database.db_connector)</a>
+      <li><a href="d3tales_api.html#d3tales_api.database_info.db_info_generator">db_info_generator() (in module d3tales_api.database_info)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.DeltaGSolvCalc">DeltaGSolvCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector">DBconnector (class in d3tales_api.D3database.d3database)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.description">description() (d3tales_api.Calculators.utils.D3Calculator method)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DeltaGSolvCalc">DeltaGSolvCalc (class in d3tales_api.Calculators.calculators)</a>
+</li>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.description">description() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.schema2model.determine_model_name">determine_model_name() (in module d3tales_api.D3database.schema2model)</a>
 </li>
@@ -490,7 +474,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.EnergyDiffCalc">EnergyDiffCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.EnergyDiffCalc">EnergyDiffCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow">Expflow (class in d3tales_api.D3database.d3database)</a>
 </li>
@@ -502,12 +486,14 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">FileTransferTask (class in d3tales_api.Processors.processing_firetasks)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.field_checker">field_checker() (d3tales_api.D3database.d3database.D3Database method)</a>
 </li>
-      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.find_data">find_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">FileTransferTask (class in d3tales_api.Processors.processing_firetasks)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.find_data">find_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data">from_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization class method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB">FrontDB (class in d3tales_api.D3database.d3database)</a>
@@ -528,13 +514,13 @@
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.get_client">get_client() (d3tales_api.D3database.restapi.RESTAPI method)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.get_collection">get_collection() (d3tales_api.D3database.db_connector.DBconnector method)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_collection">get_collection() (d3tales_api.D3database.d3database.DBconnector method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_concentration">get_concentration() (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data">get_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.db_connector.DBconnector.get_database">get_database() (d3tales_api.D3database.db_connector.DBconnector method)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_database">get_database() (d3tales_api.D3database.d3database.DBconnector method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.get_electrode">get_electrode() (d3tales_api.Processors.expflow_parser.ProcessExperimentRun method)</a>
 </li>
@@ -551,6 +537,8 @@
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">get_mol_info() (d3tales_api.D3database.info_from_smiles.GenerateMolInfo method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_param_quantity">get_param_quantity() (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj static method)</a>
+</li>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_periodic_table">get_periodic_table() (in module d3tales_api.Calculators.utils)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.get_pmgmol">get_pmgmol() (d3tales_api.Processors.parser_dft.ProcessGausLog static method)</a>
 </li>
@@ -628,7 +616,7 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Calculator.make_connections">make_connections() (d3tales_api.Calculators.utils.D3Calculator method)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.make_connections">make_connections() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.make_query">make_query() (d3tales_api.D3database.d3database.D3Database method)</a>
 
@@ -650,11 +638,7 @@
 </li>
         <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.calculators">d3tales_api.Calculators.calculators</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.calculators_dft">d3tales_api.Calculators.calculators_dft</a>
-</li>
         <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.generate_class">d3tales_api.Calculators.generate_class</a>
-</li>
-        <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.periodic_table">d3tales_api.Calculators.periodic_table</a>
 </li>
         <li><a href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters</a>
 </li>
@@ -663,8 +647,6 @@
         <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database">d3tales_api.D3database</a>
 </li>
         <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database.d3database">d3tales_api.D3database.d3database</a>
-</li>
-        <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database.db_connector">d3tales_api.D3database.db_connector</a>
 </li>
         <li><a href="d3tales_api.D3database.html#module-d3tales_api.D3database.dft_calculation_list">d3tales_api.D3database.dft_calculation_list</a>
 </li>
@@ -756,9 +738,9 @@
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.plot_data">plot_data() (d3tales_api.Calculators.plotters.CVPlotter method)</a>
 
       <ul>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter.plot_data">(d3tales_api.Calculators.plotters.DFTSpecPlotter method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter.plot_data">(d3tales_api.Calculators.plotters.D3Plotter method)</a>
 </li>
-        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.D3Plotter.plot_data">(d3tales_api.Calculators.utils.D3Plotter method)</a>
+        <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter.plot_data">(d3tales_api.Calculators.plotters.DFTSpecPlotter method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -778,6 +760,8 @@
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ProcessFile">ProcessFile (class in d3tales_api.Processors.processing_firetasks)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog">ProcessGausLog (class in d3tales_api.Processors.parser_dft)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log">ProcessPsi4Log (class in d3tales_api.Processors.parser_dft)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis">ProcessUvVis (class in d3tales_api.Processors.d3tales_parser)</a>
 </li>
@@ -799,9 +783,9 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadBuriedVolCalc">RadBuriedVolCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadBuriedVolCalc">RadBuriedVolCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RadicalSpinCalc">RadicalSpinCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RadicalSpinCalc">RadicalSpinCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">reagent_format() (d3tales_api.Processors.d3tales_parser.ProcessCV static method)</a>
 </li>
@@ -811,7 +795,7 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol_concentration">redox_mol_concentration (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj property)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RedoxPotentialCalc">RedoxPotentialCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RedoxPotentialCalc">RedoxPotentialCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.reduction_potential">reduction_potential() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
@@ -823,9 +807,9 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_groundState_cation1">relaxation_groundState_cation1() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RelaxationCalc">RelaxationCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RelaxationCalc">RelaxationCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.ReorganizationCalc">ReorganizationCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ReorganizationCalc">ReorganizationCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI">RESTAPI (class in d3tales_api.D3database.restapi)</a>
 </li>
@@ -847,9 +831,9 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_groundState_cation1">rmsd_groundState_cation1() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RMSECalc">RMSECalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RMSDCalc">RMSDCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
-      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators_dft.RSSCalc">RSSCalc (class in d3tales_api.Calculators.calculators_dft)</a>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RSSCalc">RSSCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ApproveJobs.run_task">run_task() (d3tales_api.Processors.processing_firetasks.ApproveJobs method)</a>
 

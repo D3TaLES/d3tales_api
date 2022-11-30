@@ -2,28 +2,32 @@ import warnings
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
+from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.d3database import FrontDB
 from d3tales_api.Calculators.generate_class import dict2obj
 from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 
 
 def get_id(o):
+    """
+    Get id (either `_id` or `uuid`) from a data object
+    """
     return getattr(o, '_id', None) or getattr(o, 'uuid')
 
 
 class ProcessExpFlowObj:
     """
     Base class for Processing ExpFlow objects for data analysis
-    Args:
-        expflow_obj: obj or dict, ExpFlow object to process
-        source_group: str, source group for ExpFlow object
-
-    Returns:
-        object for processing ExpFlow objects
     """
 
     def __init__(self, expflow_obj, source_group, **kwargs):
-        expflow_dict = expflow_obj if isinstance(expflow_obj, dict) else json.loads(json.dumps(model_to_dict(expflow_obj), cls=DjangoJSONEncoder))
+        """
+        :param expflow_obj: obj or dict, ExpFlow object to process
+        :param source_group: str, source group for ExpFlow object
+        :param kwargs: object for processing ExpFlow objects
+        """
+        expflow_dict = expflow_obj if isinstance(expflow_obj, dict) else json.loads(
+            json.dumps(model_to_dict(expflow_obj), cls=DjangoJSONEncoder))
         self.expflow_obj = dict2obj(expflow_dict)
         self.source_group = source_group
         self.object_id = get_id(self.expflow_obj)
@@ -32,10 +36,13 @@ class ProcessExpFlowObj:
         self.apparatus = self.expflow_obj.apparatus or []
         self.instruments = self.expflow_obj.instruments or []
         self.kwargs = dict(**kwargs)
+        self.concentration_smiles = None
+        self.concentration_volume = None
+        self.concentration_mass = None
 
     @property
     def redox_mol(self):
-        # get redox molecule instance
+        """Redox molecule instance"""
         reagent_instance = [e for e in self.reagents if e.type == "redox_molecule"]
         if len(reagent_instance) == 1:
             return reagent_instance[0]
@@ -45,7 +52,7 @@ class ProcessExpFlowObj:
 
     @property
     def molecule_id(self):
-        # get molecule_id
+        """Molecule ID"""
         rdkmol = MolFromSmiles(self.redox_mol.smiles)
         clean_smiles = MolToSmiles(rdkmol)
         instance = GenerateMolInfo(clean_smiles, database="frontend").mol_info_dict
@@ -55,6 +62,7 @@ class ProcessExpFlowObj:
 
     @property
     def reagents_by_id(self):
+        """Dictionary of reagent ids and reagent names"""
         reagents_dict = {}
         for reagent in self.reagents:
             reagent_vars = vars(reagent)
@@ -64,6 +72,7 @@ class ProcessExpFlowObj:
 
     @property
     def apparatus_by_id(self):
+        """Dictionary of apparatus ids and apparatus names"""
         apparatus_dict = {}
         for apparatus in self.apparatus:
             apparatus_vars = vars(apparatus)
@@ -74,13 +83,20 @@ class ProcessExpFlowObj:
     # Get instrument name
     @property
     def instrument_name(self, instrument_idx=0):
-        # Get instrument name
+        """Instrument name"""
         if self.instruments:
             return self.instruments[instrument_idx].name
 
     def property_by_action(self, action_name, parameter_idx=0):
-        # Get molecule_id working electrode surface area
-        # NOTE: this only works if there is only one action of the given name
+        """
+        Get molecule_id working electrode surface area
+        NOTE: this only works if there is only one action of the given name
+
+        :param action_name: str, name of action to get
+        :param parameter_idx: index of parameter to get if more than one
+        :return: return property as data dict
+        """
+
         action_instance = [e for e in self.workflow if e.name == action_name]
         if len(action_instance) == 1:
             action_value = action_instance[0].parameters[parameter_idx].value
@@ -92,8 +108,14 @@ class ProcessExpFlowObj:
                     self.object_id, len(action_instance), action_name, action_name))
 
     def get_apparatus(self, apparatus_type, get_uuid=False):
-        # Get apparatus by type
-        # NOTE: this only works if there is only one apparatus of the given type
+        """
+        Get apparatus by type
+        NOTE: this only works if there is only one apparatus of the given type
+
+        :param apparatus_type: str, type of apparatus to get
+        :param get_uuid: bool, return uuid of apparatus, else return apparatus name
+        :return: apparatus name
+        """
         beaker_instances = [e for e in self.apparatus if e.type == apparatus_type]
         if len(beaker_instances) > 1:
             warnings.warn(
@@ -104,7 +126,13 @@ class ProcessExpFlowObj:
             return beaker_instances[0].name
 
     def get_reagents(self, reagent_type, get_uuids=False):
-        # Get all reagents of a given type
+        """
+        Get all reagents of a given type
+
+        :param reagent_type: str, type of reagent to get
+        :param get_uuids: bool, return uuid of electrode, else return electrode name
+        :return: list of reagents (as dict, EX: [{"name": water, "purity": 0.95], or as uuids)
+        """
         reagent_instance = [e for e in self.reagents if e.type == reagent_type]
         instance_list = []
         for instance in reagent_instance:
@@ -116,6 +144,12 @@ class ProcessExpFlowObj:
 
     @staticmethod
     def get_param_quantity(param_list):
+        """
+        Get parameters with mass and/or volume quantities for all parameters in a list of parameters
+
+        :param param_list: list of parameters
+        :return: list of parameters with mass and/or volume quantities
+        """
         quantity_param = [q for q in param_list if q.description in ["mass", "volume"]]
         if len(quantity_param) != 1:
             warnings.warn("Error. Parameter list has {} quantity parameters".format(len(quantity_param)))
@@ -123,15 +157,26 @@ class ProcessExpFlowObj:
             return quantity_param[0]
 
     def get_concentration(self, solvent_uuids, redox_uuid, beaker_uuid):
-        # set temporary properties for concentration calculator
+        """
+        Set temporary properties for concentration calculator
+
+        :param solvent_uuids: list, list of solvent uuids
+        :param redox_uuid: str, uuid for redox-active molecule
+        :param beaker_uuid: str, uuid for beaker
+        :return: concentration data dict
+        """
         self.concentration_smiles = [r for r in self.reagents if get_id(r) == redox_uuid][0].smiles
-        redox_actions = [a for a in self.workflow if a.start_uuid == redox_uuid and a.end_uuid == beaker_uuid and a.name == 'transfer_solid']
+        redox_actions = [a for a in self.workflow if
+                         a.start_uuid == redox_uuid and a.end_uuid == beaker_uuid and a.name == 'transfer_solid']
         if len(redox_actions) != 1:
-            print("Error. ExpFlow object {} has {} transfer_solid actions with the same starting and ending point".format(self.object_id, len(redox_actions)))
+            print(
+                "Error. ExpFlow object {} has {} transfer_solid actions with the same starting and ending point".format(
+                    self.object_id, len(redox_actions)))
             return None
         else:
             self.concentration_mass = self.get_param_quantity(redox_actions[0].parameters)
-        solvent_actions = [a for a in self.workflow if a.start_uuid in solvent_uuids and a.end_uuid == beaker_uuid and a.name == 'transfer_liquid']
+        solvent_actions = [a for a in self.workflow if
+                           a.start_uuid in solvent_uuids and a.end_uuid == beaker_uuid and a.name == 'transfer_liquid']
         if len(solvent_actions) != 1:
             print("Error. ExpFlow object {} has {} transfer_liquid actions".format(self.object_id, len(redox_actions)))
             return None
@@ -148,6 +193,7 @@ class ProcessExpFlowObj:
 
     @property
     def redox_mol_concentration(self):
+        """Concentration of redox-active molecule"""
         return self.get_concentration(self.get_reagents("solvent", get_uuids=True), get_id(self.redox_mol),
                                       self.get_apparatus("beaker", get_uuid=True))
 
@@ -158,12 +204,16 @@ class ProcessExperimentRun(ProcessExpFlowObj):
     """
 
     def get_electrode(self, electrode, get_uuid=False):
-        # get electrode
+        """
+        Get electrode from experiment data
+        
+        :param electrode: str,which electrode (working, counter, or reference)
+        :param get_uuid: bool, return uuid of electrode, else return electrode name
+        :return: electrode (uuid or name)
+        """
         electrode_instance = [e for e in self.apparatus if e.type == "electrode_{}".format(electrode)]
         if len(electrode_instance) > 1:
-            warnings.warn \
-                ("Error. ExpFlow object {} has {} {} electrode entries".format(self.object_id, len(electrode_instance),
-                                                                               electrode))
+            warnings.warn("Error. ExpFlow object {} has {} {} electrode entries".format(self.object_id, len(electrode_instance), electrode))
         elif len(electrode_instance) == 1:
             if get_uuid:
                 return get_id(electrode_instance[0])
@@ -171,6 +221,7 @@ class ProcessExperimentRun(ProcessExpFlowObj):
 
     @property
     def cv_metadata(self):
+        """Dictionary of CV metadata (in accordance with D3TaLES schema)"""
         metadata = dict(
             experiment_run_id=self.object_id,
             molecule_id=self.molecule_id,

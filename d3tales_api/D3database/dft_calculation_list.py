@@ -1,4 +1,9 @@
 def calculation_list():
+    """
+    Get list of D3TaLES workflow calculation names
+
+    :return: list of calculations
+    """
     return ['wtuning',
             'opt_mol',
 
@@ -47,6 +52,11 @@ def calculation_list():
 
 
 def calc_tuple_list():
+    """
+    Get list of tuples for Django website dropdowns
+
+    :return: list of tuples
+    """
     data = []
     for calc in calculation_list():
         data.append((calc, calc))

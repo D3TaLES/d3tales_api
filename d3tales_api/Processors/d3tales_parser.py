@@ -1,23 +1,27 @@
-import os
 import sys
-import pint
 import uuid
-import json
 import hashlib
 from d3tales_api.database_info import db_info
 from d3tales_api.Processors.parser_cv import *
 from d3tales_api.Processors.parser_dft import *
 from d3tales_api.Processors.parser_uvvis import *
-from d3tales_api.D3database.db_connector import DBconnector
+from d3tales_api.D3database.d3database import DBconnector
 
 
 class ProcessDFT:
     """
-    Class to process Gaussian logfiles.
+    Class to process molecular DFT output files.
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id=None, submission_info=None, metadata=None, parsing_class=ProcessGausLog):
+    def __init__(self, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ProcessGausLog):
+        """
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission information
+        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
+        :param parsing_class: class, class to use for file parsing (EX: ProcessGausLog, ProcessCCLIB, or ProcessPsi4Log)
+        """
         submission_info = submission_info or {}
         self.id = _id
         self.parsing_class = parsing_class
@@ -27,6 +31,9 @@ class ProcessDFT:
 
     @property
     def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
         if self.DFTData.calculation_type == 'wtuning':
             if not hasattr(self.DFTData, 'omega'):
                 raise TypeError("{} parsing class is not a WTuning parsing class.".format(self.parsing_class))
@@ -104,6 +111,9 @@ class ProcessDFT:
 
     @property
     def hash_id(self):
+        """
+        Hash ID
+        """
         hash_dict = {
             "_id": self.id,
             "calculation_type": self.DFTData.calculation_type,
@@ -116,6 +126,9 @@ class ProcessDFT:
 
     @property
     def conditions(self):
+        """
+        Dictionary of conditions (in accordance with D3TaLES backend schema)
+        """
         data_dict = {
             "data_source": 'dft',
             "code_name": self.DFTData.code_name,
@@ -135,6 +148,9 @@ class ProcessDFT:
 
     @property
     def mol_info(self):
+        """
+        Dictionary containing basic molecule information using the ID from the D3TalES database
+        """
         base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
         document = base_coll.find_one({"_id": self.id})
         if document:
@@ -145,6 +161,9 @@ class ProcessDFT:
 
     @property
     def is_groundState(self):
+        """
+        True if current species is the ground state, else False
+        """
         mol_info = self.mol_info
         if 'groundState_charge' in mol_info.keys():
             gs_charge = mol_info['groundState_charge']
@@ -159,10 +178,18 @@ class ProcessCV:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, filepath, _id=None, submission_info=None, metadata=None, parsing_class=ParseChiCV):
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCV):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)
+        """
         self.id = _id
         self.hash_id = str(uuid.uuid4())
-        self.data_path = filepath
+        self.data_path = filepath or metadata.get("mol_file")
         self.submission_info = submission_info or {}
         metadata = metadata or {}
         self.instrument = metadata.get("instrument", '')
@@ -184,6 +211,9 @@ class ProcessCV:
 
     @property
     def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
         cv_data = self.CVData.cv_data
         cv_data.update(self.CVData.calculate_prop("peaks"))
         cv_data.update(dict(conditions=self.cv_conditions,
@@ -199,12 +229,14 @@ class ProcessCV:
             "submission_info": self.submission_info,
             "data": cv_data
         }
-        print("CV conditions: ", self.cv_conditions)
         json_data = json.dumps(all_data_dict)
         return json.loads(json_data)
 
     @property
     def mol_info(self):
+        """
+        Dictionary containing basic molecule information using the ID from the D3TalES database
+        """
         base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
         document = base_coll.find({"_id": self.id})
         if document:
@@ -216,6 +248,9 @@ class ProcessCV:
 
     @property
     def cv_conditions(self):
+        """
+        Dictionary of conditions (in accordance with D3TaLES backend schema)
+        """
         conditions_data = self.CVData.conditions_data
         conditions_data.update({
             "data_source": 'cv',
@@ -235,6 +270,13 @@ class ProcessCV:
 
     @staticmethod
     def reagent_format(reagents, purity=None):
+        """
+        Convert reagent data to D3TaLES schema format
+
+        :param reagents: reagent data or list of reagent data
+        :param purity: default purity value
+        :return: formatted reagent data
+        """
         def format_i(r):
             if isinstance(r, dict):
                 r_dict = r
@@ -243,16 +285,24 @@ class ProcessCV:
                 if purity:
                     r_dict["purity"] = purity
             return r_dict
+
         return [format_i(i) for i in reagents] if isinstance(reagents, list) else format_i(reagents)
 
     @staticmethod
     def data_format(data):
+        """
+        Format measurement data
+
+        :param data: measurement data
+        :return: formatted measurement data, EX: {"value": 0.5, "unit": "V"}
+        """
         if isinstance(data, dict):
             return {"value": float(data.get("value")), "unit": data.get("unit")}
         elif not isinstance(data, (str, float, int, dict)):
             value, unit = getattr(data, "value"), getattr(data, "unit")
             return {"value": value, "unit": unit}
-        elif isinstance(data, float) or isinstance(data, float) or str(data).replace('.', '', 1).replace('-', '', 1).isdigit():
+        elif isinstance(data, float) or isinstance(data, float) or str(data).replace('.', '', 1).replace('-', '',
+                                                                                                         1).isdigit():
             return {"value": float(data)}
         else:
             ureg = pint.UnitRegistry()
@@ -264,14 +314,15 @@ class ProcessUvVis:
     """
     Class to process UV-Vis data files.
     Copyright 2021, University of Kentucky
-    Args:
-        filepath (str) : filepath to data file
-        mol_id (str) : identifier for the molecule this data belongs to
-        metadata (dict) : dictionary containing any metadata for this molecule, e.g., {"solvent": "acetonitrile"}
-        parsing_class (class) : a UV-Vis parsing class with which to parse the data
     """
 
     def __init__(self, filepath, mol_id, metadata=None, parsing_class=ParseExcel):
+        """
+        :param filepath: str, filepath to data file
+        :param mol_id: str, molecule ID
+        :param metadata: dict, dictionary containing any metadata for this molecule, e.g., {"solvent": "acetonitrile"}
+        :param parsing_class: class, a UV-Vis parsing class with which to parse the data
+        """
         self.mol_id = mol_id
         self.uuid = str(uuid.uuid4())
 
@@ -284,7 +335,7 @@ class ProcessUvVis:
     @property
     def no_sql_data(self):
         """
-        Returns UV-Vis information in a dictionary that matches the No-SQL schema
+        UV-Vis information in a dictionary that matches the No-SQL schema
         """
         all_data_dict = {
             "date_recorded": self.UvVisData.date_recorded,
@@ -299,7 +350,7 @@ class ProcessUvVis:
     @property
     def sql_absorbance_data(self):
         """
-        Returns UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema
+        UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema
         """
         data = self.UvVisData.absorbance_data
         return [{"uvvis_id": self.uuid,
@@ -311,7 +362,7 @@ class ProcessUvVis:
     @property
     def sql_data(self):
         """
-        Returns UV-Vis information in a dictionary that matches the SQL UVVisData Table schema
+        UV-Vis information in a dictionary that matches the SQL UVVisData Table schema
         """
         data_dict = {
             "uvvis_id": self.uuid,

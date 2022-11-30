@@ -41,8 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">D<sup>3</sup>TaLES API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -88,13 +91,14 @@
 
 <div class="viewcode-block" id="GenerateMolInfo"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo">[docs]</a><span class="k">class</span> <span class="nc">GenerateMolInfo</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate json object for insertion from smiles string</span>
-<span class="sd">        :param names: list of names for molecule</span>
-<span class="sd">        :param smiles: smiles string</span>
-<span class="sd">        :param origin_group: which group the molecule comes from</span>
-<span class="sd">        :return: mol_info class object</span>
-<span class="sd">        Copyright 2021, University of Kentucky</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Generate json object for insertion from smiles string</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+
+<span class="sd">    :param names: list of names for molecule</span>
+<span class="sd">    :param smiles: smiles string</span>
+<span class="sd">    :param origin_group: which group the molecule comes from</span>
+<span class="sd">    :return: mol_info class object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="GenerateMolInfo.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[],</span> <span class="n">extra_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;frontend&#39;</span><span class="p">,</span> <span class="n">schema_name</span><span class="o">=</span><span class="s2">&quot;mol_info&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">smiles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">origin_group</span> <span class="o">=</span> <span class="n">origin_group</span>
@@ -105,6 +109,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mol_info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mol_info</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GenerateMolInfo.get_mol_info"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get molecule information</span>
+
+<span class="sd">        :return: mol_info as dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Fetch schema and build class</span>
         <span class="n">s2c</span> <span class="o">=</span> <span class="n">Schema2Class</span><span class="p">(</span><span class="n">schema_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_name</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
         <span class="n">mol_info</span> <span class="o">=</span> <span class="n">s2c</span><span class="o">.</span><span class="n">MolInfo</span><span class="p">()</span>
@@ -141,10 +150,11 @@
 <div class="viewcode-block" id="GenerateMolInfo.image_to_base64"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">image_to_base64</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Produce base 64 string representation of image</span>
-<span class="sd">                :param img: python Image object</span>
-<span class="sd">                :return: str representing the image</span>
-<span class="sd">                &quot;&quot;&quot;</span>
+<span class="sd">        Produce base 64 string representation of image</span>
+
+<span class="sd">        :param img: python Image object</span>
+<span class="sd">        :return: str representing the image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output_buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
         <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
         <span class="n">byte_data</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -155,6 +165,7 @@
     <span class="k">def</span> <span class="nf">base64_to_image</span><span class="p">(</span><span class="n">base64_str</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce python Image object from base 64 string representation of image</span>
+
 <span class="sd">        :param base64_str: base64 string representing image</span>
 <span class="sd">        :param image_path: path for image to be saved (optional)</span>
 <span class="sd">        :return: python Image object</span>
