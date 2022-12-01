@@ -8,7 +8,7 @@ import pandas as pd
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.restapi import RESTAPI
 
-CSV_TEST = False
+CSV_TEST = True
 
 if CSV_TEST:
     # test with csv

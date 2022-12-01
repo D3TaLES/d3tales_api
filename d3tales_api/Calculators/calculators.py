@@ -26,14 +26,8 @@ class D3Calculator(abc.ABC):
     """
 
     def __init__(self, connector=None):
-        self.connector(key_pairs=connector)
-        self.key_pairs = None
-        self.data = None
-
-    def connector(self, key_pairs=None):
-        if key_pairs:
-            self.key_pairs = key_pairs
-            return self.key_pairs
+        if connector:
+            self.key_pairs = connector
         else:
             with open("default_connector.json") as f:
                 connectors = json.load(f)
@@ -277,7 +271,6 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            print(conns)
             i_p = unit_conversion(conns["i_p"], default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')

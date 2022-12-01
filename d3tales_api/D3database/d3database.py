@@ -150,7 +150,6 @@ class D3Database:
         :param field_path: str, path to check
         :param _id: str, instance ID
         """
-        print(_id, field_path)
         if not self.coll.count_documents({"_id": _id, field_path: {"$exists": True}}):
             self.coll.update_one({"_id": _id}, {"$set": {field_path: []}}, upsert=True)
 
