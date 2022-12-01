@@ -326,6 +326,7 @@ class ProcessGausLog(ProcessCCLIB):
             print("WARNING: {} calculation contained a negative excitation energy".format(self.calculation_type))
 
         # Get plot data
-        connector = {"transitions": "transitions", "sigma": "sigma", "step": "step"}
-        c_data = {"transitions": transitions, "sigma": sigma, "step": step}
-        self.tddft_spectra_data = DFTSpecPlotter(connector=connector).plot_data(c_data)
+        if transitions:
+            connector = {"transitions": "transitions", "sigma": "sigma", "step": "step"}
+            c_data = {"transitions": transitions, "sigma": sigma, "step": step}
+            self.tddft_spectra_data = DFTSpecPlotter(connector=connector).plot_data(c_data)
