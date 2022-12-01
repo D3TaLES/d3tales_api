@@ -431,7 +431,6 @@ class Gaus2FrontCharacterization:
         h_ids, c_data = self.get_data(
             ["opt_groundState", "freq_groundState", "solv_energy_gsgs", "opt_cation1", "freq_cation1",
              "solv_energy_c1c1"])
-        print(c_data)
         c_data.update({"electrode": electrode, "num_electrons": num_electrons})
         connector = {"init_eng": "opt_groundState.scf_total_energy.value",
                      "init_corr": "freq_groundState.gibbs_correction.value",
@@ -496,4 +495,4 @@ if __name__ == "__main__":
         insert=False,
     )
     all_data = g2c.get_all_data()
-    print(json.dumps(all_data))
+    # print(json.dumps(all_data))

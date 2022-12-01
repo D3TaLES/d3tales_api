@@ -97,7 +97,7 @@ class DFTSpecPlotter(D3Plotter):
 
         negative_absorptions = [transitions.pop(index) for index, val in enumerate(transitions) if val[0] < 0]
         if negative_absorptions:
-            print("WARNING: {} calculation contained a negative excitation energy".format(self.calculation_type))
+            print("WARNING: Calculation contains a negative excitation energy")
 
         minval = min([val[0] for val in transitions]) - 5.0 * sigma
         maxval = max([val[0] for val in transitions]) + 5.0 * sigma

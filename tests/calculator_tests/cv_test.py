@@ -34,7 +34,7 @@ descriptor_cal = CVDescriptorCalculator(connector=connector)
 assert descriptor_cal.peaks(cv_entries[0]) == {'forward': [[0.091, 4.796e-05]], 'reverse': [[-0.05, -6.478e-05]]}
 assert descriptor_cal.reversibility(cv_entries[0]) == ['quasi-reversible']
 assert descriptor_cal.e_half(cv_entries[0])[0] == [0.02]
-assert descriptor_cal.peak_splittings(cv_entries[0]) ==[0.141]
+assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
 assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
 
 print("CV TESTING SUCCESSFUL")
