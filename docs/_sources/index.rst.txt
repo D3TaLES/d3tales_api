@@ -1,23 +1,38 @@
-.. ocelot documentation master file, created by
-   sphinx-quickstart on Mon Sep  9 20:15:55 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 Welcome to the |D3TaLES| API documentation!
 ===========================================
-.. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
 
-API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.
+.. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
+.. image:: D3TaLES_api_logo.png
+   :target: D3TaLES_api_logo.png
+   :alt: D3TaLES API logo
+
+
+API designed for the `D3TaLES project <https://d3tales.as.uky.edu/>`_. Includes data processing, database access functions, and property calculators.
+
+Modules
+-------
+
+This API contains three modules:
+
+
+* ``D3database``\ : Interface for interacting with the |D3TaLES| databases. Includes
+  queries, data insertion with validation, and a REST API interface.
+
+* ``Processors``\ : Processing code for extracting data from computational and experimental
+  data files as well as `ExpFlow <https://d3tales.as.uky.edu/expflow>`_ run objects.
+
+* ``Calculators``\ : Property calculators and plotters for cyclic voltammetry
+
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
    :caption: Contents:
 
-   introduction
    installation
-   Calculators
    D3database
    Processors
+   Calculators
    d3tales_api
 
 

@@ -12,14 +12,6 @@ d3tales\_api.Calculators.calculators module
    :undoc-members:
    :show-inheritance:
 
-d3tales\_api.Calculators.generate\_class module
------------------------------------------------
-
-.. automodule:: d3tales_api.Calculators.generate_class
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 d3tales\_api.Calculators.plotters module
 ----------------------------------------
 

@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction" href="introduction.html" /> 
+    <link rel="next" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,11 +43,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -77,57 +76,55 @@
              
   <section id="welcome-to-the-d3tales-api-documentation">
 <h1>Welcome to the D<sup>3</sup>TaLES API documentation!<a class="headerlink" href="#welcome-to-the-d3tales-api-documentation" title="Permalink to this heading"></a></h1>
-<p>API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.</p>
+<a class="reference external image-reference" href="D3TaLES_api_logo.png"><img alt="D3TaLES API logo" src="_images/D3TaLES_api_logo.png" /></a>
+<p>API designed for the <a class="reference external" href="https://d3tales.as.uky.edu/">D3TaLES project</a>. Includes data processing, database access functions, and property calculators.</p>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h2>
+<p>This API contains three modules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D3database</span></code>: Interface for interacting with the D<sup>3</sup>TaLES databases. Includes
+queries, data insertion with validation, and a REST API interface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Processors</span></code>: Processing code for extracting data from computational and experimental
+data files as well as <a class="reference external" href="https://d3tales.as.uky.edu/expflow">ExpFlow</a> run objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Calculators</span></code>: Property calculators and plotters for cyclic voltammetry</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#modules">Modules</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#pip-install">PIP Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#environment-variables">Environment Variables</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="D3database.html#data-insertion">Data Insertion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="D3database.html#basic-data-generation">Basic Data Generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="D3database.html#schema-validation">Schema Validation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="D3database.html#database-queries">Database Queries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="D3database.html#d-sup-3-sup-tales-rest-api">D<sup>3</sup>TaLES REST API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Processors.html#current-parsers">Current Parsers:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Processors.html#processing-molecular-dft">Processing Molecular DFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Processors.html#processing-cyclic-voltmeter">Processing Cyclic Voltmeter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Calculators.html#calculator-submodules">Calculator Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calculators.html#basic-use">Basic Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calculators.html#considering-units">Considering Units</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.calculators">d3tales_api.Calculators.calculators module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.generate_class">d3tales_api.Calculators.generate_class module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.utils">d3tales_api.Calculators.utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.d3database">d3tales_api.D3database.d3database module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.dft_calculation_list">d3tales_api.D3database.dft_calculation_list module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.info_from_smiles">d3tales_api.D3database.info_from_smiles module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.restapi">d3tales_api.D3database.restapi module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.schema2class">d3tales_api.D3database.schema2class module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.schema2model">d3tales_api.D3database.schema2model module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.back2front">d3tales_api.Processors.back2front module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.d3tales_parser">d3tales_api.Processors.d3tales_parser module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.expflow_parser">d3tales_api.Processors.expflow_parser module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_cv">d3tales_api.Processors.parser_cv module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_dft">d3tales_api.Processors.parser_dft module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_ir">d3tales_api.Processors.parser_ir module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_uvvis">d3tales_api.Processors.parser_uvvis module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.processing_firetasks">d3tales_api.Processors.processing_firetasks module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#submodules">Submodules</a></li>
@@ -140,6 +137,7 @@
 </li>
 </ul>
 </div>
+</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
@@ -154,7 +152,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
