@@ -253,7 +253,8 @@ class CVDiffusionCalculator(D3Calculator):
             :v: scan rate (default = V/s)
             :n: number of electrons
             :C: concentration of the solution (default = mol/cm^3)
-        
+            :scan_data: optional, if i_p is not provided, scan data will be used to find i_p (default = None)
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
@@ -271,7 +272,8 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            i_p = unit_conversion(conns["i_p"], default_unit='A')
+            i_p_raw = conns.get("i_p", max([d[1] for d in sum(conns["scan_data"], [])]))
+            i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
             C = unit_conversion(conns["C"], default_unit='mol/cm^3')

@@ -54,6 +54,7 @@ class ParseChiCV:
             while not line.strip().split():
                 line = f.readline()
             scan_data = []
+            potentials = []
             self.data_points_per_scan = int(abs(self.high_e["value"] - self.low_e["value"]) / self.sample_interval["value"])
             while line.strip().split():
                 scan = []
@@ -61,6 +62,7 @@ class ParseChiCV:
                 while data_point < self.data_points_per_scan:
                     if line.strip().split():
                         scan.append([float(x) for x in line.strip().split(",")])
+                        potentials.append([float(x) for x in line.strip().split(",")][1])
                     data_point += 1
                     line = f.readline()
                 arr_data = np.array(scan).tolist()
@@ -68,6 +70,7 @@ class ParseChiCV:
                 line = f.readline()
         self.num_scans = len(scan_data)
         self.scan_data = scan_data
+        self.peak_potential = max(potentials)
 
         self.cv_data = {
             "file_name": getattr(self, 'file_name'),
@@ -80,6 +83,7 @@ class ParseChiCV:
             "quiet_time": getattr(self, 'quiet_time', {}),
             "sensitivity": getattr(self, 'sensitivity', {}),
             "comp_r": getattr(self, 'comp_R', {}),
+            "peak_potential": getattr(self, 'init_e', {}),
             "scan_data": getattr(self, 'scan_data', {}),
         }
 

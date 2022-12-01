@@ -328,4 +328,4 @@ class ProcessGausLog(ProcessCCLIB):
         # Get plot data
         connector = {"transitions": "transitions", "sigma": "sigma", "step": "step"}
         c_data = {"transitions": transitions, "sigma": sigma, "step": step}
-        self.tddft_spectra_data = DFTSpecPlotter(connector=connector).calculate(c_data)
+        self.tddft_spectra_data = DFTSpecPlotter(connector=connector).plot_data(c_data)
