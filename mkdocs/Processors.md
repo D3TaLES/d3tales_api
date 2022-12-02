@@ -1,6 +1,6 @@
 # Processors
 
-This modules contains data parsers to process both computational and experimental 
+This module contains data parsers to process both computational and experimental 
 raw data files. The D<sup>3</sup>TaLES parser then converts the processed data to the 
 D<sup>3</sup>TaLES schema. It also contains a submodule for converting data from the backend
 D<sup>3</sup>TaLES database to frontend data and pushing the new data to the frontend 
