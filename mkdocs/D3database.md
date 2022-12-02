@@ -1,10 +1,9 @@
 # D3database
 
 The D3database module provides a python interface for users to interact with the D<sup>3</sup>TaLES
-database. D<sup>3</sup>TaLES uses a [MongoDB](https://www.mongodb.com/) No-SQL structure, so some 
-of the base modules can be adapted to any MongoDB database. This module includes applications to
+database. D<sup>3</sup>TaLES uses a [MongoDB](https://www.mongodb.com/) No-SQL structure, so some  base modules can be adapted to any MongoDB database. This module includes applications to
 for data insertion, schema validation, basic data generation, database queries, and 
-python-based interaction with the [D<sup>3</sup>TaLES REST API](https://d3tales.as.uky.edu/docs/restapi.html). 
+Python-based interaction with the [D<sup>3</sup>TaLES REST API](https://d3tales.as.uky.edu/docs/restapi.html). 
 
 Full documentation can be found [here](d3tales_api.D3database.html).
 

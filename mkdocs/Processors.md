@@ -15,7 +15,7 @@ Full documentation can be found [here](d3tales_api.Processors.html).
 * Cyclic Voltammetry
   * Chi CV files
 * UV/Vis Spectroscopy
-  * Excel output  from ___ instrument 
+  * Excel output from a ___ instrument 
 
 ## Processing Molecular DFT
 

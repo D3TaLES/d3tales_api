@@ -191,12 +191,22 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_all_data">
+<span class="sig-name descname"><span class="pre">get_all_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.get_all_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_all_data" title="Permalink to this definition"></a></dt>
+<dd><p>Get all calculations data for object molecule
+:return: dictionary containing all backend data for the object molecule</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calculations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calculations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disregard_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data" title="Permalink to this definition"></a></dt>
 <dd><p>Get all data from a list of calculations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>calculations</strong> – list, list of calculation names</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calculations</strong> – list, list of calculation names</p></li>
+<li><p><strong>disregard_missing</strong> – bool, disregard missing jobs if True</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[list of hash IDs, dict of calculation name with associated data]</p>

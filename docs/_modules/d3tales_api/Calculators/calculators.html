@@ -101,14 +101,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="D3Calculator.__init__"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connector</span><span class="p">(</span><span class="n">key_pairs</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="D3Calculator.connector"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.connector">[docs]</a>    <span class="k">def</span> <span class="nf">connector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_pairs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key_pairs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">key_pairs</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span>
+        <span class="k">if</span> <span class="n">connector</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">connector</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;default_connector.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">connectors</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -334,7 +328,8 @@
 <span class="sd">            :v: scan rate (default = V/s)</span>
 <span class="sd">            :n: number of electrons</span>
 <span class="sd">            :C: concentration of the solution (default = mol/cm^3)</span>
-<span class="sd">        </span>
+<span class="sd">            :scan_data: optional, if i_p is not provided, scan data will be used to find i_p (default = None)</span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :param sci_notation: return in scientific notation if True</span>
@@ -352,8 +347,8 @@
         <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
             <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
-            <span class="n">i_p</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;i_p&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+            <span class="n">i_p_raw</span> <span class="o">=</span> <span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;i_p&quot;</span><span class="p">,</span> <span class="nb">max</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sum</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">],</span> <span class="p">[])]))</span>
+            <span class="n">i_p</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">i_p_raw</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
             <span class="n">A</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;cm^2&#39;</span><span class="p">)</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;V/s&#39;</span><span class="p">)</span>
             <span class="n">C</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;mol/cm^3&#39;</span><span class="p">)</span>
