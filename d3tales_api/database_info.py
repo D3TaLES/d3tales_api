@@ -1,5 +1,6 @@
 import os
 import json
+import warnings
 
 
 def db_info_generator(db_file=None):
@@ -15,7 +16,19 @@ def db_info_generator(db_file=None):
     """
     db_file = db_file or os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
     if not db_file:
-        raise TypeError("Environment variable DB_INFO_FILE not defined.")
+        warnings.warn("Environment variable DB_INFO_FILE not defined. Default database information is in ues. ")
+        return {
+            "frontend":
+                {
+                    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend",
+                    "database": "ui"
+                },
+            "backend":
+                {
+                    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/backend",
+                    "database": "backend"
+                }
+        }
     with open(db_file, "r") as f:
         return json.load(f)
 
