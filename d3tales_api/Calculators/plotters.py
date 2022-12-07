@@ -50,7 +50,7 @@ class CVPlotter(D3Plotter):
         }]
         return plotting_data
 
-    def live_plot(self, data):
+    def live_plot(self, data, fig_path=None):
         """
         Live Matplotlib plot for data
 
@@ -59,6 +59,8 @@ class CVPlotter(D3Plotter):
 
         :param data: data for calculation
         :type data: dict
+        :param fig_path: path to which to save the figure
+        :type fig_path: str
 
         :return: shows matplotlib plot
         """
@@ -68,7 +70,10 @@ class CVPlotter(D3Plotter):
         for data in scan_data:
             plt.plot(data[:, 0], data[:, 1], color="red")
 
-        plt.show()
+        if fig_path:
+            plt.savefig(fig_path, dpi=300)
+        else:
+            plt.show()
 
 
 class DFTSpecPlotter(D3Plotter):
@@ -126,7 +131,7 @@ class DFTSpecPlotter(D3Plotter):
         spectra_data.update({"abs_plot": abs_plot})
         return spectra_data
 
-    def live_plot(self, data):
+    def live_plot(self, data, fig_path=None):
         """
         Live Matplotlib plot for data
 
@@ -138,11 +143,17 @@ class DFTSpecPlotter(D3Plotter):
 
         :param data: data for calculation
         :type data: dict
+        :param fig_path: path to which to save the figure
+        :type fig_path: str
+
 
         :return: shows matplotlib plot
         """
         spectra_data = self.calculate(data)
         plt.plot(spectra_data["lambda"], spectra_data["xas"], color="red")
 
-        plt.show()
+        if fig_path:
+            plt.savefig(fig_path, dpi=300)
+        else:
+            plt.show()
 
