@@ -48,7 +48,7 @@ class CVPlotter(D3Plotter):
                 "width": 3
             }
         }]
-        return plotting_data
+        return {"abs_plot": plotting_data, "x": x, "y": y}
 
     def live_plot(self, data, fig_path=None):
         """
@@ -64,11 +64,8 @@ class CVPlotter(D3Plotter):
 
         :return: shows matplotlib plot
         """
-        self.data = data
-        conns = self.make_connections(data)
-        scan_data = conns["scan_data"]
-        for data in scan_data:
-            plt.plot(data[:, 0], data[:, 1], color="red")
+        plt_data = self.plot_data(data)
+        plt.plot(plt_data["x"], plt_data["y"], color="red")
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)

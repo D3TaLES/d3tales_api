@@ -5,6 +5,7 @@ The code of calculator hardly changes
 
 """
 
+from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.d3database import Expflow
 
@@ -36,5 +37,7 @@ assert descriptor_cal.reversibility(cv_entries[0]) == ['quasi-reversible']
 assert descriptor_cal.e_half(cv_entries[0])[0] == [0.02]
 assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
 assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
+
+cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png")
 
 print("CV TESTING SUCCESSFUL")
