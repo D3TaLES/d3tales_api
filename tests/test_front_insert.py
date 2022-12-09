@@ -10,7 +10,7 @@ if __name__ == "__main__":
         with open(smiles_dict_file) as fn:
             smiles_dict = json.load(fn)
     else:
-        smiles_dict = {"water": "CC"}
+        smiles_dict = {"water": "O"}
     try:
         group = argv[2]
     except IndexError:

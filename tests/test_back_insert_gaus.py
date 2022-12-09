@@ -3,11 +3,11 @@ import zipfile
 from d3tales_api.D3database.d3database import *
 from d3tales_api.Processors.d3tales_parser import *
 
-ID='06IVBN'
-home = os.path.join(os.getcwd(), 'raw_data')
+ID='05XICU'
+home = os.path.join(os.getcwd(), 'raw_data', ID, "computation", "gaussian")
 
 # for mol in os.listdir(home):
-for zip_file in [f for f in os.listdir(home) if f.startswith(ID)]:
+for zip_file in os.listdir(home):
     calculation_type = "_".join(zip_file.split("_")[1:-1])
     print("----------------"+calculation_type+"------------------")
     metadata = {'calculation_type': calculation_type}

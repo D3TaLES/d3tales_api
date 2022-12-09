@@ -67,7 +67,7 @@ plotting = DFTSpecPlotter(connector=connector).plot_data(dft_data)
 assert list(plotting.keys()) == ['energies', 'lambda', 'xas', 'abs_plot']
 
 # Stability score testing
-c_data = {"log_file": '../raw_data/energy_cation1.log', "spin_type": "mulliken"}
+c_data = {"log_file": '../raw_data/05XICU/logs/05XICU_solv_energy_gsgs_1FV', "spin_type": "mulliken"}
 connector = {"log_file": "log_file", "spin_type": "spin_type"}
 rss = RSSCalc(connector=connector).calculate(c_data)
 assert rss == 78.55

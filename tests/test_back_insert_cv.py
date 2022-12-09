@@ -9,7 +9,7 @@ metadata = {'experiment_run_id': '71236a03-5560-4d2d-a6f7-d0e4c45c89bd',
             'electrode_working': 'Polycrystalline platinum electrode',
             'solvent': [{'name': 'Acetonitrile', 'purity': ''}], 'electrolyte': [{'name': 'TBAP', 'purity': ''}],
             'ionic_liquid': []}
-metadata = {"data_type": "cv",
+cv_metadata = {"data_type": "cv",
             "electrode_counter": "standard_hydrogen_electrode",
             "electrode_reference": "standard_hydrogen_electrode",
             "electrode_working": "standard_hydrogen_electrode",
@@ -28,6 +28,6 @@ metadata = {"data_type": "cv",
             "working_electrode_surface_area": "0.05 cm^2"}
 
 _id = "06TNKR"
-instance = ProcessCV(cv_file, _id=_id, metadata=metadata).data_dict
+instance = ProcessCV(cv_file, _id=_id, metadata=cv_metadata).data_dict
 # print(instance.get("data"))
 # BackDB(collection_name='experimentation', instance=instance)
