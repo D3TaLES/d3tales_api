@@ -14,7 +14,7 @@ class ProcessDFT:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, submission_info: dict = None, metadata: dict = None,
+    def __init__(self, _id: str = None, filepath: str = None, submission_info: dict = None, metadata: dict = None,
                  parsing_class=ProcessGausLog):
         """
         :param _id: str, molecule ID
@@ -23,6 +23,7 @@ class ProcessDFT:
         :param parsing_class: class, class to use for file parsing (EX: ProcessGausLog, ProcessCCLIB, or ProcessPsi4Log)
         """
         submission_info = submission_info or {}
+        self.data_path = filepath or metadata.get("mol_file")
         self.id = _id
         self.parsing_class = parsing_class
         self.submission_info = json.loads(json.dumps(submission_info, ))
