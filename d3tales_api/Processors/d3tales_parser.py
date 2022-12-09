@@ -218,7 +218,7 @@ class ProcessCV:
         cv_data = self.CVData.cv_data
         cv_data.update(self.CVData.calculate_prop("peaks"))
         cv_data.update(dict(conditions=self.cv_conditions,
-                            plot_data=self.CVData.calculate_plotting("plot_data").get(["abs_plot"]),
+                            plot_data=self.CVData.calculate_plotting("plot_data").get("abs_plot"),
                             reversibility=self.CVData.calculate_prop("reversibility", return_type=list),
                             e_half=self.CVData.calculate_prop("e_half", return_type=list),
                             peak_splittings=self.CVData.calculate_prop("peak_splittings", return_type=list),
