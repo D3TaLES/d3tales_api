@@ -13,12 +13,14 @@ Full documentation can be found [here](d3tales_api.Processors.html).
   * Gaussian logfiles
   * Psi4 logfiles (in development)
 * Cyclic Voltammetry
-  * Chi CV files
-* UV/Vis Spectroscopy
-  * Excel output from a ___ instrument 
+  * Output file from `chi_660d, chi_1100b, pine_wavenow` instruments
+* UV/Vis Spectroscopy (in development) 
+  * Excell files
 
 ## Processing Molecular DFT
 
+For this example, we must get an example log file. Here, we pull a [Gaussian](https://gaussian.com/)
+log file from GitHub [D<sup>3</sup>TaLES API repo](https://github.com/D3TaLES/d3tales_api).
 ```python
 import shutil
 from urllib import request
@@ -29,6 +31,11 @@ with request.urlopen(dft_url) as response, open("gaussian_ex.log", 'wb') as out_
     shutil.copyfileobj(response, out_file)
     
 ```
+
+To parse the DFT file, simply import the `d3tales_parser` module and use the `ProcessDFT`
+module to parse the data file (in this case, `gaussian_ex.log`).  Here we chose the `ProcessGausLog`
+parsing class because our data file is Gaussian format. 
+
 ```python    
 from d3tales_api.Processors.d3tales_parser import *
 
@@ -40,9 +47,25 @@ A user can also include `submission_info` and `metadata` in the processing.
 ```python    
 from d3tales_api.Processors.d3tales_parser import *
 
-submission_info = {}
+submission_info = {
+    "source" : "Risko",
+    "author" : "d3tales@gmail.com",
+    "author_email" : "d3tales@gmail.com",
+    "upload_time" : "2021-10-01T21:07:29.546377+00:00",
+    "file_type" : "zip",
+    "data_category" : "computation",
+    "data_type" : "gaussian",
+    "all_files_in_zip" : [ 
+        "opt_groundState.log", 
+        "opt_groundState.fchk"
+    ],
+    "approved" : True
+}
 
-metadata = {}
+metadata = {
+    "id" : "opt_groundState",
+    "calculation_type" : "tddft_cation1"
+}
 
 dft_data = ProcessDFT(filepath="gaussian_ex.log", submission_info=submission_info, metadata=metadata, parsing_class=ProcessGausLog)
 print(dft_data.data_dict)
@@ -63,7 +86,7 @@ with request.urlopen(cv_url) as response, open("cv_test.txt", 'wb') as out_file:
     
 ```
 
-To parse the CV, file, simply import the `d3tales_parser` module and use teh `ProcessCV`
+To parse the CV file, simply import the `d3tales_parser` module and use the `ProcessCV`
 module to parse the data file (in this case, `cv_test.txt`).  Here we chose the `ParseChiCV`
 parsing class because of the format of our data file. 
 ```python    
