@@ -255,17 +255,17 @@ class FrontDB(D3Database):
             instance = GenerateMolInfo(self.smiles, origin_group=self.group, database=self.database).mol_info_dict
             FrontDB(schema_layer='mol_info', instance=instance, _id=self.id)
 
-    def check_if_in_db(self, smiles):
+    def check_if_in_db(self):
         """
         Check if molecule with object SMILES string exists in the database
 
         :return: molecule ID if exists, else False
         """
         if self.smiles:
-            if self.coll.count_documents({"mol_info.smiles": smiles}) == 0:
+            if self.coll.count_documents({"mol_info.smiles": self.smiles}) == 0:
                 return False
             else:
-                _id = self.coll.find_one({"mol_info.smiles": smiles})["_id"]
+                _id = self.coll.find_one({"mol_info.smiles": self.smiles})["_id"]
             return _id
         else:
             raise TypeError("If no smiles is given, molecule smiles must be given")

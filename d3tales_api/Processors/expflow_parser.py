@@ -55,7 +55,7 @@ class ProcessExpFlowObj:
         """Molecule ID"""
         rdkmol = MolFromSmiles(self.redox_mol.smiles)
         clean_smiles = MolToSmiles(rdkmol)
-        check_id = FrontDB().check_if_in_db(clean_smiles)
+        check_id = FrontDB(clean_smiles).check_if_in_db()
         if check_id:
             return check_id
         instance = GenerateMolInfo(clean_smiles, database="frontend").mol_info_dict
