@@ -75,6 +75,7 @@
   <h1>Source code for d3tales_api.database_info</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 
 <div class="viewcode-block" id="db_info_generator"><a class="viewcode-back" href="../../d3tales_api.html#d3tales_api.database_info.db_info_generator">[docs]</a><span class="k">def</span> <span class="nf">db_info_generator</span><span class="p">(</span><span class="n">db_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -90,7 +91,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">db_file</span> <span class="o">=</span> <span class="n">db_file</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;DB_INFO_FILE&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_INFO_FILE&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">db_file</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Environment variable DB_INFO_FILE not defined.&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Environment variable DB_INFO_FILE not defined. Default database information is in ues. &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;frontend&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="s2">&quot;ui&quot;</span>
+                <span class="p">},</span>
+            <span class="s2">&quot;backend&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/backend&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="s2">&quot;backend&quot;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">db_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
 

@@ -99,25 +99,120 @@ database.</p>
 </li>
 <li><p>Cyclic Voltammetry</p>
 <ul>
-<li><p>Chi CV files</p></li>
+<li><p>Output file from <code class="docutils literal notranslate"><span class="pre">chi_660d,</span> <span class="pre">chi_1100b,</span> <span class="pre">pine_wavenow</span></code> instruments</p></li>
 </ul>
 </li>
-<li><p>UV/Vis Spectroscopy</p>
+<li><p>UV/Vis Spectroscopy (in development)</p>
 <ul>
-<li><p>Excel output  from ___ instrument</p></li>
+<li><p>Excell files</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="processing-molecular-dft">
 <h2>Processing Molecular DFT<a class="headerlink" href="#processing-molecular-dft" title="Permalink to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<p>For this example, we must get an example log file. Here, we pull a <a class="reference external" href="https://gaussian.com/">Gaussian</a>
+log file from GitHub <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API repo</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+
+<span class="c1"># Pull example file form GitHub</span>
+<span class="n">dft_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/05XICU/logs/05XICU_opt_groundState_3H0.log&quot;</span>
+<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">dft_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+<p>To parse the DFT file, simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessDFT</span></code>
+module to parse the data file (in this case, <code class="docutils literal notranslate"><span class="pre">gaussian_ex.log</span></code>).  Here we chose the <code class="docutils literal notranslate"><span class="pre">ProcessGausLog</span></code>
+parsing class because our data file is Gaussian format.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dft_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A user can also include <code class="docutils literal notranslate"><span class="pre">submission_info</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> in the processing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">submission_info</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;source&quot;</span> <span class="p">:</span> <span class="s2">&quot;Risko&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author_email&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;upload_time&quot;</span> <span class="p">:</span> <span class="s2">&quot;2021-10-01T21:07:29.546377+00:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_category&quot;</span> <span class="p">:</span> <span class="s2">&quot;computation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;all_files_in_zip&quot;</span> <span class="p">:</span> <span class="p">[</span> 
+        <span class="s2">&quot;opt_groundState.log&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;opt_groundState.fchk&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;approved&quot;</span> <span class="p">:</span> <span class="kc">True</span>
+<span class="p">}</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;calculation_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;tddft_cation1&quot;</span>
+<span class="p">}</span>
+
+<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dft_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="processing-cyclic-voltmeter">
 <h2>Processing Cyclic Voltmeter<a class="headerlink" href="#processing-cyclic-voltmeter" title="Permalink to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<p>For this example, we must get an example CV file. Here, we pull a CV text file from GitHub
+<a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API repo</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+
+<span class="c1"># Pull example file form GitHub</span>
+<span class="n">cv_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/cv_test.csv&quot;</span>
+<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">cv_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+<p>To parse the CV file, simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessCV</span></code>
+module to parse the data file (in this case, <code class="docutils literal notranslate"><span class="pre">cv_test.txt</span></code>).  Here we chose the <code class="docutils literal notranslate"><span class="pre">ParseChiCV</span></code>
+parsing class because of the format of our data file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cv_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A user can also include <code class="docutils literal notranslate"><span class="pre">submission_info</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> in the processing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">submission_info</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;source&quot;</span> <span class="p">:</span> <span class="s2">&quot;Risko&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author_email&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;upload_time&quot;</span> <span class="p">:</span> <span class="s2">&quot;2022-04-14T22:11:23.490652+00:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_category&quot;</span> <span class="p">:</span> <span class="s2">&quot;experimentation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;cv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;approved&quot;</span> <span class="p">:</span> <span class="kc">False</span>
+<span class="p">}</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;electrode_counter&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;electrode_working&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;electrode_reference&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solvent&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;acetonitrile&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;electrolyte&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tetrabutylammonium hexafluorophosphate&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;ionic_liquid&quot;</span> <span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;instrument&quot;</span> <span class="p">:</span> <span class="s2">&quot;chi_660d,_chi_1100b,_pine_wavenow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;working_electrode_surface_area&quot;</span> <span class="p">:</span> <span class="s2">&quot;0.05 cm^2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;temperature&quot;</span> <span class="p">:</span> <span class="s2">&quot;273 K&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;redox_mol_concentration&quot;</span> <span class="p">:</span> <span class="s2">&quot;0.1 M&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;cv&quot;</span>
+<span class="p">}</span>
+
+<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cv_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
