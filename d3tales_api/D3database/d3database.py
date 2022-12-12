@@ -127,7 +127,7 @@ class D3Database:
             else:
                 self.coll.update_one({"_id": _id}, {"$set": {path: v}}, upsert=True)
 
-        print("{} inserted into the {} database.".format(_id, self.database))
+        print("{} {}... inserted into the {} database.".format(_id, str(instance)[:15], self.database))
 
     def path_insert(self, _id, path, value):
         """

@@ -65,10 +65,11 @@ class CVPlotter(D3Plotter):
         :return: shows matplotlib plot
         """
         plt_data = self.plot_data(data)
-        plt.plot(plt_data["x"], plt_data["y"], color="red")
+        plt.scatter(plt_data["x"], plt_data["y"], color="red")
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)
+            plt.close()
         else:
             plt.show()
 
