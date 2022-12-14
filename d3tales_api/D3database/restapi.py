@@ -1,7 +1,14 @@
 import os
+import re
 import warnings
 import requests
+import functools
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from scipy import stats
 from pathlib import Path
+from d3tales_api.D3database.d3database import FrontDB
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 USERNAME = ''  # for pulling data
@@ -97,12 +104,167 @@ class RESTAPI(object):
         return return_data
 
 
+class D3talesData:
+    def __init__(self, username=USERNAME, password=PASSWORD, limit=0):
+        """
+        This class pulls data from the D3Tales database and outputs plots or Pandas dataframes
+        :param username: D3TaLES website username (must have REST API permissions)
+        :param password: D3TaLES website password (must have REST API permissions)
+        :param limit: limit query items to return
+        """
+        self.username = username
+        self.password = password
+        self.limit = limit
+
+    def rgetkeys(self, _dict, keys, **kwargs):
+        """
+        Functions for getting property data
+        :param _dict:
+        :param keys:
+        :return:
+        """
+        def _getkey(_dict, key):
+            _dict = _dict or {}
+            if isinstance(_dict, dict):
+                return _dict.get(key, **kwargs)
+            if isinstance(_dict, list) and key.isdigit():
+                return _dict[int(key)]
+
+        return functools.reduce(_getkey, [_dict] + keys.split('.'))
+
+    def get_prop_data(self, query, max_cutoff=None, min_cutoff=None, database='molecules'):
+        """
+        Get property data from D3TaLES database based on RESTAPI query
+        :param query: str, D3TaLES REST API query
+        :param max_cutoff: float, maximum value to return for specified property
+        :param min_cutoff: float, minimum value to return for specified property
+        :param database: str, name of database to query
+
+        :return: pandas DataFrame with query data
+        """
+        # Gather property data from REST API
+        split_query = re.split(r"\.0\.", query)
+        clean_keys = '0.' + split_query[-1] if len(split_query) > 1 else None
+        rest_query = split_query[0].strip('.')
+        prop_category = rest_query.split('.')[0]
+        prop_name = rest_query.split('.')[-1]
+        column_name = rest_query.split('.')[
+                          1] + "_" + prop_name if prop_category == "species_characterization" else prop_name
+
+        response = RESTAPI(method='get',
+                           endpoint="restapi/" + database + "/{}/" + rest_query + "=1/limit=" + str(self.limit),
+                           username=self.username, password=self.password,
+                           url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
+
+        # Clean data
+        data_df = pd.DataFrame(response)
+        data_df.set_index('_id', inplace=True)
+        if clean_keys:
+            data_df[column_name] = data_df.apply(lambda x: self.rgetkeys(x[prop_name], clean_keys), axis=1)
+        data_df = data_df[[column_name]]
+        data_df.dropna(inplace=True)
+
+        # Remove outliers
+        if pd.api.types.is_float_dtype(data_df[column_name]):
+            data_df = data_df[(np.abs(stats.zscore(data_df)) < 3).all(axis=1)]  # drop outliers
+            if min_cutoff:
+                data_df = data_df[(data_df > min_cutoff).all(axis=1)]
+            if max_cutoff:
+                data_df = data_df[(data_df < max_cutoff).all(axis=1)]
+        return data_df
+
+    def get_master_df(self, master_fn='d3tales_props.csv', restapi=False):
+        """
+        Get all major properties from D3TaLES database.
+        :param master_fn: str, filepath to CSV file in which to save data
+        :param restapi: bool, uses RESTAPI module for query if True, FrontDB module if False. For speed, this function
+        uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.
+
+        :return: pandas DataFrame with all data
+        """
+        props = [
+            "mol_info.smiles",
+            "mol_info.source_group",
+            "mol_info.groundState_charge",
+            "mol_info.number_of_atoms",
+            "mol_info.molecular_weight",
+            "mol_characterization.reorganization_energy.0.value",
+            "mol_characterization.vertical_ionization_energy.0.value",
+            "mol_characterization.vertical_ionization_energy_2.0.value",
+            "mol_characterization.vertical_electron_affinity.0.value",
+            "mol_characterization.redox_potential.0.value",
+            "mol_characterization.rmsd_groundState_cation1.0.value",
+            "mol_characterization.rmsd_cation1_cation2.0.value",
+            "mol_characterization.omega.0.value",
+            "species_characterization.ground_state.globular_volume.0.value",
+            "species_characterization.ground_state.homo_lumo_gap.0.value",
+            "species_characterization.ground_state.dipole_moment.0.value",
+            "species_characterization.ground_state.solvation_energy.0.value",
+            "species_characterization.cation1.globular_volume.0.value",
+            "species_characterization.cation1.homo_lumo_gap.0.value",
+            "species_characterization.cation1.dipole_moment.0.value",
+            "species_characterization.cation1.solvation_energy.0.value",
+            "species_characterization.cation2.globular_volume.0.value",
+            "species_characterization.cation2.homo_lumo_gap.0.value",
+            "species_characterization.cation2.dipole_moment.0.value",
+            "species_characterization.cation2.solvation_energy.0.value",
+        ]
+
+        prop_paths = {p.split(".0.")[0].replace('mol_info.', "").replace('species_characterization.', "").replace(
+            'mol_characterization.', ""): p for p in props}
+        query = {p.split(".0.")[0].strip('.'): 1 for p in props}
+
+        if restapi:
+            response = RESTAPI(method='get',
+                               endpoint="restapi/molecules/{}/" + query + "=1/limit=" + str(self.limit),
+                               username=self.username, password=self.password,
+                               url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
+            master_data = pd.DataFrame(response)
+        else:
+            cursor = FrontDB().coll.find({}, query)
+            master_data = pd.DataFrame.from_records(cursor)
+        master_data.set_index('_id', inplace=True)
+        for prop_name, prop_path in prop_paths.items():
+            master_data[prop_name] = master_data.apply(lambda x: self.rgetkeys(x.to_dict(), prop_path), axis=1)
+        final_data = master_data[prop_paths.keys()]
+        final_data.to_csv(master_fn)
+        return master_data
+
+    def hist_1d(self, query, **kwargs):
+        """
+        Plot histogram data from D3TaLES database based on RESTAPI query
+        :param query: str, D3TaLES REST API query
+
+        :return: seaborn histogram plot
+        """
+        df = self.get_prop_data(query, **kwargs)
+        sns.histplot(data=df, x=df.columns[0])
+
+    def hist_2d(self, query1, query2, db1='molecules', db2='molecules', **kwargs):
+        """
+        Plot histogram data from D3TaLES database based on RESTAPI query
+        :param query1: str, D3TaLES REST API query for x axis
+        :param query2: str, D3TaLES REST API query for y axis
+        :param db1: str, name of database for query1
+        :param db2: str, name of database for query2
+
+        :return: seaborn 2D histogram plot
+        """
+        df1 = self.get_prop_data(query1, database=db1, **kwargs)
+        df2 = self.get_prop_data(query2, database=db2, **kwargs)
+
+        final_df = df1.join(df2, rsuffix='_2', lsuffix='_1')
+        sns.histplot(data=final_df, x=final_df.columns[0], y=final_df.columns[1])
+
+
 if __name__ == "__main__":
     # r = RESTAPI(method='post', endpoint='tools/upload/computation-gaussian', expected_endpoint="tools/user_uploads",
     #             url="https://d3tales.as.uky.edu", login_endpoint='login',
     #             upload_file="/mnt/research/~scratch~/gau_files.zip",
     #             params=dict(molecule_id='05DIRJ', calculation_type='opt_groundState'))
-    p = RESTAPI(method='post', endpoint='tools/upload/e505a51f58ccc8550a772eadf59eeb18',
-                expected_endpoint="tools/user_uploads",
-                url="https://d3tales.as.uky.edu", login_endpoint='login',
-                params=dict(approved='on'))
+    # p = RESTAPI(method='post', endpoint='tools/upload/e505a51f58ccc8550a772eadf59eeb18',
+    #             expected_endpoint="tools/user_uploads",
+    #             url="https://d3tales.as.uky.edu", login_endpoint='login',
+    #             params=dict(approved='on'))
+
+    D3talesData(limit=200).hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
