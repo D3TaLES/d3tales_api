@@ -163,6 +163,7 @@ class D3talesData:
             data_df[column_name] = data_df.apply(lambda x: self.rgetkeys(x[prop_name], clean_keys), axis=1)
         data_df = data_df[[column_name]]
         data_df.dropna(inplace=True)
+        data_df = data_df[data_df[column_name].astype(str).str.isdigit()]
 
         # Remove outliers
         if pd.api.types.is_float_dtype(data_df[column_name]):
@@ -267,4 +268,4 @@ if __name__ == "__main__":
     #             url="https://d3tales.as.uky.edu", login_endpoint='login',
     #             params=dict(approved='on'))
 
-    D3talesData(limit=200).hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
+    D3talesData().hist_1d('mol_info.molecular_weight', min_cutoff=-10, max_cutoff=10)
