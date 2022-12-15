@@ -163,7 +163,7 @@ class D3talesData:
             data_df[column_name] = data_df.apply(lambda x: self.rgetkeys(x[prop_name], clean_keys), axis=1)
         data_df = data_df[[column_name]]
         data_df.dropna(inplace=True)
-        data_df = data_df[data_df[column_name].astype(str).str.isdigit()]
+        data_df = data_df[pd.to_numeric(data_df[column_name], errors='coerce').notna()]
 
         # Remove outliers
         if pd.api.types.is_float_dtype(data_df[column_name]):
