@@ -174,11 +174,10 @@ class D3talesData:
                 data_df = data_df[(data_df < max_cutoff).all(axis=1)]
         return data_df
 
-    def get_master_df(self, master_fn='d3tales_props.csv', restapi=False):
+    def get_master_df(self, master_fn='d3tales_props.csv'):
         """
         Get all major properties from D3TaLES database.
         :param master_fn: str, filepath to CSV file in which to save data
-        :param restapi: bool, uses RESTAPI module for query if True, FrontDB module if False. For speed, this function
         uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.
 
         :return: pandas DataFrame with all data
@@ -211,25 +210,14 @@ class D3talesData:
             "species_characterization.cation2.solvation_energy.0.value",
         ]
 
-        prop_paths = {p.split(".0.")[0].replace('mol_info.', "").replace('species_characterization.', "").replace(
-            'mol_characterization.', ""): p for p in props}
-        query = {p.split(".0.")[0].strip('.'): 1 for p in props}
+        master = pd.DataFrame()
+        for p in props:
+            print("Getting Prop: ", p, "...")
+            df = self.get_prop_data(p)
+            master = pd.concat([master, df], axis=1)
 
-        if restapi:
-            response = RESTAPI(method='get',
-                               endpoint="restapi/molecules/{}/" + query + "=1/limit=" + str(self.limit),
-                               username=self.username, password=self.password,
-                               url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
-            master_data = pd.DataFrame(response)
-        else:
-            cursor = FrontDB().coll.find({}, query)
-            master_data = pd.DataFrame.from_records(cursor)
-        master_data.set_index('_id', inplace=True)
-        for prop_name, prop_path in prop_paths.items():
-            master_data[prop_name] = master_data.apply(lambda x: self.rgetkeys(x.to_dict(), prop_path), axis=1)
-        final_data = master_data[prop_paths.keys()]
-        final_data.to_csv(master_fn)
-        return master_data
+        master.to_csv(master_fn)
+        return master
 
     def hist_1d(self, query, **kwargs):
         """
@@ -268,4 +256,6 @@ if __name__ == "__main__":
     #             url="https://d3tales.as.uky.edu", login_endpoint='login',
     #             params=dict(approved='on'))
 
-    D3talesData().hist_1d('mol_info.molecular_weight', min_cutoff=-10, max_cutoff=10)
+    # print(D3talesData().get_prop_data('mol_characterization.oxidation_potential.0.value'))
+    # D3talesData().hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
+    master_df = D3talesData().get_master_df()
