@@ -67,6 +67,15 @@ energy = EnergyDiffCalc(connector=connector).calculate(calc_data)
 ```
 The resulting `energy` should be `0.35`. 
 
+Useful molecular DFT calculations include: 
+* `ReorganizationCalc`: Reorganization energy.
+* `RMSDCalc`: Root mean squared error between atoms in two geometries.  
+* `DeltaGSolvCalc`: Change in Gibbs energy for solvation.
+* `RedoxPotentialCalc`: Redox potential.
+* `RadBuriedVolCalc`: Radical buried volume for the atom with the atom with the highest portion
+        of spin. Uses [DBSTEP](https://github.com/patonlab/DBSTEP).
+* `RadicalSpinCalc`: Radical spin density. Uses [DBSTEP](https://github.com/patonlab/DBSTEP).
+
 ### Cyclic Voltammetry
 
 CV scan data is assumed to be in the format produced by the D<sup>3</sup>TaLES CV parsers, 
@@ -146,6 +155,13 @@ diffusion = diffusion_cal.calculate(cv_data)
 print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
 ```
+
+Useful CV alculations include: 
+* `ConcentrationCalculator`: Solution concentration.
+* `CVDescriptorCalculator`: Various CV properties including peaks, reversibility, E<sub>1/2</sub>,
+peak splitting, etc.
+* `CVDiffusionCalculator`: Diffusion constant using Randles-Scidwick equation.
+* `CVChargeTransferCalculator`: Charge transfer rate.
 
 ## Considering Units
 

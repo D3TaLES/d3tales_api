@@ -67,3 +67,7 @@ typing_extensions==4.4.0
 uncertainties==3.1.7
 urllib3==1.26.12
 zipp==3.10.0
+
+setuptools~=60.2.0
+ocelot~=0.2
+pymatgen~=2022.11.7

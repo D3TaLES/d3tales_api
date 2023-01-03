@@ -126,6 +126,25 @@ response_1 = RESTAPI(method='get', endpoint=endpoint, url="https://d3tales.as.uk
 endpoint="restapi/molecules/_id=05XICU/mol_info.groundState_charge=1"
 response_2 = RESTAPI(method='get', endpoint=endpoint, url="https://d3tales.as.uky.edu", return_json=True).response
 ```
+
+Another class in the restapi module makes it easy to gather and plot D<sup>3</sup>TaLES data. the following 
+example will gather all `oxidation_potential` properties in the database and produce a one-dimensional 
+histogram of the resulting values. Note `USERNAME` and `PASSWORD` should be the user's username and password. 
+```python
+from d3tales_api.D3database.restapi import D3talesData
+
+# Plot 1 dimensional histogram
+D3talesData(username='USERNAME', password='PASSWORD').hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
+```
+Likewise, this example will gather all `molecular_weight` and associated `globular_volume` properties in the 
+database and produce a two-dimensional histogram of the resulting values. 
+```python
+from d3tales_api.D3database.restapi import D3talesData
+
+# Plot 1 dimensional histogram
+D3talesData(username='USERNAME', password='PASSWORD').hist_2d("species_characterization.groundState.globular_volume.0.value", "mol_info.molecular_weight")
+```
+
 Note that the D<sup>3</sup>TaLES REST API is user restricted. This means that you must have a
 D<sup>3</sup>TaLES website account and user permission to access this tool. When using the 
 D<sup>3</sup>TaLES API `RESTAPI` class, you must include your D<sup>3</sup>TaLES website 

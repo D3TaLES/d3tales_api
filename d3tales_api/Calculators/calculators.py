@@ -335,7 +335,7 @@ class AvgEHalfCalculator(D3Calculator):
 
     def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
         """
-        Charge transfer rate calculation
+        Average E half calculation
 
         Connection Points
             :e: E1/2 (default = V)
@@ -370,7 +370,7 @@ class EnergyDiffCalc(D3Calculator):
 
     def calculate(self, data: dict, precision: int = 3):
         """
-        Solvation energy calculation
+        Difference between two energies calculation
 
         Connection Points:
             :energy_final: energy final (default = eV)
@@ -393,7 +393,7 @@ class ReorganizationCalc(D3Calculator):
 
     def calculate(self, data: dict, precision: int = 3):
         """
-        Solvation energy calculation
+        Reorganization energy calculation
 
         Connection Points:
             :gs_opt: ground state optimized energy (default = eV)
