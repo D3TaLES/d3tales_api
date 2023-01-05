@@ -14,7 +14,7 @@ class Gaus2FrontCharacterization:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False):
+    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False, rmsd=True):
         """
         
         :param _id: str, molecule ID
@@ -72,9 +72,10 @@ class Gaus2FrontCharacterization:
                 self.vertical_ionization_energy, self.vertical_electron_affinity, self.adiabatic_ionization_energy,
                 self.adiabatic_ionization_energy_2, self.adiabatic_electron_affinity,
                 self.adiabatic_electron_affinity_2,
-                self.rmsd_groundState_cation1, self.rmsd_cation1_cation2, self.rmsd_groundState_anion1,
-                self.rmsd_anion1_anion2, self.oxidation_potential, self.reduction_potential
+                self.oxidation_potential, self.reduction_potential
             ]
+            if rmsd:
+                properties.extend([self.rmsd_groundState_cation1, self.rmsd_cation1_cation2, self.rmsd_groundState_anion1, self.rmsd_anion1_anion2])
             for prop in properties:
                 try:
                     self.character_dict.update(prop())
@@ -440,7 +441,6 @@ class Gaus2FrontCharacterization:
                      "fin_eng_solv": "solv_energy_c1c1.scf_total_energy.value",
                      "electrode": "electrode", "num_electrons": "num_electrons"}
         energy = -RedoxPotentialCalc(connector=connector).calculate(c_data)
-        print('ox', energy)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="oxidation_potential",
                                            condition_addition={"reference_electrode": electrode})
 
@@ -458,7 +458,6 @@ class Gaus2FrontCharacterization:
                      "fin_eng_solv": "solv_energy_a1a1.scf_total_energy.value",
                      "electrode": "electrode", "num_electrons": "num_electrons"}
         energy = RedoxPotentialCalc(connector=connector).calculate(c_data)
-        print('red', energy)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="reduction_potential",
                                            condition_addition={"reference_electrode": electrode})
 
@@ -495,4 +494,3 @@ if __name__ == "__main__":
         insert=False,
     )
     all_data = g2c.get_all_data()
-    # print(json.dumps(all_data))
