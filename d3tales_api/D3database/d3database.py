@@ -121,7 +121,7 @@ class D3Database:
                     new_path = ".".join(path.split(".") + [nest_k])
                     self.insert(_id, nested=True, update_public=False, instance={new_path: nest_v})
 
-            if isinstance(v, list):
+            elif isinstance(v, list):
                 self.array_checker(path, _id)
                 self.coll.update_one({"_id": _id}, {"$addToSet": {path: {"$each": v}}}, upsert=True)
             else:

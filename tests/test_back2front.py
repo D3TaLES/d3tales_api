@@ -5,6 +5,8 @@ from tqdm import tqdm
 from sys import argv
 
 IDS = ['502dc467c4780db94cc0c324a12c2b6b', '502dc467c4780db94cc0c324a12c2b6b', 'e230ec1287c9370451f772b8b131f914', '7a4ab0600445d41d0a0c3bed4abd5ece', 'af41192d7cd9cdb39f7a1fa14019d658', '6231f0a681fbc0ad1aeba52b4505fdf0', '82072a8cc9b047775c581e82bb01fffd']  # '9f45e5da7fc27892c06a3244a011ce88'
+# IDS = ['7a4ab0600445d41d0a0c3bed4abd5ece']
+# IDS = ['0b5640fb61e165c8117cff02c59e9af5']
 CALC_TYPE = 'opt_cation1'
 CHECK = ''  # species_characterization.groundState.globular_volume
 
