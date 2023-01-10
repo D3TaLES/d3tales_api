@@ -4,7 +4,7 @@ from d3tales_api.D3database.d3database import *
 from d3tales_api.Processors.d3tales_parser import *
 
 ID='05XICU'
-home = os.path.join(os.getcwd(), 'raw_data', ID, "computation", "gaussian")
+home = os.path.join(os.getcwd(), 'raw_data', "computation_data", ID, "zips")
 
 # for mol in os.listdir(home):
 for zip_file in os.listdir(home):

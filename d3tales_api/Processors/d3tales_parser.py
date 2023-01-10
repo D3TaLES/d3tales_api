@@ -54,9 +54,12 @@ class ProcessDFT:
             "conditions": self.conditions,
             "charge": self.DFTData.charge,
             "spin_multiplicity": self.DFTData.spin_multiplicity,
-            "is_groundState": self.is_groundState,
             "number_of_electrons": sum(self.DFTData.electrons)
         }
+        try:
+            data_dict.update({"is_groundState": self.is_groundState})
+        except ConnectionError:
+            print("Warning. Could not connect to the database, so no 'is_groundState' property was specified. DB_INFO_FILE may not be defined.")
         if 'freq' in self.DFTData.calculation_type:
             data_dict.update({
                 "gibbs_correction": {

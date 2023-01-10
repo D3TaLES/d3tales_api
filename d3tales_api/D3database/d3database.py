@@ -47,7 +47,7 @@ class DBconnector:
 
             db = conn[self.database]
         except:
-            raise Exception
+            raise ConnectionError
 
         return db
 
