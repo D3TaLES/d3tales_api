@@ -105,7 +105,7 @@ def get_electrode_potential(electrode):
     :param electrode: name of an electrode or the electrode potential
     :return:
     """
-    if str(electrode.replace(".", "").replace("-", "")).isdigit():
+    if str(electrode).replace(".", "").replace("-", "").isdigit():
         return float(electrode)
     params_db = ParamsDB(collection_name="electrode", schema_directory="materials")
     electrode_data = params_db.coll.find_one({"_id": electrode})
