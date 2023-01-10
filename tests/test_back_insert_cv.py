@@ -1,7 +1,7 @@
 import os
 from d3tales_api.Processors.d3tales_parser import ProcessCV
 
-cv_file = os.path.join(os.getcwd(), 'raw_data', 'cv_test.csv')
+cv_file = os.path.join(os.getcwd(), 'raw_data', 'cv_data', '01 GC WE Pt RE Pt CE 10 mM ferricyanide in 100 mM KCl 20 mV scan rate')
 metadata = {'experiment_run_id': '71236a03-5560-4d2d-a6f7-d0e4c45c89bd',
             'working_electrode_surface_area': {'value': 4, 'unit': 'cm^2'}, 'molecule_id': '06TNKR',
             'instrument': 'electrochemistry__chi_660d,_chi_1100b,_pine_wavenow',

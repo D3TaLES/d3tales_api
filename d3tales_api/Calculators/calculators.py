@@ -251,14 +251,14 @@ class CVDiffusionCalculator(D3Calculator):
             :i_p: peak current (default = A)
             :A: electrode area (default = cm^2)
             :v: scan rate (default = V/s)
-            :n: number of electrons
+            :n: number of electrons, default 1
             :C: concentration of the solution (default = mol/cm^3)
-            :scan_data: optional, if i_p is not provided, scan data will be used to find i_p (default = None)
+            :middle_scan: optional, if i_p is not provided, scan data will be used to find i_p (default = None)
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
-        :type data: dict
+        :type data: list
         :type precision: int
         :type sci_notation: bool
         
@@ -266,24 +266,22 @@ class CVDiffusionCalculator(D3Calculator):
         """
         self.data = data
         self.n = data.__len__()
-        diffusion_constants = np.zeros(self.n)
 
+        diffusion_constants = np.zeros(self.n)
         i_ps = np.zeros(self.n)
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            i_p_raw = conns.get("i_p", max([d[1] for d in sum(conns["scan_data"], [])]))
+            i_p_raw = conns.get("i_p", max([d[1] for d in sum(conns["middle_scan"], [])]))
             i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
             C = unit_conversion(conns["C"], default_unit='mol/cm^3')
             i_ps[idx] = i_p
             vs[idx] = pow(v, 1 / 2)
-            diffusion_constants[idx] = (pow(i_p / (2.692e5 * pow(conns["n"], 3 / 2) * A * C * pow(v, 1 / 2)), 2))
+            diffusion_constants[idx] = (pow(i_p / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C * pow(v, 1 / 2)), 2))
         slope = np.polyfit(vs, i_ps, 1)[0]
-        # vs = vs[:, np.newaxis]
-        # slope = np.linalg.lstsq(vs, i_ps, rcond=None)[0][0]
-        diffusion_fitted = pow(slope / (2.692e5 * pow(conns["n"], 3 / 2) * A * C), 2)
+        diffusion_fitted = pow(slope / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C), 2)
 
         results = [np.format_float_scientific(diffusion_constants.mean(), precision=precision),
                    np.format_float_scientific(diffusion_fitted, precision=precision)]
@@ -306,7 +304,7 @@ class CVChargeTransferCalculator(D3Calculator):
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
-        :type data: dict
+        :type data: list
         :type precision: int
         :type sci_notation: bool
 
@@ -324,7 +322,7 @@ class CVChargeTransferCalculator(D3Calculator):
             v = unit_conversion(conns["v"], default_unit='V/s')
             T = unit_conversion(conns["T"], default_unit='K') or 298
             psis.append((-0.6288 + 0.0021 * X) / (1 - 0.017 * X))
-            long_terms.append(pow((math.pi * D * conns["n"] * 96485.34 * v) / (8.3145 * T), - 1 / 2))
+            long_terms.append(pow((math.pi * D * conns.get("n", 1) * 96485.34 * v) / (8.3145 * T), - 1 / 2))
         chargetranfer_rate = np.polyfit(long_terms, psis, 1)[0]
 
         result = np.format_float_scientific(chargetranfer_rate, precision=precision)

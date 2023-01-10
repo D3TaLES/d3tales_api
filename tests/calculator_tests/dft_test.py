@@ -9,7 +9,7 @@ from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
 
 # Get DFT data
-with open('../raw_data/gaus_ex_data.json', 'r') as fn:
+with open('../raw_data/computation_data/gaus_ex_data.json', 'r') as fn:
     dft_data = json.load(fn)
 # Update with redox potential parameters
 dft_data.update({"electrode": "standard_hydrogen_electrode", "num_electrons": 1})
