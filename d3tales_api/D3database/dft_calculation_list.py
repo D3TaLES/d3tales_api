@@ -28,6 +28,7 @@ def calculation_list():
             'solv_energy_c2c2',
             'solv_energy_a1a1',
             'solv_energy_a2a2',
+            'solv_energy_gsc1',
             'solv_energy_c1gs',
             'solv_energy_gsa1',
             'solv_energy_a1gs',
