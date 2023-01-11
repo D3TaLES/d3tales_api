@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Processors.d3tales_parser &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Processors.d3tales_parser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Processors.d3tales_parser</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_cv</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_dft</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_uvvis</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">DBconnector</span>
+
+
+<div class="viewcode-block" id="ProcessDFT"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT">[docs]</a><span class="k">class</span> <span class="nc">ProcessDFT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process molecular DFT output files.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessDFT.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission information</span>
+<span class="sd">        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ProcessGausLog, ProcessCCLIB, or ProcessPsi4Log)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">submission_info</span> <span class="o">=</span> <span class="n">submission_info</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">filepath</span> <span class="ow">or</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsing_class</span> <span class="o">=</span> <span class="n">parsing_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">submission_info</span><span class="p">,</span> <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span> <span class="o">==</span> <span class="s1">&#39;wtuning&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> parsing class is not a WTuning parsing class.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsing_class</span><span class="p">))</span>
+            <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+                <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+                <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">,</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">omega</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+            <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span>
+            <span class="s2">&quot;spin_multiplicity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">spin_multiplicity</span><span class="p">,</span>
+            <span class="s2">&quot;number_of_electrons&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">electrons</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;is_groundState&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_groundState</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning. Could not connect to the database, so no &#39;is_groundState&#39; property was specified. DB_INFO_FILE may not be defined.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;freq&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">&quot;gibbs_correction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">gibbs_correction</span> <span class="o">*</span> <span class="mf">27.2114</span><span class="p">,</span>  <span class="c1"># convert to eV</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;frequency_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">frequency_dicts</span>
+            <span class="p">})</span>
+        <span class="k">elif</span> <span class="s1">&#39;opt&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span> <span class="ow">or</span> <span class="s1">&#39;energy&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">&quot;scf_total_energy&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">final_energy</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">dipole_moments</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;Debye&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;homo&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">homo</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;lumo&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">lumo</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+            <span class="p">})</span>
+            <span class="k">if</span> <span class="s1">&#39;opt&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">spin_multiplicity</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">rss_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">get_radical_stability_score</span><span class="p">(</span><span class="n">spin_type</span><span class="o">=</span><span class="s2">&quot;mulliken&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rss_dict</span><span class="p">:</span>
+                        <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rss_dict</span><span class="p">)</span>
+                <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">final_structure</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="s1">&#39;tddft&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">&quot;excitations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">tddft_excitations</span><span class="p">,</span>
+                <span class="s2">&quot;singlet_plotting&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">tddft_spectra_data</span><span class="p">,</span>
+                <span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">dipole_moments</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;Debye&quot;</span>
+                <span class="p">},</span>
+            <span class="p">})</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+            <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+            <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">,</span>
+            <span class="s2">&quot;runtime&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">runtime</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data_dict</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hash_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hash ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hash_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">,</span>
+            <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">dhash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">hash_dict</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">dhash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dhash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;dft&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;code_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">code_name</span><span class="p">,</span>
+            <span class="s2">&quot;code_version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">code_version</span><span class="p">,</span>
+            <span class="s2">&quot;functional&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">functional</span><span class="p">,</span>
+            <span class="s2">&quot;basis_set&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">basis_set</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">tuning_parameter</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;tuning_parameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">tuning_parameter</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="p">,</span> <span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;solvent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">solvent</span><span class="p">,</span>
+                <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;implicit_solvent&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dielectric_constant&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">dielectric_constant</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">data_dict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary containing basic molecule information using the ID from the D3TalES database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_coll</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="n">base_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">document</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;mol_info&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;No molecule with id </span><span class="si">{}</span><span class="s2"> exists in the frontend database. Create an instance in the frontend &quot;</span>
+                          <span class="s2">&quot;database first.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_groundState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        True if current species is the ground state, else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mol_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_info</span>
+        <span class="k">if</span> <span class="s1">&#39;groundState_charge&#39;</span> <span class="ow">in</span> <span class="n">mol_info</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">gs_charge</span> <span class="o">=</span> <span class="n">mol_info</span><span class="p">[</span><span class="s1">&#39;groundState_charge&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">gs_charge</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">charge</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;The molecule does not have a specified groundState_charge.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProcessCV"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV">[docs]</a><span class="k">class</span> <span class="nc">ProcessCV</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process Gaussian logfiles.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission info</span>
+<span class="sd">        :param metadata: dict, metadata</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">filepath</span> <span class="ow">or</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span> <span class="o">=</span> <span class="n">submission_info</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_run_id</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;experiment_run_id&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrode_working&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrode_counter&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrode_reference&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_concentration</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;redox_mol_concentration&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;working_electrode_surface_area&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvents</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">electrolytes</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrolyte&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrolyte&quot;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrolyte&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;electrolyte&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ionic_liquids</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">cv_data</span>
+        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peaks&quot;</span><span class="p">))</span>
+        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_conditions</span><span class="p">,</span>
+                            <span class="n">plot_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_plotting</span><span class="p">(</span><span class="s2">&quot;plot_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">),</span>
+                            <span class="n">reversibility</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;reversibility&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">e_half</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;e_half&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">peak_splittings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peak_splittings&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">middle_sweep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;middle_sweep&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="p">))</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+            <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">cv_data</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary containing basic molecule information using the ID from the D3TalES database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_coll</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="n">base_coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">document</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;mol_info&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                <span class="s2">&quot;No molecule with id </span><span class="si">{}</span><span class="s2"> exists in the frontend database. Create an instance in the frontend database &quot;</span>
+                <span class="s2">&quot;first.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cv_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conditions_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">conditions_data</span>
+        <span class="n">conditions_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;cv&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;working_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode</span><span class="p">,</span>
+            <span class="s2">&quot;counter_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter_electrode</span><span class="p">,</span>
+            <span class="s2">&quot;reference_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_electrode</span><span class="p">,</span>
+            <span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solvents</span><span class="p">),</span>
+            <span class="s2">&quot;electrolyte&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">electrolytes</span><span class="p">),</span>
+            <span class="s2">&quot;ionic_liquid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ionic_liquids</span><span class="p">),</span>
+            <span class="s2">&quot;instrument&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">&quot;working_electrode_surface_area&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span><span class="p">),</span>
+            <span class="s2">&quot;redox_mol_concentration&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_concentration</span><span class="p">),</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">),</span>
+            <span class="s2">&quot;experiment_run_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_run_id</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">conditions_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">}</span>
+
+<div class="viewcode-block" id="ProcessCV.reagent_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">reagent_format</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">purity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert reagent data to D3TaLES schema format</span>
+
+<span class="sd">        :param reagents: reagent data or list of reagent data</span>
+<span class="sd">        :param purity: default purity value</span>
+<span class="sd">        :return: formatted reagent data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">format_i</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">r_dict</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)}</span>
+                <span class="k">if</span> <span class="n">purity</span><span class="p">:</span>
+                    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;purity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">purity</span>
+            <span class="k">return</span> <span class="n">r_dict</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">format_i</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">format_i</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessCV.data_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">data_format</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format measurement data</span>
+
+<span class="sd">        :param data: measurement data</span>
+<span class="sd">        :return: formatted measurement data, EX: {&quot;value&quot;: 0.5, &quot;unit&quot;: &quot;V&quot;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)}</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                                                                         <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+            <span class="n">pint_m</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">pint_m</span><span class="p">,</span> <span class="s1">&#39;magnitude&#39;</span><span class="p">)),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">pint_m</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">))}</span></div></div>
+
+
+<div class="viewcode-block" id="ProcessUvVis"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis">[docs]</a><span class="k">class</span> <span class="nc">ProcessUvVis</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process UV-Vis data files.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessUvVis.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">mol_id</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseExcel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to data file</span>
+<span class="sd">        :param mol_id: str, molecule ID</span>
+<span class="sd">        :param metadata: dict, dictionary containing any metadata for this molecule, e.g., {&quot;solvent&quot;: &quot;acetonitrile&quot;}</span>
+<span class="sd">        :param parsing_class: class, a UV-Vis parsing class with which to parse the data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span> <span class="o">=</span> <span class="n">mol_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">no_sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the No-SQL schema</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;date_recorded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">date_recorded</span><span class="p">,</span>
+            <span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">,</span>
+            <span class="s2">&quot;instrument&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">&quot;integration_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">integration_time</span><span class="p">,</span>
+            <span class="s2">&quot;absorbance_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">absorbance_data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sql_absorbance_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">absorbance_data</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;uvvis_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                 <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span><span class="p">,</span>
+                 <span class="s2">&quot;wavelength&quot;</span><span class="p">:</span> <span class="n">wavelength</span><span class="p">,</span>
+                 <span class="s2">&quot;absorbance&quot;</span><span class="p">:</span> <span class="n">absorbance</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">absorbance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;wavelength&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;absorbance&quot;</span><span class="p">])]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL UVVisData Table schema</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;uvvis_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+            <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span><span class="p">,</span>
+            <span class="s2">&quot;date_recorded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">date_recorded</span><span class="p">,</span>
+            <span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">,</span>
+            <span class="s2">&quot;instrument&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">&quot;integration_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">integration_time</span><span class="p">,</span>
+            <span class="s2">&quot;absorbance_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">UvVisData</span><span class="o">.</span><span class="n">absorbance_data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

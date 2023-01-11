@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Processors.processing_firetasks &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Processors.processing_firetasks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Processors.processing_firetasks</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">paramiko</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">atomate.utils.utils</span> <span class="kn">import</span> <span class="n">env_chk</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">RESTAPI</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fireworks.core.firework</span> <span class="kn">import</span> <span class="n">FiretaskBase</span><span class="p">,</span> <span class="n">FWAction</span>
+<span class="kn">from</span> <span class="nn">fireworks.utilities.fw_utilities</span> <span class="kn">import</span> <span class="n">explicit_serialize</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.back2front</span> <span class="kn">import</span> <span class="n">Gaus2FrontCharacterization</span>
+
+<span class="c1"># Copyright 2021, University of Kentucky</span>
+<span class="n">TESTING</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="FileTransferTask"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">FileTransferTask</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Firetask to Transfer files. Note that</span>
+
+<span class="sd">    :param mode: str, - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer</span>
+<span class="sd">    :param files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing &#39;src&#39; and &#39;dest&#39; keys</span>
+
+<span class="sd">    :param dest: str, optional, destination directory, if not specified within files parameter (else optional)</span>
+<span class="sd">    :param server: str, optional, server host for remote transfer</span>
+<span class="sd">    :param user: str, optional, user to authenticate with on remote server</span>
+<span class="sd">    :param key_filename: str, optional, optional SSH key location for remote transfer</span>
+<span class="sd">    :param max_retry: int, optional, number of times to retry failed transfers; defaults to `0` (no retries)</span>
+<span class="sd">    :param retry_delay: int, optional, number of seconds to wait between retries; defaults to `10`</span>
+<span class="sd">    :param ignore_errors: bool, optional, Whether to ignore errors. Defaults to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s1">&#39;FileTransferTask&#39;</span>
+
+<div class="viewcode-block" id="FileTransferTask.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">ignore_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ignore_errors&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">max_retry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_retry&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">retry_delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_delay&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">skip_transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;skip_transfer&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">)</span>
+        <span class="n">remote_server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remote_server&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">key_file</span> <span class="o">=</span> <span class="n">env_chk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proc_vm_key&quot;</span><span class="p">),</span> <span class="n">fw_spec</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;_fw_env&quot;</span><span class="p">][</span><span class="s2">&quot;processing_vm_key&quot;</span><span class="p">]</span>
+        <span class="n">remote_server</span><span class="p">[</span><span class="s2">&quot;key_filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_file</span>
+
+        <span class="k">if</span> <span class="n">TESTING</span><span class="p">:</span>
+            <span class="n">skip_transfer</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">skip_transfer</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">remote_server</span><span class="p">)</span>
+        <span class="n">sftp</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">open_sftp</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;dest&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;put&quot;</span><span class="p">:</span>
+                    <span class="n">sftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sftp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+                <span class="n">sftp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">max_retry</span><span class="p">:</span>
+
+                    <span class="c1"># we want to avoid hammering either the local or remote machine</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;max_retry&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;There was an error performing operation </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;rtansfer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]))</span>
+
+        <span class="n">sftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ProcessFile"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ProcessFile">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">ProcessFile</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a data File</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;ProcessFile&quot;</span>
+
+<div class="viewcode-block" id="ProcessFile.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ProcessFile.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span>
+        <span class="n">mol_id</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;mol_id&quot;</span><span class="p">]</span>
+        <span class="n">submission_data</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;submission_data&quot;</span><span class="p">]</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
+        <span class="n">automatic_approval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;automatic_approval&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">TESTING</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TESTING&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/home/ubuntu/fireworks/zip_files/&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">target_zip</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">target_zip</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span>
+            <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;all_files_in_zip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+                <span class="n">calculation_type</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;calculation_type&#39;</span><span class="p">,</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">calculation_type</span> <span class="o">==</span> <span class="s1">&#39;wtuning&#39;</span><span class="p">:</span>
+                    <span class="n">output_file</span> <span class="o">=</span> <span class="n">target_zip</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="o">=</span><span class="s2">&quot;output.log&quot;</span><span class="p">)</span>
+                    <span class="n">mol_file</span> <span class="o">=</span> <span class="n">target_zip</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="o">=</span><span class="s2">&quot;wtuning.com&quot;</span><span class="p">)</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;wtuning_output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_file</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logfile</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="s2">&quot;.log&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">mol_file</span> <span class="o">=</span> <span class="n">target_zip</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="o">=</span><span class="n">logfile</span><span class="p">)</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;mol_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol_file</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">mol_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_data</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+                <span class="k">if</span> <span class="n">automatic_approval</span><span class="p">:</span>
+                    <span class="n">Gaus2FrontCharacterization</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;cv&#39;</span><span class="p">:</span>
+                <span class="n">file</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="s2">&quot;.txt&quot;</span> <span class="ow">in</span> <span class="n">f</span> <span class="ow">or</span> <span class="s2">&quot;csv&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">datafile</span> <span class="o">=</span> <span class="n">target_zip</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">datafile</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">mol_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_data</span><span class="p">,</span>
+                                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+        <span class="n">target_zip</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processed_data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+                                     <span class="s2">&quot;submission_data&quot;</span><span class="p">:</span> <span class="n">submission_data</span><span class="p">,</span>
+                                     <span class="s2">&quot;hash_id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                                     <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="n">mol_id</span><span class="p">,</span>
+                                     <span class="s2">&quot;automatic_approval&quot;</span><span class="p">:</span> <span class="n">automatic_approval</span>
+                                     <span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="SendToStorage"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.SendToStorage">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">SendToStorage</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send data file to D3TaLES storage</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;SendToStorage&quot;</span>
+
+<div class="viewcode-block" id="SendToStorage.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.SendToStorage.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">max_retry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_retry&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">retry_delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_delay&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">ignore_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ignore_errors&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span>
+        <span class="n">remote_server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remote_server&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">hash_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hash_id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hash_id&quot;</span><span class="p">)</span>
+        <span class="n">storage_base_loc</span> <span class="o">=</span> <span class="n">env_chk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;storage_base_loc&quot;</span><span class="p">),</span> <span class="n">fw_spec</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;_fw_env&quot;</span><span class="p">][</span><span class="s2">&quot;storage_base_loc&quot;</span><span class="p">]</span>
+        <span class="n">key_file</span> <span class="o">=</span> <span class="n">env_chk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;storage_key&quot;</span><span class="p">),</span> <span class="n">fw_spec</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;_fw_env&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;storage_key&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key_file</span><span class="p">:</span>
+            <span class="n">remote_server</span><span class="p">[</span><span class="s2">&quot;key_filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_file</span>
+
+        <span class="n">submission_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;submission_data&quot;</span><span class="p">]</span>
+        <span class="n">data_category</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
+        <span class="n">destination_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/d3tales/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_base_loc</span><span class="p">,</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_id&quot;</span><span class="p">),</span> <span class="n">data_category</span><span class="p">,</span>
+                                                        <span class="n">data_type</span><span class="p">)</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">remote_directory</span><span class="p">):</span>
+            <span class="n">dir_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">dir_folder</span> <span class="ow">in</span> <span class="n">remote_directory</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dir_folder</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">dir_path</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot;/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_folder</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+                    <span class="n">sftp</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rs&#39;</span><span class="p">,</span> <span class="n">remote_server</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">remote_server</span><span class="p">)</span>
+        <span class="n">sftp</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">open_sftp</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">)</span>
+            <span class="n">sftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">max_retry</span><span class="p">:</span>
+
+                <span class="c1"># we want to avoid hammering either the local or remote machine</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;max_retry&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;There was an error performing operation </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;rtansfer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Update submission DB stored_location field</span>
+        <span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
+        <span class="n">coll</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">data_category</span><span class="p">)</span>
+        <span class="n">identifier_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">hash_id</span><span class="p">}</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">identifier_dict</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;submission_info.stored_location&#39;</span><span class="p">:</span> <span class="n">destination</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Update processed data fireworks spec</span>
+        <span class="n">processed_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;processed_data&quot;</span><span class="p">]</span>
+        <span class="n">processed_data</span><span class="p">[</span><span class="s2">&quot;submission_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;stored_location&quot;</span><span class="p">:</span> <span class="n">destination</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TESTING</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sftp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="n">sftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processed_data&quot;</span><span class="p">:</span> <span class="n">processed_data</span><span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="UpdateBackendDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateBackendDB">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">UpdateBackendDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the backend D3TaLES database with parsed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateBackendDB&quot;</span>
+
+<div class="viewcode-block" id="UpdateBackendDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateBackendDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;processed_data&quot;</span><span class="p">]</span>
+        <span class="n">submission_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;submission_data&quot;</span><span class="p">]</span>
+        <span class="n">data_category</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span>
+        <span class="n">BackDB</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="n">data_category</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UpdateUserDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateUserDB">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">UpdateUserDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the D3TaLES website user database approved status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateUserDB&quot;</span>
+
+<div class="viewcode-block" id="UpdateUserDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateUserDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">processing_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fw_id</span><span class="p">)</span>
+        <span class="n">hash_id</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;hash_id&quot;</span><span class="p">]</span>
+        <span class="n">automatic_approval</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;automatic_approval&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;automatic_approval&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">processed_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;processed_data&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]))</span>
+
+        <span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span>
+        <span class="n">coll</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;submission&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_id</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;processing_id&quot;</span><span class="p">:</span> <span class="n">processing_id</span><span class="p">})[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;already_updated&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;processing_id&quot;</span><span class="p">:</span> <span class="n">hash_id</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;processed_data&quot;</span><span class="p">:</span> <span class="n">processed_data</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">automatic_approval</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;approved&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UpdateApprovalStatus"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">UpdateApprovalStatus</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the backend D3TaLES database approved status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateApprovalStatus&quot;</span>
+
+<div class="viewcode-block" id="UpdateApprovalStatus.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;already_updated&quot;</span><span class="p">,</span> <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">hash_id</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;hash_id&quot;</span><span class="p">]</span>
+        <span class="n">approved_status</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;approved_status&#39;</span><span class="p">]</span>
+        <span class="n">data_category</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span>
+
+        <span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
+        <span class="n">coll</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">data_category</span><span class="p">)</span>
+        <span class="n">identifier_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">hash_id</span><span class="p">}</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">identifier_dict</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;submission_info.approved&#39;</span><span class="p">:</span> <span class="n">approved_status</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UpdateFrontendDB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">UpdateFrontendDB</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the frontend D3TaLES database with parsed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;UpdateFrontendDB&quot;</span>
+
+<div class="viewcode-block" id="UpdateFrontendDB.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">hash_id</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;hash_id&quot;</span><span class="p">]</span>
+        <span class="n">data_category</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span>
+
+        <span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
+        <span class="n">coll</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">data_category</span><span class="p">)</span>
+        <span class="n">backend_data</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">hash_id</span><span class="p">})</span>
+
+        <span class="n">data_type</span> <span class="o">=</span> <span class="n">backend_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;submission_info&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">backend_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">mol_id</span> <span class="o">=</span> <span class="n">backend_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_id&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">calc_type</span> <span class="o">=</span> <span class="n">backend_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;calculation_type&quot;</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conditions&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">charge</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;charge&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">Gaus2FrontCharacterization</span><span class="p">(</span><span class="n">mol_id</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">charge</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ApproveJobs"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ApproveJobs">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">ApproveJobs</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Approve multiple processing jobs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;ApproveJobs&quot;</span>
+
+<div class="viewcode-block" id="ApproveJobs.run_task"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.ApproveJobs.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="n">data_category</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;data_category&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;computation&quot;</span>
+
+        <span class="n">frontend_db</span> <span class="o">=</span> <span class="n">FrontDB</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;submission&quot;</span><span class="p">)</span>
+        <span class="n">unapproved_cursor</span> <span class="o">=</span> <span class="n">frontend_db</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;$and&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;approved&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;data_category&quot;</span><span class="p">:</span> <span class="n">data_category</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;processed_data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$ne&#39;</span><span class="p">:</span> <span class="p">{}}}</span>
+        <span class="p">]</span>
+        <span class="p">})</span>
+        <span class="n">frontend_db</span> <span class="o">=</span> <span class="n">FrontDB</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s1">&#39;submission&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">unapproved_cursor</span><span class="p">:</span>
+            <span class="n">h_id</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;processing_id&#39;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">frontend_db</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;processing_id&#39;</span><span class="p">:</span> <span class="n">h_id</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">frontend_db</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one_and_delete</span><span class="p">({</span><span class="s1">&#39;processing_id&#39;</span><span class="p">:</span> <span class="n">h_id</span><span class="p">},</span> <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---one submission document deleted for processing id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h_id</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;tools/upload/&#39;</span> <span class="o">+</span> <span class="n">h_id</span><span class="p">,</span> <span class="n">expected_endpoint</span><span class="o">=</span><span class="s2">&quot;tools/user_uploads&quot;</span><span class="p">,</span>
+                        <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">login_endpoint</span><span class="o">=</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">approved</span><span class="o">=</span><span class="s1">&#39;on&#39;</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hash id </span><span class="si">{}</span><span class="s2"> approved&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h_id</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR approving hash id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h_id</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

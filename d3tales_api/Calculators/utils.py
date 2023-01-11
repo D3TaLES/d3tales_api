@@ -113,7 +113,7 @@ def get_electrode_potential(electrode):
     if abs_potential:
         return abs_potential.get("value")
     else:
-        raise ValueError(f"Electrode {electrode} note found in the D3TaLES prameters database")
+        raise ValueError(f"Electrode {electrode} not found in the D3TaLES parameters database")
 
 
 def get_periodic_table():

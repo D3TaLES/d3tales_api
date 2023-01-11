@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Processors.back2front &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Processors.back2front</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Processors.back2front</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.AllChem</span> <span class="kn">import</span> <span class="n">ComputeMolVolume</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">FrontDB</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">DBconnector</span>
+<span class="kn">from</span> <span class="nn">ocelot.routines.conformerparser</span> <span class="kn">import</span> <span class="n">pmgmol_to_rdmol</span>
+
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization">[docs]</a><span class="k">class</span> <span class="nc">Gaus2FrontCharacterization</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update frontend db with backend db data for a particular set of data.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">calculation_type</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">insert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_props</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rmsd</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param calculation_type: str, calculation type</span>
+<span class="sd">        :param conditions: dict, calculation conditions </span>
+<span class="sd">        :param charge: int, charge</span>
+<span class="sd">        :param data: dict, calculation data</span>
+<span class="sd">        :param insert: bool, insert generated data to the frontend D3TaLES database if True</span>
+<span class="sd">        :param all_props: bool, calculate all properties for the molecule if True </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># connect to databases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">front_dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontend&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">front_coll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">back_dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">back_coll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;computation&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_props</span> <span class="o">=</span> <span class="n">all_props</span>
+
+        <span class="c1"># basic variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span> <span class="o">=</span> <span class="n">calculation_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bare_conditions</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bare_conditions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">)}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bare_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groundState_charge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})[</span><span class="s2">&quot;mol_info&quot;</span><span class="p">][</span><span class="s2">&quot;groundState_charge&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="n">temp_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_data</span><span class="p">(</span><span class="n">calc_type</span><span class="o">=</span><span class="n">calculation_type</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="ow">or</span> <span class="n">temp_data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data found for </span><span class="si">{}</span><span class="s2"> calculation </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">calculation_type</span><span class="p">))</span>
+
+        <span class="c1"># all calculations for this molecule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_calcs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;opt_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_gsgs&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_cation1&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;freq_cation1&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_c1c1&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_cation1&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_cation2&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_cation2&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;solv_energy_c2c2&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;tddft_cation2&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_anion1&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_anion1&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_a1a1&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_anion1&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;opt_anion2&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;freq_anion2&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_a2a2&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_anion2&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_gsc1&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_gsa1&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;energy_c1gs&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_a1gs&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">calc_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_calcs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;solv_&quot;</span> <span class="ow">in</span> <span class="n">calc_type</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_data</span><span class="p">(</span><span class="n">calc_type</span><span class="o">=</span><span class="n">calc_type</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_data</span><span class="p">(</span><span class="n">calc_type</span><span class="o">=</span><span class="n">calc_type</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">insert</span><span class="p">:</span>
+            <span class="c1"># generate data dictionary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">character_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hole_reorganization_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">electron_reorganization_energy</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relaxation_groundState_cation1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relaxation_cation1_groundState</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relaxation_groundState_anion1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relaxation_anion1_groundState</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vertical_ionization_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_electron_affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adiabatic_ionization_energy</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adiabatic_ionization_energy_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adiabatic_electron_affinity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adiabatic_electron_affinity_2</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">oxidation_potential</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction_potential</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">rmsd</span><span class="p">:</span>
+                <span class="n">properties</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">rmsd_groundState_cation1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmsd_cation1_cation2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmsd_groundState_anion1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmsd_anion1_anion2</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">character_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prop</span><span class="p">())</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="n">FrontDB</span><span class="p">(</span><span class="n">schema_layer</span><span class="o">=</span><span class="s2">&quot;species_characterization&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">species_descriptors</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">FrontDB</span><span class="p">(</span><span class="n">schema_layer</span><span class="o">=</span><span class="s2">&quot;mol_characterization&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">character_dict</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">species_descriptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for species descriptors&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;wtuning&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">character_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;omega&quot;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;omega&quot;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">species_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">-</span><span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;anion2&quot;</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;anion1&quot;</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;groundState&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;cation1&quot;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;cation2&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">species</span> <span class="o">=</span> <span class="n">species_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">groundState_charge</span><span class="p">]</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">species</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span>
+                <span class="s2">&quot;spin_multiplicity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;spin_multiplicity&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;is_groundState&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;is_groundState&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="s2">&quot;opt&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span> <span class="ow">or</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="n">gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lumo&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;homo&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lumo&quot;</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;homo&quot;</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lumo&quot;</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span>
+                <span class="n">homo_lumo_data</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">gap</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;homo_lumo_gap&quot;</span><span class="p">:</span> <span class="n">homo_lumo_data</span><span class="p">})</span>
+            <span class="n">dipole_moment</span> <span class="o">=</span> <span class="p">[{</span>
+                <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])),</span>
+                <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span>
+            <span class="p">}]</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">:</span> <span class="n">dipole_moment</span><span class="p">})</span>
+            <span class="k">if</span> <span class="s2">&quot;opt&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+                <span class="n">pmg_mol</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_sites</span><span class="p">([</span><span class="n">Site</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span> <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]])</span>
+                <span class="n">rdmol</span> <span class="o">=</span> <span class="n">pmgmol_to_rdmol</span><span class="p">(</span><span class="n">pmg_mol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">vol</span> <span class="o">=</span> <span class="n">ComputeMolVolume</span><span class="p">(</span><span class="n">rdmol</span><span class="p">)</span>
+                <span class="n">globular_volume</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">vol</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A^3&quot;</span>
+                <span class="p">}]</span>
+                <span class="n">geom_data</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;sites&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;globular_volume&quot;</span><span class="p">:</span> <span class="n">globular_volume</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">geom_data</span><span class="p">})</span>
+                <span class="k">for</span> <span class="n">opt_descriptor</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;radical_buried_vol&quot;</span><span class="p">,</span> <span class="s2">&quot;radical_spin&quot;</span><span class="p">,</span> <span class="s2">&quot;radical_stability_score&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">opt_descriptor</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">opt_descriptor</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                            <span class="p">{</span><span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span> <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">})</span>
+                        <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_descriptor</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">opt_descriptor</span><span class="p">]]})</span>
+        <span class="k">if</span> <span class="s2">&quot;tddft&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">):</span>
+                <span class="n">dipole_moment</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])),</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;scf_dipole_moment&quot;</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">:</span> <span class="n">dipole_moment</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;excitations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Singlet&quot;</span><span class="p">):</span>
+                <span class="n">singlet_data</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;excitations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;excitations&quot;</span><span class="p">][</span><span class="s2">&quot;Singlet&quot;</span><span class="p">]</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;singlet_states&quot;</span><span class="p">:</span> <span class="n">singlet_data</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;excitations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Triplet&quot;</span><span class="p">):</span>
+                <span class="n">triplet_data</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;excitations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;excitations&quot;</span><span class="p">][</span><span class="s2">&quot;Triplet&quot;</span><span class="p">]</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;triplet_states&quot;</span><span class="p">:</span> <span class="n">triplet_data</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;singlet_plotting&quot;</span><span class="p">,</span> <span class="p">):</span>
+                <span class="n">plotting_data</span> <span class="o">=</span> <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="p">],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+                    <span class="s2">&quot;plotting_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;singlet_plotting&quot;</span><span class="p">]</span>
+                <span class="p">}]</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;spectra&quot;</span><span class="p">:</span> <span class="n">plotting_data</span><span class="p">})</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solvation_energy</span><span class="p">(</span><span class="n">species</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">data_dict</span>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.from_data"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">processing_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate data class from data dict</span>
+<span class="sd">        </span>
+<span class="sd">        :param processing_data: dict, data dict </span>
+<span class="sd">        :return: data class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="n">processing_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_id&quot;</span><span class="p">)</span>
+        <span class="n">calculation_type</span> <span class="o">=</span> <span class="n">processing_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;calculation_type&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">processing_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">conditions</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conditions&quot;</span><span class="p">)</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;charge&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">calculation_type</span><span class="o">=</span><span class="n">calculation_type</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="n">charge</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.return_descriptor_dict"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.return_descriptor_dict">[docs]</a>    <span class="k">def</span> <span class="nf">return_descriptor_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">condition_addition</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate descriptor dictionary in accordance with D3TaLES schema</span>
+
+<span class="sd">        :param value: data value</span>
+<span class="sd">        :param unit: str, unit</span>
+<span class="sd">        :param hashes: list, hash ids</span>
+<span class="sd">        :param name: str, property name</span>
+<span class="sd">        :param order: int, property order</span>
+<span class="sd">        :param condition_addition: dict, additional data to add to conditions</span>
+<span class="sd">        :return: descriptor dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">condition_addition</span><span class="p">:</span>
+            <span class="n">cond</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">condition_addition</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span>
+                <span class="p">[{</span>
+                    <span class="s2">&quot;source_hash_ids&quot;</span><span class="p">:</span> <span class="n">hashes</span> <span class="ow">or</span> <span class="p">[],</span>
+                    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="n">cond</span><span class="p">,</span>
+                    <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">order</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span>
+                <span class="p">}]</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.find_data"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.find_data">[docs]</a>    <span class="k">def</span> <span class="nf">find_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find calculation data</span>
+
+<span class="sd">        :param calc_type: str, calculation type</span>
+<span class="sd">        :param solvent: str, solvent</span>
+<span class="sd">        :return: [data dict, hash ID]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">solvent</span><span class="p">:</span>
+            <span class="n">data_conditions</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">)</span>
+            <span class="n">data_conditions</span><span class="p">[</span><span class="s2">&quot;solvent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solvent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_conditions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bare_conditions</span>
+        <span class="n">_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="n">data_conditions</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">db_request</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_data</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">_hash</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">h_data</span> <span class="o">=</span> <span class="n">db_request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">h_data</span><span class="p">,</span> <span class="n">_hash</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">_hash</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.get_data"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculations</span><span class="p">,</span> <span class="n">disregard_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all data from a list of calculations</span>
+
+<span class="sd">        :param calculations: list, list of calculation names</span>
+<span class="sd">        :param disregard_missing: bool, disregard missing jobs if True</span>
+<span class="sd">        :return: [list of hash IDs, dict of calculation name with associated data]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">calculations</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_props</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Calculation does not use this calculation type&quot;</span><span class="p">)</span>
+        <span class="n">calcs_data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calculations</span><span class="p">]</span>
+        <span class="n">jobs</span><span class="p">,</span> <span class="n">h_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calcs_data</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calcs_data</span><span class="p">]</span>
+        <span class="n">c_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">calculations</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">jobs</span><span class="p">)}</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">jobs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">disregard_missing</span><span class="p">:</span>
+            <span class="n">missing_calcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">c_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The following calculations needed for this property are missing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_calcs</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.hash_id"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.hash_id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hash_id</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="n">gaus_conditions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate hash ID</span>
+
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param calc_type: str, calculation type</span>
+<span class="sd">        :param gaus_conditions: dict, calculation conditions</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hash_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span>
+            <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="n">calc_type</span><span class="p">,</span>
+            <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="n">gaus_conditions</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">dhash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">hash_dict</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">dhash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dhash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.solvation_energy"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.solvation_energy">[docs]</a>    <span class="k">def</span> <span class="nf">solvation_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the solvation energy&quot;&quot;&quot;</span>
+        <span class="n">species_abbrev_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;anion2&quot;</span><span class="p">:</span> <span class="s2">&quot;a2&quot;</span><span class="p">,</span> <span class="s2">&quot;anion1&quot;</span><span class="p">:</span> <span class="s2">&quot;a1&quot;</span><span class="p">,</span> <span class="s2">&quot;groundState&quot;</span><span class="p">:</span> <span class="s2">&quot;gs&quot;</span><span class="p">,</span> <span class="s2">&quot;cation1&quot;</span><span class="p">:</span> <span class="s2">&quot;c1&quot;</span><span class="p">,</span> <span class="s2">&quot;cation2&quot;</span><span class="p">:</span> <span class="s2">&quot;c2&quot;</span><span class="p">}</span>
+        <span class="n">species_abbrev</span> <span class="o">=</span> <span class="n">species_abbrev_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">species</span><span class="p">)</span>
+        <span class="n">gas_phase</span> <span class="o">=</span> <span class="s2">&quot;opt_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">species</span><span class="p">)</span>
+        <span class="n">solv</span> <span class="o">=</span> <span class="s2">&quot;solv_energy_</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">species_abbrev</span><span class="p">,</span> <span class="n">species_abbrev</span><span class="p">)</span>
+
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="n">gas_phase</span><span class="p">,</span> <span class="n">solv</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">solv</span><span class="si">}</span><span class="s2">.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">gas_phase</span><span class="si">}</span><span class="s2">.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">solv_eng</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">solv_eng</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;solvation_energy&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.hole_reorganization_energy"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.hole_reorganization_energy">[docs]</a>    <span class="k">def</span> <span class="nf">hole_reorganization_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the hole reorganization energy&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_gsc1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_c1gs&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gs_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;ion_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;gs_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_c1gs.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;ion_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsc1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">ReorganizationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hole_reorganization_energy&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.electron_reorganization_energy"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.electron_reorganization_energy">[docs]</a>    <span class="k">def</span> <span class="nf">electron_reorganization_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the electron reorganization energy&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_gsa1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion1&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_a1gs&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gs_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;ion_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;gs_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_a1gs.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;ion_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsa1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">ReorganizationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;electron_reorganization_energy&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.relaxation_groundState_cation1"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_groundState_cation1">[docs]</a>    <span class="k">def</span> <span class="nf">relaxation_groundState_cation1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the relaxation energy of the ground state geometry to the +1 cation geometry&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;energy_gsc1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsc1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relaxation_groundState_cation1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.relaxation_cation1_groundState"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_cation1_groundState">[docs]</a>    <span class="k">def</span> <span class="nf">relaxation_cation1_groundState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the relaxation energy of the +1 cation geometry to the ground state geometry&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_c1gs&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_c1gs.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relaxation_cation1_groundState&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.relaxation_groundState_anion1"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_groundState_anion1">[docs]</a>    <span class="k">def</span> <span class="nf">relaxation_groundState_anion1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the relaxation energy of the ground state geometry to the -1 anion geometry&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;energy_gsa1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsa1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relaxation_groundState_anion1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.relaxation_anion1_groundState"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_anion1_groundState">[docs]</a>    <span class="k">def</span> <span class="nf">relaxation_anion1_groundState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the relaxation energy of the ground -1 anion to the ground state geometry&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_a1gs&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_a1gs.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relaxation_anion1_groundState&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.vertical_ionization_energy"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_ionization_energy">[docs]</a>    <span class="k">def</span> <span class="nf">vertical_ionization_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the vertical ionization energy&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_gsc1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsc1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vertical_ionization_energy&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.vertical_electron_affinity"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_electron_affinity">[docs]</a>    <span class="k">def</span> <span class="nf">vertical_electron_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the &quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;energy_gsa1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy_gsa1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RelaxationCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vertical_electron_affinity&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.adiabatic_ionization_energy"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy">[docs]</a>    <span class="k">def</span> <span class="nf">adiabatic_ionization_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the adiabatic ionization energy&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;adiabatic_ionization_energy&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.adiabatic_ionization_energy_2"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy_2">[docs]</a>    <span class="k">def</span> <span class="nf">adiabatic_ionization_energy_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the second adiabatic ionization energy&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_cation1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation2&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation2.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;adiabatic_ionization_energy_2&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.adiabatic_electron_affinity"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity">[docs]</a>    <span class="k">def</span> <span class="nf">adiabatic_electron_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the adiabatic electron affinity&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;adiabatic_electron_affinity&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.adiabatic_electron_affinity_2"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity_2">[docs]</a>    <span class="k">def</span> <span class="nf">adiabatic_electron_affinity_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the second adiabatic electron affinity&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_anion1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion2&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion2.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.scf_total_energy.value&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;adiabatic_electron_affinity_2&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.rmsd_groundState_cation1"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_groundState_cation1">[docs]</a>    <span class="k">def</span> <span class="nf">rmsd_groundState_cation1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the RMSD between the ground state and +1 cation geometries&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;geom_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.geometry&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;geom_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.geometry&quot;</span><span class="p">}</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">RMSDCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rmsd_groundState_cation1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.rmsd_cation1_cation2"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_cation1_cation2">[docs]</a>    <span class="k">def</span> <span class="nf">rmsd_cation1_cation2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the RMSD between the +1 cation and +2 cation geometries&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_cation2&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;geom_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.geometry&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;geom_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation2.geometry&quot;</span><span class="p">}</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">RMSDCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rmsd_groundState_cation1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.rmsd_groundState_anion1"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_groundState_anion1">[docs]</a>    <span class="k">def</span> <span class="nf">rmsd_groundState_anion1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the RMSD between the ground state and -1 anion geometries&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion1&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;geom_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.geometry&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;geom_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.geometry&quot;</span><span class="p">}</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">RMSDCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rmsd_groundState_anion1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.rmsd_anion1_anion2"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_anion1_anion2">[docs]</a>    <span class="k">def</span> <span class="nf">rmsd_anion1_anion2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the RMSD between the -1 anion and -2 anion geometries&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">([</span><span class="s2">&quot;opt_anion1&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion2&quot;</span><span class="p">])</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;geom_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.geometry&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;geom_final&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion2.geometry&quot;</span><span class="p">}</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">RMSDCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rmsd_groundState_anion1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.oxidation_potential"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.oxidation_potential">[docs]</a>    <span class="k">def</span> <span class="nf">oxidation_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span> <span class="n">num_electrons</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the oxidation potential&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;freq_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;solv_energy_gsgs&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_cation1&quot;</span><span class="p">,</span> <span class="s2">&quot;freq_cation1&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;solv_energy_c1c1&quot;</span><span class="p">])</span>
+        <span class="n">c_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;electrode&quot;</span><span class="p">:</span> <span class="n">electrode</span><span class="p">,</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="n">num_electrons</span><span class="p">})</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;init_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;init_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;freq_groundState.gibbs_correction.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;init_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;solv_energy_gsgs.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_cation1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;freq_cation1.gibbs_correction.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;solv_energy_c1c1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;electrode&quot;</span><span class="p">:</span> <span class="s2">&quot;electrode&quot;</span><span class="p">,</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="o">-</span><span class="n">RedoxPotentialCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oxidation_potential&quot;</span><span class="p">,</span>
+                                           <span class="n">condition_addition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;reference_electrode&quot;</span><span class="p">:</span> <span class="n">electrode</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.reduction_potential"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.reduction_potential">[docs]</a>    <span class="k">def</span> <span class="nf">reduction_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span> <span class="n">num_electrons</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Descriptor dict for the reduction potential&quot;&quot;&quot;</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;freq_groundState&quot;</span><span class="p">,</span> <span class="s2">&quot;solv_energy_gsgs&quot;</span><span class="p">,</span> <span class="s2">&quot;opt_anion1&quot;</span><span class="p">,</span> <span class="s2">&quot;freq_anion1&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;solv_energy_a1a1&quot;</span><span class="p">])</span>
+        <span class="n">c_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;electrode&quot;</span><span class="p">:</span> <span class="n">electrode</span><span class="p">,</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="n">num_electrons</span><span class="p">})</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;init_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_groundState.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;init_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;freq_groundState.gibbs_correction.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;init_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;solv_energy_gsgs.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;opt_anion1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;freq_anion1.gibbs_correction.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fin_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;solv_energy_a1a1.scf_total_energy.value&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;electrode&quot;</span><span class="p">:</span> <span class="s2">&quot;electrode&quot;</span><span class="p">,</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">}</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">RedoxPotentialCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_descriptor_dict</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="n">h_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;reduction_potential&quot;</span><span class="p">,</span>
+                                           <span class="n">condition_addition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;reference_electrode&quot;</span><span class="p">:</span> <span class="n">electrode</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="Gaus2FrontCharacterization.get_all_data"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_all_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all calculations data for object molecule</span>
+<span class="sd">        :return: dictionary containing all backend data for the object molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_calcs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;opt_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_gsgs&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_groundState&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_cation1&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;freq_cation1&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_c1c1&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_cation1&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_cation2&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_cation2&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;solv_energy_c2c2&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_cation2&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_anion1&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_anion1&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_a1a1&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;tddft_anion1&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_anion2&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_anion2&#39;</span><span class="p">,</span> <span class="s1">&#39;solv_energy_a2a2&#39;</span><span class="p">,</span> <span class="s1">&#39;tddft_anion2&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_gsc1&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;energy_gsa1&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_c1gs&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_a1gs&#39;</span><span class="p">]</span>
+        <span class="n">h_ids</span><span class="p">,</span> <span class="n">c_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">all_calcs</span><span class="p">,</span> <span class="n">disregard_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">c_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;h_ids&quot;</span><span class="p">:</span> <span class="n">h_ids</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">c_data</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">back_dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
+    <span class="n">back_coll</span> <span class="o">=</span> <span class="n">back_dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;computation&quot;</span><span class="p">)</span>
+    <span class="n">_id</span> <span class="o">=</span> <span class="s2">&quot;28ef46bbcbb793fc0a8a4656e01aba3e&quot;</span>  <span class="c1"># 502dc467c4780db94cc0c324a12c2b6b</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">back_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">})</span>
+    <span class="n">mol_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mol_id&quot;</span><span class="p">]</span>
+    <span class="n">calculation_type</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;calculation_type&quot;</span><span class="p">]</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;conditions&quot;</span><span class="p">]</span>
+    <span class="n">charge</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;charge&quot;</span><span class="p">]</span>
+
+    <span class="n">g2c</span> <span class="o">=</span> <span class="n">Gaus2FrontCharacterization</span><span class="p">(</span>
+        <span class="n">_id</span><span class="o">=</span><span class="n">mol_id</span><span class="p">,</span>
+        <span class="n">calculation_type</span><span class="o">=</span><span class="n">calculation_type</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span>
+        <span class="n">charge</span><span class="o">=</span><span class="n">charge</span><span class="p">,</span>
+        <span class="n">insert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">all_data</span> <span class="o">=</span> <span class="n">g2c</span><span class="o">.</span><span class="n">get_all_data</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -47,6 +47,11 @@ def calculation_list():
             'tddft_cation2',
             'tddft_anion1',
             'tddft_anion2',
+            'solv_tddft_groundState',
+            'solv_tddft_cation1',
+            'solv_tddft_cation2',
+            'solv_tddft_anion1',
+            'solv_tddft_anion2',
 
             'tddft']
 
