@@ -1,10 +1,14 @@
 from __future__ import unicode_literals
 import os
 import time
+import shutil
 import pymongo
 import zipfile
 import paramiko
 import traceback
+from pathlib import Path
+from interruptingcow import timeout
+from multiprocessing import Process
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
 from d3tales_api.D3database.restapi import RESTAPI
@@ -16,6 +20,22 @@ from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
 
+
+def mkdir_p(sftp, remote_directory):
+    dir_path = str()
+    for dir_folder in remote_directory.split("/"):
+        if dir_folder == "":
+            continue
+        dir_path += r"/{0}".format(dir_folder)
+        try:
+            sftp.listdir(dir_path)
+        except IOError:
+            sftp.mkdir(dir_path)
+
+def test_path(sftp, destination_path):
+    folder_name = destination_path.split("/")[-1]
+    folder_dir = "/".join(destination_path.split("/")[:-1])
+    return True if folder_name in sftp.listdir(folder_dir) else False
 
 @explicit_serialize
 class FileTransferTask(FiretaskBase):
@@ -162,42 +182,6 @@ class SendToStorage(FiretaskBase):
                                                         data_type)
         destination = os.path.join(destination_path, filepath.split("/")[-1]).replace("//", "/")
 
-        def mkdir_p(sftp, remote_directory):
-            dir_path = str()
-            for dir_folder in remote_directory.split("/"):
-                if dir_folder == "":
-                    continue
-                dir_path += r"/{0}".format(dir_folder)
-                try:
-                    sftp.listdir(dir_path)
-                except IOError:
-                    sftp.mkdir(dir_path)
-
-        ssh = paramiko.SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        print('rs', remote_server)
-        ssh.connect(**remote_server)
-        sftp = ssh.open_sftp()
-
-        try:
-            mkdir_p(sftp, destination_path)
-            sftp.put(filepath, destination)
-
-        except Exception:
-            traceback.print_exc()
-            if max_retry:
-
-                # we want to avoid hammering either the local or remote machine
-                time.sleep(retry_delay)
-                self['max_retry'] -= 1
-                self.run_task(fw_spec)
-
-            elif not ignore_errors:
-                raise ValueError(
-                    "There was an error performing operation {} from {} "
-                    "to {}".format("rtansfer", self["files"], self["dest"]))
-
         # Update submission DB stored_location field
         dbc = DBconnector(db_info.get("backend"))
         coll = dbc.get_collection(data_category)
@@ -208,14 +192,56 @@ class SendToStorage(FiretaskBase):
         processed_data = fw_spec["processed_data"]
         processed_data["submission_info"].update({"stored_location": destination})
 
-        if not TESTING:
+        if not str(remote_server.get("hostname")) == '10.33.30.27':
+            ssh = paramiko.SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            print('rs', remote_server)
+            ssh.connect(**remote_server)
+            sftp = ssh.open_sftp()
+
             try:
-                sftp.remove(filepath)
-                pass
-            except FileNotFoundError:
-                pass
-        sftp.close()
-        ssh.close()
+                with timeout(10, exception=RuntimeError):
+                    print("trying test...")
+                    test = test_path(sftp, destination_path)
+                if test:
+                    mkdir_p(sftp, destination_path)
+                sftp.put(filepath, destination)
+
+            except Exception as e:
+                traceback.print_exc()
+                if max_retry:
+                    # we want to avoid hammering either the local or remote machine
+                    time.sleep(retry_delay)
+                    self['max_retry'] -= 1
+                    self.run_task(fw_spec)
+
+                elif not ignore_errors:
+                    raise ValueError(
+                        "There was an error performing operation {} from {} "
+                        "to {}".format("rtansfer", self["files"], self["dest"]))
+
+            if not TESTING:
+                try:
+                    sftp.remove(filepath)
+                except FileNotFoundError:
+                    pass
+            sftp.close()
+            ssh.close()
+
+        else:
+            print(destination_path)
+            Path(destination_path).mkdir(parents=True, exist_ok=True)
+            print("copying file")
+            shutil.copyfile(filepath, destination)
+            if not TESTING:
+                try:
+                    print("removing file...")
+                    os.remove(filepath)
+                except FileNotFoundError:
+                    pass
+
+
 
         return FWAction(update_spec={"processed_data": processed_data})
 

@@ -69,9 +69,10 @@ class Gaus2FrontCharacterization:
                 self.relaxation_groundState_cation1,
                 self.relaxation_cation1_groundState, self.relaxation_groundState_anion1,
                 self.relaxation_anion1_groundState,
-                self.vertical_ionization_energy, self.vertical_electron_affinity, self.adiabatic_ionization_energy,
-                self.adiabatic_ionization_energy_2, self.adiabatic_electron_affinity,
-                self.adiabatic_electron_affinity_2,
+                self.vertical_ionization_energy, self.vertical_ionization_energy_2,
+                self.vertical_electron_affinity, self.vertical_electron_affinity_2,
+                self.adiabatic_ionization_energy, self.adiabatic_ionization_energy_2,
+                self.adiabatic_electron_affinity, self.adiabatic_electron_affinity_2,
                 self.oxidation_potential, self.reduction_potential
             ]
             if rmsd:
@@ -355,6 +356,14 @@ class Gaus2FrontCharacterization:
         energy = RelaxationCalc(connector=connector).calculate(c_data)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_ionization_energy")
 
+    def vertical_ionization_energy_2(self):
+        """Descriptor dict for the vertical ionization energy"""
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc2"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_gsc2.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_ionization_energy_2")
+
     def vertical_electron_affinity(self):
         """Descriptor dict for the """
         h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa1"])
@@ -362,6 +371,14 @@ class Gaus2FrontCharacterization:
                      "energy": "energy_gsa1.scf_total_energy.value"}
         energy = RelaxationCalc(connector=connector).calculate(c_data)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_electron_affinity")
+
+    def vertical_electron_affinity_2(self):
+        """Descriptor dict for the """
+        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa2"])
+        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
+                     "energy": "energy_gsa2.scf_total_energy.value"}
+        energy = RelaxationCalc(connector=connector).calculate(c_data)
+        return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_electron_affinity_2")
 
     def adiabatic_ionization_energy(self):
         """Descriptor dict for the adiabatic ionization energy"""

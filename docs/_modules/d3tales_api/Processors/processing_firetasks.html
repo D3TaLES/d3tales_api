@@ -76,10 +76,14 @@
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">paramiko</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">interruptingcow</span> <span class="kn">import</span> <span class="n">timeout</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
 <span class="kn">from</span> <span class="nn">atomate.utils.utils</span> <span class="kn">import</span> <span class="n">env_chk</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">RESTAPI</span>
@@ -91,6 +95,22 @@
 <span class="c1"># Copyright 2021, University of Kentucky</span>
 <span class="n">TESTING</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TESTING&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">False</span>
 
+
+<div class="viewcode-block" id="mkdir_p"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.mkdir_p">[docs]</a><span class="k">def</span> <span class="nf">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">remote_directory</span><span class="p">):</span>
+    <span class="n">dir_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">dir_folder</span> <span class="ow">in</span> <span class="n">remote_directory</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dir_folder</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">dir_path</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot;/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_folder</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">sftp</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_path"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.test_path">[docs]</a><span class="k">def</span> <span class="nf">test_path</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">):</span>
+    <span class="n">folder_name</span> <span class="o">=</span> <span class="n">destination_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">folder_dir</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">folder_name</span> <span class="ow">in</span> <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder_dir</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="FileTransferTask"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">[docs]</a><span class="nd">@explicit_serialize</span>
 <span class="k">class</span> <span class="nc">FileTransferTask</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
@@ -237,42 +257,6 @@
                                                         <span class="n">data_type</span><span class="p">)</span>
         <span class="n">destination</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">remote_directory</span><span class="p">):</span>
-            <span class="n">dir_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">dir_folder</span> <span class="ow">in</span> <span class="n">remote_directory</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">dir_folder</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">dir_path</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot;/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_folder</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-                    <span class="n">sftp</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
-
-        <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rs&#39;</span><span class="p">,</span> <span class="n">remote_server</span><span class="p">)</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">remote_server</span><span class="p">)</span>
-        <span class="n">sftp</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">open_sftp</span><span class="p">()</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">)</span>
-            <span class="n">sftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
-
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">max_retry</span><span class="p">:</span>
-
-                <span class="c1"># we want to avoid hammering either the local or remote machine</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
-                <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;max_retry&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">)</span>
-
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;There was an error performing operation </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> &quot;</span>
-                    <span class="s2">&quot;to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;rtansfer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]))</span>
-
         <span class="c1"># Update submission DB stored_location field</span>
         <span class="n">dbc</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">))</span>
         <span class="n">coll</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">data_category</span><span class="p">)</span>
@@ -283,14 +267,56 @@
         <span class="n">processed_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="p">[</span><span class="s2">&quot;processed_data&quot;</span><span class="p">]</span>
         <span class="n">processed_data</span><span class="p">[</span><span class="s2">&quot;submission_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;stored_location&quot;</span><span class="p">:</span> <span class="n">destination</span><span class="p">})</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">TESTING</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">remote_server</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hostname&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;10.33.30.27&#39;</span><span class="p">:</span>
+            <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rs&#39;</span><span class="p">,</span> <span class="n">remote_server</span><span class="p">)</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">remote_server</span><span class="p">)</span>
+            <span class="n">sftp</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">open_sftp</span><span class="p">()</span>
+
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">sftp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-                <span class="k">pass</span>
-            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-                <span class="k">pass</span>
-        <span class="n">sftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">with</span> <span class="n">timeout</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;trying test...&quot;</span><span class="p">)</span>
+                    <span class="n">test</span> <span class="o">=</span> <span class="n">test_path</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
+                    <span class="n">mkdir_p</span><span class="p">(</span><span class="n">sftp</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">)</span>
+                <span class="n">sftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">max_retry</span><span class="p">:</span>
+                    <span class="c1"># we want to avoid hammering either the local or remote machine</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;max_retry&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;There was an error performing operation </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;rtansfer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">TESTING</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">sftp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="n">sftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">destination_path</span><span class="p">)</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">destination_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;copying file&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">TESTING</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;removing file...&quot;</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+
 
         <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processed_data&quot;</span><span class="p">:</span> <span class="n">processed_data</span><span class="p">})</span></div></div>
 

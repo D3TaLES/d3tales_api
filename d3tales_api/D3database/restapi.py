@@ -228,6 +228,7 @@ class D3talesData:
         """
         df = self.get_prop_data(query, **kwargs)
         sns.histplot(data=df, x=df.columns[0])
+        return df
 
     def hist_2d(self, query1, query2, db1='molecules', db2='molecules', **kwargs):
         """
@@ -244,6 +245,7 @@ class D3talesData:
 
         final_df = df1.join(df2, rsuffix='_2', lsuffix='_1')
         sns.histplot(data=final_df, x=final_df.columns[0], y=final_df.columns[1])
+        return df1, df2
 
 
 if __name__ == "__main__":

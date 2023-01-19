@@ -23,7 +23,7 @@ cd doc
 make clean
 make html
 
-mv _build/html ../docs
+mv _build/html/* ../docs
 cd ../
 rm -rf doc
 touch docs/.nojekyll
