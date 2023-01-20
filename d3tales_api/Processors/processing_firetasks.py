@@ -19,6 +19,7 @@ from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
+LOCAL_STORAGE = False
 
 
 def mkdir_p(sftp, remote_directory):
@@ -192,7 +193,7 @@ class SendToStorage(FiretaskBase):
         processed_data = fw_spec["processed_data"]
         processed_data["submission_info"].update({"stored_location": destination})
 
-        if not str(remote_server.get("hostname")) == '10.33.30.27':
+        if LOCAL_STORAGE:
             ssh = paramiko.SSHClient()
             ssh.load_system_host_keys()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
