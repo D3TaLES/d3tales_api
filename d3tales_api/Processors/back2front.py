@@ -50,13 +50,12 @@ class Gaus2FrontCharacterization:
             raise ValueError("No data found for {} calculation {}.".format(_id, calculation_type))
 
         # all calculations for this molecule
-        self.all_calcs = ['opt_groundState', 'freq_groundState', 'solv_energy_gsgs', 'tddft_groundState', 'opt_cation1',
-                          'freq_cation1', 'solv_energy_c1c1', 'tddft_cation1', 'opt_cation2', 'freq_cation2',
-                          'solv_energy_c2c2',
-                          'tddft_cation2', 'opt_anion1', 'freq_anion1', 'solv_energy_a1a1', 'tddft_anion1',
-                          'opt_anion2',
-                          'freq_anion2', 'solv_energy_a2a2', 'tddft_anion2', 'energy_gsc1', 'energy_gsa1',
-                          'energy_c1gs', 'energy_a1gs']
+        self.all_calcs = ['opt_groundState', 'freq_groundState', 'solv_energy_gsgs', 'tddft_groundState',
+                          'opt_cation1', 'freq_cation1', 'solv_energy_c1c1', 'tddft_cation1',
+                          'opt_cation2', 'freq_cation2', 'solv_energy_c2c2', 'tddft_cation2',
+                          'opt_anion1', 'freq_anion1', 'solv_energy_a1a1', 'tddft_anion1',
+                          'opt_anion2', 'freq_anion2', 'solv_energy_a2a2', 'tddft_anion2',
+                          'energy_gsc1', 'energy_gsa1', 'energy_c1gs', 'energy_a1gs', 'energy_c1c2', 'energy_a1a2']
 
         # Get data for all calculations for this molecule
         for calc_type in self.all_calcs:
@@ -365,9 +364,9 @@ class Gaus2FrontCharacterization:
 
     def vertical_ionization_energy_2(self):
         """Descriptor dict for the vertical ionization energy"""
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsc2"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_gsc2.scf_total_energy.value"}
+        h_ids, c_data = self.get_data(["opt_cation1", "energy_c1c2"])
+        connector = {"opt_energy": "opt_cation1.scf_total_energy.value",
+                     "energy": "energy_c1c2.scf_total_energy.value"}
         energy = RelaxationCalc(connector=connector).calculate(c_data)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_ionization_energy_2")
 
@@ -381,9 +380,9 @@ class Gaus2FrontCharacterization:
 
     def vertical_electron_affinity_2(self):
         """Descriptor dict for the """
-        h_ids, c_data = self.get_data(["opt_groundState", "energy_gsa2"])
-        connector = {"opt_energy": "opt_groundState.scf_total_energy.value",
-                     "energy": "energy_gsa2.scf_total_energy.value"}
+        h_ids, c_data = self.get_data(["opt_anion1", "energy_a1a2"])
+        connector = {"opt_energy": "opt_anion1.scf_total_energy.value",
+                     "energy": "energy_a1a2.scf_total_energy.value"}
         energy = RelaxationCalc(connector=connector).calculate(c_data)
         return self.return_descriptor_dict(energy, unit='eV', hashes=h_ids, name="vertical_electron_affinity_2")
 
