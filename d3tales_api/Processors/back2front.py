@@ -8,6 +8,9 @@ from d3tales_api.D3database.d3database import DBconnector
 from ocelot.routines.conformerparser import pmgmol_to_rdmol
 
 
+DEFAULT_SOLV = {"name" : "Acetonitrile", "model" : "implicit_solvent", "dielectric_constant" : 35.688}
+
+
 class Gaus2FrontCharacterization:
     """
     Update frontend db with backend db data for a particular set of data.
@@ -55,11 +58,15 @@ class Gaus2FrontCharacterization:
                           'freq_anion2', 'solv_energy_a2a2', 'tddft_anion2', 'energy_gsc1', 'energy_gsa1',
                           'energy_c1gs', 'energy_a1gs']
 
+        # Get data for all calculations for this molecule
         for calc_type in self.all_calcs:
             if "solv_" in calc_type:
-                setattr(self, calc_type, self.find_data(calc_type=calc_type, solvent=self.solvent))
+                setattr(self, calc_type, self.find_data(calc_type=calc_type, solvent=self.solvent or DEFAULT_SOLV))
             else:
                 setattr(self, calc_type, self.find_data(calc_type=calc_type))
+
+        # Set data for this calculation
+        setattr(self, self.calculation_type, [self.data, self._hash])
 
         if insert:
             # generate data dictionary
