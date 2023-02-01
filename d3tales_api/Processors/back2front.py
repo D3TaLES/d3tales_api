@@ -86,8 +86,8 @@ class Gaus2FrontCharacterization:
             for prop in properties:
                 try:
                     self.character_dict.update(prop())
-                except ValueError:
-                    pass
+                except ValueError as e:
+                    print(e)
             FrontDB(schema_layer="species_characterization", instance=self.species_descriptors, _id=self.id)
             FrontDB(schema_layer="mol_characterization", instance=self.character_dict, _id=self.id)
 
