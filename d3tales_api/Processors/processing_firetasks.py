@@ -210,11 +210,7 @@ class SendToStorage(FiretaskBase):
             sftp = ssh.open_sftp()
 
             try:
-                with timeout(10, exception=RuntimeError):
-                    print("trying test...")
-                    test = test_path(sftp, destination_path)
-                if test:
-                    mkdir_p(sftp, destination_path)
+                mkdir_p(sftp, destination_path)
                 sftp.put(filepath, destination)
 
             except Exception as e:

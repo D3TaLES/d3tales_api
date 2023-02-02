@@ -458,6 +458,7 @@ class RMSDCalc(D3Calculator):
         geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
         geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
         try:
+            print("Finding best RMS...this may take a few minutes...")
             rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
         except:
             raise ValueError("Error finding RMSD")
