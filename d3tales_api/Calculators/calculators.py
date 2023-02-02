@@ -9,6 +9,7 @@ import pandas as pd
 from rdkit import Chem
 import dbstep.Dbstep as db
 from rdkit.Chem import rdMolAlign
+from interruptingcow import timeout
 from scipy.signal import find_peaks
 from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
@@ -459,7 +460,8 @@ class RMSDCalc(D3Calculator):
         geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
         try:
             print("Finding best RMS...this may take a few minutes...")
-            rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
+            with timeout(120, exception=RuntimeError):
+                rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
         except:
             raise ValueError("Error finding RMSD")
         return float(np.format_float_scientific(rmsd, precision=precision))
