@@ -9,6 +9,7 @@ from ocelot.routines.conformerparser import pmgmol_to_rdmol
 
 
 DEFAULT_SOLV = {"name" : "Acetonitrile", "model" : "implicit_solvent", "dielectric_constant" : 35.688}
+RMSD_DEFAULT = True
 
 
 class Gaus2FrontCharacterization:
@@ -17,7 +18,7 @@ class Gaus2FrontCharacterization:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False, rmsd=True):
+    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False, rmsd=RMSD_DEFAULT):
         """
         
         :param _id: str, molecule ID
