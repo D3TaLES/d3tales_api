@@ -489,12 +489,7 @@ class Gaus2FrontCharacterization:
         Get all calculations data for object molecule
         :return: dictionary containing all backend data for the object molecule
         """
-        all_calcs = ['opt_groundState', 'freq_groundState', 'solv_energy_gsgs', 'tddft_groundState', 'opt_cation1',
-                     'freq_cation1', 'solv_energy_c1c1', 'tddft_cation1', 'opt_cation2', 'freq_cation2',
-                     'solv_energy_c2c2', 'tddft_cation2', 'opt_anion1', 'freq_anion1', 'solv_energy_a1a1',
-                     'tddft_anion1', 'opt_anion2', 'freq_anion2', 'solv_energy_a2a2', 'tddft_anion2', 'energy_gsc1',
-                     'energy_gsa1', 'energy_c1gs', 'energy_a1gs']
-        h_ids, c_data = self.get_data(all_calcs, disregard_missing=True)
+        h_ids, c_data = self.get_data(self.all_calcs, disregard_missing=True)
         c_data.update({"h_ids": h_ids})
         return c_data
 

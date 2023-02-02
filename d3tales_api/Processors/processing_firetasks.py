@@ -194,6 +194,14 @@ class SendToStorage(FiretaskBase):
         processed_data["submission_info"].update({"stored_location": destination})
 
         if LOCAL_STORAGE:
+            Path(destination_path).mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(filepath, destination)
+            if not TESTING:
+                try:
+                    os.remove(filepath)
+                except FileNotFoundError:
+                    pass
+        else:
             ssh = paramiko.SSHClient()
             ssh.load_system_host_keys()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -229,20 +237,6 @@ class SendToStorage(FiretaskBase):
                     pass
             sftp.close()
             ssh.close()
-
-        else:
-            print(destination_path)
-            Path(destination_path).mkdir(parents=True, exist_ok=True)
-            print("copying file")
-            shutil.copyfile(filepath, destination)
-            if not TESTING:
-                try:
-                    print("removing file...")
-                    os.remove(filepath)
-                except FileNotFoundError:
-                    pass
-
-
 
         return FWAction(update_spec={"processed_data": processed_data})
 
