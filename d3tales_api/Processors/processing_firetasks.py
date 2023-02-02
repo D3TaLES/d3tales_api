@@ -19,7 +19,7 @@ from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
-LOCAL_STORAGE = False
+LOCAL_STORAGE = os.environ.get('LOCAL_STORAGE') or os.getenv('LOCAL_STORAGE') or False
 
 
 def mkdir_p(sftp, remote_directory):
