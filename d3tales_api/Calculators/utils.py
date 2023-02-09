@@ -95,6 +95,7 @@ def unit_conversion(measurement, default_unit: str, density=None):
         if isinstance(value, float) or str(value).replace('.', '', 1).replace('-', '', 1).isdigit():
             unit = measurement.get("unit", default_unit) if isinstance(measurement, dict) else default_unit
     # Convert measurement to default unit
+    unit = default_unit if unit == "dimensionless" else unit
     pint_unit = ureg("{}{}".format(value, unit))
     return pint_unit.to(default_unit, 'mol_density').magnitude
 
