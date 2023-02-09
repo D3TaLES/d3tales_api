@@ -105,7 +105,7 @@ class CVDescriptorCalculator(D3Calculator):
         scan_dict = {}
         for data_list in conns["scan_data"]:
             data = np.array(data_list)
-            if data[0, 0] < data[1, 0]:
+            if data[0, 0] < data[-1, 0]:
                 peaks_data = find_peaks(data[:, 1], width=width)
                 scan_dict.update(
                     {"forward": self.prominent_peaks(peaks_data, data)})
