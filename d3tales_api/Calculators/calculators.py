@@ -273,7 +273,7 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            i_p_raw = conns.get("i_p", max([d[1] for d in sum(conns["middle_scan"], [])]))
+            i_p_raw = conns.get("i_p") or max([d[1] for d in sum(conns["middle_scan"], [])])
             i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
