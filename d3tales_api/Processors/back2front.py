@@ -190,7 +190,7 @@ class Gaus2FrontCharacterization:
         return data_dict
 
     @classmethod
-    def from_data(cls, processing_data):
+    def from_data(cls, processing_data, **kwargs):
         """
         Generate data class from data dict
         
@@ -204,7 +204,7 @@ class Gaus2FrontCharacterization:
         charge = data.get("charge")
         return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data)
 
-    def return_descriptor_dict(self, value, unit="", hashes=None, name="", order=1, condition_addition=None):
+    def return_descriptor_dict(self, value, unit="", hashes=None, name="", order=1, condition_addition=None, **kwargs):
         """
         Generate descriptor dictionary in accordance with D3TaLES schema
 

@@ -2,6 +2,7 @@ import numpy as np
 from scipy.stats import norm
 import scipy.constants as cst
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 from d3tales_api.Calculators.calculators import D3Calculator
 
 
@@ -66,6 +67,43 @@ class CVPlotter(D3Plotter):
         """
         plt_data = self.plot_data(data)
         plt.scatter(plt_data["x"], plt_data["y"], color="red")
+
+        if fig_path:
+            plt.savefig(fig_path, dpi=300)
+            plt.close()
+        else:
+            plt.show()
+
+    def live_plot_multi(self, data, fig_path=None, sort=True):
+        """
+        Live Matplotlib plot for data
+
+        Connection Points:
+            :scan_data: scanned data from CV file
+            :variable_prop: property that varies between CVs
+
+        :param data: data for calculation
+        :type data: dict
+        :param fig_path: path to which to save the figure
+        :type fig_path: str
+        :param sort: sort by variable_prop if True
+        :type sort: bool
+
+        :return: shows matplotlib plot
+        """
+        # Get data_dict for sorting
+        data_dict = {}
+        for d in data:
+            plt_data = self.plot_data(d)
+            conns = self.make_connections(d)
+            var_prop = conns["variable_prop"]
+            data_dict[var_prop] = plt_data
+
+        if sort:
+            data_dict = dict(OrderedDict(sorted(data_dict.items())))
+
+        [plt.scatter(d["x"], d["y"], label=p) for p, d in data_dict.items()]
+        plt.legend()
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)

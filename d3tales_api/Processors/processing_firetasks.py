@@ -7,7 +7,6 @@ import zipfile
 import paramiko
 import traceback
 from pathlib import Path
-from interruptingcow import timeout
 from multiprocessing import Process
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
@@ -20,6 +19,7 @@ from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
 LOCAL_STORAGE = os.environ.get('LOCAL_STORAGE') or os.getenv('LOCAL_STORAGE') or False
+RMSD_DEFAULT = os.environ.get('RMSD_DEFAULT') or os.getenv('RMSD_DEFAULT') or False
 
 
 def mkdir_p(sftp, remote_directory):
@@ -139,7 +139,7 @@ class ProcessFile(FiretaskBase):
                 metadata["mol_file"] = mol_file
                 data = ProcessDFT(_id=mol_id, submission_info=submission_data, metadata=metadata).data_dict
                 if automatic_approval:
-                    Gaus2FrontCharacterization.from_data(data)
+                    Gaus2FrontCharacterization.from_data(data, rmsd=RMSD_DEFAULT)
                     pass
             if data_type == 'cv':
                 file = [f for f in names if ".txt" in f or "csv" in f][0]

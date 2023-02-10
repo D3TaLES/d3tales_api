@@ -21,7 +21,8 @@ connector = {
     "C": "data.conditions.redox_mol_concentration",
     "n": "num_electrodes",
 
-    "scan_data": "data.scan_data"
+    "scan_data": "data.scan_data",
+    "variable_prop": "data.conditions.scan_rate.value"
 }
 
 
@@ -39,5 +40,6 @@ assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
 assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
 
 cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png")
+cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png")
 
 print("CV TESTING SUCCESSFUL")
