@@ -1,4 +1,5 @@
 import base64
+import sys, os
 import selfies as sf
 from PIL import Image
 from tqdm import tqdm
@@ -13,6 +14,8 @@ from rdkit.Chem.Descriptors import NumRadicalElectrons
 from rdkit.Chem.inchi import MolToInchi, MolToInchiKey
 from rdkit.Chem import Draw, MolFromSmiles, MolToSmiles, AllChem
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula, CalcExactMolWt
+sys.path.append(os.path.join(Chem.RDConfig.RDContribDir, 'SA_Score'))
+import sascorer
 
 
 def find_lowest_e_conf(smiles, num_conf=50):
@@ -111,6 +114,7 @@ class GenerateMolInfo:
         mol_info.molecular_weight = CalcExactMolWt(rdkmol)
         mol_info.groundState_charge = GetFormalCharge(rdkmol)
         mol_info.groundState_spin = NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        mol_info.sa_score = round(sascorer.calculateScore(rdkmol), 2)
         if self.extra_info:
             mol_info.d2_image = image_to_base64(Draw.MolToImage(rdkmol))
             mol_info.init_structure = find_lowest_e_conf(clean_smile)
