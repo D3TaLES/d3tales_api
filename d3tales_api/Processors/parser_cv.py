@@ -53,21 +53,24 @@ class ParseChiCV:
             line = f.readline()
             while not line.strip().split():
                 line = f.readline()
-            scan_data = []
-            potentials = []
-            self.data_points_per_scan = int(abs(self.high_e["value"] - self.low_e["value"]) / self.sample_interval["value"])
+            all_data, potentials = [], []
             while line.strip().split():
-                scan = []
-                data_point = 0
-                while data_point < self.data_points_per_scan:
-                    if line.strip().split():
-                        scan.append([float(x) for x in line.strip().split(",")])
-                        potentials.append([float(x) for x in line.strip().split(",")][1])
-                    data_point += 1
-                    line = f.readline()
-                arr_data = np.array(scan).tolist()
-                scan_data.append(arr_data)
+                all_data.append([float(x) for x in line.strip().split(",")])
+                potentials.append([float(x) for x in line.strip().split(",")][0])
                 line = f.readline()
+
+            if not getattr(self, "sample_interval", None):
+                self.sample_interval = {"value": np.average(np.absolute(np.diff(potentials))), "unit": ''}
+            if not getattr(self, "high_e", None):
+                self.high_e = {"value": max(potentials), "unit": ''}
+            if not getattr(self, "low_e", None):
+                self.low_e = {"value": min(potentials), "unit": ''}
+            if not getattr(self, "low_e", None):
+                self.init_e = {"value": potentials[0], "unit": ''}
+
+            self.data_points_per_scan = int(abs(self.high_e["value"] - self.low_e["value"]) / self.sample_interval["value"])
+            scan_data = [np.array(all_data[i:i + self.data_points_per_scan]).tolist() for i in range(0, len(all_data), self.data_points_per_scan)]
+
         self.num_scans = len(scan_data)
         self.scan_data = scan_data
         self.peak_potential = max(potentials)
