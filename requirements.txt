@@ -58,7 +58,7 @@ msgpack==1.0.4
 nanoid==2.0.0
 networkx==2.8.8
 numba==0.56.4
-numpy==1.23.4
+numpy==1.24.2
 ocelot @ git+https://github.com/caer200/ocelot_api.git@f61e9a96daa1116bb74fda56504c2dd13b40449f
 orjson==3.8.7
 packaging==21.3
