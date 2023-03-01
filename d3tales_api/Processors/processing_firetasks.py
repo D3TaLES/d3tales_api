@@ -320,7 +320,7 @@ class UpdateFrontendDB(FiretaskBase):
         if data_type == 'gaussian':
             conditions = data.get("conditions", )
             charge = data.get("charge", )
-            Gaus2FrontCharacterization(mol_id, calc_type, conditions, charge)
+            Gaus2FrontCharacterization(mol_id, calc_type, conditions, charge, rmsd=RMSD_DEFAULT)
 
 
 @explicit_serialize
