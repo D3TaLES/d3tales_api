@@ -202,7 +202,7 @@ class Gaus2FrontCharacterization:
         data = processing_data.get("data", {})
         conditions = data.get("conditions")
         charge = data.get("charge")
-        return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data)
+        return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data, **kwargs)
 
     def return_descriptor_dict(self, value, unit="", hashes=None, name="", order=1, condition_addition=None, **kwargs):
         """
