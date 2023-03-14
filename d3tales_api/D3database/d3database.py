@@ -5,7 +5,7 @@ import pandas as pd
 from nanoid import generate
 from dotty_dict import dotty
 from monty.json import jsanitize
-from d3tales_api.database_info import db_info
+from d3tales_api.database_info import db_info, source_groups
 from d3tales_api.D3database.schema2class import Schema2Class
 from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 
@@ -276,30 +276,10 @@ class FrontDB(D3Database):
 
         :return: new molecule ID
         """
-        group_dict = {
-            "": '00',
-            "unknown": '00',
-            "Eaton": '01',
-            "Robotics": '11',
-            "Ganapathysubramanian": '02',
-            "Jenkins": '03',
-            "Mason": '04',
-            "Odom": '05',
-            "Odom_Hussein": '05',
-            "Odom_Aman": '05',
-            "Risko": '06',
-            "Sarkar": '07',
-            "Shaw": '08',
-            "Teague": '09',
-            "Csd": '80',
-            "Zinc": '81',
-            "Risko_Benchmark": '90',
-            "Risko_Diheds": '91'
-        }
         id_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
         if self.smiles and self.group:
-            group_num = group_dict.get(self.group.title(), '10')
+            group_num = source_groups.get(self.group.title(), '10')
             if self.coll.count_documents({"mol_info.smiles": self.smiles}) == 0:
                 self.new_molecule = True
                 rand = generate(id_chars, size=4)
