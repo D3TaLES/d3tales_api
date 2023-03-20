@@ -91,8 +91,8 @@ class CVDescriptorCalculator(D3Calculator):
 
         Connection Points:
             :scan_data: scanned data from CV file
-        
-        :param data: data for calculation
+
+        :param data: data for calculation (rows of voltage, current)
         :param width: required width of peaks to identify
         :type data: dict
         :type width: float
@@ -106,13 +106,17 @@ class CVDescriptorCalculator(D3Calculator):
         for data_list in conns["scan_data"]:
             data = np.array(data_list)
             if data[0, 0] < data[-1, 0]:
-                peaks_data = find_peaks(data[:, 1], width=width)
-                scan_dict.update(
-                    {"forward": self.prominent_peaks(peaks_data, data)})
+                try:
+                    peaks_data = find_peaks(data[:, 1], width=width)
+                    scan_dict.update({"forward": self.prominent_peaks(peaks_data, data)})
+                except ValueError:
+                    pass
             else:
-                peaks_data = find_peaks(-data[:, 1], width=width)
-                scan_dict.update(
-                    {"reverse": self.prominent_peaks(peaks_data, data)})
+                try:
+                    peaks_data = find_peaks(-data[:, 1], width=width)
+                    scan_dict.update({"reverse": self.prominent_peaks(peaks_data, data)})
+                except ValueError:
+                    pass
         return scan_dict
 
     def reversibility(self, data: dict, rev_upperbound: float = 63, quasi_rev_upperbound: float = 200, **kwargs):
@@ -123,14 +127,14 @@ class CVDescriptorCalculator(D3Calculator):
             :scan_data: scanned data from CV file (potentials in V)
             :sample_interval: sample interval value (V)
             :low_e: lowest energy value (V)
-            
+
         :param data: data for calculation
         :param rev_upperbound : upperbound for reversibility (mV)
         :param quasi_rev_upperbound : upperbound for quasi reversibility (mV)
         :type data: dict
         :type rev_upperbound: float
         :type quasi_rev_upperbound: float
-        
+
         :return: list of reversibility categorizations for peaks
         """
 
@@ -161,7 +165,7 @@ class CVDescriptorCalculator(D3Calculator):
             :scan_data: scanned data from CV file (potentials in V)
             :sample_interval: sample interval value (V)
             :low_e: lowest energy value (V)
-        
+
         :param data: data for calculation
         :type data: dict
 
@@ -189,7 +193,7 @@ class CVDescriptorCalculator(D3Calculator):
 
         :param data: data for calculation
         :type data: dict
-        
+
         :return: list of peak splittings for peaks
         """
 
@@ -212,7 +216,7 @@ class CVDescriptorCalculator(D3Calculator):
 
         :param data: data for calculation
         :type data: dict
-        
+
         :return: middle sweep from the CV
         """
 
@@ -226,13 +230,13 @@ class CVDescriptorCalculator(D3Calculator):
     def prominent_peaks(peaks_data: list, orig_data: dict, cutoff: float = 0.0999):
         """
         Get prominent peaks from the CV data
-        :param peaks_data: output data from scipy peak `find_peaks` function 
+        :param peaks_data: output data from scipy peak `find_peaks` function
         :param orig_data: original peak data
         :param cutoff: percentage as decimal for peaks to disregard
         :type peaks_data: list
         :type orig_data: dict
         :type cutoff: float
-        :return: 
+        :return:
         """
         prominences = peaks_data[1]["prominences"]
         peaks_list = list(np.where(prominences / max(prominences) > cutoff)[0])
@@ -262,7 +266,7 @@ class CVDiffusionCalculator(D3Calculator):
         :type data: list
         :type precision: int
         :type sci_notation: bool
-        
+
         :return: average diffusion constant for single redox event (cm^2/s)
         """
         self.data = data
@@ -301,7 +305,7 @@ class CVChargeTransferCalculator(D3Calculator):
             :v: scan rate (default = V/s)
             :n: number of electrons
             :X: peak shift (default = V)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
@@ -338,7 +342,7 @@ class AvgEHalfCalculator(D3Calculator):
 
         Connection Points
             :e: E1/2 (default = V)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
@@ -374,7 +378,7 @@ class EnergyDiffCalc(D3Calculator):
         Connection Points:
             :energy_final: energy final (default = eV)
             :energy_initial: energy initial (default = eV)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -399,7 +403,7 @@ class ReorganizationCalc(D3Calculator):
             :ion_opt: ion optimized energy (default = eV)
             :gs_energy: ground state energy at ion geometry (default = eV)
             :ion_energy: ion energy at ground state geometry (default = eV)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -424,7 +428,7 @@ class RelaxationCalc(D3Calculator):
         Connection Points:
             :opt_energy: optimized energy (default = eV)
             :energy: energy another geometry (default = eV)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict

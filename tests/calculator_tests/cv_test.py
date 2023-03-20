@@ -39,7 +39,7 @@ assert descriptor_cal.e_half(cv_entries[0])[0] == [0.02]
 assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
 assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
 
-cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png")
-cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png")
+cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[3], fig_path="cv_test.png", self_standard=True)
+cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=True)
 
 print("CV TESTING SUCCESSFUL")

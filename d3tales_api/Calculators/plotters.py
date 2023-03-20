@@ -3,7 +3,7 @@ from scipy.stats import norm
 import scipy.constants as cst
 import matplotlib.pyplot as plt
 from collections import OrderedDict
-from d3tales_api.Calculators.calculators import D3Calculator
+from d3tales_api.Calculators.calculators import *
 
 
 class D3Plotter(D3Calculator):
@@ -17,7 +17,7 @@ class D3Plotter(D3Calculator):
 
 class CVPlotter(D3Plotter):
 
-    def plot_data(self, data):
+    def plot_data(self, data, self_standard=False):
         """
         CV plot data for plotly
 
@@ -26,6 +26,8 @@ class CVPlotter(D3Plotter):
 
         :param data: data for calculation
         :type data: dict
+        :param self_standard: establish self standard (e_half=0V) if True
+        :type data: bool
 
         :return: plot data for plotly
         """
@@ -39,6 +41,11 @@ class CVPlotter(D3Plotter):
             x.extend([i[0] for i in scan])
             y.extend([i[1] for i in scan])
 
+        if self_standard:
+            print("Performing self-standard adjustment...")
+            e_half = CVDescriptorCalculator(self.key_pairs).e_half(data)[0]
+            x = [i-e_half for i in x]
+
         plotting_data = [{
             "x": x,
             "y": y,
@@ -51,7 +58,7 @@ class CVPlotter(D3Plotter):
         }]
         return {"abs_plot": plotting_data, "x": x, "y": y}
 
-    def live_plot(self, data, fig_path=None):
+    def live_plot(self, data, fig_path=None, **kwargs):
         """
         Live Matplotlib plot for data
 
@@ -65,7 +72,7 @@ class CVPlotter(D3Plotter):
 
         :return: shows matplotlib plot
         """
-        plt_data = self.plot_data(data)
+        plt_data = self.plot_data(data, **kwargs)
         plt.scatter(plt_data["x"], plt_data["y"], color="red")
 
         if fig_path:
@@ -74,7 +81,7 @@ class CVPlotter(D3Plotter):
         else:
             plt.show()
 
-    def live_plot_multi(self, data, fig_path=None, sort=True):
+    def live_plot_multi(self, data, fig_path=None, sort=True, **kwargs):
         """
         Live Matplotlib plot for data
 
@@ -94,7 +101,7 @@ class CVPlotter(D3Plotter):
         # Get data_dict for sorting
         data_dict = {}
         for d in data:
-            plt_data = self.plot_data(d)
+            plt_data = self.plot_data(d, **kwargs)
             conns = self.make_connections(d)
             var_prop = conns["variable_prop"]
             data_dict[var_prop] = plt_data
