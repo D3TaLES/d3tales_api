@@ -85,7 +85,7 @@ class ConcentrationCalculator(D3Calculator):
 
 class CVDescriptorCalculator(D3Calculator):
 
-    def peaks(self, data: dict, width: float = 10):
+    def peaks(self, data: dict, width: float = 1):
         """
         Gather CV peaks
 

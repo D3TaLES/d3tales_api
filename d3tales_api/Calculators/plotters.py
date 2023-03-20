@@ -90,7 +90,7 @@ class CVPlotter(D3Plotter):
             :variable_prop: property that varies between CVs
 
         :param data: data for calculation
-        :type data: dict
+        :type data: list
         :param fig_path: path to which to save the figure
         :type fig_path: str
         :param sort: sort by variable_prop if True
