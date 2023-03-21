@@ -20,6 +20,9 @@ connector = {
     "v": "data.conditions.scan_rate",
     "C": "data.conditions.redox_mol_concentration",
     "n": "num_electrodes",
+    "X": "data.peak_splittings.{}".format(NUM_ELECTRONS - 1),
+    "T": "data.conditions.temperature",
+    "D": "diffusion",
 
     "scan_data": "data.scan_data",
     "variable_prop": "data.conditions.scan_rate.value"
@@ -31,6 +34,12 @@ diffusion = diffusion_cal.calculate(cv_entries)
 assert diffusion == [2.969e-06, 2.52e-06]
 print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
+[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+
+charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+charge_transfer = charge_transfer_cal.calculate(cv_entries)
+assert charge_transfer == [2.969e-06, 2.52e-06]
+print("Charge Transfer", charge_transfer)
 
 descriptor_cal = CVDescriptorCalculator(connector=connector)
 assert descriptor_cal.peaks(cv_entries[0]) == {'forward': [[0.091, 4.796e-05]], 'reverse': [[-0.05, -6.478e-05]]}

@@ -259,6 +259,7 @@ class CVDiffusionCalculator(D3Calculator):
             :n: number of electrons, default 1
             :C: concentration of the solution (default = mol/cm^3)
             :middle_scan: optional, if i_p is not provided, scan data will be used to find i_p (default = None)
+            :scan_data: optional, if i_p is not provided and middle_scan not provided, scan data will be used to find i_p (default = None)
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
@@ -277,7 +278,11 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            i_p_raw = conns.get("i_p") or max([d[1] for d in sum(conns["middle_scan"], [])])
+            print(conns)
+            scan_data = conns.get("scan_data", [])
+            middle_scan = conns.get("middle_scan", scan_data[int(len(scan_data) / 2 - 1):int(len(scan_data) / 2 + 1)])
+            i_p_raw = conns.get("i_p") or max([d[1] for d in sum(middle_scan, [])])
+
             i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
@@ -342,6 +347,7 @@ class AvgEHalfCalculator(D3Calculator):
 
         Connection Points
             :e: E1/2 (default = V)
+            :scan_data: optional, if e not provided, scan data will be used to find e (default = None)
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
@@ -358,7 +364,9 @@ class AvgEHalfCalculator(D3Calculator):
         e_halfs = []
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            E = unit_conversion(conns["e"], default_unit='V')
+            descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
+            e_raw = conns.get("e", descriptor_cal.e_half(obj)[0])
+            E = unit_conversion(e_raw, default_unit='V')
             e_halfs.append(E)
         avg_e_half = np.average(e_halfs)
 

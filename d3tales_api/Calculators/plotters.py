@@ -73,7 +73,7 @@ class CVPlotter(D3Plotter):
         :return: shows matplotlib plot
         """
         plt_data = self.plot_data(data, **kwargs)
-        plt.scatter(plt_data["x"], plt_data["y"], color="red")
+        plt.scatter(plt_data["x"], plt_data["y"], color="red", s=10)
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)
@@ -109,7 +109,7 @@ class CVPlotter(D3Plotter):
         if sort:
             data_dict = dict(OrderedDict(sorted(data_dict.items())))
 
-        [plt.scatter(d["x"], d["y"], label=p) for p, d in data_dict.items()]
+        [plt.scatter(d["x"], d["y"], label=p, s=10) for p, d in data_dict.items()]
         plt.legend()
 
         if fig_path:
