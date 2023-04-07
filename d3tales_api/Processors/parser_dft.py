@@ -128,8 +128,10 @@ class ProcessGausLog(ProcessCCLIB):
             self.electrons = getattr(self.pmgmol, "electrons", None)
             self.final_energy = self.pmgmol.final_energy * 27.2114  # convert to eV
             self.final_structure = self.pmgmol.final_structure.as_dict()['sites']
-            self.homo = self.homo_lumo[0]
-            self.lumo = self.homo_lumo[1]
+            self.homo_1 = self.homo_lumo[0]
+            self.homo = self.homo_lumo[1]
+            self.lumo = self.homo_lumo[2]
+            self.lumo_1 = self.homo_lumo[3]
             self.frequency_dicts = [f for f in self.pmgmol.frequencies[0]] if getattr(self.pmgmol, "frequencies",
                                                                                       None) else {}
             self.gibbs_correction = self.pmgmol.corrections.get("Gibbs Free Energy")
@@ -266,10 +268,12 @@ class ProcessGausLog(ProcessCCLIB):
         """HOMO and LUMO energies from a Gaussian molecule: [homo, lumo] - list containing homo then lumo in eV"""
         num_electrons = self.pmgmol.electrons[0]
         eigens = list(self.pmgmol.eigenvalues.values())[0]
+        homo_1 = eigens[num_electrons - 2] * 27.2114  # convert to eV
         homo = eigens[num_electrons - 1] * 27.2114  # convert to eV
         lumo = eigens[num_electrons] * 27.2114  # convert to eV
+        lumo_1 = eigens[num_electrons + 1] * 27.2114  # convert to eV
 
-        return [homo, lumo]
+        return [homo_1, homo, lumo, lumo_1]
 
     @property
     def omega(self):

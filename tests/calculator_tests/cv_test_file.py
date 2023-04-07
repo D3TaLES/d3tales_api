@@ -19,12 +19,12 @@ else:
     cv_data = ProcessCV("../raw_data/aman_cv2.csv", _id='test', parsing_class=ParseChiCV).data_dict
     cv_entries = [cv_data]
 
-[d.update({"num_electrodes": NUM_ELECTRONS}) for d in cv_entries]
+[d.update({"num_electrons": NUM_ELECTRONS}) for d in cv_entries]
 [d.update({"current_cathodic": d.get("data", {}).get("forward", [[]])[NUM_ELECTRONS - 1][1]}) for d in cv_entries]
 
 
 connector = {
-    "n": "num_electrodes",
+    "n": "num_electrons",
     "i_p": "current_cathodic",
     "A": "data.conditions.working_electrode_surface_area",
     "v": "data.conditions.scan_rate",
@@ -34,7 +34,6 @@ connector = {
     "D": "diffusion",
 
     # "scan_data": "data.scan_data",
-    "variable_prop": "data.conditions.scan_rate.value"
 }
 
 
@@ -44,11 +43,11 @@ diffusion = diffusion_cal.calculate(cv_entries)
 print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
 [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
-#
-# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-# charge_transfer = charge_transfer_cal.calculate(cv_entries)
-# print("Charge Transfer", charge_transfer)
-#
+
+charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+charge_transfer = charge_transfer_cal.calculate(cv_entries)
+print("Charge Transfer", charge_transfer)
+
 # e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
 # e_half = e_half_transfer_cal.calculate(cv_entries)
 # print("Avg E half", e_half)

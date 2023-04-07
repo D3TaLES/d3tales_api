@@ -86,6 +86,14 @@ class ProcessDFT:
                     "value": self.DFTData.lumo,
                     "unit": "eV"
                 },
+                "homo_1": {
+                    "value": self.DFTData.homo_1,
+                    "unit": "eV"
+                },
+                "lumo_1": {
+                    "value": self.DFTData.lumo_1,
+                    "unit": "eV"
+                },
             })
             if 'opt' in self.DFTData.calculation_type:
                 if (int(self.DFTData.spin_multiplicity) % 2) == 0:

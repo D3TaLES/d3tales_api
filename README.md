@@ -38,6 +38,14 @@ To set this variable run:
 export DB_INFO_FILE=$PWD/db_infos_ex.json
 ```
 
+You can also set a `GROUP_FILE` environment variable. This should point to a json 
+file containing source_group tag names. This is **optional**. 
+
+To set this variable run:
+```bash
+export GROUP_FILE=$PWD/group_file_ex.json
+```
+
 REST API (`d3tales_api.restapi.RESTAPI`) will use `UPLOAD_USER` and `UPLOAD_PASS` environment 
 variables if `username` and `password` arguments are not provided. These environment variables 
 can be set in the same was as the `DB_INFO_FILE` variable. 

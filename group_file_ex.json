@@ -1,0 +1,22 @@
+{
+    "": "00",
+    "unknown": "00",
+    "Eaton": "01",
+    "Robotics": "11",
+    "Ganapathysubramanian": "02",
+    "Jenkins": "03",
+    "Mason": "04",
+    "Odom": "05",
+    "Odom_Hussein": "05",
+    "Odom_Aman": "05",
+    "Risko": "06",
+    "Sarkar": "07",
+    "Shaw": "08",
+    "Teague": "09",
+    "Csd": "80",
+    "Zinc": "81",
+    "Risko_Benchmark": "90",
+    "Risko_Diheds": "91",
+    "Risko_Aman": "92",
+    "Risko_Bayesian": "93"
+}

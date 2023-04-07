@@ -46,7 +46,7 @@ def source_groups_generator(group_file=None):
     """
     group_file = group_file or os.environ.get('GROUP_FILE') or os.getenv('GROUP_FILE')
     if not group_file:
-        warnings.warn("Environment variable GROUP_FILE not defined. Default group information is in ues. ")
+        print("Environment variable GROUP_FILE not defined. Default group information is in ues. ")
         return {
             "": '00',
             "unknown": '00',
@@ -67,6 +67,7 @@ def source_groups_generator(group_file=None):
             "Risko_Benchmark": '90',
             "Risko_Diheds": '91',
             "Risko_Aman": '92',
+            "Risko_Bayesian": '93',
         }
     with open(group_file, "r") as f:
         return json.load(f)
