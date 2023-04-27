@@ -12,7 +12,7 @@ def get_id(o):
     """
     Get id (either `_id` or `uuid`) from a data object
     """
-    return getattr(o, '_id', None) or getattr(o, 'uuid')
+    return getattr(o, '_id', None) or getattr(o, 'uuid', None)
 
 
 class ProcessExpFlowObj:
@@ -53,6 +53,8 @@ class ProcessExpFlowObj:
     @property
     def molecule_id(self):
         """Molecule ID"""
+        if not self.redox_mol:
+            return None
         rdkmol = MolFromSmiles(self.redox_mol.smiles)
         clean_smiles = MolToSmiles(rdkmol)
         check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
@@ -168,6 +170,8 @@ class ProcessExpFlowObj:
         :param beaker_uuid: str, uuid for beaker
         :return: concentration data dict
         """
+        if not solvent_uuids or not redox_uuid or not beaker_uuid:
+            return None
         self.concentration_smiles = [r for r in self.reagents if get_id(r) == redox_uuid][0].smiles
         redox_actions = [a for a in self.workflow if
                          a.start_uuid == redox_uuid and a.end_uuid == beaker_uuid and a.name == 'transfer_solid']
@@ -209,14 +213,16 @@ class ProcessExperimentRun(ProcessExpFlowObj):
     def get_electrode(self, electrode, get_uuid=False):
         """
         Get electrode from experiment data
-        
+
         :param electrode: str,which electrode (working, counter, or reference)
         :param get_uuid: bool, return uuid of electrode, else return electrode name
         :return: electrode (uuid or name)
         """
         electrode_instance = [e for e in self.apparatus if e.type == "electrode_{}".format(electrode)]
         if len(electrode_instance) > 1:
-            warnings.warn("Error. ExpFlow object {} has {} {} electrode entries".format(self.object_id, len(electrode_instance), electrode))
+            warnings.warn(
+                "Error. ExpFlow object {} has {} {} electrode entries".format(self.object_id, len(electrode_instance),
+                                                                              electrode))
         elif len(electrode_instance) == 1:
             if get_uuid:
                 return get_id(electrode_instance[0])
