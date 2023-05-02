@@ -33,20 +33,21 @@ connector = {
     "T": "data.conditions.temperature",
     "D": "diffusion",
 
-    # "scan_data": "data.scan_data",
+    "scan_data": "data.scan_data",
+    "variable_prop": "data.conditions.scan_rate.value",
 }
 
 
 
-diffusion_cal = CVDiffusionCalculator(connector=connector)
-diffusion = diffusion_cal.calculate(cv_entries)
-print("Average diffusion", diffusion[0])
-print("Fitted diffusion", diffusion[1])
-[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
-
-charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-charge_transfer = charge_transfer_cal.calculate(cv_entries)
-print("Charge Transfer", charge_transfer)
+# diffusion_cal = CVDiffusionCalculator(connector=connector)
+# diffusion = diffusion_cal.calculate(cv_entries)
+# print("Average diffusion", diffusion[0])
+# print("Fitted diffusion", diffusion[1])
+# [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+#
+# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+# charge_transfer = charge_transfer_cal.calculate(cv_entries)
+# print("Charge Transfer", charge_transfer)
 
 # e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
 # e_half = e_half_transfer_cal.calculate(cv_entries)
@@ -59,7 +60,9 @@ print("Charge Transfer", charge_transfer)
 # descriptor_cal.peak_splittings(cv_entries[0])
 # len(descriptor_cal.middle_sweep(cv_entries[0]))
 
-# cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png", self_standard=SELF_STD)
-# cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD)
+cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png", self_standard=SELF_STD,
+                                                                  title="CV Plot", xlabel="x", ylabel='y')
+cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD,
+                                                                  title="CV Plot", xlabel="Potential (V)", ylabel='Current (A)', legend_title="Scan Rate (V/s)")
 
 print("CV TESTING SUCCESSFUL")
