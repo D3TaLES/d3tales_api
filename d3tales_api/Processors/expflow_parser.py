@@ -41,6 +41,16 @@ class ProcessExpFlowObj:
         self.concentration_mass = None
 
     @property
+    def solvent(self):
+        """Redox molecule instance"""
+        reagent_instance = [e for e in self.reagents if e.type == "solvent"]
+        if len(reagent_instance) == 1:
+            return reagent_instance[0]
+        else:
+            warnings.warn(
+                "Error. ExpFlow object {} has {} redox molecule entries".format(self.object_id, len(reagent_instance)))
+
+    @property
     def redox_mol(self):
         """Redox molecule instance"""
         reagent_instance = [e for e in self.reagents if e.type == "redox_molecule"]
@@ -48,7 +58,7 @@ class ProcessExpFlowObj:
             return reagent_instance[0]
         else:
             warnings.warn(
-                "Error. ExpFlow object {} has {} redox moleucle entries".format(self.object_id, len(reagent_instance)))
+                "Error. ExpFlow object {} has {} redox molecule entries".format(self.object_id, len(reagent_instance)))
 
     @property
     def molecule_id(self):
