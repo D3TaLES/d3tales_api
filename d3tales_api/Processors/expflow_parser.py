@@ -102,25 +102,26 @@ class ProcessExpFlowObj:
         if self.instruments:
             return self.instruments[instrument_idx].name
 
-    def property_by_action(self, action_name, parameter_idx=0):
+    def property_by_action(self, action_names, parameter_idx=0):
         """
         Get molecule_id working electrode surface area
         NOTE: this only works if there is only one action of the given name
 
-        :param action_name: str, name of action to get
+        :param action_names: str or list, name of action to get
         :param parameter_idx: index of parameter to get if more than one
         :return: return property as data dict
         """
 
-        action_instance = [e for e in self.workflow if e.name == action_name]
-        if len(action_instance) == 1:
-            action_value = action_instance[0].parameters[parameter_idx].value
-            action_unit = action_instance[0].parameters[parameter_idx].unit
-            return {"value": float(action_value), "unit": action_unit}
-        else:
-            warnings.warn(
-                "Error. ExpFlow object {} has {} instances of {}. ExpFlow submissions must have 1 instance of {}".format(
-                    self.object_id, len(action_instance), action_name, action_name))
+        action_names = action_names if isinstance(action_names, list) else [action_names]
+        for action_name in action_names:
+            action_instance = [e for e in self.workflow if e.name == action_name]
+            if len(action_instance) == 1:
+                action_value = action_instance[0].parameters[parameter_idx].value
+                action_unit = action_instance[0].parameters[parameter_idx].unit
+                return {"value": float(action_value), "unit": action_unit}
+        warnings.warn(
+            "Error. ExpFlow object {} has {} instances of {}. ExpFlow submissions must have 1 instance of {}".format(
+                self.object_id, len(action_instance), action_name, action_name))
 
     def get_apparatus(self, apparatus_type, get_uuid=False):
         """
@@ -245,7 +246,7 @@ class ProcessExperimentRun(ProcessExpFlowObj):
             experiment_run_id=self.object_id,
             molecule_id=self.molecule_id,
             working_electrode_surface_area=self.property_by_action("measure_working_electrode_area"),
-            temperature=self.property_by_action("heat") or self.property_by_action("heat_stir"),
+            temperature=self.property_by_action(["heat_stir", "heat"]),
             instrument=self.instrument_name,
             electrode_counter=self.get_electrode("counter"),
             electrode_reference=self.get_electrode("reference"),

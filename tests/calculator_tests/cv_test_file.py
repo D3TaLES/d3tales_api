@@ -39,11 +39,11 @@ connector = {
 
 
 
-# diffusion_cal = CVDiffusionCalculator(connector=connector)
-# diffusion = diffusion_cal.calculate(cv_entries)
-# print("Average diffusion", diffusion[0])
-# print("Fitted diffusion", diffusion[1])
-# [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+diffusion_cal = CVDiffusionCalculator(connector=connector)
+diffusion = diffusion_cal.calculate(cv_entries)
+print("Average diffusion", diffusion[0])
+print("Fitted diffusion", diffusion[1])
+[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
 #
 # charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
 # charge_transfer = charge_transfer_cal.calculate(cv_entries)
