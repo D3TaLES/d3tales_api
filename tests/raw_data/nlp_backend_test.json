@@ -1,0 +1,45 @@
+{
+  "_id": "https://doi.org/10.1515/pac-2021-2007",
+  "date_accessed": "",
+  "abstract": "abstract",
+  "authors": [],
+  "publish_date": "",
+  "publisher":  "publisher",
+  "downloaded_ip":  "downloaded_ip",
+  "journal":  "journal",
+  "title": "title",
+  "pdf_location": "pdf_location",
+  "relevant": true,
+  "last_updated":  "",
+  "extracted_molecules": [
+    {
+      "molecule_name": "quinone",
+      "notes": "",
+      "extracted_properties": {
+        "oxidation_potential": {
+          "conditions": {
+            "data_source": "nlp",
+            "nlp_model": "llm",
+            "date_generated": "",
+            "line_number": "ox line number",
+            "parent_sentence": ""
+          },
+          "value": 4,
+          "unit": "eV"
+        },
+        "stability": {
+          "conditions": {
+            "data_source": "nlp",
+            "nlp_model": "llm",
+            "date_generated": "",
+            "doi": "https://doi.org/10.1515/pac-2021-2007",
+            "line_number": "line_number",
+            "parent_sentence": ""
+          },
+          "value": "good",
+          "unit": ""
+        }
+      }
+    }
+  ]
+}

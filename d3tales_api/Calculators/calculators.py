@@ -327,7 +327,7 @@ class CVChargeTransferCalculator(D3Calculator):
         long_terms = []
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            print(conns)
+            # print(conns)
             X = unit_conversion(conns["X"], default_unit='V') * 1000  # convert to mV
             D = unit_conversion(conns["D"], default_unit='cm^2/s')
             v = unit_conversion(conns["v"], default_unit='V/s')
