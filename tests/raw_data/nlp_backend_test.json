@@ -1,16 +1,26 @@
 {
   "_id": "https://doi.org/10.1515/pac-2021-2007",
-  "date_accessed": "",
-  "abstract": "abstract",
-  "authors": [],
-  "publish_date": "",
-  "publisher":  "publisher",
+  "date_accessed": "2023-05-02T16:57:32.824",
+  "abstract": "abstract text...",
+  "authors": [
+    {
+      "auid": "0000-0002-2659-552X",
+      "indexed_name": "",
+      "surname": "Duke",
+      "given_name": "Rebekah",
+      "affiliation": [
+        "University of Kentucky"
+      ]
+    }
+  ],
+  "publish_date": "2022",
+  "publisher":  "American Chemical Society",
   "downloaded_ip":  "downloaded_ip",
-  "journal":  "journal",
+  "journal":  "Journal of the American Chemical Society",
   "title": "title",
-  "pdf_location": "pdf_location",
+  "pdf_location": "pdf_location_path",
   "relevant": true,
-  "last_updated":  "",
+  "last_updated":  "2023-05-11T16:57:32.824",
   "extracted_molecules": [
     {
       "molecule_name": "quinone",
@@ -20,9 +30,9 @@
           "conditions": {
             "data_source": "nlp",
             "nlp_model": "llm",
-            "date_generated": "",
+            "date_generated": "2023-05-11T16:57:32.824",
             "line_number": "ox line number",
-            "parent_sentence": ""
+            "parent_sentence": "blah blah oxidation potential sentence"
           },
           "value": 4,
           "unit": "eV"
@@ -31,10 +41,10 @@
           "conditions": {
             "data_source": "nlp",
             "nlp_model": "llm",
-            "date_generated": "",
+            "date_generated": "2023-05-11T16:57:32.824",
             "doi": "https://doi.org/10.1515/pac-2021-2007",
-            "line_number": "line_number",
-            "parent_sentence": ""
+            "line_number": "stability line number",
+            "parent_sentence": "blah blah stability sentence"
           },
           "value": "good",
           "unit": ""
