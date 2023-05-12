@@ -1,11 +1,15 @@
 import copy
 import hashlib
+import warnings
+import pubchempy as pcp
+
 from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.d3database import FrontDB
 from d3tales_api.D3database.d3database import DBconnector
 from ocelot.routines.conformerparser import pmgmol_to_rdmol
+from rdkit.Chem import MolFromSmiles, MolToSmiles
 
 
 DEFAULT_SOLV = {"name" : "Acetonitrile", "model" : "implicit_solvent", "dielectric_constant" : 35.688}
@@ -493,6 +497,86 @@ class Gaus2FrontCharacterization:
         h_ids, c_data = self.get_data(self.all_calcs, disregard_missing=True)
         c_data.update({"h_ids": h_ids})
         return c_data
+
+
+class DOI2Front:
+    """
+    Update frontend db with backend db data for a particular set of data.
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, doi=None, backend_data=None, insert=True):
+        """
+
+        :param doi: str, molecule ID
+        :param backend_data: dict, calculation data
+        :param insert: bool, insert generated data to the frontend D3TaLES database if True
+        """
+
+        # connect to databases
+        self.front_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+        self.back_coll = DBconnector(db_info.get("backend")).get_collection("computation")
+
+        # Basic variables
+        if not doi and not backend_data:
+            raise ValueError("The DOI2Front class requires either the 'doi' kwarg or 'backend_data' kwarg. Neither were provided. ")
+        self.doi = doi or backend_data.get("_id")
+        self.backend_data = backend_data if backend_data else self.back_coll.find_one({"_id": self.doi})
+        self.raw_mol_data = self.backend_data.get("extracted_molecules", [])
+
+        # Set data for this NLP extraction
+        self.extracted_mol_data = {self.get_mol_id(d): self.get_literature_data(d) for d in self.raw_mol_data}
+
+        if insert:
+            for mol_id, nlp_data in self.extracted_mol_data.items():
+                FrontDB(instance=nlp_data, _id=mol_id)
+
+    def get_literature_data(self, mol_data):
+        extracted_properties = mol_data.get("extracted_properties", "")
+        return {
+            "literature_data": {
+                "related_literature": [self.doi],
+                "extracted_properties": self.check_extr_props(extracted_properties)
+            }
+        }
+
+    def check_extr_props(self, extracted_props):
+        for _, d in extracted_props.items():
+            if not d.get("conditions", {}).get("doi"):
+                d["conditions"]["doi"] = self.doi
+        return extracted_props
+
+    @staticmethod
+    def get_mol_id(mol_data):
+        mol_name = mol_data.get("molecule_name", "")
+        pub_mols = pcp.get_compounds(mol_name, 'name')
+        if len(pub_mols) == 0:
+            raise warnings.warn("No PubChem molecules found for molecule {}".format(mol_name))
+        elif len(pub_mols) > 1:
+            raise warnings.warn("Multiple PubChem molecules found for molecule {}: {}".format(mol_name, ", ".join([p.iupac_name for p in pub_mols])))
+        else:
+            smiles = pub_mols[0].isomeric_smiles
+            rdkmol = MolFromSmiles(smiles)
+            clean_smiles = MolToSmiles(rdkmol)
+            db_check = FrontDB(smiles=clean_smiles).check_if_in_db()
+
+            return db_check if db_check else FrontDB(smiles=clean_smiles, group="Sarkar", public=True).id
+
+
+    @classmethod
+    def from_json(cls, json_path, **kwargs):
+        """
+        Generate data class from data dict
+
+        :param json_path: str, path to JSON file
+        :return: data class
+        """
+        with open(json_path) as fn:
+            processing_data = json.load(fn)
+        doi = processing_data.get("_id")
+        return cls(doi=doi, backend_data=processing_data, **kwargs)
+
+
 
 
 if __name__ == "__main__":

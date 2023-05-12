@@ -27,7 +27,7 @@ class CVPlotter(D3Plotter):
         :param data: data for calculation
         :type data: dict
         :param self_standard: establish self standard (e_half=0V) if True
-        :type data: bool
+        :type self_standard: bool
 
         :return: plot data for plotly
         """
@@ -58,7 +58,7 @@ class CVPlotter(D3Plotter):
         }]
         return {"abs_plot": plotting_data, "x": x, "y": y}
 
-    def live_plot(self, data, fig_path=None, **kwargs):
+    def live_plot(self, data, fig_path=None, self_standard=False, **plt_kwargs):
         """
         Live Matplotlib plot for data
 
@@ -69,11 +69,15 @@ class CVPlotter(D3Plotter):
         :type data: dict
         :param fig_path: path to which to save the figure
         :type fig_path: str
+        :param self_standard: establish self standard (e_half=0V) if True
+        :type self_standard: bool
 
         :return: shows matplotlib plot
         """
-        plt_data = self.plot_data(data, **kwargs)
+        plt_data = self.plot_data(data, self_standard=self_standard)
         plt.scatter(plt_data["x"], plt_data["y"], color="red", s=10)
+        plt.gca().update(dict(**plt_kwargs))
+        plt.tight_layout()
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)
@@ -81,7 +85,7 @@ class CVPlotter(D3Plotter):
         else:
             plt.show()
 
-    def live_plot_multi(self, data, fig_path=None, sort=True, **kwargs):
+    def live_plot_multi(self, data, fig_path=None, sort=True, self_standard=False, **plt_kwargs):
         """
         Live Matplotlib plot for data
 
@@ -95,13 +99,15 @@ class CVPlotter(D3Plotter):
         :type fig_path: str
         :param sort: sort by variable_prop if True
         :type sort: bool
+        :param self_standard: establish self standard (e_half=0V) if True
+        :type self_standard: bool
 
         :return: shows matplotlib plot
         """
         # Get data_dict for sorting
         data_dict = {}
         for d in data:
-            plt_data = self.plot_data(d, **kwargs)
+            plt_data = self.plot_data(d, self_standard=self_standard)
             conns = self.make_connections(d)
             var_prop = conns["variable_prop"]
             data_dict[var_prop] = plt_data
@@ -110,7 +116,10 @@ class CVPlotter(D3Plotter):
             data_dict = dict(OrderedDict(sorted(data_dict.items())))
 
         [plt.scatter(d["x"], d["y"], label=p, s=10) for p, d in data_dict.items()]
-        plt.legend()
+        legend_title = plt_kwargs.pop("legend_title") if "legend_title" in plt_kwargs.keys() else "Legend"
+        plt.gca().update(dict(**plt_kwargs))
+        plt.tight_layout()
+        plt.legend(title=legend_title)
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)
@@ -174,7 +183,7 @@ class DFTSpecPlotter(D3Plotter):
         spectra_data.update({"abs_plot": abs_plot})
         return spectra_data
 
-    def live_plot(self, data, fig_path=None):
+    def live_plot(self, data, fig_path=None, **plt_kwargs):
         """
         Live Matplotlib plot for data
 
@@ -194,6 +203,8 @@ class DFTSpecPlotter(D3Plotter):
         """
         spectra_data = self.calculate(data)
         plt.plot(spectra_data["lambda"], spectra_data["xas"], color="red")
+        plt.gca().update(dict(**plt_kwargs))
+        plt.tight_layout()
 
         if fig_path:
             plt.savefig(fig_path, dpi=300)

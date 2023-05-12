@@ -278,7 +278,7 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            print(conns)
+            # print(conns)
             scan_data = conns.get("scan_data", [])
             middle_scan = conns.get("middle_scan", scan_data[int(len(scan_data) / 2 - 1):int(len(scan_data) / 2 + 1)])
             i_p_raw = conns.get("i_p") or max([d[1] for d in sum(middle_scan, [])])
@@ -327,6 +327,7 @@ class CVChargeTransferCalculator(D3Calculator):
         long_terms = []
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
+            # print(conns)
             X = unit_conversion(conns["X"], default_unit='V') * 1000  # convert to mV
             D = unit_conversion(conns["D"], default_unit='cm^2/s')
             v = unit_conversion(conns["v"], default_unit='V/s')

@@ -68,6 +68,7 @@ def source_groups_generator(group_file=None):
             "Risko_Diheds": '91',
             "Risko_Aman": '92',
             "Risko_Bayesian": '93',
+            "Risko_Robotics": '94',
         }
     with open(group_file, "r") as f:
         return json.load(f)
