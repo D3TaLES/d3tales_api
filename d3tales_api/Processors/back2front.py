@@ -11,8 +11,7 @@ from d3tales_api.D3database.d3database import DBconnector
 from ocelot.routines.conformerparser import pmgmol_to_rdmol
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 
-
-DEFAULT_SOLV = {"name" : "Acetonitrile", "model" : "implicit_solvent", "dielectric_constant" : 35.688}
+DEFAULT_SOLV = {"name": "Acetonitrile", "model": "implicit_solvent", "dielectric_constant": 35.688}
 RMSD_DEFAULT = True
 
 
@@ -22,16 +21,17 @@ class Gaus2FrontCharacterization:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False, rmsd=RMSD_DEFAULT):
+    def __init__(self, _id, calculation_type, conditions, charge, data=None, insert=True, all_props=False,
+                 rmsd=RMSD_DEFAULT):
         """
-        
+
         :param _id: str, molecule ID
         :param calculation_type: str, calculation type
-        :param conditions: dict, calculation conditions 
+        :param conditions: dict, calculation conditions
         :param charge: int, charge
         :param data: dict, calculation data
         :param insert: bool, insert generated data to the frontend D3TaLES database if True
-        :param all_props: bool, calculate all properties for the molecule if True 
+        :param all_props: bool, calculate all properties for the molecule if True
         """
         # connect to databases
         self.front_dbc = DBconnector(db_info.get("frontend"))
@@ -87,7 +87,9 @@ class Gaus2FrontCharacterization:
                 self.oxidation_potential, self.reduction_potential
             ]
             if rmsd:
-                properties.extend([self.rmsd_groundState_cation1, self.rmsd_cation1_cation2, self.rmsd_groundState_anion1, self.rmsd_anion1_anion2])
+                properties.extend(
+                    [self.rmsd_groundState_cation1, self.rmsd_cation1_cation2, self.rmsd_groundState_anion1,
+                     self.rmsd_anion1_anion2])
             for prop in properties:
                 try:
                     self.character_dict.update(prop())
@@ -197,8 +199,8 @@ class Gaus2FrontCharacterization:
     def from_data(cls, processing_data, **kwargs):
         """
         Generate data class from data dict
-        
-        :param processing_data: dict, data dict 
+
+        :param processing_data: dict, data dict
         :return: data class
         """
         _id = processing_data.get("mol_id")
@@ -206,7 +208,8 @@ class Gaus2FrontCharacterization:
         data = processing_data.get("data", {})
         conditions = data.get("conditions")
         charge = data.get("charge")
-        return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data, **kwargs)
+        return cls(_id=_id, calculation_type=calculation_type, conditions=conditions, charge=charge, data=data,
+                   **kwargs)
 
     def return_descriptor_dict(self, value, unit="", hashes=None, name="", order=1, condition_addition=None, **kwargs):
         """
@@ -515,7 +518,7 @@ class DOI2Front:
 
         # connect to databases
         self.front_coll = DBconnector(db_info.get("frontend")).get_collection("base")
-        self.back_coll = DBconnector(db_info.get("backend")).get_collection("computation")
+        self.back_coll = DBconnector(db_info.get("backend")).get_collection("nlp")
 
         # Basic variables
         if not doi and not backend_data:
@@ -545,9 +548,10 @@ class DOI2Front:
         }
 
     def check_extr_props(self, extracted_props):
-        for _, d in extracted_props.items():
-            if not d.get("conditions", {}).get("doi"):
-                d["conditions"]["doi"] = self.doi
+        for _, p_list in extracted_props.items():
+            for p in p_list:
+                if not p.get("conditions", {}).get("doi"):
+                    p["conditions"]["doi"] = self.doi
         return extracted_props
 
     @staticmethod
@@ -566,7 +570,6 @@ class DOI2Front:
 
             return db_check if db_check else FrontDB(smiles=clean_smiles, group="Sarkar", public=True).id
 
-
     @classmethod
     def from_json(cls, json_path, **kwargs):
         """
@@ -579,8 +582,6 @@ class DOI2Front:
             processing_data = json.load(fn)
         doi = processing_data.get("_id")
         return cls(doi=doi, backend_data=processing_data, **kwargs)
-
-
 
 
 if __name__ == "__main__":
