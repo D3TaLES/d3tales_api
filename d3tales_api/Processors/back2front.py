@@ -522,14 +522,18 @@ class DOI2Front:
             raise ValueError("The DOI2Front class requires either the 'doi' kwarg or 'backend_data' kwarg. Neither were provided. ")
         self.doi = doi or backend_data.get("_id")
         self.backend_data = backend_data if backend_data else self.back_coll.find_one({"_id": self.doi})
+        if not self.backend_data:
+            raise ValueError("No backend data found for DOI {}.".format(self.doi))
         self.raw_mol_data = self.backend_data.get("extracted_molecules", [])
 
         # Set data for this NLP extraction
         self.extracted_mol_data = {self.get_mol_id(d): self.get_literature_data(d) for d in self.raw_mol_data}
 
+        self.mol_ids = []
         if insert:
             for mol_id, nlp_data in self.extracted_mol_data.items():
                 FrontDB(instance=nlp_data, _id=mol_id)
+                self.mol_ids.append(mol_id)
 
     def get_literature_data(self, mol_data):
         extracted_properties = mol_data.get("extracted_properties", "")
