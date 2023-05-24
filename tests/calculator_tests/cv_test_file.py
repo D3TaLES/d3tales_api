@@ -45,17 +45,10 @@ diffusion = diffusion_cal.calculate(cv_entries)
 print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
 [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
-<<<<<<< HEAD
 
 charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
 charge_transfer = charge_transfer_cal.calculate(cv_entries, sci_notation=True)
 print("Charge Transfer", charge_transfer)
-=======
-#
-# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-# charge_transfer = charge_transfer_cal.calculate(cv_entries)
-# print("Charge Transfer", charge_transfer)
->>>>>>> afa6a961708d29de032074f3f98cc6a81c308a5a
 
 e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
 e_half = e_half_transfer_cal.calculate(cv_entries)

@@ -39,7 +39,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx_rtd_theme',
     'sphinx.ext.githubpages',
-    # 'recommonmark'
+    'recommonmark'
 ]
 
 def skip(app, what, name, obj, would_skip, options):
