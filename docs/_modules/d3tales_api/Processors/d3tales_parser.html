@@ -41,10 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -73,14 +69,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Processors.d3tales_parser</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">elsapy.elsdoc</span> <span class="kn">import</span> <span class="n">AbsDoc</span>
+<span class="kn">from</span> <span class="nn">elsapy.elsclient</span> <span class="kn">import</span> <span class="n">ElsClient</span>
+<span class="kn">from</span> <span class="nn">chemdataextractor</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">chemdataextractor.doc.text</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">articledownloader.articledownloader</span> <span class="kn">import</span> <span class="n">ArticleDownloader</span>
+
 <span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_cv</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_dft</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_uvvis</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">DBconnector</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.schema2class</span> <span class="kn">import</span> <span class="n">Schema2Class</span>
 
 
 <div class="viewcode-block" id="ProcessDFT"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT">[docs]</a><span class="k">class</span> <span class="nc">ProcessDFT</span><span class="p">:</span>
@@ -159,6 +164,14 @@
                 <span class="p">},</span>
                 <span class="s2">&quot;lumo&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">lumo</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;homo_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">homo_1</span><span class="p">,</span>
+                    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;lumo_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">lumo_1</span><span class="p">,</span>
                     <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
                 <span class="p">},</span>
             <span class="p">})</span>
@@ -455,10 +468,163 @@
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="ProcessNlp"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp">[docs]</a><span class="k">class</span> <span class="nc">ProcessNlp</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process NLP data for backend database</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessNlp.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">els_apikey</span><span class="o">=</span><span class="s2">&quot;3a5b9e26201041e25eee70953c65782c&quot;</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s2">&quot;temp/&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param doi: str, DOI or scopus id</span>
+<span class="sd">        :param instance: dict, NLP data. Instance data will override web-scrapped data.</span>
+<span class="sd">        :param els_apikey: str, API access key for api.elsevier.com</span>
+<span class="sd">        :param article_download: bool, download article and insert article main text if True</span>
+<span class="sd">        :param els_apikey: str, directory path into which to download article</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doi</span> <span class="o">=</span> <span class="p">(</span><span class="n">doi</span> <span class="ow">or</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)))</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;https://doi.org/&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">els_apikey</span> <span class="o">=</span> <span class="n">els_apikey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">article_download</span> <span class="o">=</span> <span class="n">article_download</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s2c</span> <span class="o">=</span> <span class="n">Schema2Class</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="n">schema_name</span><span class="o">=</span><span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get basic article info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_basic_info</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="c1"># Download full article</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">article_download</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_article</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_main_text</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data_dict</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span>
+        <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+        <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">})</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">article_download</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span><span class="p">:</span>
+            <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;main_text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span><span class="p">,</span> <span class="s2">&quot;pdf_location&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_path</span><span class="p">)})</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProcessNlp.get_main_text"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_main_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_path</span><span class="p">)</span>
+            <span class="n">elements</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">elements</span>
+
+            <span class="n">paragraphs</span><span class="p">,</span> <span class="n">refs</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">refs</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Abstract&quot;</span><span class="p">]:</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+                        <span class="n">elem</span> <span class="o">=</span> <span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;References&quot;</span><span class="p">]:</span>
+                                <span class="n">refs</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="k">break</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="k">pass</span>
+
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">Paragraph</span><span class="p">):</span>
+                            <span class="n">paragraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">data_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2c</span><span class="o">.</span><span class="n">Data</span><span class="p">()</span>
+            <span class="n">data_obj</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">paragraphs</span>
+            <span class="k">return</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to extract main text from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ProcessNlp.get_basic_info"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_basic_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nlp_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2c</span><span class="o">.</span><span class="n">Nlp</span><span class="p">()</span>
+        <span class="n">author_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2c</span><span class="o">.</span><span class="n">Author</span><span class="p">()</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ElsClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">els_apikey</span><span class="p">)</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">AbsDoc</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://api.elsevier.com/content/abstract/doi/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">))</span>
+        <span class="n">ab</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ab</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gathering data from the web...&quot;</span><span class="p">)</span>
+            <span class="c1"># put the data into nlp raw data schema</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;coredata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dc:publisher&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">journal</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;coredata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prism:publicationName&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">publish_date</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;coredata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prism:coverDate&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="n">author_obj</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_author_entry</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">)))</span>
+                               <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">][</span><span class="s2">&quot;author&quot;</span><span class="p">]]</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;coredata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prism:doi&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">date_accessed</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">abstract</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;coredata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dc:description&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">nlp_obj</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">title</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Not able to retrieve abstract for </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nlp_obj</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProcessNlp.make_author_entry"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry">[docs]</a>    <span class="k">def</span> <span class="nf">make_author_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">author</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;auid&quot;</span><span class="p">:</span> <span class="n">author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@auid&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;indexed_name&quot;</span><span class="p">:</span> <span class="n">author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ce:indexed-name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;surname&quot;</span><span class="p">:</span> <span class="n">author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ce:surname&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;given_name&quot;</span><span class="p">:</span> <span class="n">author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ce:given-name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;affiliations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_affiliations</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;affiliation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="ProcessNlp.download_article"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article">[docs]</a>    <span class="k">def</span> <span class="nf">download_article</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ad</span> <span class="o">=</span> <span class="n">ArticleDownloader</span><span class="p">(</span><span class="n">els_api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">els_apikey</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s2">&quot;American Chemical Society&quot;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;acs&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s2">&quot;Royal Society of Chemistry&quot;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;rsc&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;Elsevier B.V.&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;elsevier&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;Nature Research&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;nature&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;IOP Publishing Ltd&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;ecs&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;Wiley-VCH Verlag&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;wiley&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;Korean Electrochemical Society&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;ecs&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">==</span> <span class="s1">&#39;Institute of Physics Publishing&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;ecs&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;elsevier&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ad</span><span class="o">.</span><span class="n">get_html_from_doi</span><span class="p">(</span><span class="n">doi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">,</span> <span class="n">writefile</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessNlp.get_affiliations"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_affiliations</span><span class="p">(</span><span class="n">affiliation</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affiliation</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">affiliations</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">affiliation</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affiliation</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">affiliations</span> <span class="o">=</span> <span class="p">[</span><span class="n">affiliation</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">affiliations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">affiliations</span></div></div>
+
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+    <span class="c1"># data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 
            </div>

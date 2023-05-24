@@ -22,6 +22,7 @@ cp $whereisit/*.png ./doc/
 cd doc
 make clean
 make html
+pwd
 
 mv _build/html/* ../docs
 cd ../

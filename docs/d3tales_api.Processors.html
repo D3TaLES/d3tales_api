@@ -43,10 +43,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -105,6 +101,57 @@
 </section>
 <section id="module-d3tales_api.Processors.back2front">
 <span id="d3tales-api-processors-back2front-module"></span><h2>d3tales_api.Processors.back2front module<a class="headerlink" href="#module-d3tales_api.Processors.back2front" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.back2front.</span></span><span class="sig-name descname"><span class="pre">DOI2Front</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Update frontend db with backend db data for a particular set of data.
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doi</strong> – str, molecule ID</p></li>
+<li><p><strong>backend_data</strong> – dict, calculation data</p></li>
+<li><p><strong>insert</strong> – bool, insert generated data to the frontend D3TaLES database if True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.check_extr_props">
+<span class="sig-name descname"><span class="pre">check_extr_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.check_extr_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.check_extr_props" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Generate data class from data dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>json_path</strong> – str, path to JSON file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.get_literature_data">
+<span class="sig-name descname"><span class="pre">get_literature_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.get_literature_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.get_literature_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.get_mol_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_mol_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.get_mol_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.get_mol_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.Gaus2FrontCharacterization">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.back2front.</span></span><span class="sig-name descname"><span class="pre">Gaus2FrontCharacterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculation_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_props</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rmsd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization" title="Permalink to this definition"></a></dt>
@@ -178,7 +225,7 @@ Copyright 2021, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processing_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processing_data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data" title="Permalink to this definition"></a></dt>
 <dd><p>Generate data class from data dict</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -276,7 +323,7 @@ Copyright 2021, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.Gaus2FrontCharacterization.return_descriptor_dict">
-<span class="sig-name descname"><span class="pre">return_descriptor_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hashes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_addition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.return_descriptor_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.return_descriptor_dict" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">return_descriptor_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hashes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_addition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#Gaus2FrontCharacterization.return_descriptor_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.return_descriptor_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Generate descriptor dictionary in accordance with D3TaLES schema</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -487,6 +534,61 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessNlp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">els_apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3a5b9e26201041e25eee70953c65782c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'temp/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to process NLP data for backend database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">els_apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3a5b9e26201041e25eee70953c65782c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'temp/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doi</strong> – str, DOI or scopus id</p></li>
+<li><p><strong>instance</strong> – dict, NLP data. Instance data will override web-scrapped data.</p></li>
+<li><p><strong>els_apikey</strong> – str, API access key for api.elsevier.com</p></li>
+<li><p><strong>article_download</strong> – bool, download article and insert article main text if True</p></li>
+<li><p><strong>els_apikey</strong> – str, directory path into which to download article</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article">
+<span class="sig-name descname"><span class="pre">download_article</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.download_article"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_affiliations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">affiliation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_affiliations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info">
+<span class="sig-name descname"><span class="pre">get_basic_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_basic_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text">
+<span class="sig-name descname"><span class="pre">get_main_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_main_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry">
+<span class="sig-name descname"><span class="pre">make_author_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">author</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.make_author_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessUvVis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_uvvis.ParseExcel'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessUvVis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -636,13 +738,13 @@ NOTE: this only works if there is only one apparatus of the given type</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action">
-<span class="sig-name descname"><span class="pre">property_by_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/expflow_parser.html#ProcessExpFlowObj.property_by_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">property_by_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/expflow_parser.html#ProcessExpFlowObj.property_by_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action" title="Permalink to this definition"></a></dt>
 <dd><p>Get molecule_id working electrode surface area
 NOTE: this only works if there is only one action of the given name</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>action_name</strong> – str, name of action to get</p></li>
+<li><p><strong>action_names</strong> – str or list, name of action to get</p></li>
 <li><p><strong>parameter_idx</strong> – index of parameter to get if more than one</p></li>
 </ul>
 </dd>
@@ -668,6 +770,12 @@ NOTE: this only works if there is only one action of the given name</p>
 <dt class="sig sig-object py" id="d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol_concentration">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">redox_mol_concentration</span></span><a class="headerlink" href="#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol_concentration" title="Permalink to this definition"></a></dt>
 <dd><p>Concentration of redox-active molecule</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.solvent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solvent</span></span><a class="headerlink" href="#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.solvent" title="Permalink to this definition"></a></dt>
+<dd><p>Redox molecule instance</p>
 </dd></dl>
 
 </dd></dl>

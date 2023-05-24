@@ -41,10 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -74,18 +70,71 @@
              
   <h1>Source code for d3tales_api.D3database.info_from_smiles</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">selfies</span> <span class="k">as</span> <span class="nn">sf</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
 <span class="kn">import</span> <span class="nn">pubchempy</span> <span class="k">as</span> <span class="nn">pcp</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.schema2class</span> <span class="kn">import</span> <span class="n">Schema2Class</span>
 
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.rdchem</span> <span class="kn">import</span> <span class="n">Mol</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.rdmolops</span> <span class="kn">import</span> <span class="n">GetFormalCharge</span><span class="p">,</span> <span class="n">AddHs</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.Descriptors</span> <span class="kn">import</span> <span class="n">NumRadicalElectrons</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.inchi</span> <span class="kn">import</span> <span class="n">MolToInchi</span><span class="p">,</span> <span class="n">MolToInchiKey</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Draw</span><span class="p">,</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span><span class="p">,</span> <span class="n">AllChem</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.rdMolDescriptors</span> <span class="kn">import</span> <span class="n">CalcMolFormula</span><span class="p">,</span> <span class="n">CalcExactMolWt</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">RDConfig</span><span class="o">.</span><span class="n">RDContribDir</span><span class="p">,</span> <span class="s1">&#39;SA_Score&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">sascorer</span>
+
+
+<div class="viewcode-block" id="find_lowest_e_conf"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf">[docs]</a><span class="k">def</span> <span class="nf">find_lowest_e_conf</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">num_conf</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the lowest energy conformer for a molecule with RDKit</span>
+<span class="sd">    :param smiles: str, SMILES string</span>
+<span class="sd">    :param num_conf: float, number of conformers to serach</span>
+<span class="sd">    :return: str, xyz coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rdkmol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMultipleConfs</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">numConfs</span><span class="o">=</span><span class="n">num_conf</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">AllChem</span><span class="o">.</span><span class="n">ETKDG</span><span class="p">())</span>
+    <span class="n">results_MMFF</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFOptimizeMoleculeConfs</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">maxIters</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">results_MMFF</span><span class="p">)):</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">best_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolfiles</span><span class="o">.</span><span class="n">MolToXYZBlock</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">confId</span><span class="o">=</span><span class="n">best_idx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">structure</span></div>
+
+
+<div class="viewcode-block" id="image_to_base64"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.image_to_base64">[docs]</a><span class="k">def</span> <span class="nf">image_to_base64</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce base 64 string representation of image</span>
+
+<span class="sd">    :param img: python Image object</span>
+<span class="sd">    :return: str representing the image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
+    <span class="n">byte_data</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+    <span class="n">base64_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="base64_to_image"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.base64_to_image">[docs]</a><span class="k">def</span> <span class="nf">base64_to_image</span><span class="p">(</span><span class="n">base64_str</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce python Image object from base 64 string representation of image</span>
+
+<span class="sd">    :param base64_str: base64 string representing image</span>
+<span class="sd">    :param image_path: path for image to be saved (optional)</span>
+<span class="sd">    :return: python Image object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">byte_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">base64_str</span><span class="p">)</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">image_path</span><span class="p">:</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img</span></div>
 
 
 <div class="viewcode-block" id="GenerateMolInfo"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo">[docs]</a><span class="k">class</span> <span class="nc">GenerateMolInfo</span><span class="p">:</span>
@@ -136,45 +185,17 @@
         <span class="n">mol_info</span><span class="o">.</span><span class="n">molecular_weight</span> <span class="o">=</span> <span class="n">CalcExactMolWt</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
         <span class="n">mol_info</span><span class="o">.</span><span class="n">groundState_charge</span> <span class="o">=</span> <span class="n">GetFormalCharge</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
         <span class="n">mol_info</span><span class="o">.</span><span class="n">groundState_spin</span> <span class="o">=</span> <span class="n">NumRadicalElectrons</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># calculate spin multiplicity with Hand&#39;s rule</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">sa_score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">sascorer</span><span class="o">.</span><span class="n">calculateScore</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span><span class="p">:</span>
-            <span class="n">mol_info</span><span class="o">.</span><span class="n">d2_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_to_base64</span><span class="p">(</span><span class="n">Draw</span><span class="o">.</span><span class="n">MolToImage</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">))</span>
-            <span class="n">mol_info</span><span class="o">.</span><span class="n">init_structure</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">rdmolfiles</span><span class="o">.</span><span class="n">MolToXYZBlock</span><span class="p">(</span><span class="n">rdkmol_hs</span><span class="p">)</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">d2_image</span> <span class="o">=</span> <span class="n">image_to_base64</span><span class="p">(</span><span class="n">Draw</span><span class="o">.</span><span class="n">MolToImage</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">))</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">init_structure</span> <span class="o">=</span> <span class="n">find_lowest_e_conf</span><span class="p">(</span><span class="n">clean_smile</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">mol_info</span><span class="o">.</span><span class="n">synonyms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">+</span> <span class="n">pcpmol</span><span class="o">.</span><span class="n">synonyms</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="n">mol_info</span><span class="o">.</span><span class="n">synonyms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
 
-        <span class="k">return</span> <span class="n">mol_info</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">mol_info</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span></div></div>
 
-<div class="viewcode-block" id="GenerateMolInfo.image_to_base64"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">image_to_base64</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Produce base 64 string representation of image</span>
-
-<span class="sd">        :param img: python Image object</span>
-<span class="sd">        :return: str representing the image</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">output_buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
-        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
-        <span class="n">byte_data</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-        <span class="n">base64_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">base64_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="GenerateMolInfo.base64_to_image"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.base64_to_image">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">base64_to_image</span><span class="p">(</span><span class="n">base64_str</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Produce python Image object from base 64 string representation of image</span>
-
-<span class="sd">        :param base64_str: base64 string representing image</span>
-<span class="sd">        :param image_path: path for image to be saved (optional)</span>
-<span class="sd">        :return: python Image object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">byte_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">base64_str</span><span class="p">)</span>
-        <span class="n">image_data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">image_path</span><span class="p">:</span>
-            <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">img</span></div></div>
 </pre></div>
 
            </div>

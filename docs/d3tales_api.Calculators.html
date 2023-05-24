@@ -44,10 +44,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">d3tales_api.Calculators package</a><ul>
@@ -113,6 +109,9 @@
 <dt>Connection Points</dt><dd><dl class="field-list simple">
 <dt class="field-odd">e</dt>
 <dd class="field-odd"><p>E1/2 (default = V)</p>
+</dd>
+<dt class="field-even">scan_data</dt>
+<dd class="field-even"><p>optional, if e not provided, scan data will be used to find e (default = None)</p>
 </dd>
 </dl>
 </dd>
@@ -261,7 +260,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks">
-<span class="sig-name descname"><span class="pre">peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks" title="Permalink to this definition"></a></dt>
 <dd><p>Gather CV peaks</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -274,7 +273,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – data for calculation (rows of voltage, current)</p></li>
 <li><p><strong>width</strong> (<em>float</em>) – required width of peaks to identify</p></li>
 </ul>
 </dd>
@@ -288,7 +287,7 @@
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVDescriptorCalculator.prominent_peaks">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prominent_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0999</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.prominent_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.prominent_peaks" title="Permalink to this definition"></a></dt>
 <dd><p>Get prominent peaks from the CV data
-:param peaks_data: output data from scipy peak <cite>find_peaks</cite> function 
+:param peaks_data: output data from scipy peak <cite>find_peaks</cite> function
 :param orig_data: original peak data
 :param cutoff: percentage as decimal for peaks to disregard
 :type peaks_data: list
@@ -361,6 +360,9 @@
 </dd>
 <dt class="field-even">middle_scan</dt>
 <dd class="field-even"><p>optional, if i_p is not provided, scan data will be used to find i_p (default = None)</p>
+</dd>
+<dt class="field-odd">scan_data</dt>
+<dd class="field-odd"><p>optional, if i_p is not provided and middle_scan not provided, scan data will be used to find i_p (default = None)</p>
 </dd>
 </dl>
 </dd>
@@ -810,7 +812,7 @@ of spin. Uses DBSTEP.</p>
 <dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.plotters.D3Plotter" title="d3tales_api.Calculators.plotters.D3Plotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Plotter</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.live_plot">
-<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot" title="Permalink to this definition"></a></dt>
 <dd><p>Live Matplotlib plot for data</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -825,6 +827,37 @@ of spin. Uses DBSTEP.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
 <li><p><strong>fig_path</strong> (<em>str</em>) – path to which to save the figure</p></li>
+<li><p><strong>self_standard</strong> (<em>bool</em>) – establish self standard (e_half=0V) if True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>shows matplotlib plot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi">
+<span class="sig-name descname"><span class="pre">live_plot_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot_multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi" title="Permalink to this definition"></a></dt>
+<dd><p>Live Matplotlib plot for data</p>
+<dl class="simple">
+<dt>Connection Points:</dt><dd><dl class="field-list simple">
+<dt class="field-odd">scan_data</dt>
+<dd class="field-odd"><p>scanned data from CV file</p>
+</dd>
+<dt class="field-even">variable_prop</dt>
+<dd class="field-even"><p>property that varies between CVs</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>list</em>) – data for calculation</p></li>
+<li><p><strong>fig_path</strong> (<em>str</em>) – path to which to save the figure</p></li>
+<li><p><strong>sort</strong> (<em>bool</em>) – sort by variable_prop if True</p></li>
+<li><p><strong>self_standard</strong> (<em>bool</em>) – establish self standard (e_half=0V) if True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -835,7 +868,7 @@ of spin. Uses DBSTEP.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.plot_data">
-<span class="sig-name descname"><span class="pre">plot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.plot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.plot_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.plot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.plot_data" title="Permalink to this definition"></a></dt>
 <dd><p>CV plot data for plotly</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -847,7 +880,10 @@ of spin. Uses DBSTEP.</p>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – data for calculation</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
+<li><p><strong>self_standard</strong> (<em>bool</em>) – establish self standard (e_half=0V) if True</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>plot data for plotly</p>
@@ -875,7 +911,7 @@ of spin. Uses DBSTEP.</p>
 <dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.plotters.D3Plotter" title="d3tales_api.Calculators.plotters.D3Plotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Plotter</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot">
-<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#DFTSpecPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#DFTSpecPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot" title="Permalink to this definition"></a></dt>
 <dd><p>Live Matplotlib plot for data</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">

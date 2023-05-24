@@ -41,10 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -87,7 +83,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get id (either `_id` or `uuid`) from a data object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProcessExpFlowObj"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj">[docs]</a><span class="k">class</span> <span class="nc">ProcessExpFlowObj</span><span class="p">:</span>
@@ -116,6 +112,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">concentration_mass</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">solvent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Redox molecule instance&quot;&quot;&quot;</span>
+        <span class="n">reagent_instance</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagents</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;solvent&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reagent_instance</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reagent_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> redox molecule entries&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reagent_instance</span><span class="p">)))</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">redox_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Redox molecule instance&quot;&quot;&quot;</span>
         <span class="n">reagent_instance</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagents</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;redox_molecule&quot;</span><span class="p">]</span>
@@ -123,11 +129,13 @@
             <span class="k">return</span> <span class="n">reagent_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> redox moleucle entries&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reagent_instance</span><span class="p">)))</span>
+                <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> redox molecule entries&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reagent_instance</span><span class="p">)))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">molecule_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Molecule ID&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">rdkmol</span> <span class="o">=</span> <span class="n">MolFromSmiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redox_mol</span><span class="o">.</span><span class="n">smiles</span><span class="p">)</span>
         <span class="n">clean_smiles</span> <span class="o">=</span> <span class="n">MolToSmiles</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
         <span class="n">check_id</span> <span class="o">=</span> <span class="n">FrontDB</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="n">clean_smiles</span><span class="p">)</span><span class="o">.</span><span class="n">check_if_in_db</span><span class="p">()</span>
@@ -165,25 +173,26 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instruments</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instruments</span><span class="p">[</span><span class="n">instrument_idx</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
 
-<div class="viewcode-block" id="ProcessExpFlowObj.property_by_action"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action">[docs]</a>    <span class="k">def</span> <span class="nf">property_by_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_name</span><span class="p">,</span> <span class="n">parameter_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessExpFlowObj.property_by_action"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action">[docs]</a>    <span class="k">def</span> <span class="nf">property_by_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_names</span><span class="p">,</span> <span class="n">parameter_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get molecule_id working electrode surface area</span>
 <span class="sd">        NOTE: this only works if there is only one action of the given name</span>
 
-<span class="sd">        :param action_name: str, name of action to get</span>
+<span class="sd">        :param action_names: str or list, name of action to get</span>
 <span class="sd">        :param parameter_idx: index of parameter to get if more than one</span>
 <span class="sd">        :return: return property as data dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">action_instance</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">action_name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_instance</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">action_value</span> <span class="o">=</span> <span class="n">action_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">parameter_idx</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-            <span class="n">action_unit</span> <span class="o">=</span> <span class="n">action_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">parameter_idx</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">action_value</span><span class="p">),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">action_unit</span><span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> instances of </span><span class="si">{}</span><span class="s2">. ExpFlow submissions must have 1 instance of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_instance</span><span class="p">),</span> <span class="n">action_name</span><span class="p">,</span> <span class="n">action_name</span><span class="p">))</span></div>
+        <span class="n">action_names</span> <span class="o">=</span> <span class="n">action_names</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">action_names</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">action_name</span> <span class="ow">in</span> <span class="n">action_names</span><span class="p">:</span>
+            <span class="n">action_instance</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">action_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_instance</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">action_value</span> <span class="o">=</span> <span class="n">action_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">parameter_idx</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">action_unit</span> <span class="o">=</span> <span class="n">action_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">parameter_idx</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">action_value</span><span class="p">),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">action_unit</span><span class="p">}</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> instances of </span><span class="si">{}</span><span class="s2">. ExpFlow submissions must have 1 instance of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_instance</span><span class="p">),</span> <span class="n">action_name</span><span class="p">,</span> <span class="n">action_name</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProcessExpFlowObj.get_apparatus"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_apparatus">[docs]</a>    <span class="k">def</span> <span class="nf">get_apparatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apparatus_type</span><span class="p">,</span> <span class="n">get_uuid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -243,6 +252,8 @@
 <span class="sd">        :param beaker_uuid: str, uuid for beaker</span>
 <span class="sd">        :return: concentration data dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">solvent_uuids</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">redox_uuid</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">beaker_uuid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">concentration_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagents</span> <span class="k">if</span> <span class="n">get_id</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">==</span> <span class="n">redox_uuid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">smiles</span>
         <span class="n">redox_actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="k">if</span>
                          <span class="n">a</span><span class="o">.</span><span class="n">start_uuid</span> <span class="o">==</span> <span class="n">redox_uuid</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">end_uuid</span> <span class="o">==</span> <span class="n">beaker_uuid</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;transfer_solid&#39;</span><span class="p">]</span>
@@ -284,14 +295,16 @@
 <div class="viewcode-block" id="ProcessExperimentRun.get_electrode"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.get_electrode">[docs]</a>    <span class="k">def</span> <span class="nf">get_electrode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">electrode</span><span class="p">,</span> <span class="n">get_uuid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get electrode from experiment data</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param electrode: str,which electrode (working, counter, or reference)</span>
 <span class="sd">        :param get_uuid: bool, return uuid of electrode, else return electrode name</span>
 <span class="sd">        :return: electrode (uuid or name)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">electrode_instance</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">apparatus</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;electrode_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">electrode</span><span class="p">)]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">electrode_instance</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> electrode entries&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">electrode_instance</span><span class="p">),</span> <span class="n">electrode</span><span class="p">))</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Error. ExpFlow object </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> electrode entries&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">electrode_instance</span><span class="p">),</span>
+                                                                              <span class="n">electrode</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">electrode_instance</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">get_uuid</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">get_id</span><span class="p">(</span><span class="n">electrode_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -304,7 +317,7 @@
             <span class="n">experiment_run_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span>
             <span class="n">molecule_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_id</span><span class="p">,</span>
             <span class="n">working_electrode_surface_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">property_by_action</span><span class="p">(</span><span class="s2">&quot;measure_working_electrode_area&quot;</span><span class="p">),</span>
-            <span class="n">temperature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">property_by_action</span><span class="p">(</span><span class="s2">&quot;heat&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">property_by_action</span><span class="p">(</span><span class="s2">&quot;heat_stir&quot;</span><span class="p">),</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">property_by_action</span><span class="p">([</span><span class="s2">&quot;heat_stir&quot;</span><span class="p">,</span> <span class="s2">&quot;heat&quot;</span><span class="p">]),</span>
             <span class="n">instrument</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_name</span><span class="p">,</span>
             <span class="n">electrode_counter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_electrode</span><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">),</span>
             <span class="n">electrode_reference</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_electrode</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">),</span>

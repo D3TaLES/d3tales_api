@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="d3tales_api.Calculators package" href="d3tales_api.Calculators.html" />
-    <link rel="prev" title="Calculators" href="Calculators.html" /> 
+    <link rel="prev" title="Welcome to the D3TaLES API documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,10 +44,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">d3tales_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -58,6 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api.database_info">d3tales_api.database_info module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.source_groups_generator"><code class="docutils literal notranslate"><span class="pre">source_groups_generator()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api">Module contents</a></li>
@@ -171,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter"><code class="docutils literal notranslate"><span class="pre">CVPlotter</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot"><code class="docutils literal notranslate"><span class="pre">CVPlotter.live_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi"><code class="docutils literal notranslate"><span class="pre">CVPlotter.live_plot_multi()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.plot_data"><code class="docutils literal notranslate"><span class="pre">CVPlotter.plot_data()</span></code></a></li>
 </ul>
 </li>
@@ -252,11 +250,12 @@
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.info_from_smiles">d3tales_api.D3database.info_from_smiles module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.__init__"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.base64_to_image"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.base64_to_image()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.get_mol_info()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.image_to_base64()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.base64_to_image"><code class="docutils literal notranslate"><span class="pre">base64_to_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf"><code class="docutils literal notranslate"><span class="pre">find_lowest_e_conf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.image_to_base64"><code class="docutils literal notranslate"><span class="pre">image_to_base64()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.restapi">d3tales_api.D3database.restapi module</a><ul>
@@ -300,6 +299,14 @@
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.back2front">d3tales_api.Processors.back2front module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front"><code class="docutils literal notranslate"><span class="pre">DOI2Front</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.__init__"><code class="docutils literal notranslate"><span class="pre">DOI2Front.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.check_extr_props"><code class="docutils literal notranslate"><span class="pre">DOI2Front.check_extr_props()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.from_json"><code class="docutils literal notranslate"><span class="pre">DOI2Front.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_literature_data"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_literature_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_mol_id"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_mol_id()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.__init__"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_electron_affinity()</span></code></a></li>
@@ -353,6 +360,16 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.mol_info"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.mol_info</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp"><code class="docutils literal notranslate"><span class="pre">ProcessNlp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.data_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.download_article()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_affiliations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_basic_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_main_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.make_author_entry()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.no_sql_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.no_sql_data</span></code></a></li>
@@ -376,6 +393,7 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.reagents_by_id"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.reagents_by_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.redox_mol</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol_concentration"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.redox_mol_concentration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.solvent"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.solvent</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun"><code class="docutils literal notranslate"><span class="pre">ProcessExperimentRun</span></code></a><ul>
@@ -502,11 +520,29 @@ names such as <cite>frontend</cite>, <cite>backend</cite>, <cite>expflow</cite>,
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.database_info.source_groups_generator">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">source_groups_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#source_groups_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.source_groups_generator" title="Permalink to this definition"></a></dt>
+<dd><p>Get information about database connections. This function requires either a group_file argument
+or a GROUP_FILE environment variable. This argument or  environment variable should be a path
+to a JSON file containing source group information. The keys should be source group names
+and the values should be strings with two digit numbers, e.g., {“Risko”: “06”}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group_file</strong> – str, path to database info JSON file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON object containing information about source group codes</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-d3tales_api">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api" title="Permalink to this heading"></a></h2>
 <p>d3tales_api.</p>
-<p>API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.</p>
+<p>API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.
+Pip install may require –use-deprecated=legacy-resolver</p>
 </section>
 </section>
 
@@ -514,7 +550,7 @@ names such as <cite>frontend</cite>, <cite>backend</cite>, <cite>expflow</cite>,
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Calculators.html" class="btn btn-neutral float-left" title="Calculators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to the D3TaLES API documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="d3tales_api.Calculators.html" class="btn btn-neutral float-right" title="d3tales_api.Calculators package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

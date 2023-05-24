@@ -41,10 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -108,7 +104,49 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="source_groups_generator"><a class="viewcode-back" href="../../d3tales_api.html#d3tales_api.database_info.source_groups_generator">[docs]</a><span class="k">def</span> <span class="nf">source_groups_generator</span><span class="p">(</span><span class="n">group_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get information about database connections. This function requires either a group_file argument</span>
+<span class="sd">    or a GROUP_FILE environment variable. This argument or  environment variable should be a path</span>
+<span class="sd">    to a JSON file containing source group information. The keys should be source group names</span>
+<span class="sd">    and the values should be strings with two digit numbers, e.g., {&quot;Risko&quot;: &quot;06&quot;}.</span>
+
+<span class="sd">    :param group_file: str, path to database info JSON file</span>
+
+<span class="sd">    :return: JSON object containing information about source group codes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_file</span> <span class="o">=</span> <span class="n">group_file</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;GROUP_FILE&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;GROUP_FILE&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">group_file</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Environment variable GROUP_FILE not defined. Default group information is in ues. &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;unknown&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Eaton&quot;</span><span class="p">:</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Robotics&quot;</span><span class="p">:</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Ganapathysubramanian&quot;</span><span class="p">:</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Jenkins&quot;</span><span class="p">:</span> <span class="s1">&#39;03&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Mason&quot;</span><span class="p">:</span> <span class="s1">&#39;04&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom_Hussein&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Odom_Aman&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko&quot;</span><span class="p">:</span> <span class="s1">&#39;06&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Sarkar&quot;</span><span class="p">:</span> <span class="s1">&#39;07&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Shaw&quot;</span><span class="p">:</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Teague&quot;</span><span class="p">:</span> <span class="s1">&#39;09&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Csd&quot;</span><span class="p">:</span> <span class="s1">&#39;80&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Zinc&quot;</span><span class="p">:</span> <span class="s1">&#39;81&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Benchmark&quot;</span><span class="p">:</span> <span class="s1">&#39;90&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Diheds&quot;</span><span class="p">:</span> <span class="s1">&#39;91&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Aman&quot;</span><span class="p">:</span> <span class="s1">&#39;92&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Bayesian&quot;</span><span class="p">:</span> <span class="s1">&#39;93&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Risko_Robotics&quot;</span><span class="p">:</span> <span class="s1">&#39;94&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">group_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+
 <span class="n">db_info</span> <span class="o">=</span> <span class="n">db_info_generator</span><span class="p">()</span>
+<span class="n">source_groups</span> <span class="o">=</span> <span class="n">source_groups_generator</span><span class="p">()</span>
 </pre></div>
 
            </div>

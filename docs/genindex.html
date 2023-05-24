@@ -41,10 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -127,11 +123,15 @@
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.schema2class.Schema2Class.__init__">(d3tales_api.D3database.schema2class.Schema2Class method)</a>
 </li>
+        <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.__init__">(d3tales_api.Processors.back2front.DOI2Front method)</a>
+</li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.__init__">(d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">(d3tales_api.Processors.d3tales_parser.ProcessCV method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__">(d3tales_api.Processors.d3tales_parser.ProcessDFT method)</a>
+</li>
+        <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">(d3tales_api.Processors.d3tales_parser.ProcessNlp method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__">(d3tales_api.Processors.d3tales_parser.ProcessUvVis method)</a>
 </li>
@@ -184,7 +184,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.base64_to_image">base64_to_image() (d3tales_api.D3database.info_from_smiles.GenerateMolInfo static method)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.base64_to_image">base64_to_image() (in module d3tales_api.D3database.info_from_smiles)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -224,15 +224,17 @@
         <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.RSSCalc.calculate">(d3tales_api.Calculators.calculators.RSSCalc method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_plotting">calculate_plotting() (d3tales_api.Processors.parser_cv.ParseChiCV method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_prop">calculate_prop() (d3tales_api.Processors.parser_cv.ParseChiCV method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.dft_calculation_list.calculation_list">calculation_list() (in module d3tales_api.D3database.dft_calculation_list)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.cclib_parse">cclib_parse() (d3tales_api.Processors.parser_dft.ProcessCCLIB method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.check_extr_props">check_extr_props() (d3tales_api.Processors.back2front.DOI2Front method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.check_id">check_id() (d3tales_api.D3database.d3database.ParamsDB method)</a>
 </li>
@@ -368,8 +370,6 @@
         <li><a href="d3tales_api.Processors.html#module-d3tales_api.Processors">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.Processors.back2front
 
@@ -377,6 +377,8 @@
         <li><a href="d3tales_api.Processors.html#module-d3tales_api.Processors.back2front">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.Processors.d3tales_parser
 
@@ -433,6 +435,8 @@
       <ul>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.data_dict">(d3tales_api.Processors.d3tales_parser.ProcessDFT property)</a>
 </li>
+        <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict">(d3tales_api.Processors.d3tales_parser.ProcessNlp property)</a>
+</li>
       </ul></li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">data_format() (d3tales_api.Processors.d3tales_parser.ProcessCV static method)</a>
 </li>
@@ -454,7 +458,11 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.dipole_moments">dipole_moments (d3tales_api.Processors.parser_dft.ProcessGausLog property)</a>
 </li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front">DOI2Front (class in d3tales_api.Processors.back2front)</a>
+</li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.dot2dict">dot2dict() (d3tales_api.D3database.d3database.D3Database static method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article">download_article() (d3tales_api.Processors.d3tales_parser.ProcessNlp method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -484,11 +492,15 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.FileTransferTask">FileTransferTask (class in d3tales_api.Processors.processing_firetasks)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.find_data">find_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf">find_lowest_e_conf() (in module d3tales_api.D3database.info_from_smiles)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data">from_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization class method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.from_json">from_json() (d3tales_api.Processors.back2front.DOI2Front class method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB">FrontDB (class in d3tales_api.D3database.d3database)</a>
 </li>
@@ -504,9 +516,13 @@
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo">GenerateMolInfo (class in d3tales_api.D3database.info_from_smiles)</a>
 </li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations">get_affiliations() (d3tales_api.Processors.d3tales_parser.ProcessNlp static method)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_all_data">get_all_data() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_apparatus">get_apparatus() (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info">get_basic_info() (d3tales_api.Processors.d3tales_parser.ProcessNlp method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.get_client">get_client() (d3tales_api.D3database.restapi.RESTAPI method)</a>
 </li>
@@ -530,7 +546,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.get_id">get_id() (in module d3tales_api.Processors.expflow_parser)</a>
 </li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_literature_data">get_literature_data() (d3tales_api.Processors.back2front.DOI2Front method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text">get_main_text() (d3tales_api.Processors.d3tales_parser.ProcessNlp method)</a>
+</li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_master_df">get_master_df() (d3tales_api.D3database.restapi.D3talesData method)</a>
+</li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_mol_id">get_mol_id() (d3tales_api.Processors.back2front.DOI2Front static method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">get_mol_info() (d3tales_api.D3database.info_from_smiles.GenerateMolInfo method)</a>
 </li>
@@ -582,7 +604,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64">image_to_base64() (d3tales_api.D3database.info_from_smiles.GenerateMolInfo static method)</a>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.image_to_base64">image_to_base64() (in module d3tales_api.D3database.info_from_smiles)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.insert">insert() (d3tales_api.D3database.d3database.D3Database method)</a>
 </li>
@@ -615,11 +637,17 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi">live_plot_multi() (d3tales_api.Calculators.plotters.CVPlotter method)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry">make_author_entry() (d3tales_api.Processors.d3tales_parser.ProcessNlp method)</a>
+</li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.make_connections">make_connections() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.make_query">make_query() (d3tales_api.D3database.d3database.D3Database method)</a>
@@ -765,6 +793,8 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog">ProcessGausLog (class in d3tales_api.Processors.parser_dft)</a>
 </li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp">ProcessNlp (class in d3tales_api.Processors.d3tales_parser)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log">ProcessPsi4Log (class in d3tales_api.Processors.parser_dft)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis">ProcessUvVis (class in d3tales_api.Processors.d3tales_parser)</a>
@@ -875,8 +905,12 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.solvation_energy">solvation_energy() (d3tales_api.Processors.back2front.Gaus2FrontCharacterization method)</a>
 </li>
+      <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.solvent">solvent (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.html#d3tales_api.database_info.source_groups_generator">source_groups_generator() (in module d3tales_api.database_info)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.species_descriptors">species_descriptors (d3tales_api.Processors.back2front.Gaus2FrontCharacterization property)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_absorbance_data">sql_absorbance_data (d3tales_api.Processors.d3tales_parser.ProcessUvVis property)</a>
