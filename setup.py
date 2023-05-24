@@ -5,7 +5,7 @@ from d3tales_api import __version__, __author__, __credits__
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("requirements-old.txt", "r", encoding="utf-8") as f:
+with open("requirements.txt", "r", encoding="utf-8") as f:
     requirements = f.read().splitlines()
 if sys.version_info.major <=3 and sys.version_info.minor <=8:
     pass
