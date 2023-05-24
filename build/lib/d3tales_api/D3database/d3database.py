@@ -4,7 +4,6 @@ import jsonschema
 import pandas as pd
 from nanoid import generate
 from dotty_dict import dotty
-from datetime import datetime
 from monty.json import jsanitize
 from d3tales_api.database_info import db_info, source_groups
 from d3tales_api.D3database.schema2class import Schema2Class
@@ -300,12 +299,11 @@ class BackDB(D3Database):
     Class for accessing the backend D3TaLES database
     Copyright 2021, University of Kentucky
     """
-    def __init__(self, collection_name=None, instance=None, create_hash=False, last_updated=False):
+    def __init__(self, collection_name=None, instance=None, create_hash=False):
         """
         :param collection_name: str, name of collection
         :param instance: dict, instance to insert or validate
         :param create_hash: bool, generate new instance hash id if True
-        :param last_updated: bool, insert attribute last_updated to instance with the current date and time if True
         """
         super().__init__("backend", collection_name, instance)
 
@@ -315,8 +313,6 @@ class BackDB(D3Database):
             if self.id is None and not create_hash:
                 raise IOError("Hash ID is required for backend database insertion. Create an instance in the "
                               "frontend database first.")
-            if last_updated:
-                self.instance.update({"last_updated": datetime.now().isoformat()})
             self.insert(self.id)
 
     def get_geometry(self, hash_id):
