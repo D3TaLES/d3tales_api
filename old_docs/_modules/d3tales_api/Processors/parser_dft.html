@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Processors.parser_dft &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Processors.parser_dft</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Processors.parser_dft</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.plotters</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.gaussian</span> <span class="kn">import</span> <span class="n">GaussianOutput</span><span class="p">,</span> <span class="n">GaussianInput</span>
+
+
+<div class="viewcode-block" id="ProcessCCLIB"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB">[docs]</a><span class="k">class</span> <span class="nc">ProcessCCLIB</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process most logfiles using https://cclib.github.io/index.html.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessCCLIB.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mol_file&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wtuning_output</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wtuning_output&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;calculation_type&#39;</span><span class="p">,</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessCCLIB.cclib_parse"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.cclib_parse">[docs]</a>    <span class="k">def</span> <span class="nf">cclib_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use CCLIB to parse data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wtuning_output</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmol</span> <span class="o">=</span> <span class="n">cclib</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ccopen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+            <span class="c1"># self.functional = self.cmol.functional  # TODO basis set</span>
+            <span class="c1"># self.basis_set = self.cmol.basis_set  # TODO basis set</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">charge</span>
+            <span class="c1"># self.spin_multiplicity = self.cmol.atomspin  # TODO spin</span>
+
+            <span class="c1"># Skip calculation attributes if this is a Gaussian Input file</span>
+            <span class="n">file_extension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># self.electrons = getattr(self.cmol, &quot;electrons&quot;, None)  # TODO electrons</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">scfenergies</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># already in eV</span>
+            <span class="c1"># self.final_structure = self.get_sites_dict(self.cmol) # TODO fix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">homo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">moenergies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">homos</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lumo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">moenergies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="o">.</span><span class="n">homos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequency_dicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_freq_dicts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmol</span><span class="p">)</span></div>
+            <span class="c1"># self.gibbs_correction = self.cmol.corrections.get(&quot;Gibbs Free Energy&quot;) # TODO gibbs_correction</span>
+
+    <span class="c1"># TODO runtime</span>
+    <span class="c1"># TODO TDDFT</span>
+    <span class="c1"># TODO dipole</span>
+    <span class="c1"># TODO solvents stuff</span>
+    <span class="c1"># TODO omega</span>
+<div class="viewcode-block" id="ProcessCCLIB.get_sites_dict"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_sites_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_sites_dict</span><span class="p">(</span><span class="n">cmol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a pymatgen sites dictionary list from a cclib molecule object</span>
+<span class="sd">        :return: list of atom site dicts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">atomcoords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">atomic_nums</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">atomnos</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">periodictable</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">atomic_nums</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;species&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;element&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;occu&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}],</span> <span class="s1">&#39;xyz&#39;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{}}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span>
+                <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coords</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="ProcessCCLIB.get_freq_dicts"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_freq_dicts">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_freq_dicts</span><span class="p">(</span><span class="n">cmol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a pymatgen frequency dictionary list from a cclib molecule object</span>
+<span class="sd">        :return: list of frequency dicts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">vibfreqs</span>
+            <span class="n">masses</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">vibrmasses</span>
+            <span class="n">vibfconsts</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">vibfconsts</span>
+            <span class="n">vibirs</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">vibirs</span>
+            <span class="n">vibsyms</span> <span class="o">=</span> <span class="n">cmol</span><span class="o">.</span><span class="n">vibsyms</span>
+            <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r_mass&#39;</span><span class="p">:</span> <span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;f_constant&#39;</span><span class="p">:</span> <span class="n">vibfconsts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;IR_intensity&#39;</span><span class="p">:</span> <span class="n">vibirs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                     <span class="s1">&#39;symmetry&#39;</span><span class="p">:</span> <span class="n">vibsyms</span><span class="p">[</span><span class="n">i</span><span class="p">]}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freqs</span><span class="p">)]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="ProcessCCLIB.get_radical_stability_score"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_radical_stability_score">[docs]</a>    <span class="k">def</span> <span class="nf">get_radical_stability_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spin_type</span><span class="o">=</span><span class="s2">&quot;mulliken&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get radical stability score</span>
+<span class="sd">        :param spin_type: str, type of spin to use</span>
+<span class="sd">        :return: dictionary of radical stability score and its components</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_file&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;spin_type&quot;</span><span class="p">:</span> <span class="n">spin_type</span><span class="p">}</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_file&quot;</span><span class="p">:</span> <span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="s2">&quot;spin_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spin_type&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">radical_buried_vol</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">RadBuriedVolCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A^3&quot;</span><span class="p">},</span>
+                    <span class="n">radical_spin</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">RadicalSpinCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)},</span>
+                    <span class="n">radical_stability_score</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">RSSCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">c_data</span><span class="p">)})</span></div></div>
+
+
+<div class="viewcode-block" id="ProcessPsi4Log"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log">[docs]</a><span class="k">class</span> <span class="nc">ProcessPsi4Log</span><span class="p">(</span><span class="n">ProcessCCLIB</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process Psi4 logfiles.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessPsi4Log.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessPsi4Log.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div></div>
+
+        <span class="c1"># TODO finish</span>
+
+
+<div class="viewcode-block" id="ProcessGausLog"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog">[docs]</a><span class="k">class</span> <span class="nc">ProcessGausLog</span><span class="p">(</span><span class="n">ProcessCCLIB</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process Gaussian logfiles.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessGausLog.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mol_file&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wtuning_output</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wtuning_output&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;calculation_type&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_name</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;code_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Gaussian&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_version</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;code_version&#39;</span><span class="p">,</span> <span class="s1">&#39;16&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pmgmol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functional</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">functional</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">basis_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_multiplicity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">spin_multiplicity</span>
+
+        <span class="c1"># Skip calculation attributes if this is a Gaussian Input file</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">file_extension</span> <span class="o">!=</span> <span class="s1">&#39;gjf&#39;</span> <span class="ow">and</span> <span class="n">file_extension</span> <span class="o">!=</span> <span class="s1">&#39;com&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">electrons</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="p">,</span> <span class="s2">&quot;electrons&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">final_energy</span> <span class="o">*</span> <span class="mf">27.2114</span>  <span class="c1"># convert to eV</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">final_structure</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">&#39;sites&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">homo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">homo_lumo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lumo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">homo_lumo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequency_dicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="p">,</span> <span class="s2">&quot;frequencies&quot;</span><span class="p">,</span>
+                                                                                      <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gibbs_correction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">corrections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Gibbs Free Energy&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_solvent_info</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse_tddft</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProcessGausLog.get_pmgmol"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.get_pmgmol">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_pmgmol</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Pymatgen molecule object from file</span>
+
+<span class="sd">        :param file: str, file path</span>
+<span class="sd">        :return: Pymatgen molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s1">&#39;gjf&#39;</span> <span class="ow">or</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s1">&#39;com&#39;</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">GaussianInput</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">GaussianOutput</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mol</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runtime in core hours from a logfile&quot;&quot;&quot;</span>
+        <span class="n">time_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+\.d+|\d+&quot;</span><span class="p">)</span>
+        <span class="n">time_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;Job cpu time&quot;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+                    <span class="n">time_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">time_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">time_data</span><span class="p">:</span>
+            <span class="n">time_data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">time_data</span><span class="p">]</span>
+            <span class="n">runtime</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">86400</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3600</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">runtime</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">runtime</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProcessGausLog.get_tddft_excitations"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.get_tddft_excitations">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_tddft_excitations</span><span class="p">(</span><span class="n">log_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read excitation energies after a TD-DFT calculation.</span>
+
+<span class="sd">        :param log_path: str, filepath to log file</span>
+<span class="sd">        :return: A list of tuple for each transition such as [(energy (eV), lambda (nm), oscillatory strength), ... ]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">float_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*([+-]?\d+\.\d+)&quot;</span><span class="p">)</span>
+        <span class="n">state_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z]*let&quot;</span><span class="p">)</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Singlet&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s2">&quot;Doublet&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s2">&quot;Triplet&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="c1"># read in file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">td</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sExcitation energies and oscillator strengths:&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="n">td</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">td</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sExcited State\s*\d&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">float_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">state</span> <span class="o">=</span> <span class="n">state_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="n">state_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">state_val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;Singlet&quot;</span>
+                            <span class="k">elif</span> <span class="nb">round</span><span class="p">(</span><span class="n">state_val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                                <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;Doublet&quot;</span>
+                            <span class="k">elif</span> <span class="nb">round</span><span class="p">(</span><span class="n">state_val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                                <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;Triplet&quot;</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                    <span class="s2">&quot;Calculation has a spin state greater than triplet -- spin </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state_val</span><span class="p">))</span>
+                        <span class="n">transitions</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">transitions</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dipole_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of tuples, each containing teh (X, Y, Z) coordinate for a dipole moment such as [(X1, Y1, Z1), (X2, Y2, Z2)... ]&quot;&quot;&quot;</span>
+
+        <span class="n">coord_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]+=\s+[+-]?[0-9]*\.[0-9]+&quot;</span><span class="p">)</span>
+        <span class="n">dipole_moments</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># read in file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">td</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sDipole moment \(field-independent basis, Debye\):&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="n">td</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">td</span><span class="p">:</span>
+                    <span class="n">coord_dict</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coord_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+                        <span class="n">dimension</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">coord</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[+-]?[0-9]*\.[0-9]+&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">coord</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">coord_dict</span><span class="p">[</span><span class="n">dimension</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">coord_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">coord_dict</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">coord_dict</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">coord_dict</span><span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]]</span>
+                    <span class="n">dipole_moments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">coord_list</span><span class="p">))</span>
+                    <span class="n">td</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dipole_moments</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pcm_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Solvent and dielectric constant from Gaussian logfile:  [solvent_name, dielectric_constant] - list containing solvent name and dielectric constant]&quot;&quot;&quot;</span>
+        <span class="n">name_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;:(.*?),\s*Eps&quot;</span><span class="p">)</span>
+        <span class="n">dc_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Eps=\s*(.*?)\s*Eps&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">pcm</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sPolarizable Continuum Model&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="n">pcm</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">pcm</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sSolvent&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                        <span class="n">solvent_name</span> <span class="o">=</span> <span class="n">name_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="n">dielectric_constant</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dc_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="n">solvent_name</span><span class="p">,</span> <span class="n">dielectric_constant</span><span class="p">]</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">homo_lumo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;HOMO and LUMO energies from a Gaussian molecule: [homo, lumo] - list containing homo then lumo in eV&quot;&quot;&quot;</span>
+        <span class="n">num_electrons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">electrons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">eigens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">eigenvalues</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">homo</span> <span class="o">=</span> <span class="n">eigens</span><span class="p">[</span><span class="n">num_electrons</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">27.2114</span>  <span class="c1"># convert to eV</span>
+        <span class="n">lumo</span> <span class="o">=</span> <span class="n">eigens</span><span class="p">[</span><span class="n">num_electrons</span><span class="p">]</span> <span class="o">*</span> <span class="mf">27.2114</span>  <span class="c1"># convert to eV</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">homo</span><span class="p">,</span> <span class="n">lumo</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">omega</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Omega value from w-tuning output file (generated with the OCELOT w-tuning module)&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wtuning_output</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="n">w_data</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;0.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tuning_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Omega value from Pymatgen molecule object&quot;&quot;&quot;</span>
+        <span class="n">route_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">route_parameters</span>
+        <span class="n">route_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">route_params</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">omega_string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[^0-9]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">route_params</span><span class="p">[</span><span class="s1">&#39;3108&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;0.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">omega_string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">omega_string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[^0-9]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">route_params</span><span class="p">[</span><span class="s1">&#39;iop(3107&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;0.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">omega_string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ProcessGausLog.get_solvent_info"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.get_solvent_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_solvent_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get solvent information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pmgmol</span><span class="o">.</span><span class="n">is_pcm</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcm_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dielectric_constant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcm_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ProcessGausLog.parse_tddft"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.parse_tddft">[docs]</a>    <span class="k">def</span> <span class="nf">parse_tddft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse TDDFT data</span>
+
+<span class="sd">        :param sigma:</span>
+<span class="sd">        :param step:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># read the log files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tddft_excitations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tddft_excitations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+
+        <span class="c1"># get descriptors</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tddft_excitations</span><span class="p">[</span><span class="s2">&quot;Singlet&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tddft_excitations</span><span class="p">[</span><span class="s2">&quot;Doublet&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tddft_excitations</span><span class="p">[</span><span class="s2">&quot;Triplet&quot;</span><span class="p">]</span>
+
+        <span class="c1"># clean out negative absorptions</span>
+        <span class="n">negative_absorptions</span> <span class="o">=</span> <span class="p">[</span><span class="n">transitions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">transitions</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">negative_absorptions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: </span><span class="si">{}</span><span class="s2"> calculation contained a negative excitation energy&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">))</span>
+
+        <span class="c1"># Get plot data</span>
+        <span class="k">if</span> <span class="n">transitions</span><span class="p">:</span>
+            <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;transitions&quot;</span><span class="p">:</span> <span class="s2">&quot;transitions&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;step&quot;</span><span class="p">}</span>
+            <span class="n">c_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;transitions&quot;</span><span class="p">:</span> <span class="n">transitions</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="n">sigma</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tddft_spectra_data</span> <span class="o">=</span> <span class="n">DFTSpecPlotter</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">c_data</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

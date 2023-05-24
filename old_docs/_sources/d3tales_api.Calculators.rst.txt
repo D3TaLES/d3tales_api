@@ -1,0 +1,37 @@
+d3tales\_api.Calculators package
+================================
+
+Submodules
+----------
+
+d3tales\_api.Calculators.calculators module
+-------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.calculators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.plotters module
+----------------------------------------
+
+.. automodule:: d3tales_api.Calculators.plotters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Calculators.utils module
+-------------------------------------
+
+.. automodule:: d3tales_api.Calculators.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: d3tales_api.Calculators
+   :members:
+   :undoc-members:
+   :show-inheritance:

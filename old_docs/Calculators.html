@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculators &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="d3tales_api package" href="d3tales_api.html" />
+    <link rel="prev" title="Processors" href="Processors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Calculators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#calculator-submodules">Calculator Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-use">Basic Use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#molecular-dft">Molecular DFT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cyclic-voltammetry">Cyclic Voltammetry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#general-cv-analysis">General CV Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#diffusion-coefficient-calculation">Diffusion Coefficient Calculation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#considering-units">Considering Units</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Calculators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Calculators.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="calculators">
+<h1>Calculators<a class="headerlink" href="#calculators" title="Permalink to this heading"></a></h1>
+<p>D<sup>3</sup>TaLES API Calculators allow users to calculate useful experimental and
+computational properties from nested data. Additionally, all calulators contain unit conversion
+features.</p>
+<p>Full documentation can be found <a class="reference external" href="d3tales_api.Calculators.html">here</a>.</p>
+<section id="calculator-submodules">
+<h2>Calculator Submodules<a class="headerlink" href="#calculator-submodules" title="Permalink to this heading"></a></h2>
+<p>The Calculators module contains two primary submodules (<code class="docutils literal notranslate"><span class="pre">calculators</span></code> and <code class="docutils literal notranslate"><span class="pre">plotters</span></code>) and a minor submodules
+(<code class="docutils literal notranslate"><span class="pre">utils</span></code>). Most users will only the primary submodules, specifically the <code class="docutils literal notranslate"><span class="pre">calculators</span></code> primary submodule.</p>
+<p>Submodules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">calculators</span></code>: This contains many calculator classes. Each calculator class must receive
+<code class="docutils literal notranslate"><span class="pre">data</span></code> and a data <code class="docutils literal notranslate"><span class="pre">connector</span></code> that connects the input data with the connection points.
+Generally, each calculator calculates a specific property with a <code class="docutils literal notranslate"><span class="pre">calculate</span></code> method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotters</span></code>: The submodule is adapted from the calculators submodule and focuses on producing
+plotting data. Most plotters have a <code class="docutils literal notranslate"><span class="pre">plot_data</span></code> method that produces data for a <a class="reference external" href="https://plotly.com/">plotly</a>
+plot and a <code class="docutils literal notranslate"><span class="pre">live_plot</span></code> method that produces a <a class="reference external" href="https://matplotlib.org/">Matplotlib</a> plot.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: This contains several useful functions used in the primary submodules, most notable
+of which is the <code class="docutils literal notranslate"><span class="pre">unit_conversion</span></code> function.</p></li>
+</ul>
+</section>
+<section id="basic-use">
+<h2>Basic Use<a class="headerlink" href="#basic-use" title="Permalink to this heading"></a></h2>
+<p>The following examples show the basic use for the D<sup>3</sup>TaLES Calculators, including
+examples for both computational and experimental data. In general, calculating a property requires:</p>
+<ol class="simple">
+<li><p>Importing the appropriate calculator class, <code class="docutils literal notranslate"><span class="pre">CALCULATOR_CLASS</span></code></p></li>
+<li><p>Defining the raw data, <code class="docutils literal notranslate"><span class="pre">DATA</span></code></p></li>
+<li><p>Defining a connector from the raw data structure to the calculator connection points (see documentation for the imported
+calculator class), <code class="docutils literal notranslate"><span class="pre">CONNECTOR</span></code></p></li>
+<li><p>Establishing the calculator instance and calculating the property. The general format
+for this final step is: <code class="docutils literal notranslate"><span class="pre">CALCULATOR_CLASS(connector=CONNECTOR).calculate(DATA)</span></code>.</p></li>
+</ol>
+<p>Generally, calculating the property from a calcuator class instance requires calling the
+<code class="docutils literal notranslate"><span class="pre">calculate</span></code> method. However, there are some cases (EX: <code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator</span></code>) where several
+properties can be calculated from one class, so more specific methods must be called(EX:
+<code class="docutils literal notranslate"><span class="pre">peaks</span></code>, <code class="docutils literal notranslate"><span class="pre">reversibility</span></code>, <code class="docutils literal notranslate"><span class="pre">e_half</span></code>).</p>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">plotter</span></code> submodule has a very similar use to the <code class="docutils literal notranslate"><span class="pre">calculators</span></code> submodule. However,
+instead of calling the <code class="docutils literal notranslate"><span class="pre">calculate</span></code> method, the user must call the <code class="docutils literal notranslate"><span class="pre">plot_data</span></code> or <code class="docutils literal notranslate"><span class="pre">live_plot</span></code> method.</p>
+<section id="molecular-dft">
+<h3>Molecular DFT<a class="headerlink" href="#molecular-dft" title="Permalink to this heading"></a></h3>
+<p>This example shows the calculation of the adiabatic ionization energy from <code class="docutils literal notranslate"><span class="pre">calc_data</span></code> extracted
+from a calculation output file and transformed to the D<sup>3</sup>TaLES backend schema.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">EnergyDiffCalc</span>
+
+<span class="n">calc_data</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;opt_groundState&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;scf_total_energy&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.60</span><span class="p">,</span> 
+      <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;eV&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;opt_cation1&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;scf_total_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;-0.25eV&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">connector</span> <span class="o">=</span> <span class="p">{</span>   
+  <span class="s2">&quot;energy_final&quot;</span><span class="p">:</span>   <span class="s2">&quot;opt_cation1.scf_total_energy&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span>  <span class="s2">&quot;opt_groundState.scf_total_energy&quot;</span>
+<span class="p">}</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyDiffCalc</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">calc_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting <code class="docutils literal notranslate"><span class="pre">energy</span></code> should be <code class="docutils literal notranslate"><span class="pre">0.35</span></code>.</p>
+<p>Useful molecular DFT calculations include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ReorganizationCalc</span></code>: Reorganization energy.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RMSDCalc</span></code>: Root mean squared error between atoms in two geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DeltaGSolvCalc</span></code>: Change in Gibbs energy for solvation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RedoxPotentialCalc</span></code>: Redox potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RadBuriedVolCalc</span></code>: Radical buried volume for the atom with the atom with the highest portion
+of spin. Uses <a class="reference external" href="https://github.com/patonlab/DBSTEP">DBSTEP</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RadicalSpinCalc</span></code>: Radical spin density. Uses <a class="reference external" href="https://github.com/patonlab/DBSTEP">DBSTEP</a>.</p></li>
+</ul>
+</section>
+<section id="cyclic-voltammetry">
+<h3>Cyclic Voltammetry<a class="headerlink" href="#cyclic-voltammetry" title="Permalink to this heading"></a></h3>
+<p>CV scan data is assumed to be in the format produced by the D<sup>3</sup>TaLES CV parsers,
+a list of scans where each list contains a list of points and each point is a tuple containing
+the voltage the potential. EX: <code class="docutils literal notranslate"><span class="pre">[[[volt_1a,</span> <span class="pre">pot_1a],</span> <span class="pre">[volt_1b,</span> <span class="pre">pot1b],</span> <span class="pre">...],</span> <span class="pre">[[volt_2a,</span> <span class="pre">pot_2a],</span>&#160; <span class="pre">[volt_2b,</span> <span class="pre">pot2b],</span> <span class="pre">...],</span> <span class="pre">...]</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCAN_DATA1</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Some extracted CV scan data</span>
+<span class="n">SCAN_DATA2</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Some extracted CV scan data</span>
+<span class="n">SCAN_DATA3</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Some extracted CV scan data</span>
+
+<span class="n">cv_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;scan_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;0.15V/s&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;working_electrode_surface_area&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;0.007&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;cm^3&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;redox_mol_concentration&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01M&quot;</span>
+        <span class="p">},</span> 
+        <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="n">SCAN_DATA1</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;scan_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;0.15V/s&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;working_electrode_surface_area&quot;</span><span class="p">:</span> <span class="s2">&quot;0.007cm^3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;redox_mol_concentration&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01M&quot;</span>
+        <span class="p">},</span> 
+        <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="n">SCAN_DATA2</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;scan_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;0.15V/s&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;working_electrode_surface_area&quot;</span><span class="p">:</span> <span class="s2">&quot;0.007cm^3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;redox_mol_concentration&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01M&quot;</span>
+        <span class="p">},</span> 
+        <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="n">SCAN_DATA3</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">connector</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;conditions.working_electrode_surface_area&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="s2">&quot;conditions.scan_rate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;conditions.redox_mol_concentration&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;num_electrons&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="s2">&quot;scan_data&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="general-cv-analysis">
+<h4>General CV Analysis<a class="headerlink" href="#general-cv-analysis" title="Permalink to this heading"></a></h4>
+<p>Extracting basic cyclic voltammagram properties from the first
+CV in the <code class="docutils literal notranslate"><span class="pre">cv_data</span></code> list.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">CVDescriptorCalculator</span>
+
+<span class="n">descriptor_cal</span> <span class="o">=</span> <span class="n">CVDescriptorCalculator</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peaks: &quot;</span><span class="p">,</span> <span class="n">descriptor_cal</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">cv_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reversibility: &quot;</span><span class="p">,</span> <span class="n">descriptor_cal</span><span class="o">.</span><span class="n">reversibility</span><span class="p">(</span><span class="n">cv_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;E 1/2: &quot;</span><span class="p">,</span> <span class="n">descriptor_cal</span><span class="o">.</span><span class="n">e_half</span><span class="p">(</span><span class="n">cv_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak Splittings: &quot;</span><span class="p">,</span> <span class="n">descriptor_cal</span><span class="o">.</span><span class="n">peak_splittings</span><span class="p">(</span><span class="n">cv_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numer of middle sweeps: &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">descriptor_cal</span><span class="o">.</span><span class="n">middle_sweep</span><span class="p">(</span><span class="n">cv_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+</pre></div>
+</div>
+</section>
+<section id="diffusion-coefficient-calculation">
+<h4>Diffusion Coefficient Calculation<a class="headerlink" href="#diffusion-coefficient-calculation" title="Permalink to this heading"></a></h4>
+<p>Using the CVs in the <code class="docutils literal notranslate"><span class="pre">cv_data</span></code> list to calculate diffusion coefficient</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">CVDiffusionCalculator</span>
+
+<span class="n">diffusion_cal</span> <span class="o">=</span> <span class="n">CVDiffusionCalculator</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span>
+<span class="n">diffusion</span> <span class="o">=</span> <span class="n">diffusion_cal</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">cv_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average diffusion&quot;</span><span class="p">,</span> <span class="n">diffusion</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitted diffusion&quot;</span><span class="p">,</span> <span class="n">diffusion</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Useful CV alculations include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ConcentrationCalculator</span></code>: Solution concentration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator</span></code>: Various CV properties including peaks, reversibility, E<sub>1/2</sub>,
+peak splitting, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CVDiffusionCalculator</span></code>: Diffusion constant using Randles-Scidwick equation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CVChargeTransferCalculator</span></code>: Charge transfer rate.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="considering-units">
+<h2>Considering Units<a class="headerlink" href="#considering-units" title="Permalink to this heading"></a></h2>
+<p>The D<sup>3</sup>TaLES Calculators use <a class="reference external" href="https://pint.readthedocs.io/en/stable/">pint</a> to
+manage unit conversions. Therefore, parameter units can be specified in any manner
+compatible with pint (EX: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">molar</span></code>, <code class="docutils literal notranslate"><span class="pre">1.0M</span></code>, pint objects). Additionally, these calculators
+accept the D<sup>3</sup>TaLES <code class="docutils literal notranslate"><span class="pre">data_dict</span></code> format: <code class="docutils literal notranslate"><span class="pre">{&quot;value&quot;:</span> <span class="pre">1,</span> <span class="pre">&quot;unit&quot;:</span> <span class="pre">&quot;M&quot;}</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Processors.html" class="btn btn-neutral float-left" title="Processors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="d3tales_api.html" class="btn btn-neutral float-right" title="d3tales_api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+d3tales\_api.Processors package
+===============================
+
+Submodules
+----------
+
+d3tales\_api.Processors.back2front module
+-----------------------------------------
+
+.. automodule:: d3tales_api.Processors.back2front
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.d3tales\_parser module
+----------------------------------------------
+
+.. automodule:: d3tales_api.Processors.d3tales_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.expflow\_parser module
+----------------------------------------------
+
+.. automodule:: d3tales_api.Processors.expflow_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.parser\_cv module
+-----------------------------------------
+
+.. automodule:: d3tales_api.Processors.parser_cv
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.parser\_dft module
+------------------------------------------
+
+.. automodule:: d3tales_api.Processors.parser_dft
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.parser\_ir module
+-----------------------------------------
+
+.. automodule:: d3tales_api.Processors.parser_ir
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.parser\_uvvis module
+--------------------------------------------
+
+.. automodule:: d3tales_api.Processors.parser_uvvis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.processing\_firetasks module
+----------------------------------------------------
+
+.. automodule:: d3tales_api.Processors.processing_firetasks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: d3tales_api.Processors
+   :members:
+   :undoc-members:
+   :show-inheritance:

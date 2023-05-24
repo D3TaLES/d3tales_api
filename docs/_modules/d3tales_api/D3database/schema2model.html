@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.D3database.schema2model &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.D3database.schema2model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.D3database.schema2model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Json Schema to Django Model</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">inflection</span>
+
+
+<div class="viewcode-block" id="determine_model_name"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.determine_model_name">[docs]</a><span class="k">def</span> <span class="nf">determine_model_name</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the model name</span>
+
+<span class="sd">    :param model_id: str, model id</span>
+<span class="sd">    :param filename: str, filename</span>
+<span class="sd">    :return: str, model name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unhandled exception </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">model_name</span> <span class="ow">and</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># model_name = model_name.split(&#39;.&#39;)[0]</span>
+
+    <span class="k">return</span> <span class="n">inflection</span><span class="o">.</span><span class="n">camelize</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;UnknownModel&#39;</span></div>
+
+
+<div class="viewcode-block" id="get_required_string"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.get_required_string">[docs]</a><span class="k">def</span> <span class="nf">get_required_string</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_fields</span><span class="p">,</span> <span class="n">field_type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="n">is_pk_field</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the required portion of model field</span>
+
+<span class="sd">    :param is_pk_field:</span>
+<span class="sd">    :param field_type:</span>
+<span class="sd">    :param key_name:</span>
+<span class="sd">    :param required_fields:</span>
+<span class="sd">    :return: str, required model string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_pk_field</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;primary_key=True&#39;</span>
+
+    <span class="k">if</span> <span class="n">field_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key_name</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;null=False&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;null=True&#39;</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># string, boolean</span>
+        <span class="k">if</span> <span class="n">key_name</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;null=False, blank=False&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;null=True, blank=True&#39;</span></div>
+
+
+<div class="viewcode-block" id="parse_model"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.schema2model.parse_model">[docs]</a><span class="k">def</span> <span class="nf">parse_model</span><span class="p">(</span><span class="n">json_model</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert JSON object into Django model</span>
+
+<span class="sd">    :param json_model: json object containing model</span>
+<span class="sd">    :param filename: filename of model</span>
+<span class="sd">    :return: str containing Django model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model type has to be object to convert to model, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="s1">&#39;oneOf&#39;</span> <span class="ow">in</span> <span class="n">json_model</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optional required fields detected: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;oneOf&#39;</span><span class="p">]))</span>
+
+    <span class="n">model_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">determine_model_name</span><span class="p">(</span><span class="n">json_model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">),</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">model_str</span> <span class="o">+=</span> <span class="s2">&quot;class </span><span class="si">{}</span><span class="s2">(models.Model):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="n">model_str</span> <span class="o">+=</span> <span class="s1">&#39;    &quot;&quot;&quot;Generated model from json schema&quot;&quot;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model name is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">json_model</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Title of model is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="s1">&#39;description&#39;</span> <span class="ow">in</span> <span class="n">json_model</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Description of model is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]))</span>
+
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s1">&#39;required&#39;</span> <span class="ow">in</span> <span class="n">json_model</span><span class="p">:</span>
+        <span class="n">required_fields</span> <span class="o">=</span> <span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;required&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">key_name</span><span class="p">,</span> <span class="n">key_attributes</span> <span class="ow">in</span> <span class="n">json_model</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key_name</span> <span class="o">!=</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Possible ForeignKey </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;oneOf&#39;</span> <span class="ow">in</span> <span class="n">key_attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.JSONField(default=list)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">)</span>
+            <span class="n">model_str</span> <span class="o">+=</span> <span class="n">field_str</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;$ref&#39;</span> <span class="ow">in</span> <span class="n">key_attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.JSONField(default=dict)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">)</span>
+            <span class="n">model_str</span> <span class="o">+=</span> <span class="n">field_str</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Unsupported type null, skipping for field </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">))</span>
+
+        <span class="c1"># PK field</span>
+        <span class="n">is_pk_field</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">key_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
+            <span class="n">is_pk_field</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># If required field</span>
+        <span class="n">required_str</span> <span class="o">=</span> <span class="n">get_required_string</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_fields</span><span class="p">,</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">is_pk_field</span><span class="p">)</span>
+        <span class="n">field_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># String choice field, enum</span>
+        <span class="k">if</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="s1">&#39;enum&#39;</span> <span class="ow">in</span> <span class="n">key_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing enum for enum choice field </span><span class="si">{}</span><span class="s2">, skipping..&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: enum value with single choice for field </span><span class="si">{}</span><span class="s2">, choice </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                      <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">]))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Max length find</span>
+            <span class="n">max_length</span> <span class="o">=</span> <span class="mi">255</span>
+            <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">:</span>
+                    <span class="n">max_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span>
+
+            <span class="n">choices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">],</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">])))</span>
+
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.CharField(choices=</span><span class="si">{}</span><span class="s2">, max_length=</span><span class="si">{}</span><span class="s2">, &quot;</span> \
+                        <span class="s2">&quot;default=&#39;</span><span class="si">{}</span><span class="s2">&#39;, </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;enum&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="c1"># Date time field</span>
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="n">key_attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date-time&#39;</span><span class="p">:</span>
+            <span class="n">auto_now_add</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">editable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">key_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;created_on&#39;</span><span class="p">,</span> <span class="s1">&#39;modified_on&#39;</span><span class="p">]:</span>
+                <span class="n">auto_now_add</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">editable</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.DateTimeField(auto_now_add=</span><span class="si">{}</span><span class="s2">, editable=</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="p">,</span> <span class="n">editable</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.TextField(</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.FloatField(</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.IntegerField(</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.JSONField(default=list, </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = son.JSONField(default=dict, </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key_attributes</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;boolean&#39;</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> = models.BooleanField(default=False, </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">required_str</span><span class="p">)</span>
+
+        <span class="n">model_str</span> <span class="o">+=</span> <span class="n">field_str</span>
+
+    <span class="n">model_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    objects = models.DjongoManager() </span><span class="se">\n\n</span><span class="s2">    class Meta:</span><span class="se">\n</span><span class="s2">        db_table = &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inflection</span><span class="o">.</span><span class="n">underscore</span><span class="p">(</span><span class="n">model_name</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">model_str</span></div>
+    <span class="c1"># with open(&quot;{}_model.py&quot;.format(model_name.lower()),&quot;w&quot;) as f:</span>
+    <span class="c1">#     print(model_str,file=f)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Convert a JSON schema to a django model.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filename&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;filepath for a JSON schema file&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">file_list</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">file_list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">file_list</span><span class="p">]</span>
+
+    <span class="n">model_str</span> <span class="o">=</span> <span class="s2">&quot;from djongo import models</span><span class="se">\n</span><span class="s2">from djongo.models import json as djson</span><span class="se">\n\n\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json_model</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">model_str</span> <span class="o">+=</span> <span class="n">parse_model</span><span class="p">(</span><span class="n">json_model</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">5</span><span class="p">])</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;django_models.py&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">model_str</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

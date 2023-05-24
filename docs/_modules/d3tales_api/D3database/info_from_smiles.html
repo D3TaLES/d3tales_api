@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.D3database.info_from_smiles &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.D3database.info_from_smiles</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.D3database.info_from_smiles</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">selfies</span> <span class="k">as</span> <span class="nn">sf</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span> <span class="nn">pubchempy</span> <span class="k">as</span> <span class="nn">pcp</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.schema2class</span> <span class="kn">import</span> <span class="n">Schema2Class</span>
+
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.rdchem</span> <span class="kn">import</span> <span class="n">Mol</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.rdmolops</span> <span class="kn">import</span> <span class="n">GetFormalCharge</span><span class="p">,</span> <span class="n">AddHs</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.Descriptors</span> <span class="kn">import</span> <span class="n">NumRadicalElectrons</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.inchi</span> <span class="kn">import</span> <span class="n">MolToInchi</span><span class="p">,</span> <span class="n">MolToInchiKey</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Draw</span><span class="p">,</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span><span class="p">,</span> <span class="n">AllChem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.rdMolDescriptors</span> <span class="kn">import</span> <span class="n">CalcMolFormula</span><span class="p">,</span> <span class="n">CalcExactMolWt</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">RDConfig</span><span class="o">.</span><span class="n">RDContribDir</span><span class="p">,</span> <span class="s1">&#39;SA_Score&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">sascorer</span>
+
+
+<div class="viewcode-block" id="find_lowest_e_conf"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf">[docs]</a><span class="k">def</span> <span class="nf">find_lowest_e_conf</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">num_conf</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the lowest energy conformer for a molecule with RDKit</span>
+<span class="sd">    :param smiles: str, SMILES string</span>
+<span class="sd">    :param num_conf: float, number of conformers to serach</span>
+<span class="sd">    :return: str, xyz coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rdkmol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMultipleConfs</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">numConfs</span><span class="o">=</span><span class="n">num_conf</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">AllChem</span><span class="o">.</span><span class="n">ETKDG</span><span class="p">())</span>
+    <span class="n">results_MMFF</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFOptimizeMoleculeConfs</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">maxIters</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">results_MMFF</span><span class="p">)):</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">best_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolfiles</span><span class="o">.</span><span class="n">MolToXYZBlock</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">,</span> <span class="n">confId</span><span class="o">=</span><span class="n">best_idx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">structure</span></div>
+
+
+<div class="viewcode-block" id="image_to_base64"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.image_to_base64">[docs]</a><span class="k">def</span> <span class="nf">image_to_base64</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce base 64 string representation of image</span>
+
+<span class="sd">    :param img: python Image object</span>
+<span class="sd">    :return: str representing the image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
+    <span class="n">byte_data</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+    <span class="n">base64_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="base64_to_image"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.base64_to_image">[docs]</a><span class="k">def</span> <span class="nf">base64_to_image</span><span class="p">(</span><span class="n">base64_str</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce python Image object from base 64 string representation of image</span>
+
+<span class="sd">    :param base64_str: base64 string representing image</span>
+<span class="sd">    :param image_path: path for image to be saved (optional)</span>
+<span class="sd">    :return: python Image object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">byte_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">base64_str</span><span class="p">)</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">image_path</span><span class="p">:</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img</span></div>
+
+
+<div class="viewcode-block" id="GenerateMolInfo"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo">[docs]</a><span class="k">class</span> <span class="nc">GenerateMolInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate json object for insertion from smiles string</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+
+<span class="sd">    :param names: list of names for molecule</span>
+<span class="sd">    :param smiles: smiles string</span>
+<span class="sd">    :param origin_group: which group the molecule comes from</span>
+<span class="sd">    :return: mol_info class object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GenerateMolInfo.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[],</span> <span class="n">extra_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;frontend&#39;</span><span class="p">,</span> <span class="n">schema_name</span><span class="o">=</span><span class="s2">&quot;mol_info&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">smiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin_group</span> <span class="o">=</span> <span class="n">origin_group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span> <span class="o">=</span> <span class="n">extra_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mol_info</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GenerateMolInfo.get_mol_info"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_mol_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get molecule information</span>
+
+<span class="sd">        :return: mol_info as dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Fetch schema and build class</span>
+        <span class="n">s2c</span> <span class="o">=</span> <span class="n">Schema2Class</span><span class="p">(</span><span class="n">schema_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_name</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+        <span class="n">mol_info</span> <span class="o">=</span> <span class="n">s2c</span><span class="o">.</span><span class="n">MolInfo</span><span class="p">()</span>
+        <span class="c1"># Generate rdkit mol and final (cleaned) smiles</span>
+        <span class="n">rdkmol</span> <span class="o">=</span> <span class="n">MolFromSmiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="n">clean_smile</span> <span class="o">=</span> <span class="n">MolToSmiles</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">rdkmol_hs</span> <span class="o">=</span> <span class="n">AddHs</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMolecule</span><span class="p">(</span><span class="n">rdkmol_hs</span><span class="p">)</span>
+        <span class="n">pcpmol</span> <span class="o">=</span> <span class="n">pcp</span><span class="o">.</span><span class="n">get_compounds</span><span class="p">(</span><span class="n">clean_smile</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;smiles&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Populate class</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">clean_smile</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">selfies</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">clean_smile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin_group</span><span class="p">:</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">source_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin_group</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">inchi</span> <span class="o">=</span> <span class="n">MolToInchi</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">inchi_key</span> <span class="o">=</span> <span class="n">MolToInchiKey</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">iupac_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pcpmol</span><span class="o">.</span><span class="n">iupac_name</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">molecular_formula</span> <span class="o">=</span> <span class="n">CalcMolFormula</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">number_of_atoms</span> <span class="o">=</span> <span class="n">Mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">molecular_weight</span> <span class="o">=</span> <span class="n">CalcExactMolWt</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">groundState_charge</span> <span class="o">=</span> <span class="n">GetFormalCharge</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">groundState_spin</span> <span class="o">=</span> <span class="n">NumRadicalElectrons</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># calculate spin multiplicity with Hand&#39;s rule</span>
+        <span class="n">mol_info</span><span class="o">.</span><span class="n">sa_score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">sascorer</span><span class="o">.</span><span class="n">calculateScore</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span><span class="p">:</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">d2_image</span> <span class="o">=</span> <span class="n">image_to_base64</span><span class="p">(</span><span class="n">Draw</span><span class="o">.</span><span class="n">MolToImage</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">))</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">init_structure</span> <span class="o">=</span> <span class="n">find_lowest_e_conf</span><span class="p">(</span><span class="n">clean_smile</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">synonyms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">+</span> <span class="n">pcpmol</span><span class="o">.</span><span class="n">synonyms</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">mol_info</span><span class="o">.</span><span class="n">synonyms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
+
+        <span class="k">return</span> <span class="n">mol_info</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

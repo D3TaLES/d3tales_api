@@ -1,0 +1,31 @@
+d3tales\_api package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   d3tales_api.Calculators
+   d3tales_api.D3database
+   d3tales_api.Processors
+
+Submodules
+----------
+
+d3tales\_api.database\_info module
+----------------------------------
+
+.. automodule:: d3tales_api.database_info
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: d3tales_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
