@@ -85,7 +85,7 @@ class ConcentrationCalculator(D3Calculator):
 
 class CVDescriptorCalculator(D3Calculator):
 
-    def peaks(self, data: dict, width: float = 1):
+    def peaks(self, data: dict, width: float = 0.1):
         """
         Gather CV peaks
 
@@ -108,13 +108,17 @@ class CVDescriptorCalculator(D3Calculator):
             if data[0, 0] < data[-1, 0]:
                 try:
                     peaks_data = find_peaks(data[:, 1], width=width)
-                    scan_dict.update({"forward": self.prominent_peaks(peaks_data, data)})
+                    f_peaks = scan_dict.get("forward", [])
+                    f_peaks.extend(self.prominent_peaks(peaks_data, data))
+                    scan_dict.update({"forward": f_peaks})
                 except ValueError:
                     pass
             else:
                 try:
                     peaks_data = find_peaks(-data[:, 1], width=width)
-                    scan_dict.update({"reverse": self.prominent_peaks(peaks_data, data)})
+                    r_peaks = scan_dict.get("reverse", [])
+                    r_peaks.extend(self.prominent_peaks(peaks_data, data))
+                    scan_dict.update({"reverse": r_peaks})
                 except ValueError:
                     pass
         return scan_dict
