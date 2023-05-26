@@ -5,8 +5,8 @@ import hashlib
 from datetime import datetime
 from elsapy.elsdoc import AbsDoc
 from elsapy.elsclient import ElsClient
-from chemdataextractor import Document
-from chemdataextractor.doc.text import *
+from chemdataextractor2 import Document
+from chemdataextractor2.doc.text import *
 from articledownloader.articledownloader import ArticleDownloader
 
 from d3tales_api.database_info import db_info
