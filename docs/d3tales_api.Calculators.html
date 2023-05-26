@@ -53,6 +53,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">d3tales_api.Calculators package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Calculators.calculators">d3tales_api.Calculators.calculators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Calculators.ocelot_transform">d3tales_api.Calculators.ocelot_transform module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Calculators.utils">d3tales_api.Calculators.utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Calculators">Module contents</a></li>
@@ -805,6 +806,214 @@ of spin. Uses DBSTEP.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-d3tales_api.Calculators.ocelot_transform">
+<span id="d3tales-api-calculators-ocelot-transform-module"></span><h2>d3tales_api.Calculators.ocelot_transform module<a class="headerlink" href="#module-d3tales_api.Calculators.ocelot_transform" title="Permalink to this heading"></a></h2>
+<p>Code taken from the OCELOT API to transform molecule objects. <a class="reference external" href="https://github.com/caer200/ocelot_api">https://github.com/caer200/ocelot_api</a>
+Code copied from: <a class="reference external" href="https://github.com/caer200/ocelot_api/blob/master/ocelot/routines/conformerparser.py">https://github.com/caer200/ocelot_api/blob/master/ocelot/routines/conformerparser.py</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.ocelot_transform.</span></span><span class="sig-name descname"><span class="pre">ACParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomnumberlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sani</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apriori_radicals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.BO_is_OK">
+<span class="sig-name descname"><span class="pre">BO_is_OK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DU_from_AC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomicNumList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charged_fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valences</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.BO_is_OK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.BO_is_OK" title="Permalink to this definition"></a></dt>
+<dd><p>check bond order matrix based on</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BO</strong> – </p></li>
+<li><p><strong>DU_from_AC</strong> – based on valences arg</p></li>
+<li><p><strong>atomicNumList</strong> – </p></li>
+<li><p><strong>charged_fragments</strong> – </p></li>
+<li><p><strong>valences</strong> – valence assignment related to current BO</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomnumberlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sani</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apriori_radicals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>self.valences_list</strong> – a list of possible valence assignment, valences_list[i] is one possbile way to assign jth atom</p>
+</dd>
+</dl>
+<p>valence based on  valences_list[i][j].
+:var self.atomic_valence_electrons: atomic_valence_electrons[i] is the #_of_ve of ith atom
+:var self.apriori_radicals: a dict to mark the atoms that can will have a lower valence in generating BO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.addBO2mol">
+<span class="sig-name descname"><span class="pre">addBO2mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rdmol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charged_fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_single</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.addBO2mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.addBO2mol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.getUADU">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getUADU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxValence_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valence_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.getUADU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.getUADU" title="Permalink to this definition"></a></dt>
+<dd><p>get unsaturated atoms (UA) and degree of unsaturation (DU) between two possible assignments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxValence_list</strong> – </p></li>
+<li><p><strong>valence_list</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.get_BO">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_BO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DU_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UA_pairs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.get_BO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.get_BO" title="Permalink to this definition"></a></dt>
+<dd><p>for a valence assignment, get BO
+BO[i][j] is the bond order between ith and jth
+AC is a BO with all single bond
+the algo is to increase bond order s.t. degree of unsaturation (DU) does not change
+notice DU is calculated based on the given valences</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DU_init</strong> – </p></li>
+<li><p><strong>AC</strong> – </p></li>
+<li><p><strong>valences</strong> – </p></li>
+<li><p><strong>UA_pairs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.get_UA_pairs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_UA_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">UA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.get_UA_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.get_UA_pairs" title="Permalink to this definition"></a></dt>
+<dd><p>find the largest list of bonds in which all atom appears at most once</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>UA</strong> – </p></li>
+<li><p><strong>AC</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.get_atomic_charge">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_atomic_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomic_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomic_valence_electrons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_valence</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.get_atomic_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.get_atomic_charge" title="Permalink to this definition"></a></dt>
+<dd><p>atomic charge from #_valence_electrons - bond_order
+#TODO test robustness</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomic_number</strong> – </p></li>
+<li><p><strong>atomic_valence_electrons</strong> – </p></li>
+<li><p><strong>BO_valence</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.get_bonds">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bonds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">UA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.get_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.get_bonds" title="Permalink to this definition"></a></dt>
+<dd><p>get a list of unique bond tuples (i, j) between UAs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>UA</strong> – </p></li>
+<li><p><strong>AC</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.get_valence_info">
+<span class="sig-name descname"><span class="pre">get_valence_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.get_valence_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.get_valence_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.init_rdmol">
+<span class="sig-name descname"><span class="pre">init_rdmol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.init_rdmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.init_rdmol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charged_fragments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_single</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expliciths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.parse" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.parse_bonds">
+<span class="sig-name descname"><span class="pre">parse_bonds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charged_fragments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.parse_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.parse_bonds" title="Permalink to this definition"></a></dt>
+<dd><p>find the best BO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>charged_fragments</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.set_atomic_charges">
+<span class="sig-name descname"><span class="pre">set_atomic_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_valences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.set_atomic_charges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.set_atomic_charges" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.set_atomic_radicals">
+<span class="sig-name descname"><span class="pre">set_atomic_radicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_valences</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.set_atomic_radicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.set_atomic_radicals" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.ACParser.valences_not_too_large">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">valences_not_too_large</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#ACParser.valences_not_too_large"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.ACParser.valences_not_too_large" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.chiral_stereo_check">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.ocelot_transform.</span></span><span class="sig-name descname"><span class="pre">chiral_stereo_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#chiral_stereo_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.chiral_stereo_check" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.clean_charges">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.ocelot_transform.</span></span><span class="sig-name descname"><span class="pre">clean_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#clean_charges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.clean_charges" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.pmgmol_to_rdmol">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.ocelot_transform.</span></span><span class="sig-name descname"><span class="pre">pmgmol_to_rdmol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pmg_mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#pmgmol_to_rdmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.pmgmol_to_rdmol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.ocelot_transform.valence_electron">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.ocelot_transform.</span></span><span class="sig-name descname"><span class="pre">valence_electron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/ocelot_transform.html#valence_electron"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.ocelot_transform.valence_electron" title="Permalink to this definition"></a></dt>
+<dd><p>count valence electrons based on electronic configuration
+if a subshell has &gt; 10 electrons, this subshell is ignored</p>
 </dd></dl>
 
 </section>

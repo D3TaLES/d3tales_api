@@ -12,6 +12,14 @@ d3tales\_api.Calculators.calculators module
    :undoc-members:
    :show-inheritance:
 
+d3tales\_api.Calculators.ocelot\_transform module
+-------------------------------------------------
+
+.. automodule:: d3tales_api.Calculators.ocelot_transform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 d3tales\_api.Calculators.plotters module
 ----------------------------------------
 

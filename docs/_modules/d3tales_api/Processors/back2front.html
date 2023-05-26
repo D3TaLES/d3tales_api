@@ -80,11 +80,11 @@
 
 <span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.AllChem</span> <span class="kn">import</span> <span class="n">ComputeMolVolume</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">FrontDB</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.d3database</span> <span class="kn">import</span> <span class="n">DBconnector</span>
-<span class="kn">from</span> <span class="nn">ocelot.routines.conformerparser</span> <span class="kn">import</span> <span class="n">pmgmol_to_rdmol</span>
-<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.ocelot_transform</span> <span class="kn">import</span> <span class="n">pmgmol_to_rdmol</span>
 
 <span class="n">DEFAULT_SOLV</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Acetonitrile&quot;</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;implicit_solvent&quot;</span><span class="p">,</span> <span class="s2">&quot;dielectric_constant&quot;</span><span class="p">:</span> <span class="mf">35.688</span><span class="p">}</span>
 <span class="n">RMSD_DEFAULT</span> <span class="o">=</span> <span class="kc">True</span>
