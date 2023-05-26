@@ -106,19 +106,20 @@
 <span id="d3tales-api-d3database-d3database-module"></span><h2>d3tales_api.D3database.d3database module<a class="headerlink" href="#module-d3tales_api.D3database.d3database" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="d3tales_api.D3database.d3database.BackDB">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.d3database.</span></span><span class="sig-name descname"><span class="pre">BackDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#BackDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.BackDB" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.d3database.</span></span><span class="sig-name descname"><span class="pre">BackDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_updated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#BackDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.BackDB" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#d3tales_api.D3database.d3database.D3Database" title="d3tales_api.D3database.d3database.D3Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Database</span></code></a></p>
 <p>Class for accessing the backend D3TaLES database
 Copyright 2021, University of Kentucky</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.d3database.BackDB.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#BackDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.BackDB.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_updated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#BackDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.BackDB.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>collection_name</strong> – str, name of collection</p></li>
 <li><p><strong>instance</strong> – dict, instance to insert or validate</p></li>
 <li><p><strong>create_hash</strong> – bool, generate new instance hash id if True</p></li>
+<li><p><strong>last_updated</strong> – bool, insert attribute last_updated to instance with the current date and time if True</p></li>
 </ul>
 </dd>
 </dl>
@@ -513,8 +514,21 @@ Copyright 2021, University of Kentucky</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.GenerateMolInfo.base64_to_image">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base64_to_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base64_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#GenerateMolInfo.base64_to_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.base64_to_image" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">
+<span class="sig-name descname"><span class="pre">get_mol_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#GenerateMolInfo.get_mol_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get molecule information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>mol_info as dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.base64_to_image">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.info_from_smiles.</span></span><span class="sig-name descname"><span class="pre">base64_to_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base64_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#base64_to_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.base64_to_image" title="Permalink to this definition"></a></dt>
 <dd><p>Produce python Image object from base 64 string representation of image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -529,20 +543,18 @@ Copyright 2021, University of Kentucky</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info">
-<span class="sig-name descname"><span class="pre">get_mol_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#GenerateMolInfo.get_mol_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info" title="Permalink to this definition"></a></dt>
-<dd><p>Get molecule information</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>mol_info as dict</p>
-</dd>
-</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.find_lowest_e_conf">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.info_from_smiles.</span></span><span class="sig-name descname"><span class="pre">find_lowest_e_conf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#find_lowest_e_conf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf" title="Permalink to this definition"></a></dt>
+<dd><p>Find the lowest energy conformer for a molecule with RDKit
+:param smiles: str, SMILES string
+:param num_conf: float, number of conformers to serach
+:return: str, xyz coordinates</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">image_to_base64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#GenerateMolInfo.image_to_base64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.image_to_base64" title="Permalink to this definition"></a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.D3database.info_from_smiles.image_to_base64">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.info_from_smiles.</span></span><span class="sig-name descname"><span class="pre">image_to_base64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/info_from_smiles.html#image_to_base64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.info_from_smiles.image_to_base64" title="Permalink to this definition"></a></dt>
 <dd><p>Produce base 64 string representation of image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -552,8 +564,6 @@ Copyright 2021, University of Kentucky</p>
 <dd class="field-even"><p>str representing the image</p>
 </dd>
 </dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>

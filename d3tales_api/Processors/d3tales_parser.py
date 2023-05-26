@@ -1,11 +1,25 @@
+import os
 import sys
 import uuid
 import hashlib
+import warnings
+from datetime import datetime
+from elsapy.elsdoc import AbsDoc
+from elsapy.elsclient import ElsClient
+from articledownloader.articledownloader import ArticleDownloader
+
 from d3tales_api.database_info import db_info
 from d3tales_api.Processors.parser_cv import *
 from d3tales_api.Processors.parser_dft import *
 from d3tales_api.Processors.parser_uvvis import *
 from d3tales_api.D3database.d3database import DBconnector
+from d3tales_api.D3database.schema2class import Schema2Class
+
+try:
+    from chemdataextractor2 import Document
+    from chemdataextractor2.doc.text import *
+except ImportError:
+    warnings.warn("ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
 
 
 class ProcessDFT:
@@ -388,7 +402,160 @@ class ProcessUvVis:
         json_data = json.dumps(data_dict, default=str)
         return json.loads(json_data)
 
+class ProcessNlp:
+    """
+    Class to process NLP data for backend database
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False, download_dir="temp/"):
+        """
+        :param doi: str, DOI or scopus id
+        :param instance: dict, NLP data. Instance data will override web-scrapped data.
+        :param els_apikey: str, API access key for api.elsevier.com
+        :param article_download: bool, download article and insert article main text if True
+        :param els_apikey: str, directory path into which to download article
+        """
+        self.doi = (doi or instance.get("doi", instance.get("_id"))).strip("https://doi.org/")
+        if not self.doi:
+            raise ValueError("ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
+        self.els_apikey = els_apikey
+        self.instance = instance or {}
+        self.publisher, self.main_text = "", ""
+        self.article_download = article_download
+        self.download_path = "{}/{}.html".format(download_dir, self.doi.replace("/", "_"))
+        self.s2c = Schema2Class(database="backend", schema_name="nlp")
+
+        # Get basic article info
+        self.basic_info = self.get_basic_info()
+        for key in self.basic_info:
+            setattr(self, key, self.basic_info[key])
+
+        # Download full article
+        if self.article_download:
+            os.makedirs(download_dir, exist_ok=True)
+            self.download_article()
+            self.main_text = self.get_main_text()
+
+    @property
+    def data_dict(self):
+        data_dict  = self.basic_info
+        data_dict.update(self.instance)
+        data_dict.update({"_id": self.doi})
+        if self.article_download and self.main_text:
+            data_dict.update({"main_text": self.main_text, "pdf_location": os.path.abspath(self.download_path)})
+        json_data = json.dumps(data_dict)
+        return json.loads(json_data)
+
+    def get_main_text(self):
+        try:
+            doc = Document.from_file(self.download_path)
+            elements = doc.elements
+
+            paragraphs, refs, i = [], False, 0
+            while i < len(elements) and not refs:
+                elem = elements[i]
+                if elem.text in ["Abstract"]:
+                    i += 1
+                    while i < len(elements):
+                        elem = elements[i]
+                        try:
+                            if elem.text in ["References"]:
+                                refs = True
+                                break
+                        except:
+                            pass
+
+                        if isinstance(elem, Paragraph):
+                            paragraphs.append(elem.text)
+                        i += 1
+                    break
+                i += 1
+
+            data_obj = self.s2c.Data()
+            data_obj.text = paragraphs
+            return data_obj.as_dict()
+
+        except:
+            print('Failed to extract main text from {}'.format(self.doi))
+
+    def get_basic_info(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        nlp_obj = self.s2c.Nlp()
+        author_obj = self.s2c.Author()
+
+        client = ElsClient(self.els_apikey)
+        ab = AbsDoc(uri="https://api.elsevier.com/content/abstract/doi/{}".format(self.doi))
+        ab.read(client)
+
+        if ab.read(client):
+            print("Gathering data from the web...")
+            # put the data into nlp raw data schema
+            nlp_obj.publisher = ab.data["coredata"].get('dc:publisher', "")
+            nlp_obj.journal = ab.data["coredata"].get('prism:publicationName', "")
+            nlp_obj.publish_date = ab.data["coredata"].get('prism:coverDate', "")
+            nlp_obj.authors = [author_obj.from_json(json.dumps(self.make_author_entry(author=author)))
+                               for author in ab.data["authors"]["author"]]
+            nlp_obj._id = ab.data["coredata"].get('prism:doi', "")
+            nlp_obj.date_accessed = datetime.now().isoformat()
+            nlp_obj.abstract = ab.data["coredata"].get('dc:description', "")
+            nlp_obj.title = ab.title
+        else:
+            raise ConnectionError("Not able to retrieve abstract for {}.".format(self.doi))
+
+        return nlp_obj.as_dict()
+
+    def make_author_entry(self, author):
+        return {
+            "auid": author.get("@auid", ""),
+            "indexed_name": author.get("ce:indexed-name", ""),
+            "surname": author.get('ce:surname', ""),
+            "given_name": author.get("ce:given-name", ""),
+            "affiliations": self.get_affiliations(author.get("affiliation", ""))
+        }
+
+    def download_article(self):
+        ad = ArticleDownloader(els_api_key=self.els_apikey)
+
+        if self.publisher == "American Chemical Society":
+            mode = "acs"
+        elif self.publisher == "Royal Society of Chemistry":
+            mode = "rsc"
+        elif self.publisher == 'Elsevier B.V.':
+            mode = "elsevier"
+        elif self.publisher == 'Nature Research':
+            mode = 'nature'
+        elif self.publisher == 'IOP Publishing Ltd':
+            mode = "ecs"
+        elif self.publisher == 'Wiley-VCH Verlag':
+            mode = "wiley"
+        elif self.publisher == 'Korean Electrochemical Society':
+            mode = "ecs"
+        elif self.publisher == 'Institute of Physics Publishing':
+            mode = "ecs"
+        else:
+            mode = "elsevier"
+
+        with open(self.download_path, "wb") as f:
+            ad.get_html_from_doi(doi=self.doi, writefile=f, mode=mode)
+
+    @staticmethod
+    def get_affiliations(affiliation):
+        if isinstance(affiliation, list):
+            affiliations = [x.get("@id", "") for x in affiliation]
+        elif isinstance(affiliation, dict):
+            affiliations = [affiliation.get("@id", "")]
+        else:
+            affiliations = []
+        return affiliations
+
+
 
 if __name__ == "__main__":
     # data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict
-    data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict
+    # data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict
+    data = ProcessNlp(sys.argv[1], article_download=False).data_dict
+
+    print(data)

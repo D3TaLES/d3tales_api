@@ -77,7 +77,8 @@
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 <span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">cst</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">D3Calculator</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="o">*</span>
 
 
 <div class="viewcode-block" id="D3Plotter"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter">[docs]</a><span class="k">class</span> <span class="nc">D3Plotter</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
@@ -91,7 +92,7 @@
 
 <div class="viewcode-block" id="CVPlotter"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter">[docs]</a><span class="k">class</span> <span class="nc">CVPlotter</span><span class="p">(</span><span class="n">D3Plotter</span><span class="p">):</span>
 
-<div class="viewcode-block" id="CVPlotter.plot_data"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="CVPlotter.plot_data"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">self_standard</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        CV plot data for plotly</span>
 
@@ -100,6 +101,8 @@
 
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :type data: dict</span>
+<span class="sd">        :param self_standard: establish self standard (e_half=0V) if True</span>
+<span class="sd">        :type self_standard: bool</span>
 
 <span class="sd">        :return: plot data for plotly</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -113,6 +116,11 @@
             <span class="n">x</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scan</span><span class="p">])</span>
             <span class="n">y</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scan</span><span class="p">])</span>
 
+        <span class="k">if</span> <span class="n">self_standard</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Performing self-standard adjustment...&quot;</span><span class="p">)</span>
+            <span class="n">e_half</span> <span class="o">=</span> <span class="n">CVDescriptorCalculator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span><span class="p">)</span><span class="o">.</span><span class="n">e_half</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">e_half</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
         <span class="n">plotting_data</span> <span class="o">=</span> <span class="p">[{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
             <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
@@ -125,7 +133,7 @@
         <span class="p">}]</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">:</span> <span class="n">plotting_data</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="CVPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fig_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CVPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fig_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">self_standard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">plt_kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Live Matplotlib plot for data</span>
 
@@ -136,11 +144,57 @@
 <span class="sd">        :type data: dict</span>
 <span class="sd">        :param fig_path: path to which to save the figure</span>
 <span class="sd">        :type fig_path: str</span>
+<span class="sd">        :param self_standard: establish self standard (e_half=0V) if True</span>
+<span class="sd">        :type self_standard: bool</span>
 
 <span class="sd">        :return: shows matplotlib plot</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">plt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">plt_data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">plt_data</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="n">plt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_standard</span><span class="o">=</span><span class="n">self_standard</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">plt_data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">plt_data</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">plt_kwargs</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">fig_path</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CVPlotter.live_plot_multi"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot_multi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fig_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">self_standard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">plt_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Live Matplotlib plot for data</span>
+
+<span class="sd">        Connection Points:</span>
+<span class="sd">            :scan_data: scanned data from CV file</span>
+<span class="sd">            :variable_prop: property that varies between CVs</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: list</span>
+<span class="sd">        :param fig_path: path to which to save the figure</span>
+<span class="sd">        :type fig_path: str</span>
+<span class="sd">        :param sort: sort by variable_prop if True</span>
+<span class="sd">        :type sort: bool</span>
+<span class="sd">        :param self_standard: establish self standard (e_half=0V) if True</span>
+<span class="sd">        :type self_standard: bool</span>
+
+<span class="sd">        :return: shows matplotlib plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get data_dict for sorting</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">plt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">self_standard</span><span class="o">=</span><span class="n">self_standard</span><span class="p">)</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">var_prop</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;variable_prop&quot;</span><span class="p">]</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="n">var_prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt_data</span>
+
+        <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+            <span class="n">data_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+
+        <span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">legend_title</span> <span class="o">=</span> <span class="n">plt_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;legend_title&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;legend_title&quot;</span> <span class="ow">in</span> <span class="n">plt_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;Legend&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">plt_kwargs</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fig_path</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
@@ -204,7 +258,7 @@
         <span class="n">spectra_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">:</span> <span class="n">abs_plot</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">spectra_data</span></div>
 
-<div class="viewcode-block" id="DFTSpecPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fig_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DFTSpecPlotter.live_plot"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.DFTSpecPlotter.live_plot">[docs]</a>    <span class="k">def</span> <span class="nf">live_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fig_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">plt_kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Live Matplotlib plot for data</span>
 
@@ -224,6 +278,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">spectra_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectra_data</span><span class="p">[</span><span class="s2">&quot;lambda&quot;</span><span class="p">],</span> <span class="n">spectra_data</span><span class="p">[</span><span class="s2">&quot;xas&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">plt_kwargs</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">fig_path</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>

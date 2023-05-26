@@ -79,8 +79,9 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">nanoid</span> <span class="kn">import</span> <span class="n">generate</span>
 <span class="kn">from</span> <span class="nn">dotty_dict</span> <span class="kn">import</span> <span class="n">dotty</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">monty.json</span> <span class="kn">import</span> <span class="n">jsanitize</span>
-<span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.database_info</span> <span class="kn">import</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">source_groups</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.schema2class</span> <span class="kn">import</span> <span class="n">Schema2Class</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.D3database.info_from_smiles</span> <span class="kn">import</span> <span class="n">GenerateMolInfo</span>
 
@@ -351,30 +352,10 @@
 
 <span class="sd">        :return: new molecule ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">group_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;unknown&quot;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Eaton&quot;</span><span class="p">:</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Robotics&quot;</span><span class="p">:</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Ganapathysubramanian&quot;</span><span class="p">:</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Jenkins&quot;</span><span class="p">:</span> <span class="s1">&#39;03&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Mason&quot;</span><span class="p">:</span> <span class="s1">&#39;04&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Odom&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Odom_Hussein&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Odom_Aman&quot;</span><span class="p">:</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Risko&quot;</span><span class="p">:</span> <span class="s1">&#39;06&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Sarkar&quot;</span><span class="p">:</span> <span class="s1">&#39;07&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Shaw&quot;</span><span class="p">:</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Teague&quot;</span><span class="p">:</span> <span class="s1">&#39;09&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Csd&quot;</span><span class="p">:</span> <span class="s1">&#39;80&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Zinc&quot;</span><span class="p">:</span> <span class="s1">&#39;81&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Risko_Benchmark&quot;</span><span class="p">:</span> <span class="s1">&#39;90&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Risko_Diheds&quot;</span><span class="p">:</span> <span class="s1">&#39;91&#39;</span>
-        <span class="p">}</span>
         <span class="n">id_chars</span> <span class="o">=</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span>
-            <span class="n">group_num</span> <span class="o">=</span> <span class="n">group_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="s1">&#39;10&#39;</span><span class="p">)</span>
+            <span class="n">group_num</span> <span class="o">=</span> <span class="n">source_groups</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="s1">&#39;10&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;mol_info.smiles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">})</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">new_molecule</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">rand</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">id_chars</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -394,11 +375,12 @@
 <span class="sd">    Class for accessing the backend D3TaLES database</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="BackDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_hash</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BackDB.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_hash</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">last_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param collection_name: str, name of collection</span>
 <span class="sd">        :param instance: dict, instance to insert or validate</span>
 <span class="sd">        :param create_hash: bool, generate new instance hash id if True</span>
+<span class="sd">        :param last_updated: bool, insert attribute last_updated to instance with the current date and time if True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
 
@@ -408,6 +390,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">create_hash</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Hash ID is required for backend database insertion. Create an instance in the &quot;</span>
                               <span class="s2">&quot;frontend database first.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">last_updated</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()})</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BackDB.get_geometry"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.get_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">get_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hash_id</span><span class="p">):</span>

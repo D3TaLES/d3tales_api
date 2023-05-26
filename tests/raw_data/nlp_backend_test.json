@@ -1,0 +1,38 @@
+{
+  "_id": "https://doi.org/10.1039/c7cs00569e",
+  "extracted_molecules": [
+    {
+      "molecule_name": "quinone",
+      "notes": "",
+      "extracted_properties": {
+        "oxidation_potential": [
+          {
+            "conditions": {
+              "data_source": "nlp",
+              "nlp_model": "llm",
+              "date_generated": "2023-05-11T16:57:32.824",
+              "line_number": "ox line number",
+              "parent_sentence": "blah blah oxidation potential sentence"
+            },
+            "value": 4,
+            "unit": "eV"
+          }
+        ],
+        "stability": [
+          {
+            "conditions": {
+              "data_source": "nlp",
+              "nlp_model": "llm",
+              "date_generated": "2023-05-11T16:57:32.824",
+              "doi": "https://doi.org/10.1039/c7cs00569e",
+              "line_number": "stability line number",
+              "parent_sentence": "blah blah stability sentence"
+            },
+            "value": "good",
+            "unit": ""
+          }
+        ]
+      }
+    }
+  ]
+}
