@@ -23,9 +23,12 @@ This module can be installed with pip install by running the following code:
 pip install git+https://github.com/d3tales/d3tales_api.git
 ```
 
-**Note**: If your python version is greater than 3.8, then you will need to install 
-[pymatgen](https://pymatgen.org/) directly into the environment you are working in. It is best to use 
-[conda](https://anaconda.org/conda-forge/pymatgen) for this.
+>**Installation Notes**: 
+> * If your python version is greater than 3.8, then you will need to install 
+>[pymatgen](https://pymatgen.org/) directly into the environment you are working in. It is best to use 
+>[conda](https://anaconda.org/conda-forge/pymatgen) for this.
+> * If you plan to use any NLP parsers, you will need to install [ChemDataExtractor2](https://github.com/CambridgeMolecularEngineering/chemdataextractor2) 
+> * with `pip install ChemDataExtractor2`. Dependency conflicts make it necessary to install separately.  
 
 ### Environment Variables
 Note that many operation require a `DB_INFO_FILE` environment variable. This environment variable
