@@ -2,11 +2,10 @@ import os
 import sys
 import uuid
 import hashlib
+import warnings
 from datetime import datetime
 from elsapy.elsdoc import AbsDoc
 from elsapy.elsclient import ElsClient
-from chemdataextractor2 import Document
-from chemdataextractor2.doc.text import *
 from articledownloader.articledownloader import ArticleDownloader
 
 from d3tales_api.database_info import db_info
@@ -15,6 +14,12 @@ from d3tales_api.Processors.parser_dft import *
 from d3tales_api.Processors.parser_uvvis import *
 from d3tales_api.D3database.d3database import DBconnector
 from d3tales_api.D3database.schema2class import Schema2Class
+
+try:
+    from chemdataextractor2 import Document, Paragraph
+    from chemdataextractor2.doc.text import *
+except ImportError:
+    warnings.warn("ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
 
 
 class ProcessDFT:
