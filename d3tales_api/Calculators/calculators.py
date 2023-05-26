@@ -14,7 +14,7 @@ from scipy.signal import find_peaks
 from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
 from rdkit.Chem.Descriptors import ExactMolWt
-from ocelot.routines.conformerparser import pmgmol_to_rdmol
+from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 
 
 class D3Calculator(abc.ABC):

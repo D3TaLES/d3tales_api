@@ -5,11 +5,11 @@ import pubchempy as pcp
 
 from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
+from rdkit.Chem import MolFromSmiles, MolToSmiles
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.d3database import FrontDB
 from d3tales_api.D3database.d3database import DBconnector
-from ocelot.routines.conformerparser import pmgmol_to_rdmol
-from rdkit.Chem import MolFromSmiles, MolToSmiles
+from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 
 DEFAULT_SOLV = {"name": "Acetonitrile", "model": "implicit_solvent", "dielectric_constant": 35.688}
 RMSD_DEFAULT = True
