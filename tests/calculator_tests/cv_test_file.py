@@ -7,6 +7,7 @@ SELF_STD = True
 NUM_ELECTRONS = 1
 
 ROBOT_DATA = True
+ONLY_ONE = False
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_WORKING_ELECTRODE_AREA = "0.03142cm^2"
@@ -14,7 +15,10 @@ print("Concentration: ", DEFAULT_CONCENTRATION)
 
 if ROBOT_DATA:
     cv_dir = "../raw_data/robotic_data"
-    cv_locations = [os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")]
+    cv_locations = sorted([os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")])
+    if ONLY_ONE:
+        print(cv_locations[0])
+        cv_locations = [cv_locations[0]]
     cv_entries = [ProcessCV(loc, _id="test", submission_info={}, metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE, "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA}, parsing_class=ParseChiCV).data_dict for loc in cv_locations]
 else:
     cv_data = ProcessCV("../raw_data/aman_cv2.csv", _id='test', parsing_class=ParseChiCV).data_dict
@@ -34,7 +38,7 @@ connector = {
     "T": "data.conditions.temperature",
     "D": "diffusion",
 
-    "scan_data": "data.scan_data",
+    "scan_data": "data.middle_sweep",
     "variable_prop": "data.conditions.scan_rate.value",
 }
 
@@ -42,8 +46,8 @@ connector = {
 
 diffusion_cal = CVDiffusionCalculator(connector=connector)
 diffusion = diffusion_cal.calculate(cv_entries)
-print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
+print("Average diffusion", diffusion[0])
 [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
 
 charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
@@ -54,10 +58,10 @@ e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
 e_half = e_half_transfer_cal.calculate(cv_entries)
 print("Avg E half", e_half)
 
-# descriptor_cal = CVDescriptorCalculator(connector=connector)
-# print(descriptor_cal.peaks(cv_entries[0]))
-# descriptor_cal.reversibility(cv_entries[0])
-# descriptor_cal.e_half(cv_entries[0])[0]
+descriptor_cal = CVDescriptorCalculator(connector=connector)
+print(descriptor_cal.peaks(cv_entries[0]))
+print(descriptor_cal.reversibility(cv_entries[0]))
+print(descriptor_cal.e_half(cv_entries[0]))
 # descriptor_cal.peak_splittings(cv_entries[0])
 # len(descriptor_cal.middle_sweep(cv_entries[0]))
 #

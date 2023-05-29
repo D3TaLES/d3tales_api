@@ -108,16 +108,43 @@ class CVDescriptorCalculator(D3Calculator):
             if data[0, 0] < data[-1, 0]:
                 try:
                     peaks_data = find_peaks(data[:, 1], width=width)
-                    scan_dict.update({"forward": self.prominent_peaks(peaks_data, data)})
+                    f_peaks = scan_dict.get("forward", []) + self.prominent_peaks(peaks_data, data)
+                    scan_dict.update({"forward": f_peaks})
                 except ValueError:
                     pass
             else:
                 try:
                     peaks_data = find_peaks(-data[:, 1], width=width)
-                    scan_dict.update({"reverse": self.prominent_peaks(peaks_data, data)})
+                    r_peaks = scan_dict.get("reverse", []) + self.prominent_peaks(peaks_data, data)
+                    scan_dict.update({"reverse": r_peaks})
                 except ValueError:
                     pass
         return scan_dict
+
+    def peaks_for_analysis(self, data: dict, cut_extras=True, **kwargs):
+        """
+        Get peaks for analysis
+
+        :param data: data for calculation
+        :param cut_extras: cut extra peaks off the end of the appropriate array if True and there are
+            not the same number of forward and reverse peaks
+        :param kwargs:
+        :return: forward_peaks, reverse_peaks
+        """
+        peaks = self.peaks(data, **kwargs)
+        forward_peaks_raw = [item[0] for item in peaks.get('forward', [])]
+        reverse_peaks_raw = [item[0] for item in peaks.get('reverse', [[]])]
+
+        # Check if there are the same number of forward and reverse peaks
+        if len(forward_peaks_raw) != len(reverse_peaks_raw):
+            if cut_extras:
+                num_peaks = min([len(forward_peaks_raw), len(reverse_peaks_raw)])
+                forward_peaks_raw, reverse_peaks_raw = forward_peaks_raw[:num_peaks], reverse_peaks_raw[:num_peaks]
+            else:
+                return ['irreversible']
+
+        # Get reversibility
+        return sorted(forward_peaks_raw), sorted(reverse_peaks_raw)
 
     def reversibility(self, data: dict, rev_upperbound: float = 63, quasi_rev_upperbound: float = 200, **kwargs):
         """
@@ -138,14 +165,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of reversibility categorizations for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
-        # If there are not the same number of forward and reverse peaks, default to irreversible.
-        if len(forward_peaks) != len(reverse_peaks):
-            return ['irreversible']
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         peaks_reversibility = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             delta_e = abs(f_peak - r_peak)
@@ -172,11 +192,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of E 1/2 for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         e_halfs = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             e_halfs.append(round((f_peak + r_peak) / 2, 3))
@@ -197,11 +213,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of peak splittings for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         splittings = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             splittings.append(round(abs(f_peak - r_peak), 3))
