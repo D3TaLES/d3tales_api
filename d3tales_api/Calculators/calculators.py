@@ -85,7 +85,7 @@ class ConcentrationCalculator(D3Calculator):
 
 class CVDescriptorCalculator(D3Calculator):
 
-    def peaks(self, data: dict, width: float = 1):
+    def peaks(self, data: dict, width: float = 1, middle_sweep=True):
         """
         Gather CV peaks
 
@@ -94,34 +94,41 @@ class CVDescriptorCalculator(D3Calculator):
 
         :param data: data for calculation (rows of voltage, current)
         :param width: required width of peaks to identify
+        :param middle_sweep: ensure the middle sweep in analyzed if True
         :type data: dict
         :type width: float
+        :type middle_sweep: bool
 
         :return: dictionary containing list of forward peaks and list of reverse peaks
         """
 
-        self.data = data
-        conns = self.make_connections(data)
-        scan_dict = {}
-        for data_list in conns["scan_data"]:
+        if middle_sweep:
+            scan_data =self.middle_sweep(data)
+        else:
+            self.data = data
+            conns = self.make_connections(data)
+            scan_data = conns["scan_data"]
+
+        peak_dict = {}
+        for data_list in scan_data:
             data = np.array(data_list)
             if data[0, 0] < data[-1, 0]:
                 try:
                     peaks_data = find_peaks(data[:, 1], width=width)
-                    f_peaks = scan_dict.get("forward", []) + self.prominent_peaks(peaks_data, data)
-                    scan_dict.update({"forward": f_peaks})
+                    f_peaks = peak_dict.get("forward", []) + self.prominent_peaks(peaks_data, data)
+                    peak_dict.update({"forward": f_peaks})
                 except ValueError:
                     pass
             else:
                 try:
                     peaks_data = find_peaks(-data[:, 1], width=width)
-                    r_peaks = scan_dict.get("reverse", []) + self.prominent_peaks(peaks_data, data)
-                    scan_dict.update({"reverse": r_peaks})
+                    r_peaks = peak_dict.get("reverse", []) + self.prominent_peaks(peaks_data, data)
+                    peak_dict.update({"reverse": r_peaks})
                 except ValueError:
                     pass
-        return scan_dict
+        return peak_dict
 
-    def peaks_for_analysis(self, data: dict, cut_extras=True, **kwargs):
+    def peaks_for_analysis(self, data: dict, cut_extras=False, **kwargs):
         """
         Get peaks for analysis
 
@@ -132,19 +139,18 @@ class CVDescriptorCalculator(D3Calculator):
         :return: forward_peaks, reverse_peaks
         """
         peaks = self.peaks(data, **kwargs)
-        forward_peaks_raw = [item[0] for item in peaks.get('forward', [])]
-        reverse_peaks_raw = [item[0] for item in peaks.get('reverse', [[]])]
+        forward_peaks = [item[0] for item in peaks.get('forward', [])]
+        reverse_peaks = [item[0] for item in peaks.get('reverse', [[]])]
 
         # Check if there are the same number of forward and reverse peaks
-        if len(forward_peaks_raw) != len(reverse_peaks_raw):
+        if len(forward_peaks) != len(reverse_peaks):
             if cut_extras:
-                num_peaks = min([len(forward_peaks_raw), len(reverse_peaks_raw)])
-                forward_peaks_raw, reverse_peaks_raw = forward_peaks_raw[:num_peaks], reverse_peaks_raw[:num_peaks]
+                num_peaks = min([len(forward_peaks), len(reverse_peaks)])
+                forward_peaks, reverse_peaks = forward_peaks[:num_peaks], reverse_peaks[:num_peaks]
             else:
-                return ['irreversible']
+                return None
 
-        # Get reversibility
-        return sorted(forward_peaks_raw), sorted(reverse_peaks_raw)
+        return sorted(forward_peaks), sorted(reverse_peaks)
 
     def reversibility(self, data: dict, rev_upperbound: float = 63, quasi_rev_upperbound: float = 200, **kwargs):
         """

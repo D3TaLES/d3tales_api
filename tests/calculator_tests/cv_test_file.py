@@ -7,7 +7,7 @@ SELF_STD = True
 NUM_ELECTRONS = 1
 
 ROBOT_DATA = True
-ONLY_ONE = False
+ONLY_ONE = True
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_WORKING_ELECTRODE_AREA = "0.03142cm^2"
@@ -38,25 +38,25 @@ connector = {
     "T": "data.conditions.temperature",
     "D": "diffusion",
 
-    "scan_data": "data.middle_sweep",
+    "scan_data": "data.scan_data",
     "variable_prop": "data.conditions.scan_rate.value",
 }
 
 
 
-diffusion_cal = CVDiffusionCalculator(connector=connector)
-diffusion = diffusion_cal.calculate(cv_entries)
-print("Fitted diffusion", diffusion[1])
-print("Average diffusion", diffusion[0])
-[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
-
-charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-charge_transfer = charge_transfer_cal.calculate(cv_entries, sci_notation=True)
-print("Charge Transfer", charge_transfer)
-
-e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
-e_half = e_half_transfer_cal.calculate(cv_entries)
-print("Avg E half", e_half)
+# diffusion_cal = CVDiffusionCalculator(connector=connector)
+# diffusion = diffusion_cal.calculate(cv_entries)
+# print("Fitted diffusion", diffusion[1])
+# print("Average diffusion", diffusion[0])
+# [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+#
+# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+# charge_transfer = charge_transfer_cal.calculate(cv_entries, sci_notation=True)
+# print("Charge Transfer", charge_transfer)
+#
+# e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
+# e_half = e_half_transfer_cal.calculate(cv_entries)
+# print("Avg E half", e_half)
 
 descriptor_cal = CVDescriptorCalculator(connector=connector)
 print(descriptor_cal.peaks(cv_entries[0]))
