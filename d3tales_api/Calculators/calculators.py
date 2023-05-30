@@ -85,7 +85,7 @@ class ConcentrationCalculator(D3Calculator):
 
 class CVDescriptorCalculator(D3Calculator):
 
-    def peaks(self, data: dict, width: float = 0.1):
+    def peaks(self, data: dict, width: float = 1, middle_sweep=True):
         """
         Gather CV peaks
 
@@ -94,34 +94,63 @@ class CVDescriptorCalculator(D3Calculator):
 
         :param data: data for calculation (rows of voltage, current)
         :param width: required width of peaks to identify
+        :param middle_sweep: ensure the middle sweep in analyzed if True
         :type data: dict
         :type width: float
+        :type middle_sweep: bool
 
         :return: dictionary containing list of forward peaks and list of reverse peaks
         """
 
-        self.data = data
-        conns = self.make_connections(data)
-        scan_dict = {}
-        for data_list in conns["scan_data"]:
+        if middle_sweep:
+            scan_data = self.middle_sweep(data)
+        else:
+            self.data = data
+            conns = self.make_connections(data)
+            scan_data = conns["scan_data"]
+
+        peak_dict = {}
+        for data_list in scan_data:
             data = np.array(data_list)
             if data[0, 0] < data[-1, 0]:
                 try:
                     peaks_data = find_peaks(data[:, 1], width=width)
-                    f_peaks = scan_dict.get("forward", [])
-                    f_peaks.extend(self.prominent_peaks(peaks_data, data))
-                    scan_dict.update({"forward": f_peaks})
+                    f_peaks = peak_dict.get("forward", []) + self.prominent_peaks(peaks_data, data)
+                    peak_dict.update({"forward": f_peaks})
                 except ValueError:
                     pass
             else:
                 try:
                     peaks_data = find_peaks(-data[:, 1], width=width)
-                    r_peaks = scan_dict.get("reverse", [])
-                    r_peaks.extend(self.prominent_peaks(peaks_data, data))
-                    scan_dict.update({"reverse": r_peaks})
+                    r_peaks = peak_dict.get("reverse", []) + self.prominent_peaks(peaks_data, data)
+                    peak_dict.update({"reverse": r_peaks})
                 except ValueError:
                     pass
-        return scan_dict
+        return peak_dict
+
+    def peaks_for_analysis(self, data: dict, cut_extras=False, **kwargs):
+        """
+        Get peaks for analysis
+
+        :param data: data for calculation
+        :param cut_extras: cut extra peaks off the end of the appropriate array if True and there are
+            not the same number of forward and reverse peaks
+        :param kwargs:
+        :return: forward_peaks, reverse_peaks
+        """
+        peaks = self.peaks(data, **kwargs)
+        forward_peaks = [item[0] for item in peaks.get('forward', [])]
+        reverse_peaks = [item[0] for item in peaks.get('reverse', [[]])]
+
+        # Check if there are the same number of forward and reverse peaks
+        if len(forward_peaks) != len(reverse_peaks):
+            if cut_extras:
+                num_peaks = min([len(forward_peaks), len(reverse_peaks)])
+                forward_peaks, reverse_peaks = forward_peaks[:num_peaks], reverse_peaks[:num_peaks]
+            else:
+                return None
+
+        return sorted(forward_peaks), sorted(reverse_peaks)
 
     def reversibility(self, data: dict, rev_upperbound: float = 63, quasi_rev_upperbound: float = 200, **kwargs):
         """
@@ -142,14 +171,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of reversibility categorizations for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
-        # If there are not the same number of forward and reverse peaks, default to irreversible.
-        if len(forward_peaks) != len(reverse_peaks):
-            return ['irreversible']
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         peaks_reversibility = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             delta_e = abs(f_peak - r_peak)
@@ -176,11 +198,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of E 1/2 for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         e_halfs = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             e_halfs.append(round((f_peak + r_peak) / 2, 3))
@@ -201,11 +219,7 @@ class CVDescriptorCalculator(D3Calculator):
         :return: list of peak splittings for peaks
         """
 
-        self.data = data
-
-        peaks = self.peaks(data, **kwargs)
-        forward_peaks = sorted([item[0] for item in peaks.get('forward', [])])
-        reverse_peaks = sorted([item[0] for item in peaks.get('reverse', [[]])], reverse=True)
+        forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)
         splittings = []
         for f_peak, r_peak in zip(forward_peaks, reverse_peaks):
             splittings.append(round(abs(f_peak - r_peak), 3))
@@ -293,7 +307,8 @@ class CVDiffusionCalculator(D3Calculator):
             C = unit_conversion(conns["C"], default_unit='mol/cm^3')
             i_ps[idx] = i_p
             vs[idx] = pow(v, 1 / 2)
-            diffusion_constants[idx] = (pow(i_p / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C * pow(v, 1 / 2)), 2))
+            diffusion_constants[idx] = (
+                pow(i_p / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C * pow(v, 1 / 2)), 2))
         slope = np.polyfit(vs, i_ps, 1)[0]
         diffusion_fitted = pow(slope / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C), 2)
 
@@ -464,7 +479,7 @@ class RMSDCalc(D3Calculator):
         Connection Points:
             :geom_final: geometry final (default = A)
             :geom_initial: geometry initial (default = A)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -497,7 +512,7 @@ class DeltaGSolvCalc(D3Calculator):
             :fin_eng: final energy (default = eV)
             :fin_corr: final entropy correction (default = eV)
             :fin_eng_solv: final energy of solvation (default = eV)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -536,10 +551,10 @@ class RedoxPotentialCalc(D3Calculator):
             :fin_eng: final energy (default = eV)
             :fin_corr: final entropy correction (default = eV)
             :fin_eng_solv: final energy of solvation (default = eV)
-    
+
             :num_electrons: number of electrons (default = 1)
             :electrode: electrode name as str or potential as float (default = standard_hydrogen_electrode)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -566,7 +581,7 @@ class RadBuriedVolCalc(D3Calculator):
         Connection Points:
             :log_file: calculation output file. Must be readable with CCLIB
             :spin_type: type of CCLIB spin to extract (default = Mulliken)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
@@ -600,7 +615,7 @@ class RadicalSpinCalc(D3Calculator):
         Connection Points:
             :log_file: calculation output file. Must be readable with CCLIB
             :spin_type: type of CCLIB spin to extract (default = Mulliken)
-        
+
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :type data: dict
