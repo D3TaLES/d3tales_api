@@ -19,7 +19,7 @@ try:
     from chemdataextractor2 import Document
     from chemdataextractor2.doc.text import *
 except ImportError:
-    warnings.warn("ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
+    print("WARNING. ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
 
 
 class ProcessDFT:
@@ -205,7 +205,7 @@ class ProcessCV:
     """
 
     def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
-                 parsing_class=ParseChiCV):
+                 parsing_class=ParseChiCV, **kwargs):
         """
         :param filepath: str, filepath to
         :param _id: str, molecule ID
@@ -233,7 +233,7 @@ class ProcessCV:
         self.ionic_liquids = metadata.get("ionic_liquid") if isinstance(metadata.get("ionic_liquid"), list) else [
             metadata.get("ionic_liquid")] if metadata.get("ionic_liquid") else []
 
-        self.CVData = parsing_class(filepath)
+        self.CVData = parsing_class(filepath, **kwargs)
 
     @property
     def data_dict(self):

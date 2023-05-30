@@ -4,6 +4,7 @@ import cclib
 import abc
 import json
 import math
+import warnings
 import numpy as np
 import pandas as pd
 from rdkit import Chem
@@ -128,7 +129,7 @@ class CVDescriptorCalculator(D3Calculator):
                     pass
         return peak_dict
 
-    def peaks_for_analysis(self, data: dict, cut_extras=False, **kwargs):
+    def peaks_for_analysis(self, data: dict, get_max=True, cut_extras=False, **kwargs):
         """
         Get peaks for analysis
 
@@ -140,15 +141,21 @@ class CVDescriptorCalculator(D3Calculator):
         """
         peaks = self.peaks(data, **kwargs)
         forward_peaks = [item[0] for item in peaks.get('forward', [])]
-        reverse_peaks = [item[0] for item in peaks.get('reverse', [[]])]
+        reverse_peaks = [item[0] for item in peaks.get('reverse', [])]
 
         # Check if there are the same number of forward and reverse peaks
         if len(forward_peaks) != len(reverse_peaks):
-            if cut_extras:
-                num_peaks = min([len(forward_peaks), len(reverse_peaks)])
+            num_peaks = min([len(forward_peaks), len(reverse_peaks)])
+            if get_max:
+                f_idx = np.argsort([item[1] for item in peaks.get('forward', [])])[-num_peaks:]
+                r_idx = np.argsort([item[1] for item in peaks.get('reverse', [])])[-num_peaks:]
+                forward_peaks = [forward_peaks[i] for i in f_idx]
+                reverse_peaks = [reverse_peaks[i] for i in r_idx]
+            elif cut_extras:
                 forward_peaks, reverse_peaks = forward_peaks[:num_peaks], reverse_peaks[:num_peaks]
             else:
-                return None
+                raise ValueError("Error. There are {} forward peaks and {} reverse peaks. Either examine data or set "
+                                 "get_max or cut_extras kwarg to True.".format(len(forward_peaks), len(reverse_peaks)))
 
         return sorted(forward_peaks), sorted(reverse_peaks)
 

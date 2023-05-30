@@ -17,8 +17,8 @@ if ROBOT_DATA:
     cv_dir = "../raw_data/robotic_data"
     cv_locations = sorted([os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")])
     if ONLY_ONE:
-        print(cv_locations[0])
-        cv_locations = [cv_locations[0]]
+        print(cv_locations[7])
+        cv_locations = [cv_locations[7]]
     cv_entries = [ProcessCV(loc, _id="test", submission_info={}, metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE, "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA}, parsing_class=ParseChiCV).data_dict for loc in cv_locations]
 else:
     cv_data = ProcessCV("../raw_data/aman_cv2.csv", _id='test', parsing_class=ParseChiCV).data_dict
@@ -57,6 +57,8 @@ connector = {
 # e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
 # e_half = e_half_transfer_cal.calculate(cv_entries)
 # print("Avg E half", e_half)
+
+# print(cv_entries[0].get("data", {}).get("scan_data"))
 
 descriptor_cal = CVDescriptorCalculator(connector=connector)
 print(descriptor_cal.peaks(cv_entries[0]))

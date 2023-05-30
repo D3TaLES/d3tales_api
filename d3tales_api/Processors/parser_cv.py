@@ -3,12 +3,39 @@ import dateutil.parser
 from d3tales_api.Calculators.plotters import CVPlotter
 from d3tales_api.Calculators.calculators import CVDescriptorCalculator
 
+MIN_SCAN_LEN = 5
+
+
+def break_list(lst, return_brks=False):
+    if len(lst) < 2:
+        return lst
+    direction = lst[1] - lst[0] / abs(lst[1] - lst[0])
+    brks = []
+    for i in range(1, len(lst)):
+        previous_diff = lst[i] - lst[i - 1]
+        if not previous_diff:
+            continue
+        i_direction = previous_diff / abs(previous_diff)
+        if i_direction != direction:
+            brks.append(i)
+            direction = i_direction
+    if return_brks:
+        return brks
+    return [lst[x:y] for x, y in zip([0] + brks, brks + [None])]
+
+
+def break_scan_data(scan_data):
+    volts = [v for v, i in scan_data]
+    brks = break_list(volts, return_brks=True)
+    return [scan_data[x:y] for x, y in zip([0] + brks, brks + [None])]
+
 
 class ParseChiCV:
     """
     Extract data from raw Chi CV experiment files
     """
-    def __init__(self, file_path):
+
+    def __init__(self, file_path, min_scan_len=MIN_SCAN_LEN):
         """
         :param file_path: str, filepath to experiment data file
         """
@@ -68,9 +95,7 @@ class ParseChiCV:
             if not getattr(self, "low_e", None):
                 self.init_e = {"value": potentials[0], "unit": ''}
 
-            self.data_points_per_scan = int(abs(self.high_e["value"] - self.low_e["value"]) / self.sample_interval["value"])
-            scan_data = [np.array(all_data[i:i + self.data_points_per_scan]).tolist() for i in range(0, len(all_data), self.data_points_per_scan)]
-
+        scan_data = [s for s in break_scan_data(all_data) if len(s) > min_scan_len]
         self.num_scans = len(scan_data)
         self.scan_data = scan_data
         self.peak_potential = max(potentials)
@@ -80,7 +105,6 @@ class ParseChiCV:
             "header": getattr(self, 'header'),
             "note": getattr(self, 'note'),
             "date_recorded": getattr(self, 'date_recorded'),
-            "data_points_per_scan": getattr(self, 'data_points_per_scan', None),
             "segment": getattr(self, 'segment', None),
             "sample_interval": getattr(self, 'sample_interval', {}),
             "quiet_time": getattr(self, 'quiet_time', {}),
@@ -116,8 +140,9 @@ class ParseChiCV:
         try:
             func = getattr(CVDescriptorCalculator(connector=connector), prop_name)
             return func(self)
-        except Exception:
+        except Exception as e:
             print("CVDescriptorCalculator does not have function ", prop_name)
+            print("\t" + str(e))
             return return_type()
 
     def calculate_plotting(self, prop_name, return_type=dict):
@@ -158,4 +183,3 @@ class ParseChiCV:
             return {"value": value, "unit": unit}
         else:
             return value
-
