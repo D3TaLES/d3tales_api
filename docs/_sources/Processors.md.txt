@@ -16,6 +16,8 @@ Full documentation can be found [here](d3tales_api.Processors.html).
   * Output file from `chi_660d, chi_1100b, pine_wavenow` instruments
 * UV/Vis Spectroscopy (in development) 
   * Excell files
+* Literature Articles 
+  * Generate article metadata from DOI
 
 ## Processing Molecular DFT
 
@@ -129,4 +131,30 @@ cv_data = ProcessCV(filepath="cv_test.txt", _id='test', submission_info=submissi
 print(cv_data.data_dict)
 ```
 
+
+
+
+## Processing Literature Articles
+
+Here we generate metadata for an article based on its DOI. To do this, we 
+simply import the `d3tales_parser` module and use the `ProcessNlp`
+module to generate the article metadata. 
+```python    
+from d3tales_api.Processors.d3tales_parser import *
+
+doi = "10.1039/c7cs00569e"
+nlp_data = ProcessNlp(doi)
+print(nlp_data.data_dict)
+```
+
+We can also instruct the parser to download the article PDF with the `article_download` kwarg and 
+store it in a directory specified with the `download_dir` kwarg. The parser will record the PDF 
+location in the output data. 
+```python    
+from d3tales_api.Processors.d3tales_parser import *
+
+doi = "10.1039/c7cs00569e"
+nlp_data = ProcessNlp(doi, article_download=True, download_dir="temp/")
+print(nlp_data.data_dict)
+```
 
