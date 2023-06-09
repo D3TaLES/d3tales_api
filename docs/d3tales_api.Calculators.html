@@ -265,7 +265,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks">
-<span class="sig-name descname"><span class="pre">peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle_sweep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks" title="Permalink to this definition"></a></dt>
 <dd><p>Gather CV peaks</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -280,10 +280,30 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>dict</em>) – data for calculation (rows of voltage, current)</p></li>
 <li><p><strong>width</strong> (<em>float</em>) – required width of peaks to identify</p></li>
+<li><p><strong>middle_sweep</strong> (<em>bool</em>) – ensure the middle sweep in analyzed if True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dictionary containing list of forward peaks and list of reverse peaks</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis">
+<span class="sig-name descname"><span class="pre">peaks_for_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks_for_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Get peaks for analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data for calculation</p></li>
+<li><p><strong>cut_extras</strong> – cut extra peaks off the end of the appropriate array if True and there are
+not the same number of forward and reverse peaks</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>forward_peaks, reverse_peaks</p>
 </dd>
 </dl>
 </dd></dl>

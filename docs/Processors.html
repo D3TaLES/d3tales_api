@@ -50,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#current-parsers">Current Parsers:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-molecular-dft">Processing Molecular DFT</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-cyclic-voltmeter">Processing Cyclic Voltmeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-literature-articles">Processing Literature Articles</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
@@ -105,6 +106,11 @@ database.</p>
 <li><p>UV/Vis Spectroscopy (in development)</p>
 <ul>
 <li><p>Excell files</p></li>
+</ul>
+</li>
+<li><p>Literature Articles</p>
+<ul>
+<li><p>Generate article metadata from DOI</p></li>
 </ul>
 </li>
 </ul>
@@ -213,6 +219,29 @@ parsing class because of the format of our data file.</p>
 
 <span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cv_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="processing-literature-articles">
+<h2>Processing Literature Articles<a class="headerlink" href="#processing-literature-articles" title="Permalink to this heading"></a></h2>
+<p>Here we generate metadata for an article based on its DOI. To do this, we
+simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessNlp</span></code>
+module to generate the article metadata.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">doi</span> <span class="o">=</span> <span class="s2">&quot;10.1039/c7cs00569e&quot;</span>
+<span class="n">nlp_data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nlp_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also instruct the parser to download the article PDF with the <code class="docutils literal notranslate"><span class="pre">article_download</span></code> kwarg and
+store it in a directory specified with the <code class="docutils literal notranslate"><span class="pre">download_dir</span></code> kwarg. The parser will record the PDF
+location in the output data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">doi</span> <span class="o">=</span> <span class="s2">&quot;10.1039/c7cs00569e&quot;</span>
+<span class="n">nlp_data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s2">&quot;temp/&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nlp_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

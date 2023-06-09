@@ -160,7 +160,7 @@
 
 <div class="viewcode-block" id="CVDescriptorCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator">[docs]</a><span class="k">class</span> <span class="nc">CVDescriptorCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
 
-<div class="viewcode-block" id="CVDescriptorCalculator.peaks"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks">[docs]</a>    <span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="CVDescriptorCalculator.peaks"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks">[docs]</a>    <span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">middle_sweep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gather CV peaks</span>
 
@@ -169,30 +169,63 @@
 
 <span class="sd">        :param data: data for calculation (rows of voltage, current)</span>
 <span class="sd">        :param width: required width of peaks to identify</span>
+<span class="sd">        :param middle_sweep: ensure the middle sweep in analyzed if True</span>
 <span class="sd">        :type data: dict</span>
 <span class="sd">        :type width: float</span>
+<span class="sd">        :type middle_sweep: bool</span>
 
 <span class="sd">        :return: dictionary containing list of forward peaks and list of reverse peaks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">scan_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">data_list</span> <span class="ow">in</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">middle_sweep</span><span class="p">:</span>
+            <span class="n">scan_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">middle_sweep</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">scan_data</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;scan_data&quot;</span><span class="p">]</span>
+
+        <span class="n">peak_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">data_list</span> <span class="ow">in</span> <span class="n">scan_data</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">peaks_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
-                    <span class="n">scan_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;forward&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)})</span>
+                    <span class="n">f_peaks</span> <span class="o">=</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                    <span class="n">peak_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;forward&quot;</span><span class="p">:</span> <span class="n">f_peaks</span><span class="p">})</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">peaks_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="o">-</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
-                    <span class="n">scan_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)})</span>
+                    <span class="n">r_peaks</span> <span class="o">=</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prominent_peaks</span><span class="p">(</span><span class="n">peaks_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                    <span class="n">peak_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="n">r_peaks</span><span class="p">})</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">pass</span>
-        <span class="k">return</span> <span class="n">scan_dict</span></div>
+        <span class="k">return</span> <span class="n">peak_dict</span></div>
+
+<div class="viewcode-block" id="CVDescriptorCalculator.peaks_for_analysis"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">peaks_for_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">cut_extras</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get peaks for analysis</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :param cut_extras: cut extra peaks off the end of the appropriate array if True and there are</span>
+<span class="sd">            not the same number of forward and reverse peaks</span>
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        :return: forward_peaks, reverse_peaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])]</span>
+
+        <span class="c1"># Check if there are the same number of forward and reverse peaks</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_peaks</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">cut_extras</span><span class="p">:</span>
+                <span class="n">num_peaks</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_peaks</span><span class="p">)])</span>
+                <span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="n">forward_peaks</span><span class="p">[:</span><span class="n">num_peaks</span><span class="p">],</span> <span class="n">reverse_peaks</span><span class="p">[:</span><span class="n">num_peaks</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">reverse_peaks</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CVDescriptorCalculator.reversibility"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.reversibility">[docs]</a>    <span class="k">def</span> <span class="nf">reversibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">rev_upperbound</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">63</span><span class="p">,</span> <span class="n">quasi_rev_upperbound</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -213,14 +246,7 @@
 <span class="sd">        :return: list of reversibility categorizations for peaks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-
-        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
-        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># If there are not the same number of forward and reverse peaks, default to irreversible.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_peaks</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;irreversible&#39;</span><span class="p">]</span>
+        <span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks_for_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">peaks_reversibility</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
             <span class="n">delta_e</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f_peak</span> <span class="o">-</span> <span class="n">r_peak</span><span class="p">)</span>
@@ -247,11 +273,7 @@
 <span class="sd">        :return: list of E 1/2 for peaks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-
-        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
-        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks_for_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">e_halfs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
             <span class="n">e_halfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">f_peak</span> <span class="o">+</span> <span class="n">r_peak</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -272,11 +294,7 @@
 <span class="sd">        :return: list of peak splittings for peaks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-
-        <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">forward_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="p">[])])</span>
-        <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">peaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="p">[[]])],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks_for_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">splittings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f_peak</span><span class="p">,</span> <span class="n">r_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forward_peaks</span><span class="p">,</span> <span class="n">reverse_peaks</span><span class="p">):</span>
             <span class="n">splittings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">f_peak</span> <span class="o">-</span> <span class="n">r_peak</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
@@ -364,7 +382,8 @@
             <span class="n">C</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;mol/cm^3&#39;</span><span class="p">)</span>
             <span class="n">i_ps</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">i_p</span>
             <span class="n">vs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="n">diffusion_constants</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">i_p</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.692e5</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">diffusion_constants</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">pow</span><span class="p">(</span><span class="n">i_p</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.692e5</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">i_ps</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">diffusion_fitted</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">slope</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.692e5</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -535,7 +554,7 @@
 <span class="sd">        Connection Points:</span>
 <span class="sd">            :geom_final: geometry final (default = A)</span>
 <span class="sd">            :geom_initial: geometry initial (default = A)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :type data: dict</span>
@@ -568,7 +587,7 @@
 <span class="sd">            :fin_eng: final energy (default = eV)</span>
 <span class="sd">            :fin_corr: final entropy correction (default = eV)</span>
 <span class="sd">            :fin_eng_solv: final energy of solvation (default = eV)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :type data: dict</span>
@@ -607,10 +626,10 @@
 <span class="sd">            :fin_eng: final energy (default = eV)</span>
 <span class="sd">            :fin_corr: final entropy correction (default = eV)</span>
 <span class="sd">            :fin_eng_solv: final energy of solvation (default = eV)</span>
-<span class="sd">    </span>
+
 <span class="sd">            :num_electrons: number of electrons (default = 1)</span>
 <span class="sd">            :electrode: electrode name as str or potential as float (default = standard_hydrogen_electrode)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :type data: dict</span>
@@ -637,7 +656,7 @@
 <span class="sd">        Connection Points:</span>
 <span class="sd">            :log_file: calculation output file. Must be readable with CCLIB</span>
 <span class="sd">            :spin_type: type of CCLIB spin to extract (default = Mulliken)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :type data: dict</span>
@@ -671,7 +690,7 @@
 <span class="sd">        Connection Points:</span>
 <span class="sd">            :log_file: calculation output file. Must be readable with CCLIB</span>
 <span class="sd">            :spin_type: type of CCLIB spin to extract (default = Mulliken)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param data: data for calculation</span>
 <span class="sd">        :param precision: number of significant figures (in scientific notation)</span>
 <span class="sd">        :type data: dict</span>

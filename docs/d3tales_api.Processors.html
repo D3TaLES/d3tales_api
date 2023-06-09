@@ -54,13 +54,13 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">d3tales_api.Processors package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.back2front">d3tales_api.Processors.back2front module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d3tales-api-processors-d3tales-parser-module">d3tales_api.Processors.d3tales_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.d3tales_parser">d3tales_api.Processors.d3tales_parser module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.expflow_parser">d3tales_api.Processors.expflow_parser module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.parser_cv">d3tales_api.Processors.parser_cv module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.parser_dft">d3tales_api.Processors.parser_dft module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.parser_ir">d3tales_api.Processors.parser_ir module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.parser_uvvis">d3tales_api.Processors.parser_uvvis module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d3tales-api-processors-processing-firetasks-module">d3tales_api.Processors.processing_firetasks module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors.processing_firetasks">d3tales_api.Processors.processing_firetasks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Processors">Module contents</a></li>
 </ul>
 </li>
@@ -409,8 +409,230 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 </section>
-<section id="d3tales-api-processors-d3tales-parser-module">
-<h2>d3tales_api.Processors.d3tales_parser module<a class="headerlink" href="#d3tales-api-processors-d3tales-parser-module" title="Permalink to this heading"></a></h2>
+<section id="module-d3tales_api.Processors.d3tales_parser">
+<span id="d3tales-api-processors-d3tales-parser-module"></span><h2>d3tales_api.Processors.d3tales_parser module<a class="headerlink" href="#module-d3tales_api.Processors.d3tales_parser" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCV'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to process Gaussian logfiles.
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCV'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – str, filepath to</p></li>
+<li><p><strong>_id</strong> – str, molecule ID</p></li>
+<li><p><strong>submission_info</strong> – dict, submission info</p></li>
+<li><p><strong>metadata</strong> – dict, metadata</p></li>
+<li><p><strong>parsing_class</strong> – class, class to use for file parsing (EX: ParseChiCV)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.cv_conditions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cv_conditions</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.cv_conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of conditions (in accordance with D3TaLES backend schema)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.data_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV.data_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format" title="Permalink to this definition"></a></dt>
+<dd><p>Format measurement data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – measurement data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>formatted measurement data, EX: {“value”: 0.5, “unit”: “V”}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.mol_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mol_info</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.mol_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary containing basic molecule information using the ID from the D3TalES database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reagent_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV.reagent_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format" title="Permalink to this definition"></a></dt>
+<dd><p>Convert reagent data to D3TaLES schema format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagents</strong> – reagent data or list of reagent data</p></li>
+<li><p><strong>purity</strong> – default purity value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>formatted reagent data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessDFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_dft.ProcessGausLog'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessDFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to process molecular DFT output files.
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_dft.ProcessGausLog'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessDFT.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> – str, molecule ID</p></li>
+<li><p><strong>submission_info</strong> – dict, submission information</p></li>
+<li><p><strong>metadata</strong> – dict, metadata (<cite>mol_file</cite> should be a key to the filepath of the file to be processed)</p></li>
+<li><p><strong>parsing_class</strong> – class, class to use for file parsing (EX: ProcessGausLog, ProcessCCLIB, or ProcessPsi4Log)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.conditions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">conditions</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of conditions (in accordance with D3TaLES backend schema)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.data_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.hash_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash_id</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.hash_id" title="Permalink to this definition"></a></dt>
+<dd><p>Hash ID</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.is_groundState">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_groundState</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.is_groundState" title="Permalink to this definition"></a></dt>
+<dd><p>True if current species is the ground state, else False</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessDFT.mol_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mol_info</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessDFT.mol_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary containing basic molecule information using the ID from the D3TalES database</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessNlp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">els_apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3a5b9e26201041e25eee70953c65782c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'temp/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to process NLP data for backend database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">els_apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3a5b9e26201041e25eee70953c65782c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'temp/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doi</strong> – str, DOI or scopus id</p></li>
+<li><p><strong>instance</strong> – dict, NLP data. Instance data will override web-scrapped data.</p></li>
+<li><p><strong>els_apikey</strong> – str, API access key for api.elsevier.com</p></li>
+<li><p><strong>article_download</strong> – bool, download article and insert article main text if True</p></li>
+<li><p><strong>els_apikey</strong> – str, directory path into which to download article</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article">
+<span class="sig-name descname"><span class="pre">download_article</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.download_article"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_affiliations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">affiliation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_affiliations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info">
+<span class="sig-name descname"><span class="pre">get_basic_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_basic_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text">
+<span class="sig-name descname"><span class="pre">get_main_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.get_main_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry">
+<span class="sig-name descname"><span class="pre">make_author_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">author</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.make_author_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessUvVis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_uvvis.ParseExcel'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessUvVis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to process UV-Vis data files.
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_uvvis.ParseExcel'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessUvVis.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – str, filepath to data file</p></li>
+<li><p><strong>mol_id</strong> – str, molecule ID</p></li>
+<li><p><strong>metadata</strong> – dict, dictionary containing any metadata for this molecule, e.g., {“solvent”: “acetonitrile”}</p></li>
+<li><p><strong>parsing_class</strong> – class, a UV-Vis parsing class with which to parse the data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis.no_sql_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">no_sql_data</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis.no_sql_data" title="Permalink to this definition"></a></dt>
+<dd><p>UV-Vis information in a dictionary that matches the No-SQL schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_absorbance_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sql_absorbance_data</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_absorbance_data" title="Permalink to this definition"></a></dt>
+<dd><p>UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sql_data</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_data" title="Permalink to this definition"></a></dt>
+<dd><p>UV-Vis information in a dictionary that matches the SQL UVVisData Table schema</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-d3tales_api.Processors.expflow_parser">
 <span id="d3tales-api-processors-expflow-parser-module"></span><h2>d3tales_api.Processors.expflow_parser module<a class="headerlink" href="#module-d3tales_api.Processors.expflow_parser" title="Permalink to this heading"></a></h2>
@@ -889,8 +1111,289 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 </section>
-<section id="d3tales-api-processors-processing-firetasks-module">
-<h2>d3tales_api.Processors.processing_firetasks module<a class="headerlink" href="#d3tales-api-processors-processing-firetasks-module" title="Permalink to this heading"></a></h2>
+<section id="module-d3tales_api.Processors.processing_firetasks">
+<span id="d3tales-api-processors-processing-firetasks-module"></span><h2>d3tales_api.Processors.processing_firetasks module<a class="headerlink" href="#module-d3tales_api.Processors.processing_firetasks" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.ApproveJobs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">ApproveJobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#ApproveJobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.ApproveJobs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Approve multiple processing jobs</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.ApproveJobs.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#ApproveJobs.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.ApproveJobs.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.FileTransferTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">FileTransferTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#FileTransferTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.FileTransferTask" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>A Firetask to Transfer files. Note that</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – str, - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer</p></li>
+<li><p><strong>files</strong> – ([str]) or ([(str, str)]) - list of source files, or dictionary containing ‘src’ and ‘dest’ keys</p></li>
+<li><p><strong>dest</strong> – str, optional, destination directory, if not specified within files parameter (else optional)</p></li>
+<li><p><strong>server</strong> – str, optional, server host for remote transfer</p></li>
+<li><p><strong>user</strong> – str, optional, user to authenticate with on remote server</p></li>
+<li><p><strong>key_filename</strong> – str, optional, optional SSH key location for remote transfer</p></li>
+<li><p><strong>max_retry</strong> – int, optional, number of times to retry failed transfers; defaults to <cite>0</cite> (no retries)</p></li>
+<li><p><strong>retry_delay</strong> – int, optional, number of seconds to wait between retries; defaults to <cite>10</cite></p></li>
+<li><p><strong>ignore_errors</strong> – bool, optional, Whether to ignore errors. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.FileTransferTask.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#FileTransferTask.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.FileTransferTask.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.ProcessFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">ProcessFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#ProcessFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.ProcessFile" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Process a data File</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.ProcessFile.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#ProcessFile.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.ProcessFile.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.SendToStorage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">SendToStorage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#SendToStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.SendToStorage" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Send data file to D3TaLES storage</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.SendToStorage.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#SendToStorage.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.SendToStorage.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">UpdateApprovalStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateApprovalStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Update the backend D3TaLES database approved status</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateApprovalStatus.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateApprovalStatus.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateBackendDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">UpdateBackendDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateBackendDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateBackendDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Update the backend D3TaLES database with parsed data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateBackendDB.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateBackendDB.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateBackendDB.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateFrontendDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">UpdateFrontendDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateFrontendDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Update the frontend D3TaLES database with parsed data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateFrontendDB.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateFrontendDB.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateFrontendDB.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateUserDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">UpdateUserDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateUserDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateUserDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<p>Update the D3TaLES website user database approved status</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.UpdateUserDB.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#UpdateUserDB.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.UpdateUserDB.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.mkdir_p">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">mkdir_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sftp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#mkdir_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.mkdir_p" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Processors.processing_firetasks.test_path">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.processing_firetasks.</span></span><span class="sig-name descname"><span class="pre">test_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sftp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/processing_firetasks.html#test_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.processing_firetasks.test_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-d3tales_api.Processors">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api.Processors" title="Permalink to this heading"></a></h2>
