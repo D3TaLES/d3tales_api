@@ -36,23 +36,24 @@ connector = {
 
     "scan_data": "data.scan_data",
     "variable_prop": "data.conditions.scan_rate.value",
+    "we_surface_area": "data.conditions.working_electrode_surface_area",
 }
 
+# print(cv_entries[0].get("data", {}).get("conditions"))
 
-
-diffusion_cal = CVDiffusionCalculator(connector=connector)
-diffusion = diffusion_cal.calculate(cv_entries)
-print("Average diffusion", diffusion[0])
-print("Fitted diffusion", diffusion[1])
-[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
-
-charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-charge_transfer = charge_transfer_cal.calculate(cv_entries, sci_notation=True)
-print("Charge Transfer", charge_transfer)
-
-e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
-e_half = e_half_transfer_cal.calculate(cv_entries)
-print("Avg E half", e_half)
+# diffusion_cal = CVDiffusionCalculator(connector=connector)
+# diffusion = diffusion_cal.calculate(cv_entries)
+# print("Average diffusion", diffusion[0])
+# print("Fitted diffusion", diffusion[1])
+# [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+#
+# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+# charge_transfer = charge_transfer_cal.calculate(cv_entries, sci_notation=True)
+# print("Charge Transfer", charge_transfer)
+#
+# e_half_transfer_cal = AvgEHalfCalculator(connector=connector)
+# e_half = e_half_transfer_cal.calculate(cv_entries)
+# print("Avg E half", e_half)
 
 # descriptor_cal = CVDescriptorCalculator(connector=connector)
 # print(descriptor_cal.peaks(cv_entries[0]))
@@ -63,7 +64,8 @@ print("Avg E half", e_half)
 #
 # cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png", self_standard=SELF_STD,
 #                                                                   title="CV Plot", xlabel="x", ylabel='y')
-# cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD,
-#                                                                   title="CV Plot", xlabel="Potential (V)", ylabel='Current (A)', legend_title="Scan Rate (V/s)")
+cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD,
+                                                                  title="CV Plot", xlabel="Potential (V) vs Ag/$Ag^+$", ylabel=None,
+                                                                  legend_title="Scan Rate (V/s)", a_to_ma=True, current_density=True)
 
 print("CV TESTING SUCCESSFUL")

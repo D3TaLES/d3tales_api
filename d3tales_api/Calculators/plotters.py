@@ -17,12 +17,13 @@ class D3Plotter(D3Calculator):
 
 class CVPlotter(D3Plotter):
 
-    def plot_data(self, data, self_standard=False, a_to_ma=False):
+    def plot_data(self, data, self_standard=False, a_to_ma=False, current_density=False):
         """
         CV plot data for plotly
 
         Connection Points:
             :scan_data: scanned data from CV file
+            :we_surface_area: working electrode surface area
 
         :param data: data for calculation
         :type data: dict
@@ -30,6 +31,9 @@ class CVPlotter(D3Plotter):
         :type self_standard: bool
         :param a_to_ma: convert current values (assumed to be in A) to mA if True
         :type a_to_ma: bool
+        :param current_density: convert current values to current density if True (requires we_surface_area connection)
+)
+        :type current_density: bool
 
         :return: plot data for plotly
         """
@@ -41,7 +45,13 @@ class CVPlotter(D3Plotter):
         y = []
         for scan in conns["scan_data"]:
             x.extend([i[0] for i in scan])
-            y.extend([i[1]/1000 if a_to_ma else i[1] for i in scan])
+            y.extend([i[1]*1000 if a_to_ma else i[1] for i in scan])
+
+        # Convert to current density
+        if current_density:
+            print("Converting current to current density...")
+            we_sa = unit_conversion(conns["we_surface_area"], default_unit='cm^2')
+            y = [i/we_sa for i in y]
 
         if self_standard:
             print("Performing self-standard adjustment...")
@@ -60,7 +70,7 @@ class CVPlotter(D3Plotter):
         }]
         return {"abs_plot": plotting_data, "x": x, "y": y}
 
-    def live_plot(self, data, fig_path=None, self_standard=False, a_to_ma=False, **plt_kwargs):
+    def live_plot(self, data, fig_path=None, self_standard=False, a_to_ma=False, current_density=False, **plt_kwargs):
         """
         Live Matplotlib plot for data
 
@@ -76,8 +86,11 @@ class CVPlotter(D3Plotter):
 
         :return: shows matplotlib plot
         """
-        plt_data = self.plot_data(data, self_standard=self_standard, a_to_ma=a_to_ma)
+        plt_data = self.plot_data(data, self_standard=self_standard, a_to_ma=a_to_ma, current_density=current_density)
         plt.scatter(plt_data["x"], plt_data["y"], color="red", s=10)
+        if not plt_kwargs.get("ylabel"):
+            current_unit = "mA" if a_to_ma else "A"
+            plt_kwargs.update({"ylabel": f"Current Density ({current_unit}/$cm^2$)" if current_density else f"Current ({current_unit})"})
         plt.gca().update(dict(**plt_kwargs))
         plt.tight_layout()
 
@@ -87,7 +100,7 @@ class CVPlotter(D3Plotter):
         else:
             plt.show()
 
-    def live_plot_multi(self, data, fig_path=None, sort=True, self_standard=False, a_to_ma=False, **plt_kwargs):
+    def live_plot_multi(self, data, fig_path=None, sort=True, self_standard=False, a_to_ma=False, current_density=False, **plt_kwargs):
         """
         Live Matplotlib plot for data
 
@@ -109,7 +122,7 @@ class CVPlotter(D3Plotter):
         # Get data_dict for sorting
         data_dict = {}
         for d in data:
-            plt_data = self.plot_data(d, self_standard=self_standard, a_to_ma=a_to_ma)
+            plt_data = self.plot_data(d, self_standard=self_standard, a_to_ma=a_to_ma, current_density=current_density)
             conns = self.make_connections(d)
             var_prop = conns["variable_prop"]
             data_dict[var_prop] = plt_data
@@ -119,6 +132,9 @@ class CVPlotter(D3Plotter):
 
         [plt.scatter(d["x"], d["y"], label=p, s=10) for p, d in data_dict.items()]
         legend_title = plt_kwargs.pop("legend_title") if "legend_title" in plt_kwargs.keys() else "Legend"
+        if not plt_kwargs.get("ylabel"):
+            current_unit = "mA" if a_to_ma else "A"
+            plt_kwargs.update({"ylabel": f"Current Density ({current_unit}/$cm^2$)" if current_density else f"Current ({current_unit})"})
         plt.gca().update(dict(**plt_kwargs))
         plt.tight_layout()
         plt.legend(title=legend_title)
