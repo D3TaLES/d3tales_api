@@ -157,5 +157,3 @@ doi = "10.1039/c7cs00569e"
 nlp_data = ProcessNlp(doi, article_download=True, download_dir="temp/")
 print(nlp_data.data_dict)
 ```
-
-

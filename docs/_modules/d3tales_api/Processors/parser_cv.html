@@ -78,12 +78,39 @@
 <span class="kn">from</span> <span class="nn">d3tales_api.Calculators.plotters</span> <span class="kn">import</span> <span class="n">CVPlotter</span>
 <span class="kn">from</span> <span class="nn">d3tales_api.Calculators.calculators</span> <span class="kn">import</span> <span class="n">CVDescriptorCalculator</span>
 
+<span class="n">MIN_SCAN_LEN</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="break_list"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.break_list">[docs]</a><span class="k">def</span> <span class="nf">break_list</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">return_brks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lst</span>
+    <span class="n">direction</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">brks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)):</span>
+        <span class="n">previous_diff</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">previous_diff</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">i_direction</span> <span class="o">=</span> <span class="n">previous_diff</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">previous_diff</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i_direction</span> <span class="o">!=</span> <span class="n">direction</span><span class="p">:</span>
+            <span class="n">brks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">i_direction</span>
+    <span class="k">if</span> <span class="n">return_brks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">brks</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">brks</span><span class="p">,</span> <span class="n">brks</span> <span class="o">+</span> <span class="p">[</span><span class="kc">None</span><span class="p">])]</span></div>
+
+
+<div class="viewcode-block" id="break_scan_data"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.break_scan_data">[docs]</a><span class="k">def</span> <span class="nf">break_scan_data</span><span class="p">(</span><span class="n">scan_data</span><span class="p">):</span>
+    <span class="n">volts</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scan_data</span><span class="p">]</span>
+    <span class="n">brks</span> <span class="o">=</span> <span class="n">break_list</span><span class="p">(</span><span class="n">volts</span><span class="p">,</span> <span class="n">return_brks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">scan_data</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">brks</span><span class="p">,</span> <span class="n">brks</span> <span class="o">+</span> <span class="p">[</span><span class="kc">None</span><span class="p">])]</span></div>
+
 
 <div class="viewcode-block" id="ParseChiCV"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV">[docs]</a><span class="k">class</span> <span class="nc">ParseChiCV</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract data from raw Chi CV experiment files</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="ParseChiCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ParseChiCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">min_scan_len</span><span class="o">=</span><span class="n">MIN_SCAN_LEN</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param file_path: str, filepath to experiment data file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -143,9 +170,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;low_e&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">init_e</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">potentials</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_points_per_scan</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">high_e</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">low_e</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_interval</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-            <span class="n">scan_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_points_per_scan</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_data</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_points_per_scan</span><span class="p">)]</span>
-
+        <span class="n">scan_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">break_scan_data</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_scan_len</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_scans</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scan_data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span> <span class="o">=</span> <span class="n">scan_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_potential</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">potentials</span><span class="p">)</span>
@@ -155,7 +180,6 @@
             <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;header&#39;</span><span class="p">),</span>
             <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;note&#39;</span><span class="p">),</span>
             <span class="s2">&quot;date_recorded&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;date_recorded&#39;</span><span class="p">),</span>
-            <span class="s2">&quot;data_points_per_scan&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data_points_per_scan&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s2">&quot;segment&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;segment&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s2">&quot;sample_interval&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;sample_interval&#39;</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="s2">&quot;quiet_time&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;quiet_time&#39;</span><span class="p">,</span> <span class="p">{}),</span>
@@ -191,8 +215,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">CVDescriptorCalculator</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">),</span> <span class="n">prop_name</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CVDescriptorCalculator does not have function &quot;</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">return_type</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ParseChiCV.calculate_plotting"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_plotting">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_plotting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">dict</span><span class="p">):</span>
@@ -233,7 +258,6 @@
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span></div></div>
-
 </pre></div>
 
            </div>

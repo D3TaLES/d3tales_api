@@ -291,7 +291,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis">
-<span class="sig-name descname"><span class="pre">peaks_for_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks_for_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">peaks_for_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVDescriptorCalculator.peaks_for_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis" title="Permalink to this definition"></a></dt>
 <dd><p>Get peaks for analysis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1045,7 +1045,7 @@ if a subshell has &gt; 10 electrons, this subshell is ignored</p>
 <dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.plotters.D3Plotter" title="d3tales_api.Calculators.plotters.D3Plotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Plotter</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.live_plot">
-<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">live_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_to_ma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot" title="Permalink to this definition"></a></dt>
 <dd><p>Live Matplotlib plot for data</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -1071,7 +1071,7 @@ if a subshell has &gt; 10 electrons, this subshell is ignored</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi">
-<span class="sig-name descname"><span class="pre">live_plot_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot_multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">live_plot_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_to_ma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plt_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.live_plot_multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi" title="Permalink to this definition"></a></dt>
 <dd><p>Live Matplotlib plot for data</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
@@ -1101,25 +1101,53 @@ if a subshell has &gt; 10 electrons, this subshell is ignored</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.plotters.CVPlotter.plot_data">
-<span class="sig-name descname"><span class="pre">plot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.plot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.plot_data" title="Permalink to this definition"></a></dt>
-<dd><p>CV plot data for plotly</p>
+<span class="sig-name descname"><span class="pre">plot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_standard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_to_ma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/plotters.html#CVPlotter.plot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.plotters.CVPlotter.plot_data" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>CV plot data for plotly</p>
 <dl class="simple">
 <dt>Connection Points:</dt><dd><dl class="field-list simple">
 <dt class="field-odd">scan_data</dt>
 <dd class="field-odd"><p>scanned data from CV file</p>
 </dd>
+<dt class="field-even">we_surface_area</dt>
+<dd class="field-even"><p>working electrode surface area</p>
+</dd>
 </dl>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
-<li><p><strong>self_standard</strong> (<em>bool</em>) – establish self standard (e_half=0V) if True</p></li>
-</ul>
+<dt class="field-odd">param data</dt>
+<dd class="field-odd"><p>data for calculation</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">type data</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">param self_standard</dt>
+<dd class="field-odd"><p>establish self standard (e_half=0V) if True</p>
+</dd>
+<dt class="field-even">type self_standard</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+<dt class="field-odd">param a_to_ma</dt>
+<dd class="field-odd"><p>convert current values (assumed to be in A) to mA if True</p>
+</dd>
+<dt class="field-even">type a_to_ma</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+<dt class="field-odd">param current_density</dt>
+<dd class="field-odd"><p>convert current values to current density if True (requires we_surface_area connection)</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>)</dt><dd><dl class="field-list simple">
+<dt class="field-odd">type current_density</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">return</dt>
 <dd class="field-even"><p>plot data for plotly</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
