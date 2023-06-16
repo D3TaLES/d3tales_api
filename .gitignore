@@ -1,5 +1,6 @@
 venv/
 .idea/
+build/
 **/__pycache__/
 d3tales_api.egg-info
 sphinx/_build/
