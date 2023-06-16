@@ -591,7 +591,7 @@ class CV2Front:
     """
 
     def __init__(self, id_list=None, backend_data=None, mol_id=None, e_half_scan_rate=0.1, run_anodic=False,
-                 run_processing=True, insert=True, verbose=1):
+                 run_processing=True, insert=True, redox_event="oxidation", verbose=1):
         """
         :param id_list: list, list of backend ids
         :param backend_data: list, list of JSON containing processed backend data
@@ -618,13 +618,16 @@ class CV2Front:
         self.p_ids = [d.get("_id") for d in self.multi_data]
         self.e_half_scan_rate = e_half_scan_rate
         self.run_anodic = run_anodic
+        self.redox_event = redox_event
 
         # Check Mol ID
         mol_ids = list(set(filter(lambda i: i is not None, [d.get("mol_id") for d in self.multi_data])))
         if len(mol_ids) > 1: 
-            raise ValueError("Not all submitted data is associated with the same moleucle! Submitted data are associated"
+            raise ValueError("Not all submitted data is associated with the same molecule! Submitted data are associated"
                              "with molecules {}.".format(", ".join(mol_ids)))
         self.mol_id = mol_ids[0] if mol_ids else mol_id
+
+        # Start Metadict
         self.meta_dict = {}
 
         if run_processing:
@@ -633,26 +636,28 @@ class CV2Front:
         [setattr(self, k, v) for k, v in self.meta_dict.items()]
 
         if insert:
-            FrontDB(schema_layer="experiment_data.mol_characterization", instance=self.meta_dict, _id=self.mol_id)
-            FrontDB(instance={"experiment_data.experiment_ids": self.p_ids}, _id=data.get("mol_id"))
+            FrontDB(instance={"experiment_data.mol_characterization": self.meta_dict}, _id=self.mol_id)
+            FrontDB(instance={"experiment_data.experiment_ids": self.p_ids}, _id=self.mol_id)
 
     def process(self):
+        diffusions, charge_transfers = [], []
         if self.verbose:
             print("STARTING META PROPERTY PROCESSING...This could take a few minutes.")
             print("E 1/2s: ", self.e_halfs)
 
+        self.meta_dict.update({f"{self.redox_event}_potential": self.e_halfs})
+
         for i, e_half in enumerate(self.e_halfs):
-            c_diffusion_coef, c_transfer_rate = self.cv_meta_calcs(electron_num=i + 1, curve_type="cathodic")
-            self.meta_dict.update(self.return_descriptor_dict(
-                c_diffusion_coef[1], unit="cm^2/s", name="diffusion_coefficient", order=i, notes="cathodic"))
-            self.meta_dict.update(self.return_descriptor_dict(
-                c_transfer_rate, unit="cm/s", name="charge_transfer_rate", order=i, notes="cathodic"))
+            c_diffusion_coef, c_transfer_rate = self.cv_meta_calcs(electron_num=i+1, curve_type="cathodic")
+            diffusions.append(self.prop_dict(c_diffusion_coef[1], unit="cm^2/s", order=i+1, notes="cathodic"))
+            charge_transfers.append(self.prop_dict(c_transfer_rate, unit="cm/s", order=i+1, notes="cathodic"))
+
             if self.run_anodic:
-                a_diffusion_coef, a_transfer_rate = self.cv_meta_calcs(electron_num=i + 1, curve_type="anodic")
-                self.meta_dict.update(self.return_descriptor_dict(
-                    a_diffusion_coef[1], unit="cm^2/s", name="diffusion_coefficient", order=i, notes="anodic"))
-                self.meta_dict.update(self.return_descriptor_dict(
-                    a_transfer_rate, unit="cm/s", name="charge_transfer_rate", order=i, notes="anodic"))
+                a_diffusion_coef, a_transfer_rate = self.cv_meta_calcs(electron_num=i+1, curve_type="anodic")
+                diffusions.append(self.prop_dict(a_diffusion_coef[1], unit="cm^2/s", order=i+1, notes="anodic"))
+                charge_transfers.append(self.prop_dict(a_transfer_rate, unit="cm/s", order=i+1, notes="anodic"))
+
+        self.meta_dict.update({"diffusion_coefficient": diffusions, "charge_transfer_rate": charge_transfers})
 
     def get_conditions(self):
         all_cond = [d.get("data", {}).get("conditions") for d in self.multi_data]
@@ -667,20 +672,21 @@ class CV2Front:
         dhash.update(encoded)
         return dhash.hexdigest()
 
-    def return_descriptor_dict(self, value, unit="", name="", order=1, notes=None):
+    def prop_dict(self, value, unit="",order=1, conditions=None, hashes=None, notes=None):
         """
         Generate descriptor dictionary in accordance with D3TaLES schema
 
         :param value: data value
         :param unit: str, unit
-        :param name: str, property name
         :param order: int, property order
+        :param conditions: list, property conditions
+        :param hashes: list, property hash ids
         :param notes: str, property notes
         :return: descriptor dictionary
         """
-        cond = copy.deepcopy(self.conditions)
+        cond = copy.deepcopy(conditions or self.conditions)
         prop_dict = {
-                    "source_hash_ids": self.p_ids,
+                    "source_hash_ids": hashes or self.p_ids,
                     "conditions": cond,
                     "order": order,
                     "value": value,
@@ -688,7 +694,7 @@ class CV2Front:
                 }
         if notes:
             prop_dict.update({"notes": notes})
-        return { name: [prop_dict] }
+        return prop_dict
 
 
     def cv_meta_calcs(self, electron_num=1, curve_type="anodic"):
@@ -728,7 +734,7 @@ class CV2Front:
             [d.update({"diffusion": float(diffusion_coef[1])}) for d in processed_data]
             transfer_cal = CVChargeTransferCalculator(connector=connector)
             transfer_rate = transfer_cal.calculate(processed_data, sci_notation=True)
-            return diffusion_coef, transfer_rate
+            return [float(d) for d in diffusion_coef], float(transfer_rate)
         except:
             return [None, None], None
 
@@ -737,7 +743,12 @@ class CV2Front:
         for d in self.multi_data:
             d_sr = d.get("data", {}).get("conditions", {}).get("scan_rate", {}).get("value", None)
             if self.e_half_scan_rate == d_sr:
-                return d.get("data", {}).get("e_half")
+                self.e_halfs_id = d.get("_id")
+                self.e_halfs_conditions = d.get("data", {}).get("conditions")
+                e_halfs = d.get("data", {}).get("e_half")
+                return [self.prop_dict(e_half, unit="V", order=i + 1, hashes=[self.e_halfs_id],
+                                       conditions=self.e_halfs_conditions) for i, e_half in enumerate(e_halfs)]
+
 
     @classmethod
     def from_json(cls, json_path, **kwargs):
