@@ -76,13 +76,16 @@ class GenerateMolInfo:
     :param origin_group: which group the molecule comes from
     :return: mol_info class object
     """
-    def __init__(self, smiles, origin_group="", names=[], extra_info=True, database='frontend', schema_name="mol_info"):
+    def __init__(self, smiles, origin_group="", names=[], extra_info=True, database='frontend', schema_name="mol_info",
+                 ground_spin=None, ground_charge=None):
         self.smiles = smiles
         self.origin_group = origin_group
         self.names = names
         self.database = database
         self.schema_name = schema_name
         self.extra_info = extra_info
+        self.ground_spin = ground_spin
+        self.ground_charge = ground_charge
         self.mol_info_dict = self.get_mol_info()
 
     def get_mol_info(self):
@@ -112,8 +115,8 @@ class GenerateMolInfo:
         mol_info.molecular_formula = CalcMolFormula(rdkmol)
         mol_info.number_of_atoms = Mol.GetNumAtoms(rdkmol)
         mol_info.molecular_weight = CalcExactMolWt(rdkmol)
-        mol_info.groundState_charge = GetFormalCharge(rdkmol)
-        mol_info.groundState_spin = NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        mol_info.groundState_charge = self.ground_charge or GetFormalCharge(rdkmol)
+        mol_info.groundState_spin = self.ground_spin or NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
         mol_info.sa_score = round(sascorer.calculateScore(rdkmol), 2)
         if self.extra_info:
             mol_info.d2_image = image_to_base64(Draw.MolToImage(rdkmol))
