@@ -591,7 +591,7 @@ class CV2Front:
     """
 
     def __init__(self, id_list=None, backend_data=None, mol_id=None, e_half_scan_rate=0.1, run_anodic=False,
-                 run_processing=True, insert=True, redox_event="oxidation", verbose=1):
+                 run_processing=True, insert=True, redox_event="oxidation", verbose=1, backend_db="backend"):
         """
         :param id_list: list, list of backend ids
         :param backend_data: list, list of JSON containing processed backend data
@@ -601,11 +601,12 @@ class CV2Front:
         :param run_processing: bool, run processing (takes a few minutes) if True
         :param insert: bool, insert generated data to the frontend D3TaLES database if True
         :param verbose: int, level of verbosity
+        :param verbose: str, backend DB key word
         """
 
         # connect to databases
         self.front_coll = DBconnector(db_info.get("frontend")).get_collection("base")
-        self.back_coll = DBconnector(db_info.get("backend")).get_collection("experimentation")
+        self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
 
         # Basic variables
         self.verbose = verbose
@@ -643,7 +644,7 @@ class CV2Front:
         diffusions, charge_transfers = [], []
         if self.verbose:
             print("STARTING META PROPERTY PROCESSING...This could take a few minutes.")
-            print("E 1/2s: ", self.e_halfs)
+            print("E 1/2s: ", ", ".join([e.get("value") for e in self.e_halfs]))
 
         self.meta_dict.update({f"{self.redox_event}_potential": self.e_halfs})
 

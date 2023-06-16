@@ -16,8 +16,5 @@ IDS_2P = [
 ]
 
 if __name__ == "__main__":
-    b2f = CV2Front(id_list=IDS_2P, e_half_scan_rate=0.1, run_anodic=False, run_processing=True, insert=True, verbose=1)
-    for k, v in b2f.meta_dict.items():
-        print("------------")
-        print(k)
-        print(v)
+    b2f = CV2Front(id_list=IDS_2P, e_half_scan_rate=0.1, run_anodic=False, run_processing=True, insert=False, verbose=1)
+    print(meta)
