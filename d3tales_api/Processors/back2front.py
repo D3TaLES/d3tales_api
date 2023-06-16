@@ -590,12 +590,13 @@ class CV2Front:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, id_list=None, backend_data=None, mol_id=None, e_half_scan_rate=0.1, run_anodic=False,
+    def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1, run_anodic=False,
                  run_processing=True, insert=True, redox_event="oxidation", verbose=1, backend_db="backend"):
         """
         :param id_list: list, list of backend ids
         :param backend_data: list, list of JSON containing processed backend data
-        :param mol_id: str, default molecule ID for data if none found  
+        :param metadata_dict: dict, default metadata dictionary
+        :param mol_id: str, default molecule ID for data if none found
         :param e_half_scan_rate: float, scan rate at which to extract e half
         :param run_anodic: bool, run processing for anodic sweep if True
         :param run_processing: bool, run processing (takes a few minutes) if True
@@ -629,7 +630,7 @@ class CV2Front:
         self.mol_id = mol_ids[0] if mol_ids else mol_id
 
         # Start Metadict
-        self.meta_dict = {}
+        self.meta_dict = metadata_dict or {}
 
         if run_processing:
             self.process()
@@ -644,7 +645,7 @@ class CV2Front:
         diffusions, charge_transfers = [], []
         if self.verbose:
             print("STARTING META PROPERTY PROCESSING...This could take a few minutes.")
-            print("E 1/2s: ", ", ".join([e.get("value") for e in self.e_halfs]))
+            print("E 1/2s: ", ", ".join([str(e.get("value")) for e in self.e_halfs]))
 
         self.meta_dict.update({f"{self.redox_event}_potential": self.e_halfs})
 

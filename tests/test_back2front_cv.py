@@ -16,5 +16,5 @@ IDS_2P = [
 ]
 
 if __name__ == "__main__":
-    b2f = CV2Front(id_list=IDS_2P, e_half_scan_rate=0.1, run_anodic=False, run_processing=True, insert=False, verbose=1)
-    print(meta)
+    b2f = CV2Front(id_list=IDS_2P, run_processing=False, insert=False)
+    print(b2f.multi_data)
