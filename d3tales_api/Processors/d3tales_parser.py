@@ -2,10 +2,7 @@ import os
 import sys
 import uuid
 import hashlib
-import warnings
 from datetime import datetime
-from elsapy.elsdoc import AbsDoc
-from elsapy.elsclient import ElsClient
 from articledownloader.articledownloader import ArticleDownloader
 
 from d3tales_api.database_info import db_info
@@ -20,7 +17,11 @@ try:
     from chemdataextractor2.doc.text import *
 except ImportError:
     print("WARNING. ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
-
+try:
+    from elsapy.elsdoc import AbsDoc
+    from elsapy.elsclient import ElsClient
+except Exception:
+    print("WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
 
 class ProcessDFT:
     """
