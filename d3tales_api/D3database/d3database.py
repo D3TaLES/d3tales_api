@@ -187,9 +187,9 @@ class D3Database:
                 cursor = self.coll.find(query).limit(limit)
         else:
             if projection:
-                cursor = [self.coll.find_one(query, projection).limit(limit)]
+                cursor = [self.coll.find_one(query, projection)]
             else:
-                cursor = [self.coll.find_one(query).limit(limit)]
+                cursor = [self.coll.find_one(query)]
 
         if output == "pandas":
             return pd.DataFrame.from_records(cursor)

@@ -273,7 +273,7 @@ class CVDescriptorCalculator(D3Calculator):
 
 class CVDiffusionCalculator(D3Calculator):
 
-    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
+    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
         """
         Diffusion constant using Randles-Scidwick equation
 
@@ -326,7 +326,7 @@ class CVDiffusionCalculator(D3Calculator):
 
 class CVChargeTransferCalculator(D3Calculator):
 
-    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
+    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
         """
         Charge transfer rate calculation
 
