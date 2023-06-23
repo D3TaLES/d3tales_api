@@ -2,10 +2,7 @@ import os
 import sys
 import uuid
 import hashlib
-import warnings
 from datetime import datetime
-from elsapy.elsdoc import AbsDoc
-from elsapy.elsclient import ElsClient
 from articledownloader.articledownloader import ArticleDownloader
 
 from d3tales_api.database_info import db_info
@@ -20,7 +17,11 @@ try:
     from chemdataextractor2.doc.text import *
 except ImportError:
     print("WARNING. ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
-
+try:
+    from elsapy.elsdoc import AbsDoc
+    from elsapy.elsclient import ElsClient
+except Exception:
+    print("WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
 
 class ProcessDFT:
     """
@@ -551,6 +552,84 @@ class ProcessNlp:
             affiliations = []
         return affiliations
 
+    @classmethod
+    def from_json(cls, json_path, **kwargs):
+        """
+        Generate data class from JSON file
+
+        :param json_path: str, path to JSON file
+        :return: data class
+        """
+        with open(json_path) as fn:
+            processing_data = json.load(fn)
+        return cls(instance=processing_data, **kwargs)
+
+    @classmethod
+    def from_dataframe(cls, nlp_df, nlp_model, doi=None, base_instance=None, date_generated=datetime.now(), **kwargs):
+        """
+        Translate pandas DataFrame from NLP extraction to JSON data conforming to the D3TaLES backend NLP
+        schema: https://github.com/D3TaLES/schema/blob/main/schema_backend/nlp.schema.json. Note that the DataFrame
+        should contain the all the columns listed in the expected_columns variable, and no other columns.
+
+        :param nlp_df: pandas DataFrame, extracted NLP data
+        :param nlp_model: str, name of NLP model used for data extraction
+        :param doi: str, DOI associated with extracted data
+        :param base_instance: dict, base instance containing additional info for backend data insertion
+        :param date_generated: datetime obj, date and time the data was generated
+        :return: dict, JSON formatted data conforming to the D3TaLES backend   NLP schema
+        """
+        # Check for DOI
+        doi_str= (doi or base_instance.get("doi", base_instance.get("_id"))).strip("https://doi.org/")
+        if not doi_str:
+            raise ValueError("ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.")
+
+        # Check DF columns
+        expected_columns = ["molecule", "property", "value", "unit", "line_number", "parent_sentence", "notes"]
+        unexpected_columns = [c for c in nlp_df.columns if c not in expected_columns]
+        if unexpected_columns:
+            raise SyntaxError(
+                "The column titles for the NLP DataFrame do not match the expected column titles. Columns {}"
+                "were unexpected.".format(", ".join(unexpected_columns)))
+        if nlp_df.columns != expected_columns:
+            raise SyntaxError("The column titles for the NLP DataFrame do not contain columns: ".format(
+                ", ".join([c for c in expected_columns if c not in nlp_df.columns])))
+
+        # Check values in "properties" column
+        expected_properties = ["oxidation_potential", "reduction_potential", "solubility", "stability", "conductivity",
+                               "diffusion_coefficient", "charge_transfer_rate"]
+        unexpected_properties = [p for p in set(nlp_df.properties.tolist()) if p not in expected_properties]
+        if unexpected_properties:
+            raise ValueError("There were unexpected properties in the NLP DataFrame 'properties' column: ",
+                             ", ".join(unexpected_properties))
+
+        # Generate output JSON
+        extracted_molecules = []
+        mol_names = set(nlp_df.molecule.tolist())
+        for mol in mol_names:
+            extracted_properties = {}
+            mol_df = nlp_df[nlp_df.molecule == mol]
+            for prop in set(mol_df.property.tolist()):
+                props = []
+                prop_df = mol_df[mol_df.property == prop]
+                for i, row in prop_df.iterrows():
+                    props.append({
+                        "conditions": {
+                            "data_source": "nlp",
+                            "nlp_model": nlp_model,
+                            "date_generated": date_generated,
+                            "doi": doi_str,
+                            "line_number": row.line_number,
+                            "parent_sentence": row.parent_sentence,
+                            "notes": row.notes
+                        },
+                        "value": row.value,
+                        "unit": row.unit
+                    })
+                extracted_properties[prop] = props
+            extracted_molecules.append({"molecule_name": mol, "extracted_properties": extracted_properties})
+
+        (base_instance or {}).update({"_id": doi_str, "extracted_molecules": extracted_molecules})
+        return cls(instance=base_instance, **kwargs)
 
 
 if __name__ == "__main__":
@@ -559,3 +638,4 @@ if __name__ == "__main__":
     data = ProcessNlp(sys.argv[1], article_download=False).data_dict
 
     print(data)
+
