@@ -77,4 +77,4 @@ nlp_df = pd.DataFrame()  # NLP OUTPUT!
 generation_data = ""  # Some datetime object
 
 # Convert NLP data to backend database entry
-backend_dat = ProcessNlp.from_dataframe(nlp_df, NLP_MODLE, base_instance=nlp_data, date_generated=generation_data)
+backend_data = ProcessNlp.from_dataframe(nlp_df, NLP_MODLE, base_instance=nlp_data, date_generated=generation_data).data_dict

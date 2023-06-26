@@ -3,6 +3,8 @@ import sys
 import uuid
 import hashlib
 from datetime import datetime
+
+import pandas as pd
 from articledownloader.articledownloader import ArticleDownloader
 
 from d3tales_api.database_info import db_info
@@ -417,7 +419,8 @@ class ProcessNlp:
         :param article_download: bool, download article and insert article main text if True
         :param els_apikey: str, directory path into which to download article
         """
-        self.doi = (doi or instance.get("doi", instance.get("_id"))).strip("https://doi.org/")
+        instance = instance or {}
+        self.doi = (doi or instance.get("doi", instance.get("_id")) or "").strip("https://doi.org/")
         if not self.doi:
             raise ValueError("ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
         self.els_apikey = els_apikey
@@ -588,22 +591,22 @@ class ProcessNlp:
         unexpected_columns = [c for c in nlp_df.columns if c not in expected_columns]
         if unexpected_columns:
             raise SyntaxError(
-                "The column titles for the NLP DataFrame do not match the expected column titles. Columns {}"
-                "were unexpected.".format(", ".join(unexpected_columns)))
-        if nlp_df.columns != expected_columns:
-            raise SyntaxError("The column titles for the NLP DataFrame do not contain columns: ".format(
-                ", ".join([c for c in expected_columns if c not in nlp_df.columns])))
+                "The column titles for the NLP DataFrame contain unexpected columns:  "+", ".join(unexpected_columns))
+        missing_columns = [c for c in expected_columns if c not in nlp_df.columns]
+        if missing_columns:
+            raise SyntaxError("The column titles for the NLP DataFrame do not contain columns: "+", ".join(missing_columns))
 
         # Check values in "properties" column
         expected_properties = ["oxidation_potential", "reduction_potential", "solubility", "stability", "conductivity",
                                "diffusion_coefficient", "charge_transfer_rate"]
-        unexpected_properties = [p for p in set(nlp_df.properties.tolist()) if p not in expected_properties]
+        unexpected_properties = [p for p in set(nlp_df.property.tolist()) if p not in expected_properties]
         if unexpected_properties:
             raise ValueError("There were unexpected properties in the NLP DataFrame 'properties' column: ",
                              ", ".join(unexpected_properties))
 
         # Generate output JSON
         extracted_molecules = []
+        date_generated = date_generated.isoformat() if isinstance(date_generated, datetime) else date_generated
         mol_names = set(nlp_df.molecule.tolist())
         for mol in mol_names:
             extracted_properties = {}
@@ -612,24 +615,34 @@ class ProcessNlp:
                 props = []
                 prop_df = mol_df[mol_df.property == prop]
                 for i, row in prop_df.iterrows():
-                    props.append({
+                    row.fillna("", inplace=True)
+                    prop_data = {
                         "conditions": {
                             "data_source": "nlp",
                             "nlp_model": nlp_model,
                             "date_generated": date_generated,
                             "doi": doi_str,
-                            "line_number": row.line_number,
-                            "parent_sentence": row.parent_sentence,
-                            "notes": row.notes
                         },
-                        "value": row.value,
+                        "value": float(row.value),
                         "unit": row.unit
-                    })
+                    }
+                    prop_data.update({p: row.get(p) for p in ["line_number", "parent_sentence", "notes"] if row.get(p)})
+                    props.append(prop_data)
                 extracted_properties[prop] = props
             extracted_molecules.append({"molecule_name": mol, "extracted_properties": extracted_properties})
+        instance = base_instance or {}
+        instance.update({"_id": doi_str, "extracted_molecules": extracted_molecules})
+        return cls(instance=instance, **kwargs)
 
-        (base_instance or {}).update({"_id": doi_str, "extracted_molecules": extracted_molecules})
-        return cls(instance=base_instance, **kwargs)
+    @classmethod
+    def from_html(cls, html_txt, nlp_model, doi=None, base_instance=None, date_generated=datetime.now(), **kwargs):
+        nlp_dfs = pd.read_html(html_txt)
+        if len(nlp_dfs) > 1:
+            raise ValueError("ProcessNlp.from_html found {} tables in the HTML string. There should be only one.".format(len(nlp_dfs)))
+        if len(nlp_dfs) < 1:
+            raise ValueError("ProcessNlp.from_html no tables in the HTML string. There should be  one.")
+        return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
+
 
 
 if __name__ == "__main__":

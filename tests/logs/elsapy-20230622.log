@@ -1,0 +1,247 @@
+2023-06-22 10:30:57,587 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:30:57,587 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:30:57,589 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:30:58,590 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:30:59,296 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:31:00,300 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:31:00,840 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:33:26,479 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:33:26,479 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:33:26,480 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:33:27,482 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:33:28,043 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:33:29,026 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:33:29,558 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:34:02,509 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:34:02,509 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:34:02,509 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:34:26,988 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:34:26,988 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:34:26,989 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:36:28,533 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:36:28,534 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:36:28,534 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:36:50,560 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:36:50,560 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:36:50,560 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:37:14,885 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:37:14,885 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:37:14,885 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:38:02,801 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:38:02,801 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:38:02,801 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:38:23,165 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:38:23,165 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:38:23,166 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:39:39,808 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:39:39,809 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:39:39,809 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:40:02,127 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:40:02,128 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:40:02,128 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:40:18,191 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:40:18,192 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:40:18,192 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:40:56,664 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:40:56,664 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:40:56,665 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:43:14,163 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:43:14,163 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:43:14,163 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:44:09,918 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:44:09,919 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:44:09,919 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:44:34,213 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:44:34,213 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:44:34,213 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:44:53,367 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:44:53,367 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:44:53,368 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:45:10,779 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:45:10,779 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:45:10,780 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:45:50,233 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:45:50,234 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:45:50,234 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:45:51,235 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:45:51,896 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:45:52,891 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:45:53,420 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:09,055 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:46:09,055 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:46:09,055 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:46:10,058 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:10,546 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:11,545 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:12,132 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:33,164 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:46:33,165 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:46:33,165 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:46:34,166 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:34,846 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:35,843 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:46:36,487 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:48:17,863 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:48:17,864 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:48:17,864 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:48:18,865 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:48:19,727 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:48:20,715 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:48:21,257 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:06,268 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:49:06,268 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:49:06,268 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:49:07,269 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:07,808 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:08,806 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:09,674 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:52,707 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:49:52,707 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:49:52,708 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:49:53,709 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:54,341 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:55,331 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:49:55,789 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:13,835 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:50:13,836 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:50:13,836 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:50:14,837 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:15,393 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:16,386 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:16,924 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:35,405 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:50:35,405 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:50:35,406 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:50:36,407 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:37,095 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:38,080 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:50:38,705 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:53:54,504 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:53:54,504 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:53:54,504 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:53:55,510 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:53:56,356 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:53:57,349 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:53:57,940 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:56:23,664 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:56:23,664 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:56:23,665 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:56:24,667 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:56:25,215 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:56:26,207 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:56:26,694 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:00,251 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:59:00,252 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:59:00,252 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:59:01,256 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:01,853 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:02,836 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:03,401 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:21,805 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 10:59:21,805 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 10:59:21,806 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 10:59:22,807 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:23,660 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:24,642 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 10:59:25,217 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:10,057 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 11:01:10,058 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 11:01:10,058 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 11:01:11,059 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:11,716 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:12,714 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:13,364 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:32,172 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 11:01:32,172 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 11:01:32,173 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 11:01:33,174 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:33,848 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:34,831 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:35,400 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:01:59,024 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 11:01:59,025 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 11:01:59,025 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 11:02:00,026 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:00,838 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:01,832 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:02,365 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:32,528 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 11:02:32,528 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 11:02:32,528 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 11:02:33,529 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:34,040 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:35,035 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 11:02:35,545 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:41:57,867 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:41:57,867 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:41:57,867 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:41:58,868 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:41:59,603 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:00,589 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:01,214 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:26,396 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:42:26,397 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:42:26,397 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:42:27,404 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:27,941 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:28,934 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:42:29,449 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:39,494 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:43:39,494 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:43:39,495 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:43:40,502 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:41,043 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:42,040 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:42,501 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:54,018 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:43:54,018 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:43:54,019 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:43:55,022 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:55,742 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:56,741 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:43:57,200 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:44:03,256 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:44:03,256 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:44:03,257 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:44:04,259 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:44:04,859 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:44:05,848 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:44:06,376 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:45:55,672 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:45:55,672 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:45:55,673 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:45:56,674 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:45:57,243 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:45:58,241 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:45:58,873 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:46:15,137 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 12:46:15,137 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 12:46:15,138 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 12:46:16,140 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:46:16,637 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:46:17,636 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 12:46:18,118 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1039/c7cs00569e
+2023-06-22 13:03:50,366 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 13:03:50,367 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 13:03:50,367 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 13:03:51,368 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:03:52,086 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:03:53,085 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:03:53,732 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:44:52,222 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 13:44:52,222 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 13:44:52,223 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 13:45:23,755 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 13:45:23,756 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 13:45:23,756 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 13:45:24,757 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:45:25,217 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:45:26,220 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:45:26,674 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1038/s42004-021-00523-0
+2023-06-22 13:48:00,826 - elsapy.elsentity - INFO - Module loaded.
+2023-06-22 13:48:00,826 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-22 13:48:00,826 - elsapy.elsclient - INFO - Module loaded.
+2023-06-22 13:48:01,830 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-22 13:48:02,167 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-22 13:48:03,167 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-22 13:48:03,624 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
