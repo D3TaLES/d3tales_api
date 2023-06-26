@@ -5,6 +5,6 @@ API designed for the D3TaLES project. Includes data processing, database access 
 Pip install may require --use-deprecated=legacy-resolver
 """
 
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 __author__ = 'Rebekah Duke'
 __credits__ = 'University of Kentucky'
