@@ -249,7 +249,7 @@ class ProcessCV:
                             plot_data=self.CVData.calculate_plotting("plot_data").get("abs_plot"),
                             reversibility=self.CVData.calculate_prop("reversibility", return_type=list),
                             e_half=self.CVData.calculate_prop("e_half", return_type=list),
-                            peak_splittings=self.CVData.calculate_prop("peak_splittings", return_type=list),
+                            peak_splittings=self.CVData.calculate_prop("peak_splittings.py", return_type=list),
                             middle_sweep=self.CVData.calculate_prop("middle_sweep", return_type=list),
                             ))
         all_data_dict = {

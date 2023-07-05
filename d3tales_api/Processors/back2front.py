@@ -716,7 +716,7 @@ class CV2Front:
         connector = {
             "n": "n",
             "i_p": "current_{}".format(curve_type),
-            "X": "peak_splittings.{}".format(electron_num - 1),
+            "X": "peak_splittings.py.{}".format(electron_num - 1),
             "v": "conditions.scan_rate",
             "T": "conditions.temperature",
             "C": "conditions.redox_mol_concentration",

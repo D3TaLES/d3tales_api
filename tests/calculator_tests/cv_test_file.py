@@ -34,7 +34,7 @@ connector = {
     "A": "data.conditions.working_electrode_surface_area",
     "v": "data.conditions.scan_rate",
     "C": "data.conditions.redox_mol_concentration",
-    "X": "data.peak_splittings.{}".format(NUM_ELECTRONS - 1),
+    "X": "data.peak_splittings.py.{}".format(NUM_ELECTRONS - 1),
     "T": "data.conditions.temperature",
     "D": "diffusion",
 
@@ -64,7 +64,7 @@ descriptor_cal = CVDescriptorCalculator(connector=connector)
 print(descriptor_cal.peaks(cv_entries[0]))
 print(descriptor_cal.reversibility(cv_entries[0]))
 print(descriptor_cal.e_half(cv_entries[0]))
-# descriptor_cal.peak_splittings(cv_entries[0])
+# descriptor_cal.peak_splittings.py(cv_entries[0])
 # len(descriptor_cal.middle_sweep(cv_entries[0]))
 #
 # cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png", self_standard=SELF_STD,

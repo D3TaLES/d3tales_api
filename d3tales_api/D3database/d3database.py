@@ -73,6 +73,7 @@ class D3Database:
     Base class for connecting to a database
     Copyright 2021, University of Kentucky
     """
+
     def __init__(self, database=None, collection_name=None, instance=None, schema_layer="", schema_directory=None,
                  public=None, schema_db=None, default_id=None, validate_schema=True):
         """
@@ -100,7 +101,7 @@ class D3Database:
             self.s2c = Schema2Class(schema_name=collection_name, database=schema_db, schema_directory=schema_directory)
             jsonschema.validate(schema=self.s2c.schema, instance=self.instance)
 
-    def insert(self, _id, nested=False, update_public=True, instance=None):
+    def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=False):
         """
         Upserts a dictionary into a collection
 
@@ -108,6 +109,7 @@ class D3Database:
         :param nested: bool, insert nested attributes if True
         :param update_public: bool, update the public status if true
         :param instance: dict, instance to be inserted
+        :param override_lists: bool, override existing lists in insertion if True
         """
         if not instance:
             instance = jsanitize(self.instance, allow_bson=True)
@@ -122,7 +124,7 @@ class D3Database:
                     new_path = ".".join(path.split(".") + [nest_k])
                     self.insert(_id, nested=True, update_public=False, instance={new_path: nest_v})
 
-            elif isinstance(v, list):
+            elif isinstance(v, list) and not override_lists:
                 self.array_checker(path, _id)
                 self.coll.update_one({"_id": _id}, {"$addToSet": {path: {"$each": v}}}, upsert=True)
             else:
@@ -207,6 +209,7 @@ class D3Database:
         :param dot_dict: dotted dictionary
         :return: nested final dictionary
         """
+        dot_dict = dot_dict or {}
         if isinstance(dot_dict, dict):
             final_dict = {}
             for k, v in dot_dict.items():
@@ -226,6 +229,7 @@ class FrontDB(D3Database):
     Class for accessing the frontend D3TaLES database
     Copyright 2021, University of Kentucky
     """
+
     def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base",
                  generate_mol=False, public=None):
         """
@@ -300,6 +304,7 @@ class BackDB(D3Database):
     Class for accessing the backend D3TaLES database
     Copyright 2021, University of Kentucky
     """
+
     def __init__(self, collection_name=None, instance=None, create_hash=False, last_updated=False):
         """
         :param collection_name: str, name of collection
@@ -338,6 +343,7 @@ class ParamsDB(D3Database):
     Class for accessing the parameters D3TaLES database
     Copyright 2021, University of Kentucky
     """
+
     def __init__(self, database='frontend', collection_name=None, instance=None, schema_directory=None, _id=None,
                  update=False):
         """
@@ -393,6 +399,7 @@ class Expflow(D3Database):
     Class for accessing the ExpFlow experimental database
     Copyright 2021, University of Kentucky
     """
+
     def __init__(self, collection_name='experimentation', instance=None, create_hash=False):
         """
         :param collection_name: str, name of collection
@@ -407,6 +414,69 @@ class Expflow(D3Database):
                 raise IOError("Hash ID is required for database insertion. Be sure to create an instance in the "
                               "molecule database first.")
             self.insert(self.id)
+
+
+class RobotStatusDB(D3Database):
+    """
+    Class for accessing the Robot Status database
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, apparatus_type: str, _id: str = None, instance: dict = None, override_lists: bool = True,
+                 wflow_name: str = None):
+        """
+        Initiate class
+        :param apparatus_type: str, name of apparatus
+        :param _id: str, _id
+        :param instance: dict, instance to insert or validate
+        :param override_lists: bool,
+        :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
+        """
+        super().__init__("robotics", 'status_' + apparatus_type, instance, schema_db='robot')
+        self.id = _id or self.instance.get("_id")
+        self.wflow_name = wflow_name
+        if instance:
+            instance["_id"] = self.id
+            if not self.id:
+                raise IOError("ID is required for {} status database insertion.".format(apparatus_type))
+            self.insert(self.id, override_lists=override_lists)
+        if wflow_name and self.id:
+            self.check_wflow_name()
+
+    def __str__(self):
+        return self.id
+
+    @property
+    def exists(self):
+        return True if self.coll.find_one({"_id": self.id}) else False
+
+    def check_wflow_name(self):
+        current_wflow = self.coll.find_one({"_id": self.id}).get("current_wflow_name")
+        if current_wflow == self.wflow_name:
+            return True
+        raise NameError("Argument wflow_name ({}) does not match instance current_wflow_name {}.".format(self.wflow_name, current_wflow))
+
+    def get_prop(self, prop: str):
+        """
+        Get database prop for instance with _id
+        :param prop: str, property name
+        :return: prop
+        """
+        return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
+
+    def update_status(self, new_status, status_name="location"):
+        """
+        Update status for a vial location or station vial
+        :param new_status: str, new vial location or new vial in station
+        :param status_name: str, name for status properties
+        """
+        current_status = self.get_prop("current_" + status_name)
+        history = self.get_prop(status_name + "_history") or []
+        history.append(current_status)
+        self.insert(self.id, override_lists=True, instance={
+            "current_" + status_name: new_status,
+            status_name + "_history": history
+        })
 
 
 class QueryDB:

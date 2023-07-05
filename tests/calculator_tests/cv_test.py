@@ -20,7 +20,7 @@ connector = {
     "v": "data.conditions.scan_rate",
     "C": "data.conditions.redox_mol_concentration",
     "n": "num_electrodes",
-    "X": "data.peak_splittings.{}".format(NUM_ELECTRONS - 1),
+    "X": "data.peak_splittings.py.{}".format(NUM_ELECTRONS - 1),
     "T": "data.conditions.temperature",
     "D": "diffusion",
 

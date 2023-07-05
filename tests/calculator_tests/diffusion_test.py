@@ -39,7 +39,7 @@ connector = {
     "i_p": "current",
     "middle_scan": "middle_sweep",
     "v": "conditions.scan_rate",
-    "X": "peak_splittings.{}".format(num_electrons - 1),
+    "X": "peak_splittings.py.{}".format(num_electrons - 1),
     "n": "n",
     "D": "diffusion",
     "T": "temperature",
