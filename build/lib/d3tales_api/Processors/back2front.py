@@ -7,8 +7,8 @@ from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from d3tales_api.Calculators.calculators import *
-from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.D3database.d3database import DBconnector
+from d3tales_api.D3database.d3database import DBconnector, FrontDB
+from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 
 DEFAULT_SOLV = {"name": "Acetonitrile", "model": "implicit_solvent", "dielectric_constant": 35.688}
@@ -508,12 +508,13 @@ class DOI2Front:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, doi=None, backend_data=None, insert=True):
+    def __init__(self, doi=None, backend_data=None, insert=True, nlp_group="Sarkar"):
         """
 
         :param doi: str, molecule ID
         :param backend_data: dict, calculation data
         :param insert: bool, insert generated data to the frontend D3TaLES database if True
+        :param nlp_group: str, name of NLP group
         """
 
         # connect to databases
@@ -530,13 +531,12 @@ class DOI2Front:
         self.raw_mol_data = self.backend_data.get("extracted_molecules", [])
 
         # Set data for this NLP extraction
-        self.extracted_mol_data = {self.get_mol_id(d): self.get_literature_data(d) for d in self.raw_mol_data}
+        self.extracted_mol_data = {self.get_mol_id(d, nlp_group): self.get_literature_data(d) for d in self.raw_mol_data}
 
-        self.mol_ids = []
+        self.mol_ids = set([i for i in self.extracted_mol_data.keys() if i])
         if insert:
-            for mol_id, nlp_data in self.extracted_mol_data.items():
-                FrontDB(instance=nlp_data, _id=mol_id)
-                self.mol_ids.append(mol_id)
+            for i in self.mol_ids:
+                FrontDB(instance=self.extracted_mol_data[i], _id=i)
 
     def get_literature_data(self, mol_data):
         extracted_properties = mol_data.get("extracted_properties", "")
@@ -555,20 +555,23 @@ class DOI2Front:
         return extracted_props
 
     @staticmethod
-    def get_mol_id(mol_data):
+    def get_mol_id(mol_data, nlp_group):
         mol_name = mol_data.get("molecule_name", "")
         pub_mols = pcp.get_compounds(mol_name, 'name')
         if len(pub_mols) == 0:
-            raise warnings.warn("No PubChem molecules found for molecule {}".format(mol_name))
+            warnings.warn("No PubChem molecules found for molecule {}".format(mol_name))
         elif len(pub_mols) > 1:
-            raise warnings.warn("Multiple PubChem molecules found for molecule {}: {}".format(mol_name, ", ".join([p.iupac_name for p in pub_mols])))
+            warnings.warn("Multiple PubChem molecules found for molecule {}: {}".format(mol_name, ", ".join([p.iupac_name for p in pub_mols])))
         else:
             smiles = pub_mols[0].isomeric_smiles
             rdkmol = MolFromSmiles(smiles)
             clean_smiles = MolToSmiles(rdkmol)
             db_check = FrontDB(smiles=clean_smiles).check_if_in_db()
-
-            return db_check if db_check else FrontDB(smiles=clean_smiles, group="Sarkar", public=True).id
+            if db_check:
+                return db_check
+            instance = GenerateMolInfo(clean_smiles, origin_group=nlp_group, database="frontend").mol_info_dict
+            db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles, group=nlp_group)
+            return db_insertion.id
 
     @classmethod
     def from_json(cls, json_path, **kwargs):
