@@ -1,5 +1,6 @@
 venv/
 .idea/
+dist/
 build/
 **/__pycache__/
 d3tales_api.egg-info
