@@ -45,7 +45,7 @@ db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=smiles
 
 ### Schema Validation
 
-The D3database modules automatically validate instances with the appropriate schema. 
+The D3database modules automatically validate instances with the [appropriate schema](https://github.com/D3TaLES/schema). 
 ```python
 from d3tales_api.D3database.d3database import FrontDB
 
