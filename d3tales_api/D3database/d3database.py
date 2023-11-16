@@ -454,7 +454,8 @@ class RobotStatusDB(D3Database):
         current_wflow = self.coll.find_one({"_id": self.id}).get("current_wflow_name")
         if current_wflow == self.wflow_name:
             return True
-        raise NameError("Argument wflow_name ({}) does not match instance current_wflow_name {}.".format(self.wflow_name, current_wflow))
+        raise NameError("Argument wflow_name ({}) does not match instance current_wflow_name {}. Make sure that "
+                        "only one workflow is initialized.".format(self.wflow_name, current_wflow))
 
     def get_prop(self, prop: str):
         """
