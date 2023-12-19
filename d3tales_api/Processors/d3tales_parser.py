@@ -644,7 +644,6 @@ class ProcessNlp:
         return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
 
 
-
 if __name__ == "__main__":
     # data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict
     # data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict
