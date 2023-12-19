@@ -401,6 +401,35 @@ class AvgEHalfCalculator(D3Calculator):
         return result if sci_notation else float(result)
 
 
+class DirtyElectrodeDetector(D3Calculator):
+
+    def calculate(self, data: dict, max_current_range: float = 0.00001):
+        """
+        Detect dirty electrode
+
+        Connection Points
+            :scan_data: optional, if e not provided, scan data will be used to find e (default = None)
+
+        :param data: data for calculation
+        :type data: dict
+        :param max_current_range: maximum rango of current points allowed for a clean electrode
+        :type max_current_range: float
+
+        :return: average E1/2 (in units V)
+        """
+        self.data = data
+        self.n = data.__len__()
+
+        descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
+        peaks_dict = descriptor_cal.peaks(data)
+        forward_peak = max([p[1] for p in peaks_dict.get("forward", [])])
+        reverse_peak = min([p[1] for p in peaks_dict.get("reverse", [])])
+        current_range = forward_peak - reverse_peak
+        print("Dirty Electrode Detection CURRENT RANGE: ", current_range)
+
+        return False if current_range < max_current_range else True
+
+
 # ------------------------- Molecular DFT Calculators --------------------------------
 
 
