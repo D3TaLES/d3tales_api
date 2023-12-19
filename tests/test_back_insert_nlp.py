@@ -26,5 +26,6 @@ else:
     # Get (scrape) nlp database data from DOI
     instance = ProcessNlp(DOI, article_download=True).data_dict
 
+# print(instance)
 back_id = BackDB(collection_name='nlp', instance=instance, last_updated=True).id
 print(back_id)

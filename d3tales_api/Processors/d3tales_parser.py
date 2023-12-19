@@ -623,7 +623,7 @@ class ProcessNlp:
                             "date_generated": date_generated,
                             "doi": doi_str,
                         },
-                        "value": float(row.value),
+                        "value": float(row.value.replace(" ", "").replace("x10^", "e")),
                         "unit": row.unit
                     }
                     prop_data.update({p: row.get(p) for p in ["line_number", "parent_sentence", "notes"] if row.get(p)})

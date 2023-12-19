@@ -368,7 +368,7 @@ class CVChargeTransferCalculator(D3Calculator):
 
 class AvgEHalfCalculator(D3Calculator):
 
-    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
+    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
         """
         Average E half calculation
 

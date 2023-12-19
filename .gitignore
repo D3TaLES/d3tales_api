@@ -2,6 +2,7 @@ venv/
 .idea/
 dist/
 build/
+dist/
 **/__pycache__/
 d3tales_api.egg-info
 sphinx/_build/
