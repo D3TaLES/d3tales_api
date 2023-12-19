@@ -3,6 +3,7 @@ venv/
 dist/
 build/
 dist/
+logs/
 **/__pycache__/
 d3tales_api.egg-info
 sphinx/_build/
