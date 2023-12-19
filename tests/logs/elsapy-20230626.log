@@ -1,0 +1,45 @@
+2023-06-26 14:59:56,801 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 14:59:56,802 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 14:59:56,806 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 15:58:48,448 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 15:58:48,448 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 15:58:48,450 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 15:58:49,457 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:58:51,263 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:58:52,261 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:58:52,870 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:59:29,128 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 15:59:29,128 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 15:59:29,128 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 15:59:30,129 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:59:30,478 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:59:31,478 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 15:59:31,835 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:18,507 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 16:00:18,507 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 16:00:18,508 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 16:00:19,509 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:20,003 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:21,006 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:21,678 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:46,173 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 16:00:46,173 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 16:00:46,173 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 16:00:47,174 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:48,319 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:49,320 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:00:50,070 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:00,175 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 16:01:00,175 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 16:01:00,176 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 16:01:01,191 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:01,609 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:02,613 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:03,100 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:41,605 - elsapy.elsentity - INFO - Module loaded.
+2023-06-26 16:01:41,605 - elsapy.elsdoc - INFO - Module loaded.
+2023-06-26 16:01:41,606 - elsapy.elsclient - INFO - Module loaded.
+2023-06-26 16:01:42,624 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:42,989 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:43,995 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
+2023-06-26 16:01:44,367 - elsapy.elsentity - INFO - Data loaded for https://api.elsevier.com/content/abstract/doi/10.1016/j.chempr.2019.04.021
