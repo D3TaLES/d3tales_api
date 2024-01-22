@@ -24,7 +24,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/D3TaLES/d3tales_api/issues"
     },
     license=__credits__,
-    packages=['d3tales_api', 'd3tales_api.Calculators', 'd3tales_api.D3database', 'd3tales_api.Processors'],
+    packages=['d3tales_api', 'd3tales_api.Calculators', 'd3tales_api.D3database', 'd3tales_api.Processors', 'd3tales_api.Workflows'],
     install_requires=requirements,
 )
 
