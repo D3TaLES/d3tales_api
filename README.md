@@ -13,6 +13,7 @@ queries, data insertion with validation, and a REST API interface.
 * `Processors`: Processing code for extracting data from computational and experimental
 data files as well as [ExpFlow](https://d3tales.as.uky.edu/expflow) run objects. 
 * `Calculators`: Property calculators and plotters for cyclic voltammetry
+* `Workflows`: Fireworks workflow for the D<sup>3</sup>TaLES databases high throughput workflows 
 
 ## Installation 
 
