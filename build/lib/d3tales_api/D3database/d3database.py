@@ -443,9 +443,6 @@ class RobotStatusDB(D3Database):
         if wflow_name and self.id:
             self.check_wflow_name()
 
-    def __str__(self):
-        return self.id
-
     def check_wflow_name(self):
         current_wflow = self.coll.find_one({"_id": self.id}).get("current_wflow_name")
         if current_wflow == self.wflow_name:
@@ -458,7 +455,7 @@ class RobotStatusDB(D3Database):
         :param prop: str, property name
         :return: prop
         """
-        return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
+        return self.coll.find_one({"_id": self.id}).get(prop)
 
     def update_status(self, new_status, status_name="location"):
         """
@@ -467,7 +464,7 @@ class RobotStatusDB(D3Database):
         :param status_name: str, name for status properties
         """
         current_status = self.get_prop("current_" + status_name)
-        history = self.get_prop(status_name + "_history") or []
+        history = self.get_prop(status_name + "_history")
         history.append(current_status)
         self.insert(self.id, override_lists=True, instance={
             "current_" + status_name: new_status,
