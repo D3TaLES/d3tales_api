@@ -23,7 +23,9 @@ try:
     from elsapy.elsdoc import AbsDoc
     from elsapy.elsclient import ElsClient
 except Exception:
-    print("WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
+    print(
+        "WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
+
 
 class ProcessDFT:
     """
@@ -76,7 +78,8 @@ class ProcessDFT:
         try:
             data_dict.update({"is_groundState": self.is_groundState})
         except ConnectionError:
-            print("Warning. Could not connect to the database, so no 'is_groundState' property was specified. DB_INFO_FILE may not be defined.")
+            print(
+                "Warning. Could not connect to the database, so no 'is_groundState' property was specified. DB_INFO_FILE may not be defined.")
         if 'freq' in self.DFTData.calculation_type:
             data_dict.update({
                 "gibbs_correction": {
@@ -306,6 +309,7 @@ class ProcessCV:
         :param purity: default purity value
         :return: formatted reagent data
         """
+
         def format_i(r):
             if isinstance(r, dict):
                 r_dict = r
@@ -405,13 +409,15 @@ class ProcessUvVis:
         json_data = json.dumps(data_dict, default=str)
         return json.loads(json_data)
 
+
 class ProcessNlp:
     """
     Class to process NLP data for backend database
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False, download_dir="temp/"):
+    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False,
+                 download_dir="temp/"):
         """
         :param doi: str, DOI or scopus id
         :param instance: dict, NLP data. Instance data will override web-scrapped data.
@@ -422,7 +428,8 @@ class ProcessNlp:
         instance = instance or {}
         self.doi = (doi or instance.get("doi", instance.get("_id")) or "").strip("https://doi.org/")
         if not self.doi:
-            raise ValueError("ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
+            raise ValueError(
+                "ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
         self.els_apikey = els_apikey
         self.instance = instance or {}
         self.publisher, self.main_text = "", ""
@@ -443,7 +450,7 @@ class ProcessNlp:
 
     @property
     def data_dict(self):
-        data_dict  = self.basic_info
+        data_dict = self.basic_info
         data_dict.update(self.instance)
         data_dict.update({"_id": self.doi})
         if self.article_download and self.main_text:
@@ -582,19 +589,21 @@ class ProcessNlp:
         :return: dict, JSON formatted data conforming to the D3TaLES backend   NLP schema
         """
         # Check for DOI
-        doi_str= (doi or base_instance.get("doi", base_instance.get("_id"))).strip("https://doi.org/")
+        doi_str = (doi or base_instance.get("doi", base_instance.get("_id"))).strip("https://doi.org/")
         if not doi_str:
-            raise ValueError("ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.")
+            raise ValueError(
+                "ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.")
 
         # Check DF columns
         expected_columns = ["molecule", "property", "value", "unit", "line_number", "parent_sentence", "notes"]
         unexpected_columns = [c for c in nlp_df.columns if c not in expected_columns]
         if unexpected_columns:
             raise SyntaxError(
-                "The column titles for the NLP DataFrame contain unexpected columns:  "+", ".join(unexpected_columns))
+                "The column titles for the NLP DataFrame contain unexpected columns:  " + ", ".join(unexpected_columns))
         missing_columns = [c for c in expected_columns if c not in nlp_df.columns]
         if missing_columns:
-            raise SyntaxError("The column titles for the NLP DataFrame do not contain columns: "+", ".join(missing_columns))
+            raise SyntaxError(
+                "The column titles for the NLP DataFrame do not contain columns: " + ", ".join(missing_columns))
 
         # Check values in "properties" column
         expected_properties = ["oxidation_potential", "reduction_potential", "solubility", "stability", "conductivity",
@@ -638,10 +647,13 @@ class ProcessNlp:
     def from_html(cls, html_txt, nlp_model, doi=None, base_instance=None, date_generated=datetime.now(), **kwargs):
         nlp_dfs = pd.read_html(html_txt)
         if len(nlp_dfs) > 1:
-            raise ValueError("ProcessNlp.from_html found {} tables in the HTML string. There should be only one.".format(len(nlp_dfs)))
+            raise ValueError(
+                "ProcessNlp.from_html found {} tables in the HTML string. There should be only one.".format(
+                    len(nlp_dfs)))
         if len(nlp_dfs) < 1:
             raise ValueError("ProcessNlp.from_html no tables in the HTML string. There should be  one.")
-        return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
+        return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance,
+                                  date_generated=date_generated, **kwargs)
 
 
 if __name__ == "__main__":
@@ -650,4 +662,3 @@ if __name__ == "__main__":
     data = ProcessNlp(sys.argv[1], article_download=False).data_dict
 
     print(data)
-
