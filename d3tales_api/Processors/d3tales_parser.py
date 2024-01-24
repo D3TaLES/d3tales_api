@@ -204,9 +204,9 @@ class ProcessDFT:
             raise IOError("The molecule does not have a specified groundState_charge.")
 
 
-class ProcessCV:
+class ProcessPotBase:
     """
-    Class to process Gaussian logfiles.
+    Base class for processing potentiostat files
     Copyright 2021, University of Kentucky
     """
 
@@ -239,27 +239,20 @@ class ProcessCV:
         self.ionic_liquids = metadata.get("ionic_liquid") if isinstance(metadata.get("ionic_liquid"), list) else [
             metadata.get("ionic_liquid")] if metadata.get("ionic_liquid") else []
 
-        self.CVData = parsing_class(filepath, **kwargs)
+        self.ParsedData = parsing_class(filepath, **kwargs)
 
     @property
     def data_dict(self):
         """
         Dictionary of processed data (in accordance with D3TalES backend schema)
         """
-        cv_data = self.CVData.cv_data
-        cv_data.update(self.CVData.calculate_prop("peaks"))
-        cv_data.update(dict(conditions=self.cv_conditions,
-                            plot_data=self.CVData.calculate_plotting("plot_data").get("abs_plot"),
-                            reversibility=self.CVData.calculate_prop("reversibility", return_type=list),
-                            e_half=self.CVData.calculate_prop("e_half", return_type=list),
-                            peak_splittings=self.CVData.calculate_prop("peak_splittings.py", return_type=list),
-                            middle_sweep=self.CVData.calculate_prop("middle_sweep", return_type=list),
-                            ))
+        pot_data = self.ParsedData.parsed_data
+        pot_data.update({"conditions": self.pot_conditions})
         all_data_dict = {
             "_id": self.hash_id,
             "mol_id": self.id,
             "submission_info": self.submission_info,
-            "data": cv_data
+            "data": pot_data
         }
         json_data = json.dumps(all_data_dict)
         return json.loads(json_data)
@@ -279,13 +272,12 @@ class ProcessCV:
                 "first.".format(id))
 
     @property
-    def cv_conditions(self):
+    def pot_conditions(self):
         """
         Dictionary of conditions (in accordance with D3TaLES backend schema)
         """
-        conditions_data = self.CVData.conditions_data
+        conditions_data = self.ParsedData.conditions_data
         conditions_data.update({
-            "data_source": 'cv',
             "working_electrode": self.working_electrode,
             "counter_electrode": self.counter_electrode,
             "reference_electrode": self.reference_electrode,
@@ -341,6 +333,87 @@ class ProcessCV:
             ureg = pint.UnitRegistry()
             pint_m = ureg(str(data))
             return {"value": float(getattr(pint_m, 'magnitude')), "unit": str(getattr(pint_m, 'units'))}
+
+
+class ProcessCV(ProcessPotBase):
+    """
+    Class to process CV data
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCV, **kwargs):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)
+        """
+        super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
+
+        self.ParsedData = parsing_class(filepath, **kwargs)
+
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        cv_data = self.ParsedData.parsed_data
+        cv_data.update(self.ParsedData.calculate_prop("peaks"))
+        cv_data.update(dict(conditions=self.pot_conditions,
+                            plot_data=self.ParsedData.calculate_plotting("plot_data").get("abs_plot"),
+                            reversibility=self.ParsedData.calculate_prop("reversibility", return_type=list),
+                            e_half=self.ParsedData.calculate_prop("e_half", return_type=list),
+                            peak_splittings=self.ParsedData.calculate_prop("peak_splittings.py", return_type=list),
+                            middle_sweep=self.ParsedData.calculate_prop("middle_sweep", return_type=list),
+                            ))
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "data": cv_data
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
+
+
+class ProcessCA(ProcessPotBase):
+    """
+    Class to process CA data
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCA, **kwargs):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCA)
+        """
+        super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
+
+        self.ParsedData = parsing_class(filepath, **kwargs)
+
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        cv_data = self.ParsedData.parsed_data
+        cv_data.update(dict(conditions=self.pot_conditions,
+                            # TODO add conductivity
+                            ))
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "data": cv_data
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
 
 
 class ProcessUvVis:
@@ -657,8 +730,9 @@ class ProcessNlp:
 
 
 if __name__ == "__main__":
+    pass
     # data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict
     # data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict
-    data = ProcessNlp(sys.argv[1], article_download=False).data_dict
+    # data = ProcessNlp(sys.argv[1], article_download=False).data_dict
 
-    print(data)
+    # print(data)

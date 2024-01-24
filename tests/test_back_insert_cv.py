@@ -28,7 +28,7 @@ cv_metadata = {"data_type": "cv",
             "working_electrode_surface_area": "0.05 cm^2"}
 
 _id = "06TNKR"
-instance = ProcessCV(cv_file, _id=_id, metadata=cv_metadata).data_dict
-print(instance)
+instance = ProcessCV(cv_file, _id=_id, metadata=cv_metadata)
+print(instance.pot_conditions)
 # print(instance.get("data"))
 # BackDB(collection_name='experimentation', instance=instance)

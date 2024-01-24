@@ -45,53 +45,54 @@ class ParseChiBase:
         self.file_path = file_path
 
         with open(self.file_path, "r") as f:
-            line = f.readline()
-            self.date_recorded = dateutil.parser.parse(line.strip()).isoformat()
+            self.lines = f.readlines()
 
-            line = f.readline()
-            line_count = 1
-            while not line.startswith(data_header):
-                if line.startswith("File"):
-                    self.file_name = self.extract_value_unit(line, value_break=":")
-                elif line.startswith("Instrument Mode"):
-                    self.instrument = self.extract_value_unit(line, value_break=":")
-                elif line.startswith("Header"):
-                    self.header = self.extract_value_unit(line, value_break=":")
-                elif line.startswith("Note"):
-                    self.note = self.extract_value_unit(line, value_break=":")
-                elif line.startswith("Init E"):
-                    self.init_e = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("High E"):
-                    self.high_e = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Low E"):
-                    self.low_e = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Init P/N"):
-                    self.init_p_n = self.extract_value_unit(line)
-                elif line.startswith("Scan Rate"):
-                    self.scan_rate = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Segment ="):
-                    self.segment = self.extract_value_unit(line, value_type='int')
-                elif line.startswith("Sample Interval"):
-                    self.sample_interval = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Quiet Time"):
-                    self.quiet_time = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Sensitivity"):
-                    self.sensitivity = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Comp R"):
-                    self.comp_R = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("High Frequency"):
-                    self.high_f = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Low Frequency"):
-                    self.low_f = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Amplitude"):
-                    self.amp = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Step"):
-                    self.step = self.extract_value_unit(line, value_type='float', return_dict=True)
-                elif line.startswith("Pulse Width"):
-                    self.pulse_width = self.extract_value_unit(line, value_type='float', return_dict=True)
+        line_count = 0
+        for line_count, line in enumerate(self.lines):
+            if line_count == 0:
+                self.date_recorded = dateutil.parser.parse(line.strip()).isoformat()
 
-                line = f.readline()
-                line_count += 1
+            if line.startswith("File"):
+                self.file_name = self.extract_value_unit(line, value_break=":")
+            elif line.startswith("Instrument Mode"):
+                self.instrument = self.extract_value_unit(line, value_break=":")
+            elif line.startswith("Header"):
+                self.header = self.extract_value_unit(line, value_break=":")
+            elif line.startswith("Note"):
+                self.note = self.extract_value_unit(line, value_break=":")
+            elif line.startswith("Init E"):
+                self.init_e = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("High E"):
+                self.high_e = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Low E"):
+                self.low_e = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Init P/N"):
+                self.init_p_n = self.extract_value_unit(line)
+            elif line.startswith("Scan Rate"):
+                self.scan_rate = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Segment ="):
+                self.segment = self.extract_value_unit(line, value_type='int')
+            elif line.startswith("Sample Interval"):
+                self.sample_interval = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Quiet Time"):
+                self.quiet_time = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Sensitivity"):
+                self.sensitivity = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Comp R"):
+                self.comp_R = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("High Frequency"):
+                self.high_f = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Low Frequency"):
+                self.low_f = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Amplitude"):
+                self.amp = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Step"):
+                self.step = self.extract_value_unit(line, value_type='float', return_dict=True)
+            elif line.startswith("Pulse Width"):
+                self.pulse_width = self.extract_value_unit(line, value_type='float', return_dict=True)
+
+            if line.startswith(data_header):
+                break
 
         self.all_data = np.loadtxt(self.file_path, delimiter=delimiter, skiprows=line_count+1)
 
@@ -183,27 +184,29 @@ class ParseChiCV(ParseChiBase):
         self.scan_data = scan_data
         self.peak_potential = max(potentials)
 
-        self.cv_data = {
-            "file_name": getattr(self, 'file_name'),
-            "header": getattr(self, 'header'),
-            "note": getattr(self, 'note'),
-            "date_recorded": getattr(self, 'date_recorded'),
-            "segment": getattr(self, 'segment', None),
-            "sample_interval": getattr(self, 'sample_interval', {}),
-            "quiet_time": getattr(self, 'quiet_time', {}),
-            "sensitivity": getattr(self, 'sensitivity', {}),
-            "comp_r": getattr(self, 'comp_R', {}),
-            "peak_potential": getattr(self, 'init_e', {}),
-            "scan_data": getattr(self, 'scan_data', {}),
-        }
-
         self.conditions_data = {
+            "data_source": 'cv',
             "scan_rate": getattr(self, 'scan_rate', {}),
             "num_scans": getattr(self, 'num_scans', None),
             "initial_potential": getattr(self, 'init_e', {}),
             "high_e": getattr(self, 'high_e', {}),
             "low_e": getattr(self, 'low_e', {}),
+            "comp_r": getattr(self, 'comp_R', {}),
         }
+        self.parsed_data = {
+            "file_name": getattr(self, 'file_name'),
+            "header": getattr(self, 'header'),
+            "note": getattr(self, 'note'),
+            "date_recorded": getattr(self, 'date_recorded'),
+            "conditions": self.conditions_data,
+            "segment": getattr(self, 'segment', None),
+            "sample_interval": getattr(self, 'sample_interval', {}),
+            "quiet_time": getattr(self, 'quiet_time', {}),
+            "sensitivity": getattr(self, 'sensitivity', {}),
+            "peak_potential": getattr(self, 'init_e', {}),
+            "scan_data": getattr(self, 'scan_data', {}),
+        }
+
         self.low_e_value = self.low_e.get("value")
         self.sample_interval_value = self.sample_interval.get("value")
 
@@ -221,22 +224,46 @@ class ParseChiCA(ParseChiBase):
 
         self.t = self.all_data[:, 0]
         self.i = self.all_data[:, 1]
-
-        self.esi_data = {
-            "file_name": getattr(self, 'file_name'),
-            "header": getattr(self, 'header'),
-            "note": getattr(self, 'note'),
-            "date_recorded": getattr(self, 'date_recorded'),
-            "quiet_time": getattr(self, 'quiet_time', {}),
-            "all_data": self.all_data,
-        }
+        self.f_slp = self.get_data_calcs(calc_name="Slp", header="Forward:")
+        self.f_int = self.get_data_calcs(calc_name="Int", header="Forward:")
+        self.f_cor = self.get_data_calcs(calc_name="Cor", header="Forward:")
+        self.r_slp = self.get_data_calcs(calc_name="Slp", header="Reverse:")
+        self.r_int = self.get_data_calcs(calc_name="Int", header="Reverse:")
+        self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
         self.conditions_data = {
+            "data_source": 'ca',
             "high_e": getattr(self, 'high_e', {}),
             "low_e": getattr(self, 'low_e', {}),
             "step": getattr(self, 'step', {}),
             "pulse_width": getattr(self, 'pulse_width', {}),
         }
+
+        self.parsed_data = {
+            "file_name": getattr(self, 'file_name'),
+            "header": getattr(self, 'header'),
+            "note": getattr(self, 'note'),
+            "date_recorded": getattr(self, 'date_recorded'),
+            "conditions": self.conditions_data,
+            "quiet_time": getattr(self, 'quiet_time', {}),
+            "f_slp": self.f_slp,
+            "f_int": self.f_int,
+            "f_cor": self.f_cor,
+            "r_slp": self.r_slp,
+            "r_int": self.r_int,
+            "r_cor": self.r_cor,
+            "time": self.t.tolist(),
+            "current": self.i.tolist(),
+        }
+
+    def get_data_calcs(self, calc_name="Slp", header="Forward"):
+        h_lines = [i for i, l in enumerate(self.lines) if l.startswith(header)]
+        if h_lines:
+            calcs_lines = self.lines[h_lines[0]+1:h_lines[0]+4]
+            calc_line = [l for l in calcs_lines if calc_name in l]
+            if calc_line:
+                calc = calc_line[0].split()[2]
+                return float(calc)
 
 
 class ParseChiESI(ParseChiBase):
@@ -263,19 +290,20 @@ class ParseChiESI(ParseChiBase):
         if not getattr(self, "low_f", None):
             self.low_f = {"value": min(self.freq), "unit": 'Hz'}
 
-        self.esi_data = {
+        self.conditions_data = {
+            "data_source": 'esi',
+            "high_f": getattr(self, 'high_f', {}),
+            "low_f": getattr(self, 'low_f', {}),
+            "amp": getattr(self, 'amp', {}),
+        }
+        self.parsed_data = {
             "file_name": getattr(self, 'file_name'),
             "header": getattr(self, 'header'),
             "note": getattr(self, 'note'),
             "date_recorded": getattr(self, 'date_recorded'),
+            "conditions": self.conditions_data,
             "quiet_time": getattr(self, 'quiet_time', {}),
             "all_data": self.all_data,
             "resistance": self.resistance,
-        }
-
-        self.conditions_data = {
-            "high_f": getattr(self, 'high_f', {}),
-            "low_f": getattr(self, 'low_f', {}),
-            "amp": getattr(self, 'amp', {}),
         }
 
