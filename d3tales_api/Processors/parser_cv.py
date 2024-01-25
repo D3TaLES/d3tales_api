@@ -1,7 +1,7 @@
 import numpy as np
 import dateutil.parser
 from d3tales_api.Calculators.plotters import CVPlotter
-from d3tales_api.Calculators.calculators import CVDescriptorCalculator
+from d3tales_api.Calculators.calculators import CVDescriptorCalculator, CAResistanceCalculator
 
 MIN_SCAN_LEN = 5
 
@@ -87,7 +87,7 @@ class ParseChiBase:
             elif line.startswith("Amplitude"):
                 self.amp = self.extract_value_unit(line, value_type='float', return_dict=True)
             elif line.startswith("Step"):
-                self.step = self.extract_value_unit(line, value_type='float', return_dict=True)
+                self.step = self.extract_value_unit(line, value_type='float', return_dict=False)
             elif line.startswith("Pulse Width"):
                 self.pulse_width = self.extract_value_unit(line, value_type='float', return_dict=True)
 
@@ -95,43 +95,6 @@ class ParseChiBase:
                 break
 
         self.all_data = np.loadtxt(self.file_path, delimiter=delimiter, skiprows=line_count+1)
-
-    def calculate_prop(self, prop_name, return_type=dict):
-        """
-        Calculate a given property using the D3TaLES CV Calculators
-
-        :param prop_name: str, property name
-        :param return_type: str, datatype to return
-        :return: property or empty datatype
-        """
-        connector = {
-            "intv": "sample_interval_value",
-            "low_e": "low_e_value",
-            "scan_data": "scan_data"
-        }
-        try:
-            func = getattr(CVDescriptorCalculator(connector=connector), prop_name)
-            return func(self)
-        except Exception as e:
-            print("CVDescriptorCalculator does not have function ", prop_name)
-            print("\t" + str(e))
-            return return_type()
-
-    def calculate_plotting(self, prop_name, return_type=dict):
-        """
-        Calculate a given plotting property using the D3TaLES Plotters
-
-        :param prop_name: str, property name
-        :param return_type: str, datatype to return
-        :return: plotting property or empty datatype
-        """
-        connector = {"scan_data": "scan_data"}
-        try:
-            func = getattr(CVPlotter(connector=connector), prop_name)
-            return func(self)
-        except Exception:
-            print("CVPlotter does not have function ", prop_name)
-            return return_type()
 
     @staticmethod
     def extract_value_unit(line, value_break="=", value_type='str', return_dict=False):
@@ -210,6 +173,43 @@ class ParseChiCV(ParseChiBase):
         self.low_e_value = self.low_e.get("value")
         self.sample_interval_value = self.sample_interval.get("value")
 
+    def calculate_prop(self, prop_name, return_type=dict):
+        """
+        Calculate a given property using the D3TaLES CV Calculators
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: property or empty datatype
+        """
+        connector = {
+            "intv": "sample_interval_value",
+            "low_e": "low_e_value",
+            "scan_data": "scan_data"
+        }
+        try:
+            func = getattr(CVDescriptorCalculator(connector=connector), prop_name)
+            return func(self)
+        except Exception as e:
+            print("CVDescriptorCalculator does not have function ", prop_name)
+            print("\t" + str(e))
+            return return_type()
+
+    def calculate_plotting(self, prop_name, return_type=dict):
+        """
+        Calculate a given plotting property using the D3TaLES Plotters
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: plotting property or empty datatype
+        """
+        connector = {"scan_data": "scan_data"}
+        try:
+            func = getattr(CVPlotter(connector=connector), prop_name)
+            return func(self)
+        except Exception:
+            print("CVPlotter does not have function ", prop_name)
+            return return_type()
+
 
 class ParseChiCA(ParseChiBase):
     """
@@ -252,9 +252,22 @@ class ParseChiCA(ParseChiBase):
             "r_slp": self.r_slp,
             "r_int": self.r_int,
             "r_cor": self.r_cor,
+            "resistance": self.resistance,
             "time": self.t.tolist(),
             "current": self.i.tolist(),
         }
+
+    @property
+    def resistance(self, **kwargs):
+        connector = {
+            "i_s": "i",
+            "t_s": "t",
+            "pulse_width": "pulse_width.value",
+            "steps": "step",
+            "low_e": "low_e.value",
+        }
+        r_calculator = CAResistanceCalculator(connector=connector)
+        return r_calculator.calculate(self.__dict__, **kwargs)
 
     def get_data_calcs(self, calc_name="Slp", header="Forward"):
         h_lines = [i for i, l in enumerate(self.lines) if l.startswith(header)]

@@ -1,6 +1,6 @@
 from d3tales_api.Processors.d3tales_parser import *
 
-cv_file = os.path.join(os.getcwd(), '../raw_data', 'pot_data', 'CA.csv')
+ca_file = os.path.join(os.getcwd(), '../raw_data', 'pot_data', 'CA.csv')
 ca_metadata = {"data_type": "cv",
                "electrode_counter": "standard_hydrogen_electrode",
                "electrode_reference": "standard_hydrogen_electrode",
@@ -20,9 +20,9 @@ ca_metadata = {"data_type": "cv",
                "working_electrode_surface_area": "0.05 cm^2"}
 
 _id = "06TNKR"
-instance = ProcessCA(cv_file, _id=_id, metadata=ca_metadata)
-print(instance.data_dict)
-# print(instance.data_dict.get("data"))
+# instance = ProcessCA(ca_file, _id=_id, metadata=ca_metadata)
+# print(instance.data_dict)
+print(ParseChiCA(ca_file).resistance)
 
 
 connector = {

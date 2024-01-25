@@ -430,6 +430,49 @@ class DirtyElectrodeDetector(D3Calculator):
         return False if current_range < max_current_range else True
 
 
+class CAResistanceCalculator(D3Calculator):
+
+    def calculate(self, data: dict, offset_factor: float = 5, return_error: bool = False):
+        """
+        Calculator for calculating resistance after a CA experiment.
+
+        Connection Points
+            :i_s: list, current points (s)
+            :t_s: list, time points (s)
+            :pulse_width: float, time width of a pulse (s)
+            :steps: int, number of potentiostat sweeps
+            :low_e: float, lowest voltage (V)
+
+        :param data: data for calculation
+        :type data: dict
+        :param offset_factor: factor by which to consider the voltage offset
+        :type offset_factor: int
+        :param return_error: return error and resistance if True
+        :type return_error: bool
+
+        :return: array [resistance, resistance error] if return_error is True, else resistance
+        """
+        self.data = data
+        self.n = data.__len__()
+
+        conns = self.make_connections(data)
+
+        dt = conns["t_s"][-1] / len(conns["t_s"])  # time interval per time measurement
+        n = float(conns["pulse_width"] / dt)  # number of time measurements in a pulse
+        n_pulses = math.floor(conns["steps"] / 2) - 1  # number of pulses
+        offset = n / offset_factor  # a slight offset to measure voltage after switching
+
+        max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in range(n_pulses)]
+
+        avg = np.sum(max_i) / n_pulses
+        std = np.std(max_i)
+
+        last_R = abs(float(conns["low_e"]) / avg)
+        last_dR = last_R * std / avg
+
+        return [last_R, last_dR] if return_error else last_R
+
+
 # ------------------------- Molecular DFT Calculators --------------------------------
 
 
