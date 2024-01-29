@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Workflows package &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="d3tales_api.Processors package" href="d3tales_api.Processors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">d3tales_api.Workflows package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.D3TaLES_FW">d3tales_api.Workflows.D3TaLES_FW module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.Gaussian">d3tales_api.Workflows.Gaussian module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.Gromacs">d3tales_api.Workflows.Gromacs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.Initialize">d3tales_api.Workflows.Initialize module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.ParamSet">d3tales_api.Workflows.ParamSet module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.utils">d3tales_api.Workflows.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.wf_writer">d3tales_api.Workflows.wf_writer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.wtuning">d3tales_api.Workflows.wtuning module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#module-d3tales_api.database_info">d3tales_api.database_info module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#module-d3tales_api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="d3tales_api.html">d3tales_api package</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Workflows package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/d3tales_api.Workflows.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="d3tales-api-workflows-package">
+<h1>d3tales_api.Workflows package<a class="headerlink" href="#d3tales-api-workflows-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-d3tales_api.Workflows.D3TaLES_FW">
+<span id="d3tales-api-workflows-d3tales-fw-module"></span><h2>d3tales_api.Workflows.D3TaLES_FW module<a class="headerlink" href="#module-d3tales_api.Workflows.D3TaLES_FW" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.DihedRot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">DihedRot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dihed_degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#DihedRot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.DihedRot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.DihedRot.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dihed_degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#DihedRot.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.DihedRot.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.EmailEnd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">EmailEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#EmailEnd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.EmailEnd" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.EmailEnd.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#EmailEnd.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.EmailEnd.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.EmailStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">EmailStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#EmailStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.EmailStart" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.EmailStart.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#EmailStart.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.EmailStart.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.Energy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">Energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#Energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.Energy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.Energy.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#Energy.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.Energy.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">InitializeMolecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'initial_molecule_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#InitializeMolecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'initial_molecule_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#InitializeMolecule.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.MolOpt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">MolOpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt_mol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#MolOpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.MolOpt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.MolOpt.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt_mol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#MolOpt.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.MolOpt.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.Optimization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">Optimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt_mol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#Optimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.Optimization" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.Optimization.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt_mol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#Optimization.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.Optimization.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.TDDFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">TDDFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solv_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#TDDFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.TDDFT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.TDDFT.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groundState'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solv_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#TDDFT.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.TDDFT.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.WTuning">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.D3TaLES_FW.</span></span><span class="sig-name descname"><span class="pre">WTuning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wtuning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#WTuning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.WTuning" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.D3TaLES_FW.WTuning.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wtuning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/D3TaLES_FW.html#WTuning.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.D3TaLES_FW.WTuning.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
+spec (dict): specification of the job to run. Used by the Firetask.
+launches ([Launch]): a list of Launch objects of this Firework.
+archived_launches ([Launch]): a list of archived Launch objects of this Firework.
+state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
+created_on (datetime): time of creation
+fw_id (int): an identification number for this Firework.
+parents (Firework or [Firework]): list of parent FWs this FW depends on.
+updated_on (datetime): last time the STATE was updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.Gaussian">
+<span id="d3tales-api-workflows-gaussian-module"></span><h2>d3tales_api.Workflows.Gaussian module<a class="headerlink" href="#module-d3tales_api.Workflows.Gaussian" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.GaussianBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">GaussianBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#GaussianBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.GaussianBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.GaussianBase.post_job">
+<span class="sig-name descname"><span class="pre">post_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#GaussianBase.post_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.GaussianBase.post_job" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.GaussianBase.run_check">
+<span class="sig-name descname"><span class="pre">run_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#GaussianBase.run_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.GaussianBase.run_check" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.GaussianBase.setup_calc">
+<span class="sig-name descname"><span class="pre">setup_calc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#GaussianBase.setup_calc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.GaussianBase.setup_calc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.GaussianBase.setup_files">
+<span class="sig-name descname"><span class="pre">setup_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'opt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#GaussianBase.setup_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.GaussianBase.setup_files" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianDihedRot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">RunGaussianDihedRot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianDihedRot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Workflows.Gaussian.GaussianBase" title="d3tales_api.Workflows.Gaussian.GaussianBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianDihedRot.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianDihedRot.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianEnergy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">RunGaussianEnergy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianEnergy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianEnergy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Workflows.Gaussian.GaussianBase" title="d3tales_api.Workflows.Gaussian.GaussianBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianEnergy.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianEnergy.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianEnergy.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianOpt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">RunGaussianOpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianOpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianOpt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Workflows.Gaussian.GaussianBase" title="d3tales_api.Workflows.Gaussian.GaussianBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianOpt.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianOpt.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianOpt.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianTDDFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">RunGaussianTDDFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianTDDFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianTDDFT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Workflows.Gaussian.GaussianBase" title="d3tales_api.Workflows.Gaussian.GaussianBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunGaussianTDDFT.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunGaussianTDDFT.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunGaussianTDDFT.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunWtuning">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Gaussian.</span></span><span class="sig-name descname"><span class="pre">RunWtuning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunWtuning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunWtuning" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Gaussian.RunWtuning.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Gaussian.html#RunWtuning.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Gaussian.RunWtuning.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.Gromacs">
+<span id="d3tales-api-workflows-gromacs-module"></span><h2>d3tales_api.Workflows.Gromacs module<a class="headerlink" href="#module-d3tales_api.Workflows.Gromacs" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-d3tales_api.Workflows.Initialize">
+<span id="d3tales-api-workflows-initialize-module"></span><h2>d3tales_api.Workflows.Initialize module<a class="headerlink" href="#module-d3tales_api.Workflows.Initialize" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.EmailFinished">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Initialize.</span></span><span class="sig-name descname"><span class="pre">EmailFinished</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#EmailFinished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.EmailFinished" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.EmailFinished.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#EmailFinished.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.EmailFinished.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.EmailStarting">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Initialize.</span></span><span class="sig-name descname"><span class="pre">EmailStarting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#EmailStarting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.EmailStarting" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.EmailStarting.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#EmailStarting.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.EmailStarting.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.Mail">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Initialize.</span></span><span class="sig-name descname"><span class="pre">Mail</span></span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#Mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.Mail" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.Mail.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#Mail.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.Mail.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.Mail.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emails</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#Mail.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.Mail.send" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.MoleculeInit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.Initialize.</span></span><span class="sig-name descname"><span class="pre">MoleculeInit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#MoleculeInit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.MoleculeInit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FiretaskBase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.Initialize.MoleculeInit.run_task">
+<span class="sig-name descname"><span class="pre">run_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/Initialize.html#MoleculeInit.run_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.Initialize.MoleculeInit.run_task" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets called when the Firetask is run. It can take in a
+Firework spec, perform some task using that data, and then return an
+output in the form of a FWAction.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+contains the env settings of the FWorker calling this method.
+This provides for abstracting out certain commands or
+settings. For example, “foo” may be named “foo1” in resource
+1 and “foo2” in resource 2. The FWorker env can specify {
+“foo”: “foo1”}, which maps an abstract variable “foo” to the
+relevant “foo1” or “foo2”. You can then write a task that
+uses fw_spec[“_fw_env”][“foo”] that will work across all
+these multiple resources.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>(FWAction)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.ParamSet">
+<span id="d3tales-api-workflows-paramset-module"></span><h2>d3tales_api.Workflows.ParamSet module<a class="headerlink" href="#module-d3tales_api.Workflows.ParamSet" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.GausParamSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.ParamSet.</span></span><span class="sig-name descname"><span class="pre">GausParamSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#GausParamSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.GausParamSet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MSONable</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.GausParamSet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#GausParamSet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.GausParamSet.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.GausParamSet.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#GausParamSet.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.GausParamSet.from_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.GaussianParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.ParamSet.</span></span><span class="sig-name descname"><span class="pre">GaussianParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link0_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#GaussianParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.GaussianParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MSONable</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.GaussianParameters.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link0_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#GaussianParameters.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.GaussianParameters.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.VaspParamSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.ParamSet.</span></span><span class="sig-name descname"><span class="pre">VaspParamSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#VaspParamSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.VaspParamSet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MSONable</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.VaspParamSet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#VaspParamSet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.VaspParamSet.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.VaspParamSet.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#VaspParamSet.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.VaspParamSet.from_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.VaspParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.ParamSet.</span></span><span class="sig-name descname"><span class="pre">VaspParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#VaspParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.VaspParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MSONable</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.VaspParameters.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#VaspParameters.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.VaspParameters.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.ParamSet.sett">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.ParamSet.</span></span><span class="sig-name descname"><span class="pre">sett</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/ParamSet.html#sett"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.ParamSet.sett" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.utils">
+<span id="d3tales-api-workflows-utils-module"></span><h2>d3tales_api.Workflows.utils module<a class="headerlink" href="#module-d3tales_api.Workflows.utils" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.generate_gaussian_input">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">generate_gaussian_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dieze_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#P'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#generate_gaussian_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.generate_gaussian_input" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_central_dihed">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_central_dihed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rdk_mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_central_dihed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_central_dihed" title="Permalink to this definition"></a></dt>
+<dd><p>function for recording central dihedral atom numbers</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_db_geom">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_db_geom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_geometry_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_raise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_db_geom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_db_geom" title="Permalink to this definition"></a></dt>
+<dd><p>get input geometry from DB
+:param input_geometry_hash: str
+:return: pymatgen mol object</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_groundState">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_groundState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'charge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_groundState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_groundState" title="Permalink to this definition"></a></dt>
+<dd><p>get input geometry frontend DB smiles
+:param identifier: str
+:param prop: str
+:return: int, ground state charge</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_hash_id">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_hash_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_hash_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_hash_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_scfs">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_scfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_scfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_scfs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.get_tddft_excitations">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">get_tddft_excitations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#get_tddft_excitations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.get_tddft_excitations" title="Permalink to this definition"></a></dt>
+<dd><p>Read a excitation energies after a TD-DFT calculation.</p>
+<p>Returns:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>A list: A list of tuple for each transition such as</dt><dd><p>[(energie (eV), lambda (nm), oscillatory strength), … ]</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.orig_conditions">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">orig_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">functional</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuning_parameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#orig_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.orig_conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of conditions (in accordance with D3TaLES backend schema)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.orig_hash_id">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">orig_hash_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculation_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functional</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuning_parameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#orig_hash_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.orig_hash_id" title="Permalink to this definition"></a></dt>
+<dd><p>Hash ID</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.parse_tddft">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">parse_tddft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tddft_logfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#parse_tddft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.parse_tddft" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.runtime_from_log">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">runtime_from_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#runtime_from_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.runtime_from_log" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.start_from_smiles">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">start_from_smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#start_from_smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.start_from_smiles" title="Permalink to this definition"></a></dt>
+<dd><p>get input geometry frontend DB smiles
+:param identifier: str
+:return: pymatgen mol object</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.write_nto">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">write_nto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tddft_log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excitation_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tddft_chk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#write_nto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.write_nto" title="Permalink to this definition"></a></dt>
+<dd><p>Run NTO analysis after a TDDFT calculation. <a class="reference external" href="https://gaussian.com/faq4/">https://gaussian.com/faq4/</a>
+:param tddft_log: str, path to TDDFT calculation log file
+:param excitation_num: int, number for excitation on which to run the NTO analysis
+:param tddft_chk: str, path to TDDFT calculation checkpoint file (assumed to be the same name as log if not specified)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.zip_files">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">zip_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'upload_zip.zip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#zip_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.zip_files" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.wf_writer">
+<span id="d3tales-api-workflows-wf-writer-module"></span><h2>d3tales_api.Workflows.wf_writer module<a class="headerlink" href="#module-d3tales_api.Workflows.wf_writer" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.d3tales_wf">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">d3tales_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#d3tales_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.d3tales_wf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.hf_wf">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">hf_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#hf_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.hf_wf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.huckaba_wf">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">huckaba_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DiMethylSulfoxide'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#huckaba_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.huckaba_wf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.just_anion">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">just_anion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#just_anion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.just_anion" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.just_initialize">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">just_initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#just_initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.just_initialize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.just_nmr">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">just_nmr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#just_nmr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.just_nmr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.just_tddft">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">just_tddft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_if_already_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#just_tddft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.just_tddft" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.solv_wf">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">solv_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#solv_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.solv_wf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wf_writer.specialized_job">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wf_writer.</span></span><span class="sig-name descname"><span class="pre">specialized_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acetonitrile'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wtune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_mol_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_if_already_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wf_writer.html#specialized_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wf_writer.specialized_job" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows.wtuning">
+<span id="d3tales-api-workflows-wtuning-module"></span><h2>d3tales_api.Workflows.wtuning module<a class="headerlink" href="#module-d3tales_api.Workflows.wtuning" title="Permalink to this heading"></a></h2>
+<p>Code taken from the OCELOT API to transform molecule objects. <a class="reference external" href="https://github.com/caer200/ocelot_api">https://github.com/caer200/ocelot_api</a>
+Code copied from: <a class="reference external" href="https://github.com/caer200/ocelot_api/blob/master/ocelot/task/wtuning.py">https://github.com/caer200/ocelot_api/blob/master/ocelot/task/wtuning.py</a></p>
+<p>originally written by Sean M. Ryno, Cheng Zhong, Haitao Sun, see /legacy/aw_tuning.py
+for a certain mol, get tuned w
+default keywords for gaussian
+‘scf=(xqc,fermi,noincfock,ndamp=35,conver=6,vshift=500,novaracc)’
+dev-ing</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wtuning.</span></span><span class="sig-name descname"><span class="pre">WtuningJob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uLC-wHPBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2tzvp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'scf':</span> <span class="pre">{'conver':</span> <span class="pre">'6',</span> <span class="pre">'fermi':</span> <span class="pre">'',</span> <span class="pre">'ndamp':</span> <span class="pre">'35',</span> <span class="pre">'noincfock':</span> <span class="pre">'',</span> <span class="pre">'novaracc':</span> <span class="pre">'',</span> <span class="pre">'vshift':</span> <span class="pre">'500',</span> <span class="pre">'xqc':</span> <span class="pre">''}}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Jh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wbmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wbmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gauss_cmd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g16'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uLC-wHPBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2tzvp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'scf':</span> <span class="pre">{'conver':</span> <span class="pre">'6',</span> <span class="pre">'fermi':</span> <span class="pre">'',</span> <span class="pre">'ndamp':</span> <span class="pre">'35',</span> <span class="pre">'noincfock':</span> <span class="pre">'',</span> <span class="pre">'novaracc':</span> <span class="pre">'',</span> <span class="pre">'vshift':</span> <span class="pre">'500',</span> <span class="pre">'xqc':</span> <span class="pre">''}}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Jh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wbmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wbmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gauss_cmd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g16'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.alpha_atune">
+<span class="sig-name descname"><span class="pre">alpha_atune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.alpha_atune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.alpha_atune" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.alpha_format">
+<span class="sig-name descname"><span class="pre">alpha_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.alpha_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.alpha_format" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.alpha_iopstr">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha_iopstr</span></span><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.alpha_iopstr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.alpha_tune">
+<span class="sig-name descname"><span class="pre">alpha_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaalpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.alpha_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.alpha_tune" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.atuning_cycle">
+<span class="sig-name descname"><span class="pre">atuning_cycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.atuning_cycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.atuning_cycle" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.beta_iopstr">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_iopstr</span></span><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.beta_iopstr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.extract_abs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.extract_abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.extract_abs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.extract_energy">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.extract_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.extract_energy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.gauss_run">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gauss_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gcmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.gauss_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.gauss_run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.geo_opt">
+<span class="sig-name descname"><span class="pre">geo_opt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.geo_opt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.geo_opt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.iop_route_params">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iop_route_params</span></span><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.iop_route_params" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.log_add">
+<span class="sig-name descname"><span class="pre">log_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.log_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.log_add" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_FindC">
+<span class="sig-name descname"><span class="pre">omega_FindC</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_FindC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_FindC" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate scheme value from extracted data
+Set the optimization criterion (the value to minimize),
+available options are:
+J2—((HOMO-IP)^2+(A_HOMO+EA)^2)
+Jh—(HOMO-IP)
+Jl—(LUMO+EA)
+Jn2—((HOMO-IP)^2+(LUMO+EA)^2)
+O2—((A_HOMO-LUMO)^2+(C_LUMO-HOMO)^2)
+:return: Jn, Jl, Jh value (depending on scheme)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_extract">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">omega_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_extract" title="Permalink to this definition"></a></dt>
+<dd><p>Pull important data from Log Files after run
+:param fn: Filename of Log File to be read
+:return: Energies of Molecule, HOMO and LUMO in eV</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_format">
+<span class="sig-name descname"><span class="pre">omega_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_format" title="Permalink to this definition"></a></dt>
+<dd><p>Format IOp strings based off of omega value, then update route parameters dictionary and input filenames</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_gauss_do">
+<span class="sig-name descname"><span class="pre">omega_gauss_do</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_gauss_do"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_gauss_do" title="Permalink to this definition"></a></dt>
+<dd><p>Run Gaussian in subprocess and wait for termination. Extract data from output when done</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_iopstr">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">omega_iopstr</span></span><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_iopstr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_tune">
+<span class="sig-name descname"><span class="pre">omega_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaomega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_tune" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.omega_wtune">
+<span class="sig-name descname"><span class="pre">omega_wtune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.omega_wtune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.omega_wtune" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega_in</strong> – Value for ‘fminbound’ function to pass scalars into</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Scheme value from FindC</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.to_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.to_file">
+<span class="sig-name descname"><span class="pre">to_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.to_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.WtuningJob.wtuning_cycle">
+<span class="sig-name descname"><span class="pre">wtuning_cycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#WtuningJob.wtuning_cycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.WtuningJob.wtuning_cycle" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.wtuning.gauss_in_gen">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.wtuning.</span></span><span class="sig-name descname"><span class="pre">gauss_in_gen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link0_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/wtuning.html#gauss_in_gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.wtuning.gauss_in_gen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-d3tales_api.Workflows">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api.Workflows" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="d3tales_api.Processors.html" class="btn btn-neutral float-left" title="d3tales_api.Processors package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
