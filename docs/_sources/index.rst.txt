@@ -13,7 +13,7 @@ API designed for the `D3TaLES project <https://d3tales.as.uky.edu/>`_. Includes 
 Modules
 -------
 
-This API contains three modules:
+This API contains four modules:
 
 
 * ``D3database``\ : Interface for interacting with the |D3TaLES| databases. Includes
@@ -24,6 +24,10 @@ This API contains three modules:
 
 * ``Calculators``\ : Property calculators and plotters for cyclic voltammetry
 
+* ``Workflows``\ : `Fireworks <https://materialsproject.github.io/fireworks/>`_ workflow for
+  the |D3TaLES| databases high throughput workflows
+
+
 
 .. toctree::
    :maxdepth: 3
@@ -33,6 +37,7 @@ This API contains three modules:
    D3database
    Processors
    Calculators
+   Workflows
    d3tales_api
 
 

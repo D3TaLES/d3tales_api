@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -63,6 +64,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html">d3tales_api.Workflows package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#submodules">Submodules</a></li>
@@ -214,7 +216,7 @@ Copyright 2021, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.d3database.D3Database.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#D3Database.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.D3Database.insert" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#D3Database.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.D3Database.insert" title="Permalink to this definition"></a></dt>
 <dd><p>Upserts a dictionary into a collection</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -223,6 +225,7 @@ Copyright 2021, University of Kentucky</p>
 <li><p><strong>nested</strong> – bool, insert nested attributes if True</p></li>
 <li><p><strong>update_public</strong> – bool, update the public status if true</p></li>
 <li><p><strong>instance</strong> – dict, instance to be inserted</p></li>
+<li><p><strong>override_lists</strong> – bool, override existing lists in insertion if True</p></li>
 </ul>
 </dd>
 </dl>
@@ -462,6 +465,46 @@ Copyright 2021, University of Kentucky</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.D3database.d3database.RobotStatusDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.d3database.</span></span><span class="sig-name descname"><span class="pre">RobotStatusDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#RobotStatusDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.RobotStatusDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.D3database.d3database.D3Database" title="d3tales_api.D3database.d3database.D3Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Database</span></code></a></p>
+<p>Class for accessing the Robot Status database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.D3database.d3database.RobotStatusDB.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#RobotStatusDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.RobotStatusDB.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initiate class
+:param apparatus_type: str, name of apparatus
+:param _id: str, _id
+:param instance: dict, instance to insert or validate
+:param override_lists: bool,
+:param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.D3database.d3database.RobotStatusDB.check_wflow_name">
+<span class="sig-name descname"><span class="pre">check_wflow_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#RobotStatusDB.check_wflow_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.RobotStatusDB.check_wflow_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.D3database.d3database.RobotStatusDB.get_prop">
+<span class="sig-name descname"><span class="pre">get_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#RobotStatusDB.get_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.RobotStatusDB.get_prop" title="Permalink to this definition"></a></dt>
+<dd><p>Get database prop for instance with _id
+:param prop: str, property name
+:return: prop</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.D3database.d3database.RobotStatusDB.update_status">
+<span class="sig-name descname"><span class="pre">update_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'location'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/d3database.html#RobotStatusDB.update_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.d3database.RobotStatusDB.update_status" title="Permalink to this definition"></a></dt>
+<dd><p>Update status for a vial location or station vial
+:param new_status: str, new vial location or new vial in station
+:param status_name: str, name for status properties</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-d3tales_api.D3database.dft_calculation_list">
 <span id="d3tales-api-d3database-dft-calculation-list-module"></span><h2>d3tales_api.D3database.dft_calculation_list module<a class="headerlink" href="#module-d3tales_api.D3database.dft_calculation_list" title="Permalink to this heading"></a></h2>
@@ -576,18 +619,28 @@ Copyright 2021, University of Kentucky</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>This class pulls data from the D3Tales database and outputs plots or Pandas dataframes
-:param username: D3TaLES website username (must have REST API permissions)
-:param password: D3TaLES website password (must have REST API permissions)
-:param limit: limit query items to return</p>
+<dd><p>This class pulls data from the D3Tales database and outputs plots or Pandas dataframes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – D3TaLES website username (must have REST API permissions)</p></li>
+<li><p><strong>password</strong> – D3TaLES website password (must have REST API permissions)</p></li>
+<li><p><strong>limit</strong> – limit query items to return</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.get_master_df">
 <span class="sig-name descname"><span class="pre">get_master_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">master_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'d3tales_props.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.get_master_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.get_master_df" title="Permalink to this definition"></a></dt>
-<dd><p>Get all major properties from D3TaLES database.
-:param master_fn: str, filepath to CSV file in which to save data
-uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.</p>
+<dd><p>Get all major properties from D3TaLES database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>master_fn</strong> – str, filepath to CSV file in which to save data</p>
+</dd>
+</dl>
+<p>uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>pandas DataFrame with all data</p>
@@ -598,14 +651,18 @@ uses the D3database FrontDB module by default, which required the DB_INFO_FILE t
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.get_prop_data">
 <span class="sig-name descname"><span class="pre">get_prop_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'molecules'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.get_prop_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.get_prop_data" title="Permalink to this definition"></a></dt>
-<dd><p>Get property data from D3TaLES database based on RESTAPI query
-:param query: str, D3TaLES REST API query
-:param max_cutoff: float, maximum value to return for specified property
-:param min_cutoff: float, minimum value to return for specified property
-:param database: str, name of database to query</p>
+<dd><p>Get property data from D3TaLES database based on RESTAPI query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>pandas DataFrame with query data</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – str, D3TaLES REST API query</p></li>
+<li><p><strong>max_cutoff</strong> – float, maximum value to return for specified property</p></li>
+<li><p><strong>min_cutoff</strong> – float, minimum value to return for specified property</p></li>
+<li><p><strong>database</strong> – str, name of database to query</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pandas DataFrame with query data</p>
 </dd>
 </dl>
 </dd></dl>
@@ -613,11 +670,13 @@ uses the D3database FrontDB module by default, which required the DB_INFO_FILE t
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.hist_1d">
 <span class="sig-name descname"><span class="pre">hist_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.hist_1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.hist_1d" title="Permalink to this definition"></a></dt>
-<dd><p>Plot histogram data from D3TaLES database based on RESTAPI query
-:param query: str, D3TaLES REST API query</p>
+<dd><p>Plot histogram data from D3TaLES database based on RESTAPI query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>seaborn histogram plot</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>query</strong> – str, D3TaLES REST API query</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>seaborn histogram plot</p>
 </dd>
 </dl>
 </dd></dl>
@@ -625,14 +684,18 @@ uses the D3database FrontDB module by default, which required the DB_INFO_FILE t
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.hist_2d">
 <span class="sig-name descname"><span class="pre">hist_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'molecules'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'molecules'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.hist_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.hist_2d" title="Permalink to this definition"></a></dt>
-<dd><p>Plot histogram data from D3TaLES database based on RESTAPI query
-:param query1: str, D3TaLES REST API query for x axis
-:param query2: str, D3TaLES REST API query for y axis
-:param db1: str, name of database for query1
-:param db2: str, name of database for query2</p>
+<dd><p>Plot histogram data from D3TaLES database based on RESTAPI query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>seaborn 2D histogram plot</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query1</strong> – str, D3TaLES REST API query for x axis</p></li>
+<li><p><strong>query2</strong> – str, D3TaLES REST API query for y axis</p></li>
+<li><p><strong>db1</strong> – str, name of database for query1</p></li>
+<li><p><strong>db2</strong> – str, name of database for query2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>seaborn 2D histogram plot</p>
 </dd>
 </dl>
 </dd></dl>
@@ -640,10 +703,18 @@ uses the D3database FrontDB module by default, which required the DB_INFO_FILE t
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.D3database.restapi.D3talesData.rgetkeys">
 <span class="sig-name descname"><span class="pre">rgetkeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/restapi.html#D3talesData.rgetkeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.restapi.D3talesData.rgetkeys" title="Permalink to this definition"></a></dt>
-<dd><p>Functions for getting property data
-:param _dict:
-:param keys:
-:return:</p>
+<dd><p>Functions for getting property data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dict</strong> – </p></li>
+<li><p><strong>keys</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

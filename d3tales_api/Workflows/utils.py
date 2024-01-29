@@ -15,6 +15,22 @@ file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
 
+# ENVIRONMENT VARIABLES
+
+ZINDOLIB = ">>ZINDOLIB<<"
+ZINDOBIN = ">>ZINDOBIN<<"
+ZINDOCTBIN = ">>ZINDOCTBIN<<"
+DB_FILE = ">>db_file<<"
+AFLOW = ">>aflow<<"
+VASP_CMD = ">>vasp_cmd<<"
+GAMMA_VASP_CMD = ">>gamma_vasp_cmd<<"
+G16_CMD = ">>g16_cmd<<"
+MA_DEF2 = ">>ma_def2<<"
+PATH = ">>path<<"
+RUNFILE_LOG = ">>runfile_log<<"
+PROC_VM_KEY = ">>processing_vm_key<<"
+
+# FUNCTIONS
 
 def runtime_from_log(logfile):
     import re

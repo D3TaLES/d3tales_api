@@ -1,7 +1,7 @@
 from fireworks import Firework
 from d3tales_api.Workflows.Gaussian import *
 from d3tales_api.Workflows.Initialize import *
-from d3tales_api.Workflows.envwf import G16_CMD, PATH, PROC_VM_KEY, RUNFILE_LOG
+from d3tales_api.Workflows.utils import G16_CMD, PATH, PROC_VM_KEY, RUNFILE_LOG
 
 # Copyright 2021-2022, University of Kentucky
 

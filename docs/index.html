@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -80,13 +81,15 @@
 <p>API designed for the <a class="reference external" href="https://d3tales.as.uky.edu/">D3TaLES project</a>. Includes data processing, database access functions, and property calculators.</p>
 <section id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h2>
-<p>This API contains three modules:</p>
+<p>This API contains four modules:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">D3database</span></code>: Interface for interacting with the D<sup>3</sup>TaLES databases. Includes
 queries, data insertion with validation, and a REST API interface.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Processors</span></code>: Processing code for extracting data from computational and experimental
 data files as well as <a class="reference external" href="https://d3tales.as.uky.edu/expflow">ExpFlow</a> run objects.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Calculators</span></code>: Property calculators and plotters for cyclic voltammetry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Workflows</span></code>: <a class="reference external" href="https://materialsproject.github.io/fireworks/">Fireworks</a> workflow for
+the D<sup>3</sup>TaLES databases high throughput workflows</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
@@ -125,11 +128,20 @@ data files as well as <a class="reference external" href="https://d3tales.as.uky
 <li class="toctree-l2"><a class="reference internal" href="Calculators.html#considering-units">Considering Units</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Workflows.html#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Workflows.html#submitting-basic-workflow">Submitting basic workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Workflows.html#config-directory">Config Directory</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html">d3tales_api.Workflows package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.html#submodules">Submodules</a></li>
