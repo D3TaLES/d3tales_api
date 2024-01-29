@@ -10,7 +10,7 @@ Important Fireworks-based modules include:
 * Calculation-specific modules for **FireTasks**: 
   * `Initialize`: FireTasks for initialize molecules and getting basic molecular information 
   * `Gaussian`: FireTasks for Density Functional Theory calculations with [Gaussian](https://gaussian.com/)
-  * `Gromacs`: FireTasks for Molecular Dynamics simulations with [Gromacs](https://www.gromacs.org/)
+  * _In development_ `Gromacs`: FireTasks for Molecular Dynamics simulations with [Gromacs](https://www.gromacs.org/)
 * `D3TaLES_FW`: defines all **Fireworks** 
 * `wf_writer`: defines **Workflows**
 
