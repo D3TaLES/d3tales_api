@@ -65,7 +65,7 @@ if REST_API:
             "D": "diffusion",
             "v": "conditions.scan_rate",
             "n": "n",
-            "X": "peak_splittings.py.{}".format(num_electrons-1)
+            "X": "peak_splittings.{}".format(num_electrons-1)
         }
     # 0.00127 cm/s
 

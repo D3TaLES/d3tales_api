@@ -101,7 +101,7 @@ test_dict = [{
         0.8505,
         0.8495
     ],
-    "peak_splittings.py": [
+    "peak_splittings": [
         0.141,
         0.355
     ],

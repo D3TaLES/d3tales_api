@@ -365,7 +365,7 @@ class ProcessCV(ProcessPotBase):
                             plot_data=self.ParsedData.calculate_plotting("plot_data").get("abs_plot"),
                             reversibility=self.ParsedData.calculate_prop("reversibility", return_type=list),
                             e_half=self.ParsedData.calculate_prop("e_half", return_type=list),
-                            peak_splittings=self.ParsedData.calculate_prop("peak_splittings.py", return_type=list),
+                            peak_splittings=self.ParsedData.calculate_prop("peak_splittings", return_type=list),
                             middle_sweep=self.ParsedData.calculate_prop("middle_sweep", return_type=list),
                             ))
         all_data_dict = {
