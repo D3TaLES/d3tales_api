@@ -108,6 +108,7 @@ class D3talesData:
     def __init__(self, username=USERNAME, password=PASSWORD, limit=0):
         """
         This class pulls data from the D3Tales database and outputs plots or Pandas dataframes
+
         :param username: D3TaLES website username (must have REST API permissions)
         :param password: D3TaLES website password (must have REST API permissions)
         :param limit: limit query items to return
@@ -119,6 +120,7 @@ class D3talesData:
     def rgetkeys(self, _dict, keys, **kwargs):
         """
         Functions for getting property data
+
         :param _dict:
         :param keys:
         :return:
@@ -135,6 +137,7 @@ class D3talesData:
     def get_prop_data(self, query, max_cutoff=None, min_cutoff=None, database='molecules'):
         """
         Get property data from D3TaLES database based on RESTAPI query
+
         :param query: str, D3TaLES REST API query
         :param max_cutoff: float, maximum value to return for specified property
         :param min_cutoff: float, minimum value to return for specified property
@@ -177,6 +180,7 @@ class D3talesData:
     def get_master_df(self, master_fn='d3tales_props.csv'):
         """
         Get all major properties from D3TaLES database.
+
         :param master_fn: str, filepath to CSV file in which to save data
         uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.
 
@@ -222,6 +226,7 @@ class D3talesData:
     def hist_1d(self, query, **kwargs):
         """
         Plot histogram data from D3TaLES database based on RESTAPI query
+
         :param query: str, D3TaLES REST API query
 
         :return: seaborn histogram plot
@@ -233,6 +238,7 @@ class D3talesData:
     def hist_2d(self, query1, query2, db1='molecules', db2='molecules', **kwargs):
         """
         Plot histogram data from D3TaLES database based on RESTAPI query
+
         :param query1: str, D3TaLES REST API query for x axis
         :param query2: str, D3TaLES REST API query for y axis
         :param db1: str, name of database for query1

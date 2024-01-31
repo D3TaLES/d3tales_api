@@ -10,6 +10,7 @@ Subpackages
    d3tales_api.Calculators
    d3tales_api.D3database
    d3tales_api.Processors
+   d3tales_api.Workflows
 
 Submodules
 ----------

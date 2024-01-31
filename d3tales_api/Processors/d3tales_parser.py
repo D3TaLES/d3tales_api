@@ -27,6 +27,18 @@ except Exception:
         "WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
 
 
+def float_from_str(text):
+    normal_chars = "0123456789"
+    # replace subscripts
+    subscript_chars = "₀₁₂₃₄₅₆₇₈₉"
+    mapping = str.maketrans(subscript_chars, normal_chars)
+    text = text.translate(mapping)
+    # replace superscript
+    superscript_chars = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+    mapping = str.maketrans(superscript_chars, normal_chars)
+    text = text.translate(mapping)
+    return float(text.replace(" ", "").replace("x10^", "e").replace("×10", "e").replace("⁻", "-").encode("ascii", "ignore").decode())
+
 class ProcessDFT:
     """
     Class to process molecular DFT output files.
@@ -636,7 +648,7 @@ class ProcessNlp:
         return affiliations
 
     @classmethod
-    def from_json(cls, json_path, **kwargs):
+    def from_parsed_json(cls, json_path, **kwargs):
         """
         Generate data class from JSON file
 
@@ -679,6 +691,8 @@ class ProcessNlp:
                 "The column titles for the NLP DataFrame do not contain columns: " + ", ".join(missing_columns))
 
         # Check values in "properties" column
+        nlp_df.property = nlp_df.property.str.replace(' ', '_')
+        nlp_df.property = nlp_df.property.str.lower()
         expected_properties = ["oxidation_potential", "reduction_potential", "solubility", "stability", "conductivity",
                                "diffusion_coefficient", "charge_transfer_rate"]
         unexpected_properties = [p for p in set(nlp_df.property.tolist()) if p not in expected_properties]
@@ -705,7 +719,7 @@ class ProcessNlp:
                             "date_generated": date_generated,
                             "doi": doi_str,
                         },
-                        "value": float(row.value.replace(" ", "").replace("x10^", "e")),
+                        "value": float_from_str(row.value),
                         "unit": row.unit
                     }
                     prop_data.update({p: row.get(p) for p in ["line_number", "parent_sentence", "notes"] if row.get(p)})
@@ -725,8 +739,14 @@ class ProcessNlp:
                     len(nlp_dfs)))
         if len(nlp_dfs) < 1:
             raise ValueError("ProcessNlp.from_html no tables in the HTML string. There should be  one.")
-        return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance,
-                                  date_generated=date_generated, **kwargs)
+        return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
+
+    @classmethod
+    def from_prop_list(cls, prop_list, nlp_model, doi=None, base_instance=None, date_generated=datetime.now(), **kwargs):
+        if len(prop_list) < 1:
+            raise ValueError("ProcessNlp.from_prop_list no propreties in prop_list. There should be at least one.")
+        nlp_df = pd.DataFrame(prop_list)
+        return cls.from_dataframe(nlp_df, nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="d3tales_api.Calculators package" href="d3tales_api.Calculators.html" />
-    <link rel="prev" title="Calculators" href="Calculators.html" /> 
+    <link rel="prev" title="Workflows" href="Workflows.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,11 +48,13 @@
 <li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">d3tales_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html">d3tales_api.Workflows package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -268,6 +270,13 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB"><code class="docutils literal notranslate"><span class="pre">QueryDB</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.__init__"><code class="docutils literal notranslate"><span class="pre">QueryDB.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.make_query"><code class="docutils literal notranslate"><span class="pre">QueryDB.make_query()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.__init__"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.check_wflow_name"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.check_wflow_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.get_prop"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.get_prop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.update_status"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.update_status()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -541,6 +550,182 @@
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="d3tales_api.Workflows.html">d3tales_api.Workflows package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.D3TaLES_FW">d3tales_api.Workflows.D3TaLES_FW module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.DihedRot"><code class="docutils literal notranslate"><span class="pre">DihedRot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.DihedRot.__init__"><code class="docutils literal notranslate"><span class="pre">DihedRot.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailEnd"><code class="docutils literal notranslate"><span class="pre">EmailEnd</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailEnd.__init__"><code class="docutils literal notranslate"><span class="pre">EmailEnd.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailStart"><code class="docutils literal notranslate"><span class="pre">EmailStart</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailStart.__init__"><code class="docutils literal notranslate"><span class="pre">EmailStart.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Energy"><code class="docutils literal notranslate"><span class="pre">Energy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Energy.__init__"><code class="docutils literal notranslate"><span class="pre">Energy.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule.__init__"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.MolOpt"><code class="docutils literal notranslate"><span class="pre">MolOpt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.MolOpt.__init__"><code class="docutils literal notranslate"><span class="pre">MolOpt.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Optimization"><code class="docutils literal notranslate"><span class="pre">Optimization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Optimization.__init__"><code class="docutils literal notranslate"><span class="pre">Optimization.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.TDDFT"><code class="docutils literal notranslate"><span class="pre">TDDFT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.TDDFT.__init__"><code class="docutils literal notranslate"><span class="pre">TDDFT.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.WTuning"><code class="docutils literal notranslate"><span class="pre">WTuning</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.WTuning.__init__"><code class="docutils literal notranslate"><span class="pre">WTuning.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Gaussian">d3tales_api.Workflows.Gaussian module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase"><code class="docutils literal notranslate"><span class="pre">GaussianBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.post_job"><code class="docutils literal notranslate"><span class="pre">GaussianBase.post_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.run_check"><code class="docutils literal notranslate"><span class="pre">GaussianBase.run_check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.setup_calc"><code class="docutils literal notranslate"><span class="pre">GaussianBase.setup_calc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.setup_files"><code class="docutils literal notranslate"><span class="pre">GaussianBase.setup_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot"><code class="docutils literal notranslate"><span class="pre">RunGaussianDihedRot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot.run_task"><code class="docutils literal notranslate"><span class="pre">RunGaussianDihedRot.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianEnergy"><code class="docutils literal notranslate"><span class="pre">RunGaussianEnergy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianEnergy.run_task"><code class="docutils literal notranslate"><span class="pre">RunGaussianEnergy.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianOpt"><code class="docutils literal notranslate"><span class="pre">RunGaussianOpt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianOpt.run_task"><code class="docutils literal notranslate"><span class="pre">RunGaussianOpt.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianTDDFT"><code class="docutils literal notranslate"><span class="pre">RunGaussianTDDFT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianTDDFT.run_task"><code class="docutils literal notranslate"><span class="pre">RunGaussianTDDFT.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunWtuning"><code class="docutils literal notranslate"><span class="pre">RunWtuning</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunWtuning.run_task"><code class="docutils literal notranslate"><span class="pre">RunWtuning.run_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Gromacs">d3tales_api.Workflows.Gromacs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Initialize">d3tales_api.Workflows.Initialize module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailFinished"><code class="docutils literal notranslate"><span class="pre">EmailFinished</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailFinished.run_task"><code class="docutils literal notranslate"><span class="pre">EmailFinished.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailStarting"><code class="docutils literal notranslate"><span class="pre">EmailStarting</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailStarting.run_task"><code class="docutils literal notranslate"><span class="pre">EmailStarting.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail"><code class="docutils literal notranslate"><span class="pre">Mail</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail.__init__"><code class="docutils literal notranslate"><span class="pre">Mail.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail.send"><code class="docutils literal notranslate"><span class="pre">Mail.send()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.MoleculeInit"><code class="docutils literal notranslate"><span class="pre">MoleculeInit</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.MoleculeInit.run_task"><code class="docutils literal notranslate"><span class="pre">MoleculeInit.run_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.ParamSet">d3tales_api.Workflows.ParamSet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet"><code class="docutils literal notranslate"><span class="pre">GausParamSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.__init__"><code class="docutils literal notranslate"><span class="pre">GausParamSet.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.from_json"><code class="docutils literal notranslate"><span class="pre">GausParamSet.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GaussianParameters"><code class="docutils literal notranslate"><span class="pre">GaussianParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GaussianParameters.__init__"><code class="docutils literal notranslate"><span class="pre">GaussianParameters.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParamSet"><code class="docutils literal notranslate"><span class="pre">VaspParamSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParamSet.__init__"><code class="docutils literal notranslate"><span class="pre">VaspParamSet.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParamSet.from_json"><code class="docutils literal notranslate"><span class="pre">VaspParamSet.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParameters"><code class="docutils literal notranslate"><span class="pre">VaspParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParameters.__init__"><code class="docutils literal notranslate"><span class="pre">VaspParameters.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.sett"><code class="docutils literal notranslate"><span class="pre">sett()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.utils">d3tales_api.Workflows.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.generate_gaussian_input"><code class="docutils literal notranslate"><span class="pre">generate_gaussian_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_central_dihed"><code class="docutils literal notranslate"><span class="pre">get_central_dihed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_db_geom"><code class="docutils literal notranslate"><span class="pre">get_db_geom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_groundState"><code class="docutils literal notranslate"><span class="pre">get_groundState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_hash_id"><code class="docutils literal notranslate"><span class="pre">get_hash_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_scfs"><code class="docutils literal notranslate"><span class="pre">get_scfs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_tddft_excitations"><code class="docutils literal notranslate"><span class="pre">get_tddft_excitations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_conditions"><code class="docutils literal notranslate"><span class="pre">orig_conditions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_hash_id"><code class="docutils literal notranslate"><span class="pre">orig_hash_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.parse_tddft"><code class="docutils literal notranslate"><span class="pre">parse_tddft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.runtime_from_log"><code class="docutils literal notranslate"><span class="pre">runtime_from_log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.start_from_smiles"><code class="docutils literal notranslate"><span class="pre">start_from_smiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.write_nto"><code class="docutils literal notranslate"><span class="pre">write_nto()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.zip_files"><code class="docutils literal notranslate"><span class="pre">zip_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.wf_writer">d3tales_api.Workflows.wf_writer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.d3tales_wf"><code class="docutils literal notranslate"><span class="pre">d3tales_wf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.hf_wf"><code class="docutils literal notranslate"><span class="pre">hf_wf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.huckaba_wf"><code class="docutils literal notranslate"><span class="pre">huckaba_wf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_anion"><code class="docutils literal notranslate"><span class="pre">just_anion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_initialize"><code class="docutils literal notranslate"><span class="pre">just_initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_nmr"><code class="docutils literal notranslate"><span class="pre">just_nmr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_tddft"><code class="docutils literal notranslate"><span class="pre">just_tddft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.solv_wf"><code class="docutils literal notranslate"><span class="pre">solv_wf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.specialized_job"><code class="docutils literal notranslate"><span class="pre">specialized_job()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.wtuning">d3tales_api.Workflows.wtuning module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob"><code class="docutils literal notranslate"><span class="pre">WtuningJob</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.__init__"><code class="docutils literal notranslate"><span class="pre">WtuningJob.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.alpha_atune"><code class="docutils literal notranslate"><span class="pre">WtuningJob.alpha_atune()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.alpha_format"><code class="docutils literal notranslate"><span class="pre">WtuningJob.alpha_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.alpha_iopstr"><code class="docutils literal notranslate"><span class="pre">WtuningJob.alpha_iopstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.alpha_tune"><code class="docutils literal notranslate"><span class="pre">WtuningJob.alpha_tune()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.atuning_cycle"><code class="docutils literal notranslate"><span class="pre">WtuningJob.atuning_cycle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.beta_iopstr"><code class="docutils literal notranslate"><span class="pre">WtuningJob.beta_iopstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.extract_abs"><code class="docutils literal notranslate"><span class="pre">WtuningJob.extract_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.extract_energy"><code class="docutils literal notranslate"><span class="pre">WtuningJob.extract_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.gauss_run"><code class="docutils literal notranslate"><span class="pre">WtuningJob.gauss_run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.geo_opt"><code class="docutils literal notranslate"><span class="pre">WtuningJob.geo_opt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.iop_route_params"><code class="docutils literal notranslate"><span class="pre">WtuningJob.iop_route_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.log_add"><code class="docutils literal notranslate"><span class="pre">WtuningJob.log_add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_FindC"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_FindC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_extract"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_format"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_gauss_do"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_gauss_do()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_iopstr"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_iopstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_tune"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_tune()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.omega_wtune"><code class="docutils literal notranslate"><span class="pre">WtuningJob.omega_wtune()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.to_dict"><code class="docutils literal notranslate"><span class="pre">WtuningJob.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.to_file"><code class="docutils literal notranslate"><span class="pre">WtuningJob.to_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.wtuning_cycle"><code class="docutils literal notranslate"><span class="pre">WtuningJob.wtuning_cycle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.gauss_in_gen"><code class="docutils literal notranslate"><span class="pre">gauss_in_gen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -596,7 +781,7 @@ Pip install may require –use-deprecated=legacy-resolver</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Calculators.html" class="btn btn-neutral float-left" title="Calculators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Workflows.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="d3tales_api.Calculators.html" class="btn btn-neutral float-right" title="d3tales_api.Calculators package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

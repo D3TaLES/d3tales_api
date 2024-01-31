@@ -45,6 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -183,6 +184,7 @@
 <div class="viewcode-block" id="D3talesData.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This class pulls data from the D3Tales database and outputs plots or Pandas dataframes</span>
+
 <span class="sd">        :param username: D3TaLES website username (must have REST API permissions)</span>
 <span class="sd">        :param password: D3TaLES website password (must have REST API permissions)</span>
 <span class="sd">        :param limit: limit query items to return</span>
@@ -194,6 +196,7 @@
 <div class="viewcode-block" id="D3talesData.rgetkeys"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.rgetkeys">[docs]</a>    <span class="k">def</span> <span class="nf">rgetkeys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Functions for getting property data</span>
+
 <span class="sd">        :param _dict:</span>
 <span class="sd">        :param keys:</span>
 <span class="sd">        :return:</span>
@@ -210,6 +213,7 @@
 <div class="viewcode-block" id="D3talesData.get_prop_data"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_prop_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">max_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;molecules&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get property data from D3TaLES database based on RESTAPI query</span>
+
 <span class="sd">        :param query: str, D3TaLES REST API query</span>
 <span class="sd">        :param max_cutoff: float, maximum value to return for specified property</span>
 <span class="sd">        :param min_cutoff: float, minimum value to return for specified property</span>
@@ -252,6 +256,7 @@
 <div class="viewcode-block" id="D3talesData.get_master_df"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_master_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_master_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">master_fn</span><span class="o">=</span><span class="s1">&#39;d3tales_props.csv&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all major properties from D3TaLES database.</span>
+
 <span class="sd">        :param master_fn: str, filepath to CSV file in which to save data</span>
 <span class="sd">        uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.</span>
 
@@ -297,6 +302,7 @@
 <div class="viewcode-block" id="D3talesData.hist_1d"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.hist_1d">[docs]</a>    <span class="k">def</span> <span class="nf">hist_1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot histogram data from D3TaLES database based on RESTAPI query</span>
+
 <span class="sd">        :param query: str, D3TaLES REST API query</span>
 
 <span class="sd">        :return: seaborn histogram plot</span>
@@ -308,6 +314,7 @@
 <div class="viewcode-block" id="D3talesData.hist_2d"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.hist_2d">[docs]</a>    <span class="k">def</span> <span class="nf">hist_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query1</span><span class="p">,</span> <span class="n">query2</span><span class="p">,</span> <span class="n">db1</span><span class="o">=</span><span class="s1">&#39;molecules&#39;</span><span class="p">,</span> <span class="n">db2</span><span class="o">=</span><span class="s1">&#39;molecules&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot histogram data from D3TaLES database based on RESTAPI query</span>
+
 <span class="sd">        :param query1: str, D3TaLES REST API query for x axis</span>
 <span class="sd">        :param query2: str, D3TaLES REST API query for y axis</span>
 <span class="sd">        :param db1: str, name of database for query1</span>

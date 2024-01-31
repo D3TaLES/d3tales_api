@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Workflows.utils &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Workflows.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Workflows.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">RESTAPI</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.D3database.info_from_smiles</span> <span class="kn">import</span> <span class="n">find_lowest_e_conf</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.core.sites</span> <span class="kn">import</span> <span class="n">Site</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Molecule</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.gaussian</span> <span class="kn">import</span> <span class="n">GaussianInput</span><span class="p">,</span> <span class="n">GaussianOutput</span>
+
+<span class="kn">from</span> <span class="nn">rdkit.Chem.rdmolops</span> <span class="kn">import</span> <span class="n">AddHs</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">AllChem</span>
+
+<span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+<span class="c1"># Copyright 2021, University of Kentucky</span>
+
+<span class="c1"># ENVIRONMENT VARIABLES</span>
+
+<span class="n">ZINDOLIB</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;ZINDOLIB&lt;&lt;&quot;</span>
+<span class="n">ZINDOBIN</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;ZINDOBIN&lt;&lt;&quot;</span>
+<span class="n">ZINDOCTBIN</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;ZINDOCTBIN&lt;&lt;&quot;</span>
+<span class="n">DB_FILE</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;db_file&lt;&lt;&quot;</span>
+<span class="n">AFLOW</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;aflow&lt;&lt;&quot;</span>
+<span class="n">VASP_CMD</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;vasp_cmd&lt;&lt;&quot;</span>
+<span class="n">GAMMA_VASP_CMD</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;gamma_vasp_cmd&lt;&lt;&quot;</span>
+<span class="n">G16_CMD</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;g16_cmd&lt;&lt;&quot;</span>
+<span class="n">MA_DEF2</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;ma_def2&lt;&lt;&quot;</span>
+<span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;path&lt;&lt;&quot;</span>
+<span class="n">RUNFILE_LOG</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;runfile_log&lt;&lt;&quot;</span>
+<span class="n">PROC_VM_KEY</span> <span class="o">=</span> <span class="s2">&quot;&gt;&gt;processing_vm_key&lt;&lt;&quot;</span>
+
+<span class="c1"># FUNCTIONS</span>
+
+<div class="viewcode-block" id="runtime_from_log"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.runtime_from_log">[docs]</a><span class="k">def</span> <span class="nf">runtime_from_log</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+
+    <span class="n">time_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+\.d+|\d+&quot;</span><span class="p">)</span>
+    <span class="n">time_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;Job cpu time&quot;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+                <span class="n">time_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">time_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">time_data</span><span class="p">:</span>
+        <span class="n">time_data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">time_data</span><span class="p">]</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">86400</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">time_data</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3600</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">runtime</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="generate_gaussian_input"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.generate_gaussian_input">[docs]</a><span class="k">def</span> <span class="nf">generate_gaussian_input</span><span class="p">(</span><span class="n">paramset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dieze_tag</span><span class="o">=</span><span class="s2">&quot;#P&quot;</span><span class="p">):</span>
+    <span class="n">route_parameters</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">route_parameters</span>
+    <span class="n">input_parameters</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">input_parameters</span>
+    <span class="n">link0_parameters</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">link0_parameters</span>
+    <span class="n">charge</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">charge</span>
+    <span class="n">multiplicity</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">multiplicity</span>
+    <span class="n">functional</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">functional</span>
+    <span class="n">basis_set</span> <span class="o">=</span> <span class="n">paramset</span><span class="o">.</span><span class="n">basis_set</span>
+
+    <span class="n">ginput</span> <span class="o">=</span> <span class="n">GaussianInput</span><span class="p">(</span><span class="n">mol</span><span class="o">=</span><span class="n">mol</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="n">charge</span><span class="p">,</span> <span class="n">spin_multiplicity</span><span class="o">=</span><span class="n">multiplicity</span><span class="p">,</span>
+                           <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="n">basis_set</span><span class="p">,</span> <span class="n">link0_parameters</span><span class="o">=</span><span class="n">link0_parameters</span><span class="p">,</span>
+                           <span class="n">route_parameters</span><span class="o">=</span><span class="n">route_parameters</span><span class="p">,</span> <span class="n">input_parameters</span><span class="o">=</span><span class="n">input_parameters</span><span class="p">,</span> <span class="n">dieze_tag</span><span class="o">=</span><span class="n">dieze_tag</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ginput</span></div>
+
+
+<div class="viewcode-block" id="get_central_dihed"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_central_dihed">[docs]</a><span class="k">def</span> <span class="nf">get_central_dihed</span><span class="p">(</span><span class="n">rdk_mol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    function for recording central dihedral atom numbers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># find all potential center bonds (single bonds between carbons)</span>
+    <span class="n">potential_cntbond</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">rdk_mol</span><span class="o">.</span><span class="n">GetBonds</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetBondType</span><span class="p">())</span> <span class="o">==</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">:</span>
+            <span class="n">atom_a</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetBeginAtom</span><span class="p">()</span>
+            <span class="n">atom_b</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetEndAtom</span><span class="p">()</span>
+            <span class="n">bond_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom_a</span><span class="p">,</span> <span class="n">atom_b</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">atom_a</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">atom_b</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="n">potential_cntbond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond_atoms</span><span class="p">)</span>
+
+    <span class="c1"># find central bond</span>
+    <span class="n">num_cnt_bond</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">potential_cntbond</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cnt_bond</span> <span class="o">=</span> <span class="n">potential_cntbond</span><span class="p">[</span><span class="n">num_cnt_bond</span><span class="p">]</span>
+
+    <span class="n">cntatom_a</span> <span class="o">=</span> <span class="n">cnt_bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cntatom_b</span> <span class="o">=</span> <span class="n">cnt_bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dihed1</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dihed2</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># assemble list of atoms in first dihedral angle</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cntatom_a</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span> <span class="o">!=</span> <span class="n">cntatom_b</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">():</span>
+            <span class="n">dihed1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+            <span class="n">dihed1</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">cntatom_a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">(),</span> <span class="n">cntatom_b</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()))</span>
+            <span class="k">break</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cntatom_b</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span> <span class="o">!=</span> <span class="n">cntatom_a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">():</span>
+            <span class="n">dihed1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+            <span class="k">break</span>
+    <span class="c1"># assemble list of atoms in second dihedral angle</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cntatom_a</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+        <span class="n">dihed2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dihed1</span> <span class="k">else</span> <span class="n">dihed1</span>
+    <span class="n">dihed2</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">cntatom_a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">(),</span> <span class="n">cntatom_b</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()))</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cntatom_b</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+        <span class="n">dihed2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dihed1</span> <span class="k">else</span> <span class="n">dihed1</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">dihed1</span><span class="p">,</span> <span class="n">dihed2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_scfs"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_scfs">[docs]</a><span class="k">def</span> <span class="nf">get_scfs</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+    <span class="n">energies</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sSCF Done:&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">energies</span></div>
+
+
+<div class="viewcode-block" id="parse_tddft"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.parse_tddft">[docs]</a><span class="k">def</span> <span class="nf">parse_tddft</span><span class="p">(</span><span class="n">tddft_logfile</span><span class="p">):</span>
+    <span class="c1"># read the log files</span>
+    <span class="n">excitations</span> <span class="o">=</span> <span class="n">get_tddft_excitations</span><span class="p">(</span><span class="n">tddft_logfile</span><span class="p">)</span>
+
+    <span class="c1"># get descriptors</span>
+    <span class="n">singlet_excitation_energy</span> <span class="o">=</span> <span class="n">excitations</span><span class="p">[</span><span class="s2">&quot;Singlet&quot;</span><span class="p">]</span>
+    <span class="n">triplet_excitation_energy</span> <span class="o">=</span> <span class="n">excitations</span><span class="p">[</span><span class="s2">&quot;Triplet&quot;</span><span class="p">]</span>
+
+    <span class="c1"># get absorption spectrum (pymatgen.io.gaussian Gaussian.get_spectre_plot truncated)</span>
+    <span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">cst</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+
+    <span class="n">transitions</span> <span class="o">=</span> <span class="n">singlet_excitation_energy</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.50</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+    <span class="n">minval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">])</span> <span class="o">-</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span>
+    <span class="n">maxval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">])</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">maxval</span> <span class="o">-</span> <span class="n">minval</span><span class="p">)</span> <span class="o">/</span> <span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">eneval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>  <span class="c1"># in eV</span>
+    <span class="n">lambdaval</span> <span class="o">=</span> <span class="p">[</span><span class="n">cst</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">val</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.e9</span>
+                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">eneval</span><span class="p">]</span>  <span class="c1"># in nm</span>
+
+    <span class="c1"># sum of gaussian functions</span>
+    <span class="n">spectre</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">:</span>
+        <span class="n">spectre</span> <span class="o">+=</span> <span class="n">trans</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">eneval</span><span class="p">,</span> <span class="n">trans</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma</span><span class="p">)</span>
+    <span class="n">spectre</span> <span class="o">/=</span> <span class="n">spectre</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">singlet_spectra_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energies&quot;</span><span class="p">:</span> <span class="n">eneval</span><span class="p">,</span> <span class="s2">&quot;lambda&quot;</span><span class="p">:</span> <span class="n">lambdaval</span><span class="p">,</span> <span class="s2">&quot;xas&quot;</span><span class="p">:</span> <span class="n">spectre</span><span class="p">}</span>
+
+    <span class="c1"># for plotting in frontend</span>
+    <span class="n">abs_plot</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">singlet_spectra_data</span><span class="p">[</span><span class="s2">&quot;lambda&quot;</span><span class="p">]],</span>
+                 <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">singlet_spectra_data</span><span class="p">[</span><span class="s2">&quot;xas&quot;</span><span class="p">],</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s1">&#39;lines&#39;</span><span class="p">,</span>
+                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;absorption&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="p">{</span>
+                     <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#003396&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">3</span>
+                 <span class="p">}}]</span>
+    <span class="n">singlet_spectra_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">:</span> <span class="n">abs_plot</span><span class="p">})</span>
+
+    <span class="c1"># add results to DB</span>
+    <span class="n">descriptors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;vs0s1&quot;</span><span class="p">:</span> <span class="n">singlet_excitation_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s2">&quot;vs0t1&quot;</span><span class="p">:</span> <span class="n">triplet_excitation_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="n">visuals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;exec_singlet&quot;</span><span class="p">:</span> <span class="n">singlet_spectra_data</span><span class="p">}</span>
+
+    <span class="n">timings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tddft&quot;</span><span class="p">:</span> <span class="n">runtime_from_log</span><span class="p">(</span><span class="n">tddft_logfile</span><span class="p">)}</span>
+
+    <span class="n">d_results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;descriptors&quot;</span><span class="p">:</span> <span class="n">descriptors</span><span class="p">,</span>
+                 <span class="s2">&quot;visuals&quot;</span><span class="p">:</span> <span class="n">visuals</span><span class="p">,</span>
+                 <span class="s2">&quot;timings&quot;</span><span class="p">:</span> <span class="n">timings</span><span class="p">,</span>
+                 <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">d_results</span></div>
+
+
+<div class="viewcode-block" id="get_hash_id"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_hash_id">[docs]</a><span class="k">def</span> <span class="nf">get_hash_id</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="n">calc_type</span><span class="p">,</span> <span class="s2">&quot;mol_file&quot;</span><span class="p">:</span> <span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;wtuning_output&quot;</span><span class="p">:</span> <span class="n">output_file</span><span class="p">}</span>
+    <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">process_data</span><span class="o">.</span><span class="n">hash_id</span></div>
+
+
+<div class="viewcode-block" id="orig_hash_id"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_hash_id">[docs]</a><span class="k">def</span> <span class="nf">orig_hash_id</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">calculation_type</span><span class="p">,</span> <span class="n">functional</span><span class="p">,</span> <span class="n">basis_set</span><span class="p">,</span> <span class="n">tuning_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hash ID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">orig_conditions</span><span class="p">(</span><span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="n">basis_set</span><span class="p">,</span> <span class="n">tuning_parameter</span><span class="o">=</span><span class="n">tuning_parameter</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="n">solvent</span><span class="p">)</span>
+    <span class="n">hash_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span>
+        <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span> <span class="n">calculation_type</span><span class="p">,</span>
+        <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="n">conditions</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">dhash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">hash_dict</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="n">dhash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dhash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="orig_conditions"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_conditions">[docs]</a><span class="k">def</span> <span class="nf">orig_conditions</span><span class="p">(</span><span class="n">functional</span><span class="p">,</span> <span class="n">basis_set</span><span class="p">,</span> <span class="n">tuning_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;dft&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;code_name&quot;</span><span class="p">:</span> <span class="s1">&#39;Gaussian&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;code_version&quot;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;functional&quot;</span><span class="p">:</span> <span class="n">functional</span><span class="p">,</span>
+        <span class="s2">&quot;basis_set&quot;</span><span class="p">:</span> <span class="n">basis_set</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">tuning_parameter</span><span class="p">:</span>
+        <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;tuning_parameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuning_parameter</span>
+    <span class="k">if</span> <span class="n">solvent</span><span class="p">:</span>
+        <span class="n">dielectric_constant</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;acetonitrile&quot;</span><span class="p">:</span> <span class="mf">35.688</span><span class="p">}</span>
+        <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;solvent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">solvent</span><span class="p">,</span>
+            <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;implicit_solvent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dielectric_constant&#39;</span><span class="p">:</span> <span class="n">dielectric_constant</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solvent</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">data_dict</span></div>
+
+
+<div class="viewcode-block" id="start_from_smiles"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.start_from_smiles">[docs]</a><span class="k">def</span> <span class="nf">start_from_smiles</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get input geometry frontend DB smiles</span>
+<span class="sd">    :param identifier: str</span>
+<span class="sd">    :return: pymatgen mol object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/molecules/_id=</span><span class="si">{}</span><span class="s2">/mol_info.init_structure=1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">),</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_info&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;init_structure&#39;</span><span class="p">),</span> <span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/molecules/_id=</span><span class="si">{}</span><span class="s2">/mol_info.smiles=1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">),</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">smiles</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_info&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="n">find_lowest_e_conf</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s1">&#39;xyz&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_groundState"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_groundState">[docs]</a><span class="k">def</span> <span class="nf">get_groundState</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;charge&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get input geometry frontend DB smiles</span>
+<span class="sd">    :param identifier: str</span>
+<span class="sd">    :param prop: str</span>
+<span class="sd">    :return: int, ground state charge</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/molecules/_id=</span><span class="si">{}</span><span class="s2">/mol_info.groundState_</span><span class="si">{}</span><span class="s2">=1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prop</span><span class="p">),</span>
+        <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol_info&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;groundState_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prop</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="get_db_geom"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_db_geom">[docs]</a><span class="k">def</span> <span class="nf">get_db_geom</span><span class="p">(</span><span class="n">input_geometry_hash</span><span class="p">,</span> <span class="n">error_raise</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get input geometry from DB</span>
+<span class="sd">    :param input_geometry_hash: str</span>
+<span class="sd">    :return: pymatgen mol object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/rawdata/computation/_id=</span><span class="si">{}</span><span class="s2">/data.geometry=1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_geometry_hash</span><span class="p">),</span>
+        <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">response</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">error_raise</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s2">&quot;Starting geometry with hash </span><span class="si">{}</span><span class="s2"> not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_geometry_hash</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">dict_sites</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dict_sites</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">error_raise</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s2">&quot;There is not starting gemetry for computation item </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_geometry_hash</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_sites</span><span class="p">([</span><span class="n">Site</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span> <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="n">dict_sites</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="zip_files"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.zip_files">[docs]</a><span class="k">def</span> <span class="nf">zip_files</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="n">zip_name</span><span class="o">=</span><span class="s1">&#39;upload_zip.zip&#39;</span><span class="p">):</span>
+    <span class="n">zip_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">zip_name</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zipF</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+            <span class="n">zipF</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">compress_type</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zip_path</span></div>
+
+
+<div class="viewcode-block" id="get_tddft_excitations"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_tddft_excitations">[docs]</a><span class="k">def</span> <span class="nf">get_tddft_excitations</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a excitation energies after a TD-DFT calculation.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        A list: A list of tuple for each transition such as</span>
+<span class="sd">                [(energie (eV), lambda (nm), oscillatory strength), ... ]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">float_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*([+-]?\d+\.\d+)&quot;</span><span class="p">)</span>
+    <span class="n">state_patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z]*let&quot;</span><span class="p">)</span>
+    <span class="n">transitions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Singlet&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                   <span class="s2">&quot;Triplet&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                   <span class="p">}</span>
+
+    <span class="c1"># read in file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="n">td</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sExcitation energies and oscillator strengths:&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="n">td</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">td</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\sExcited State\s*\d&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">float_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="n">state_patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">state_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">state_val</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;Singlet&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;Triplet&quot;</span>
+                    <span class="c1"># transitions.append(tuple(val[0:3]))</span>
+                    <span class="n">transitions</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">transitions</span></div>
+
+
+<div class="viewcode-block" id="write_nto"><a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.write_nto">[docs]</a><span class="k">def</span> <span class="nf">write_nto</span><span class="p">(</span><span class="n">tddft_log</span><span class="p">,</span> <span class="n">excitation_num</span><span class="p">,</span> <span class="n">tddft_chk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run NTO analysis after a TDDFT calculation. https://gaussian.com/faq4/</span>
+<span class="sd">    :param tddft_log: str, path to TDDFT calculation log file</span>
+<span class="sd">    :param excitation_num: int, number for excitation on which to run the NTO analysis</span>
+<span class="sd">    :param tddft_chk: str, path to TDDFT calculation checkpoint file (assumed to be the same name as log if not specified)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tddft_chk</span> <span class="o">=</span> <span class="n">tddft_chk</span> <span class="ow">or</span> <span class="n">tddft_log</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.chk&quot;</span>
+    <span class="n">nto_com</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_state</span><span class="si">{:02d}</span><span class="s2">.com&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tddft_log</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">excitation_num</span><span class="p">)</span>
+    <span class="n">nto_chk</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.chk&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nto_com</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">gout</span> <span class="o">=</span> <span class="n">GaussianOutput</span><span class="p">(</span><span class="n">tddft_log</span><span class="p">)</span>
+    <span class="n">ginp</span> <span class="o">=</span> <span class="n">gout</span><span class="o">.</span><span class="n">to_input</span><span class="p">()</span>
+    <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span> <span class="o">=</span> <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iop(3107&quot;</span><span class="p">,</span> <span class="p">):</span>
+        <span class="n">iop_str</span> <span class="o">=</span> <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span><span class="p">[</span><span class="s2">&quot;iop(3107&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iop(3/107=</span><span class="si">{}</span><span class="s2">, 3/108=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iop_str</span><span class="p">,</span> <span class="n">iop_str</span><span class="p">):</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+    <span class="n">ginp</span><span class="o">.</span><span class="n">route_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Geom&quot;</span><span class="p">:</span> <span class="s2">&quot;AllCheck&quot;</span><span class="p">,</span> <span class="s2">&quot;Guess&quot;</span><span class="p">:</span> <span class="s2">&quot;(Read,Only)&quot;</span><span class="p">,</span> <span class="s2">&quot;Density&quot;</span><span class="p">:</span> <span class="s2">&quot;(Check,Transition=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">excitation_num</span><span class="p">),</span>
+                                  <span class="s2">&quot;Pop&quot;</span><span class="p">:</span> <span class="s2">&quot;(Minimal,NTO,SaveNTO)&quot;</span><span class="p">})</span>
+    <span class="n">ginp</span><span class="o">.</span><span class="n">link0_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">hk&quot;</span><span class="p">:</span> <span class="n">nto_chk</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%o</span><span class="s2">ldchk&quot;</span><span class="p">:</span> <span class="n">tddft_chk</span><span class="p">})</span>
+    <span class="n">ginp</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">nto_com</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">nto_com</span><span class="p">,</span> <span class="n">nto_chk</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
