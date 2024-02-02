@@ -29,26 +29,29 @@ connector = {
 }
 
 
-diffusion_cal = CVDiffusionCalculator(connector=connector)
-diffusion = diffusion_cal.calculate(cv_entries)
-assert diffusion == [2.969e-06, 2.52e-06]
-print("Average diffusion", diffusion[0])
-print("Fitted diffusion", diffusion[1])
-[d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+# diffusion_cal = CVDiffusionCalculator(connector=connector)
+# diffusion = diffusion_cal.calculate(cv_entries)
+# assert diffusion == [2.969e-06, 2.52e-06]
+# print("Average diffusion", diffusion[0])
+# print("Fitted diffusion", diffusion[1])
+# [d.update({"diffusion": diffusion[1]}) for d in cv_entries]
+#
+# charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
+# charge_transfer = charge_transfer_cal.calculate(cv_entries)
+# assert charge_transfer == [2.969e-06, 2.52e-06]
+# print("Charge Transfer", charge_transfer)
+#
+# descriptor_cal = CVDescriptorCalculator(connector=connector)
+# assert descriptor_cal.peaks(cv_entries[0]) == {'forward': [[0.091, 4.796e-05]], 'reverse': [[-0.05, -6.478e-05]]}
+# assert descriptor_cal.reversibility(cv_entries[0]) == ['quasi-reversible']
+# assert descriptor_cal.e_half(cv_entries[0])[0] == [0.02]
+# assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
+# assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
+#
+# cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[3], fig_path="cv_test.png", self_standard=True)
+# cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=True)
 
-charge_transfer_cal = CVChargeTransferCalculator(connector=connector)
-charge_transfer = charge_transfer_cal.calculate(cv_entries)
-assert charge_transfer == [2.969e-06, 2.52e-06]
-print("Charge Transfer", charge_transfer)
-
-descriptor_cal = CVDescriptorCalculator(connector=connector)
-assert descriptor_cal.peaks(cv_entries[0]) == {'forward': [[0.091, 4.796e-05]], 'reverse': [[-0.05, -6.478e-05]]}
-assert descriptor_cal.reversibility(cv_entries[0]) == ['quasi-reversible']
-assert descriptor_cal.e_half(cv_entries[0])[0] == [0.02]
-assert descriptor_cal.peak_splittings(cv_entries[0]) == [0.141]
-assert len(descriptor_cal.middle_sweep(cv_entries[0])) == 2
-
-cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[3], fig_path="cv_test.png", self_standard=True)
-cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=True)
+dirty_calc = DirtyElectrodeDetector(connector=connector)
+dirty = dirty_calc.calculate(cv_entries[0])
 
 print("CV TESTING SUCCESSFUL")

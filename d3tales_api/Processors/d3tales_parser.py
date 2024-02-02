@@ -23,7 +23,9 @@ try:
     from elsapy.elsdoc import AbsDoc
     from elsapy.elsclient import ElsClient
 except Exception:
-    print("WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
+    print(
+        "WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
+
 
 def float_from_str(text):
     normal_chars = "0123456789"
@@ -88,7 +90,8 @@ class ProcessDFT:
         try:
             data_dict.update({"is_groundState": self.is_groundState})
         except ConnectionError:
-            print("Warning. Could not connect to the database, so no 'is_groundState' property was specified. DB_INFO_FILE may not be defined.")
+            print(
+                "Warning. Could not connect to the database, so no 'is_groundState' property was specified. DB_INFO_FILE may not be defined.")
         if 'freq' in self.DFTData.calculation_type:
             data_dict.update({
                 "gibbs_correction": {
@@ -213,9 +216,9 @@ class ProcessDFT:
             raise IOError("The molecule does not have a specified groundState_charge.")
 
 
-class ProcessCV:
+class ProcessPotBase:
     """
-    Class to process Gaussian logfiles.
+    Base class for processing potentiostat files
     Copyright 2021, University of Kentucky
     """
 
@@ -248,27 +251,20 @@ class ProcessCV:
         self.ionic_liquids = metadata.get("ionic_liquid") if isinstance(metadata.get("ionic_liquid"), list) else [
             metadata.get("ionic_liquid")] if metadata.get("ionic_liquid") else []
 
-        self.CVData = parsing_class(filepath, **kwargs)
+        self.ParsedData = parsing_class(filepath, **kwargs)
 
     @property
     def data_dict(self):
         """
         Dictionary of processed data (in accordance with D3TalES backend schema)
         """
-        cv_data = self.CVData.cv_data
-        cv_data.update(self.CVData.calculate_prop("peaks"))
-        cv_data.update(dict(conditions=self.cv_conditions,
-                            plot_data=self.CVData.calculate_plotting("plot_data").get("abs_plot"),
-                            reversibility=self.CVData.calculate_prop("reversibility", return_type=list),
-                            e_half=self.CVData.calculate_prop("e_half", return_type=list),
-                            peak_splittings=self.CVData.calculate_prop("peak_splittings", return_type=list),
-                            middle_sweep=self.CVData.calculate_prop("middle_sweep", return_type=list),
-                            ))
+        pot_data = self.ParsedData.parsed_data
+        pot_data.update({"conditions": self.pot_conditions})
         all_data_dict = {
             "_id": self.hash_id,
             "mol_id": self.id,
             "submission_info": self.submission_info,
-            "data": cv_data
+            "data": pot_data
         }
         json_data = json.dumps(all_data_dict)
         return json.loads(json_data)
@@ -288,13 +284,12 @@ class ProcessCV:
                 "first.".format(id))
 
     @property
-    def cv_conditions(self):
+    def pot_conditions(self):
         """
         Dictionary of conditions (in accordance with D3TaLES backend schema)
         """
-        conditions_data = self.CVData.conditions_data
+        conditions_data = self.ParsedData.conditions_data
         conditions_data.update({
-            "data_source": 'cv',
             "working_electrode": self.working_electrode,
             "counter_electrode": self.counter_electrode,
             "reference_electrode": self.reference_electrode,
@@ -318,6 +313,7 @@ class ProcessCV:
         :param purity: default purity value
         :return: formatted reagent data
         """
+
         def format_i(r):
             if isinstance(r, dict):
                 r_dict = r
@@ -349,6 +345,87 @@ class ProcessCV:
             ureg = pint.UnitRegistry()
             pint_m = ureg(str(data))
             return {"value": float(getattr(pint_m, 'magnitude')), "unit": str(getattr(pint_m, 'units'))}
+
+
+class ProcessCV(ProcessPotBase):
+    """
+    Class to process CV data
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCV, **kwargs):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)
+        """
+        super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
+
+        self.ParsedData = parsing_class(filepath, **kwargs)
+
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        cv_data = self.ParsedData.parsed_data
+        cv_data.update(self.ParsedData.calculate_prop("peaks"))
+        cv_data.update(dict(conditions=self.pot_conditions,
+                            plot_data=self.ParsedData.calculate_plotting("plot_data").get("abs_plot"),
+                            reversibility=self.ParsedData.calculate_prop("reversibility", return_type=list),
+                            e_half=self.ParsedData.calculate_prop("e_half", return_type=list),
+                            peak_splittings=self.ParsedData.calculate_prop("peak_splittings", return_type=list),
+                            middle_sweep=self.ParsedData.calculate_prop("middle_sweep", return_type=list),
+                            ))
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "data": cv_data
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
+
+
+class ProcessCA(ProcessPotBase):
+    """
+    Class to process CA data
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCA, **kwargs):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCA)
+        """
+        super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
+
+        self.ParsedData = parsing_class(filepath, **kwargs)
+
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        cv_data = self.ParsedData.parsed_data
+        cv_data.update(dict(conditions=self.pot_conditions,
+                            # TODO add conductivity
+                            ))
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "data": cv_data
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
 
 
 class ProcessUvVis:
@@ -417,13 +494,15 @@ class ProcessUvVis:
         json_data = json.dumps(data_dict, default=str)
         return json.loads(json_data)
 
+
 class ProcessNlp:
     """
     Class to process NLP data for backend database
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False, download_dir="temp/"):
+    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False,
+                 download_dir="temp/"):
         """
         :param doi: str, DOI or scopus id
         :param instance: dict, NLP data. Instance data will override web-scrapped data.
@@ -434,7 +513,8 @@ class ProcessNlp:
         instance = instance or {}
         self.doi = (doi or instance.get("doi", instance.get("_id")) or "").strip("https://doi.org/")
         if not self.doi:
-            raise ValueError("ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
+            raise ValueError(
+                "ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.")
         self.els_apikey = els_apikey
         self.instance = instance or {}
         self.publisher, self.main_text = "", ""
@@ -455,7 +535,7 @@ class ProcessNlp:
 
     @property
     def data_dict(self):
-        data_dict  = self.basic_info
+        data_dict = self.basic_info
         data_dict.update(self.instance)
         data_dict.update({"_id": self.doi})
         if self.article_download and self.main_text:
@@ -594,19 +674,21 @@ class ProcessNlp:
         :return: dict, JSON formatted data conforming to the D3TaLES backend   NLP schema
         """
         # Check for DOI
-        doi_str= (doi or base_instance.get("doi", base_instance.get("_id"))).strip("https://doi.org/")
+        doi_str = (doi or base_instance.get("doi", base_instance.get("_id"))).strip("https://doi.org/")
         if not doi_str:
-            raise ValueError("ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.")
+            raise ValueError(
+                "ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.")
 
         # Check DF columns
         expected_columns = ["molecule", "property", "value", "unit", "line_number", "parent_sentence", "notes"]
         unexpected_columns = [c for c in nlp_df.columns if c not in expected_columns]
         if unexpected_columns:
             raise SyntaxError(
-                "The column titles for the NLP DataFrame contain unexpected columns:  "+", ".join(unexpected_columns))
+                "The column titles for the NLP DataFrame contain unexpected columns:  " + ", ".join(unexpected_columns))
         missing_columns = [c for c in expected_columns if c not in nlp_df.columns]
         if missing_columns:
-            raise SyntaxError("The column titles for the NLP DataFrame do not contain columns: "+", ".join(missing_columns))
+            raise SyntaxError(
+                "The column titles for the NLP DataFrame do not contain columns: " + ", ".join(missing_columns))
 
         # Check values in "properties" column
         nlp_df.property = nlp_df.property.str.replace(' ', '_')
@@ -652,7 +734,9 @@ class ProcessNlp:
     def from_html(cls, html_txt, nlp_model, doi=None, base_instance=None, date_generated=datetime.now(), **kwargs):
         nlp_dfs = pd.read_html(html_txt)
         if len(nlp_dfs) > 1:
-            raise ValueError("ProcessNlp.from_html found {} tables in the HTML string. There should be only one.".format(len(nlp_dfs)))
+            raise ValueError(
+                "ProcessNlp.from_html found {} tables in the HTML string. There should be only one.".format(
+                    len(nlp_dfs)))
         if len(nlp_dfs) < 1:
             raise ValueError("ProcessNlp.from_html no tables in the HTML string. There should be  one.")
         return cls.from_dataframe(nlp_dfs[0], nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
@@ -665,11 +749,10 @@ class ProcessNlp:
         return cls.from_dataframe(nlp_df, nlp_model, doi=doi, base_instance=base_instance, date_generated=date_generated, **kwargs)
 
 
-
 if __name__ == "__main__":
+    pass
     # data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict
     # data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict
-    data = ProcessNlp(sys.argv[1], article_download=False).data_dict
+    # data = ProcessNlp(sys.argv[1], article_download=False).data_dict
 
-    print(data)
-
+    # print(data)

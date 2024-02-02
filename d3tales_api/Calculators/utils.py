@@ -77,7 +77,7 @@ def unit_conversion(measurement, default_unit: str, density=None):
     :type density: str
     :return: float magnitude for the converted measurement 
     """
-    if not measurement:
+    if measurement is None:
         return None
     # Set context in case conversion include mass-->volume or volume-->mass
     ureg = pint.UnitRegistry()
