@@ -20,9 +20,9 @@ try:
 except ImportError:
     print("WARNING. ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on performing NLP parsing.")
 try:
-    from elsapy.elsdoc import AbsDoc
+    from elsapy.elsdoc import AbsDoc, Paragraph
     from elsapy.elsclient import ElsClient
-except Exception:
+except ImportError:
     print(
         "WARNING. Elsevier's elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.")
 
@@ -38,6 +38,7 @@ def float_from_str(text):
     mapping = str.maketrans(superscript_chars, normal_chars)
     text = text.translate(mapping)
     return float(text.replace(" ", "").replace("x10^", "e").replace("×10", "e").replace("⁻", "-").encode("ascii", "ignore").decode())
+
 
 class ProcessDFT:
     """
@@ -252,6 +253,7 @@ class ProcessPotBase:
             metadata.get("ionic_liquid")] if metadata.get("ionic_liquid") else []
 
         self.ParsedData = parsing_class(filepath, **kwargs)
+        self.pot_conditions = self.gen_pot_conditions()
 
     @property
     def data_dict(self):
@@ -283,8 +285,7 @@ class ProcessPotBase:
                 "No molecule with id {} exists in the frontend database. Create an instance in the frontend database "
                 "first.".format(id))
 
-    @property
-    def pot_conditions(self):
+    def gen_pot_conditions(self):
         """
         Dictionary of conditions (in accordance with D3TaLES backend schema)
         """
@@ -379,6 +380,47 @@ class ProcessCV(ProcessPotBase):
                             e_half=self.ParsedData.calculate_prop("e_half", return_type=list),
                             peak_splittings=self.ParsedData.calculate_prop("peak_splittings", return_type=list),
                             middle_sweep=self.ParsedData.calculate_prop("middle_sweep", return_type=list),
+                            ))
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "data": cv_data
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
+
+
+class ProcessCVMicro(ProcessPotBase):
+    """
+    Class to process CV data
+    Copyright 2021, University of Kentucky
+    """
+
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
+                 parsing_class=ParseChiCVMicro, **kwargs):
+        """
+        :param filepath: str, filepath to
+        :param _id: str, molecule ID
+        :param submission_info: dict, submission info
+        :param metadata: dict, metadata
+        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)
+        """
+        super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
+
+        self.ParsedData = parsing_class(filepath, **kwargs)
+
+        self.pot_conditions.pop("working_electrode_surface_area")
+        self.pot_conditions.update(dict(working_electrode_radius=metadata.get("working_electrode_radius")))
+
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        cv_data = self.ParsedData.parsed_data
+        cv_data.update(dict(conditions=self.pot_conditions,
+                            plot_data=self.ParsedData.calculate_plotting("plot_data").get("abs_plot"),
                             ))
         all_data_dict = {
             "_id": self.hash_id,

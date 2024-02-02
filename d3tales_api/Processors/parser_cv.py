@@ -1,5 +1,6 @@
 import numpy as np
 import dateutil.parser
+from scipy.ndimage import gaussian_filter1d
 from d3tales_api.Calculators.plotters import CVPlotter
 from d3tales_api.Calculators.calculators import CVDescriptorCalculator, CAResistanceCalculator
 
@@ -210,6 +211,115 @@ class ParseChiCV(ParseChiBase):
             print("CVPlotter does not have function ", prop_name)
             return return_type()
 
+
+class ParseChiCVMicro(ParseChiBase):
+    """
+    Extract data from raw Chi CV experiment files
+    """
+
+    def __init__(self, file_path, data_header="Potential", delimiter=",", min_scan_len=MIN_SCAN_LEN):
+        """
+        :param file_path: str, filepath to experiment data file
+        """
+        super().__init__(file_path, data_header, delimiter)
+
+        self.potential = self.all_data[:, 0]
+        self.current = self.all_data[:, 1]
+
+        if not getattr(self, "sample_interval", None):
+            self.sample_interval = {"value": np.average(np.absolute(np.diff(self.potential))), "unit": ''}
+        if not getattr(self, "high_e", None):
+            self.high_e = {"value": max(self.potential), "unit": ''}
+        if not getattr(self, "low_e", None):
+            self.low_e = {"value": min(self.potential), "unit": ''}
+        if not getattr(self, "low_e", None):
+            self.init_e = {"value": self.potential[0], "unit": ''}
+
+        scan_data = [s for s in break_scan_data(self.all_data) if len(s) > min_scan_len]
+        self.num_scans = len(scan_data)
+        self.scan_data = scan_data
+        self.peak_potential = max(self.potential)
+        self.i_ss = max(self.current) - min(self.current)
+        self.e_half = self.get_e_half(scan_data[0])
+
+        self.conditions_data = {
+            "data_source": 'cv',
+            "scan_rate": getattr(self, 'scan_rate', {}),
+            "num_scans": getattr(self, 'num_scans', None),
+            "initial_potential": getattr(self, 'init_e', {}),
+            "high_e": getattr(self, 'high_e', {}),
+            "low_e": getattr(self, 'low_e', {}),
+            "comp_r": getattr(self, 'comp_R', {}),
+        }
+        self.parsed_data = {
+            "file_name": getattr(self, 'file_name'),
+            "header": getattr(self, 'header'),
+            "note": getattr(self, 'note'),
+            "date_recorded": getattr(self, 'date_recorded'),
+            "conditions": self.conditions_data,
+            "segment": getattr(self, 'segment', None),
+            "sample_interval": getattr(self, 'sample_interval', {}),
+            "quiet_time": getattr(self, 'quiet_time', {}),
+            "sensitivity": getattr(self, 'sensitivity', {}),
+            "peak_potential": self.peak_potential,
+            "i_ss": self.i_ss,
+            "e_half": self.e_half,
+            "scan_data": self.scan_data,
+        }
+
+        self.low_e_value = self.low_e.get("value")
+        self.sample_interval_value = self.sample_interval.get("value")
+
+    @staticmethod
+    def get_e_half(sweep):
+        potential = [i[0] for i in sweep]
+        current = [i[1] for i in sweep]
+        # smooth current data
+        smooth_current = gaussian_filter1d(current, 100)
+        # compute second derivative
+        current_d2 = np.gradient(np.gradient(smooth_current))
+        # Find the inflection point
+        inflection_points = np.where(np.diff(np.sign(current_d2)))[0]
+        if len(inflection_points) != 1:
+            raise Exception(f"Error calculating E1/2 with microelectrode. {inflection_points} inflection points found.")
+        return potential[inflection_points[0]]
+
+    def calculate_prop(self, prop_name, return_type=dict):
+        """
+        Calculate a given property using the D3TaLES CV Calculators
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: property or empty datatype
+        """
+        connector = {
+            "intv": "sample_interval_value",
+            "low_e": "low_e_value",
+            "scan_data": "scan_data"
+        }
+        try:
+            func = getattr(CVDescriptorCalculator(connector=connector), prop_name)
+            return func(self)
+        except Exception as e:
+            print("CVDescriptorCalculator does not have function ", prop_name)
+            print("\t" + str(e))
+            return return_type()
+
+    def calculate_plotting(self, prop_name, return_type=dict):
+        """
+        Calculate a given plotting property using the D3TaLES Plotters
+
+        :param prop_name: str, property name
+        :param return_type: str, datatype to return
+        :return: plotting property or empty datatype
+        """
+        connector = {"scan_data": "scan_data"}
+        try:
+            func = getattr(CVPlotter(connector=connector), prop_name)
+            return func(self)
+        except Exception:
+            print("CVPlotter does not have function ", prop_name)
+            return return_type()
 
 class ParseChiCA(ParseChiBase):
     """

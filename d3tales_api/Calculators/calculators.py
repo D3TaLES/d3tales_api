@@ -324,6 +324,42 @@ class CVDiffusionCalculator(D3Calculator):
         return results if sci_notation else [float(x) for x in results]
 
 
+class CVDiffusionCalculatorMicro(D3Calculator):
+
+    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
+        """
+        Diffusion constant calculation for CV gathered with ultramicroelectrodes
+
+
+        Connection Points:
+            :i_ss: steady state current (default = A)
+            :n: number of electrons, default 1
+            :C: concentration of the solution (default = mol/cm^3)
+            :r: radius of ultramicroelectrode (default = cm)
+
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :param sci_notation: return in scientific notation if True
+        :type data: list
+        :type precision: int
+        :type sci_notation: bool
+
+        :return: average diffusion constant for single redox event (cm^2/s)
+        """
+        self.data = data
+        self.n = data.__len__()
+        conns = self.make_connections(data)
+        print(conns)
+
+        i_ss = unit_conversion(conns["i_ss"], default_unit='cm^2')
+        n = conns["n"]
+        C = unit_conversion(conns["C"], default_unit='mol/cm^3')
+        r = unit_conversion(conns["r"], default_unit='cm')
+        F = 96485.3321  # Faraday constant, s A / mol
+        D = i_ss / (4 * n * F * C * r)
+        return np.format_float_scientific(D) if sci_notation else float(D)
+
+
 class CVChargeTransferCalculator(D3Calculator):
 
     def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
@@ -364,6 +400,45 @@ class CVChargeTransferCalculator(D3Calculator):
 
         result = np.format_float_scientific(chargetranfer_rate, precision=precision)
         return result if sci_notation else round(float(result), precision)
+
+
+class CVChargeTransferCalculatorMicro(D3Calculator):
+
+    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
+        """
+        Charge transfer rate calculation for CVs gathered with ultramicroelectrodes
+
+        Connection Points:
+            :e_half: measured half-wave potential of steady-state sigmoid (default = V)
+            :e_rev: formal potential of redox couple in reversible conditions (default = V)
+            :n: number of electrons
+            :T: Temperature (default = 293 K)
+            :D: Diffusion constant (default = cm^2/s)
+            :r: radius of ultramicroelectrode (default = cm)
+
+        :param data: data for calculation
+        :param precision: number of significant figures (in scientific notation)
+        :param sci_notation: return in scientific notation if True
+        :type data: list
+        :type precision: int
+        :type sci_notation: bool
+
+        :return: charge transfer rate (cm/s)
+        """
+        self.data = data
+        self.n = data.__len__()
+        conns = self.make_connections(data)
+
+        e_half = unit_conversion(conns["e_half"], default_unit='V')
+        e_rev = unit_conversion(conns["e_rev"], default_unit='V')
+        n = conns["n"]
+        T = unit_conversion(conns["T"], default_unit='K')
+        D = unit_conversion(conns["D"], default_unit='cm^2/s')
+        r = unit_conversion(conns["r"], default_unit='cm')
+        F = 96485.3321  # Faraday constant, s A / mol
+        R = 8.314  # molar gas constant, J / K / mol
+        k = 2 * D / (r * (1 - (math.exp(n * F * (e_half - e_rev) / (R * T)))))
+        return np.format_float_scientific(k) if sci_notation else float(k)
 
 
 class AvgEHalfCalculator(D3Calculator):
