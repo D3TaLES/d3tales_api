@@ -1,4 +1,5 @@
 import copy
+import urllib
 import hashlib
 import warnings
 import pubchempy as pcp
@@ -555,11 +556,20 @@ class DOI2Front:
         return extracted_props
 
     @staticmethod
-    def get_mol_id(mol_data, nlp_group):
+    def cir_convert(mol_name):
+        url = 'http://cactus.nci.nih.gov/chemical/structure/' + urllib.parse.quote(mol_name) + '/smiles'
+        try:
+            return urllib.request.urlopen(url).read().decode('utf8')
+        except urllib.error.HTTPError:
+            return None
+
+    def get_mol_id(self, mol_data, nlp_group):
         mol_name = mol_data.get("molecule_name", "")
         pub_mols = pcp.get_compounds(mol_name, 'name')
         if len(pub_mols) == 0:
-            warnings.warn("No PubChem molecules found for molecule {}".format(mol_name))
+            smiles = self.cir_convert(mol_name)
+            if not smiles:
+                warnings.warn("No PubChem or CIR molecules found for molecule {}".format(mol_name))
         elif len(pub_mols) > 1:
             warnings.warn("Multiple PubChem molecules found for molecule {}: {}".format(mol_name, ", ".join([p.iupac_name for p in pub_mols])))
         else:
