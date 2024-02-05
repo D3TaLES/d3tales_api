@@ -410,8 +410,11 @@ class ProcessCVMicro(ProcessPotBase):
 
         self.ParsedData = parsing_class(filepath, **kwargs)
 
-        self.pot_conditions.pop("working_electrode_surface_area")
-        self.pot_conditions.update(dict(working_electrode_radius=metadata.get("working_electrode_radius")))
+        radius = metadata.get("working_electrode_radius")
+        print("RADIUS ", radius)
+        if radius:
+            self.pot_conditions.update(dict(working_electrode_radius=radius))
+            self.pot_conditions.update(dict(working_electrode_surface_area=math.pi*(radius**2)))
 
     @property
     def data_dict(self):

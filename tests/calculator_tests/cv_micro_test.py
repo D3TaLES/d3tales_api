@@ -28,8 +28,8 @@ diff_calc = CVDiffusionCalculatorMicro(connector=connector)
 diff = diff_calc.calculate(instance)
 print(diff)
 
-# metadata_dict = CV2Front(backend_data=[instance], run_anodic=False, insert=False,
-#                          micro_electrodes=True).meta_dict
-# [print(k, v, '\n') for k, v in metadata_dict.items()]
+metadata_dict = CV2Front(backend_data=[instance], run_anodic=False, insert=False,
+                         micro_electrodes=True).meta_dict
+[print(k, v, '\n') for k, v in metadata_dict.items()]
 
 print("CV TESTING SUCCESSFUL")
