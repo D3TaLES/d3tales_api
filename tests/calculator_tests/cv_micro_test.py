@@ -1,4 +1,5 @@
 from d3tales_api.Processors.d3tales_parser import *
+from d3tales_api.Processors.back2front import CV2Front
 
 ca_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'CV_microelectrode.csv')
 ca_metadata = {"data_type": "cv",
@@ -26,5 +27,9 @@ connector = {
 diff_calc = CVDiffusionCalculatorMicro(connector=connector)
 diff = diff_calc.calculate(instance)
 print(diff)
+
+# metadata_dict = CV2Front(backend_data=[instance], run_anodic=False, insert=False,
+#                          micro_electrodes=True).meta_dict
+# [print(k, v, '\n') for k, v in metadata_dict.items()]
 
 print("CV TESTING SUCCESSFUL")

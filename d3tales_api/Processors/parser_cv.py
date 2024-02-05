@@ -263,7 +263,7 @@ class ParseChiCVMicro(ParseChiBase):
             "sensitivity": getattr(self, 'sensitivity', {}),
             "peak_potential": self.peak_potential,
             "i_ss": self.i_ss,
-            "e_half": self.e_half,
+            "e_half": [self.e_half],
             "scan_data": self.scan_data,
         }
 
