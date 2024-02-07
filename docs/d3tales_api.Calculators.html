@@ -140,6 +140,50 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CAResistanceCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.calculators.</span></span><span class="sig-name descname"><span class="pre">CAResistanceCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CAResistanceCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CAResistanceCalculator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.calculators.D3Calculator" title="d3tales_api.Calculators.calculators.D3Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Calculator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CAResistanceCalculator.calculate">
+<span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CAResistanceCalculator.calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CAResistanceCalculator.calculate" title="Permalink to this definition"></a></dt>
+<dd><p>Calculator for calculating resistance after a CA experiment.</p>
+<dl class="simple">
+<dt>Connection Points</dt><dd><dl class="field-list simple">
+<dt class="field-odd">i_s</dt>
+<dd class="field-odd"><p>list, current points (s)</p>
+</dd>
+<dt class="field-even">t_s</dt>
+<dd class="field-even"><p>list, time points (s)</p>
+</dd>
+<dt class="field-odd">pulse_width</dt>
+<dd class="field-odd"><p>float, time width of a pulse (s)</p>
+</dd>
+<dt class="field-even">steps</dt>
+<dd class="field-even"><p>int, number of potentiostat sweeps</p>
+</dd>
+<dt class="field-odd">low_e</dt>
+<dd class="field-odd"><p>float, lowest voltage (V)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
+<li><p><strong>offset_factor</strong> (<em>int</em>) – factor by which to consider the voltage offset</p></li>
+<li><p><strong>return_error</strong> (<em>bool</em>) – return error and resistance if True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array [resistance, resistance error] if return_error is True, else resistance</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.CVChargeTransferCalculator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.calculators.</span></span><span class="sig-name descname"><span class="pre">CVChargeTransferCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#CVChargeTransferCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.CVChargeTransferCalculator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.calculators.D3Calculator" title="d3tales_api.Calculators.calculators.D3Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Calculator</span></code></a></p>
@@ -470,6 +514,11 @@ the connections default to the connections found in <cite>default_connector.json
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#D3Calculator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.D3Calculator.__init__" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.D3Calculator.all_connections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_connections</span></span><a class="headerlink" href="#d3tales_api.Calculators.calculators.D3Calculator.all_connections" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.D3Calculator.calculate">
 <span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#D3Calculator.calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.D3Calculator.calculate" title="Permalink to this definition"></a></dt>
@@ -527,6 +576,37 @@ the connections default to the connections found in <cite>default_connector.json
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>delta G solv  (in units A)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.DirtyElectrodeDetector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Calculators.calculators.</span></span><span class="sig-name descname"><span class="pre">DirtyElectrodeDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#DirtyElectrodeDetector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.DirtyElectrodeDetector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Calculators.calculators.D3Calculator" title="d3tales_api.Calculators.calculators.D3Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">D3Calculator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Calculators.calculators.DirtyElectrodeDetector.calculate">
+<span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_current_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Calculators/calculators.html#DirtyElectrodeDetector.calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Calculators.calculators.DirtyElectrodeDetector.calculate" title="Permalink to this definition"></a></dt>
+<dd><p>Detect dirty electrode</p>
+<dl class="simple">
+<dt>Connection Points</dt><dd><dl class="field-list simple">
+<dt class="field-odd">scan_data</dt>
+<dd class="field-odd"><p>optional, if e not provided, scan data will be used to find e (default = None)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – data for calculation</p></li>
+<li><p><strong>max_current_range</strong> (<em>float</em>) – maximum rango of current points allowed for a clean electrode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>average E1/2 (in units V)</p>
 </dd>
 </dl>
 </dd></dl>

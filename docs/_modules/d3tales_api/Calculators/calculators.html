@@ -107,9 +107,7 @@
         <span class="k">if</span> <span class="n">connector</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">connector</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;default_connector.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">connectors</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="n">connectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_connections</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="D3Calculator.make_connections"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.make_connections">[docs]</a>    <span class="k">def</span> <span class="nf">make_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
@@ -117,14 +115,64 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connection</span><span class="p">)})</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">rgetkeys</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connection</span><span class="p">)})</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">rgetkeys</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connection</span><span class="p">)})</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">continue</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
 <div class="viewcode-block" id="D3Calculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="D3Calculator.description"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">all_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;electrode area (default = cm^2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;concentration of the solution (default = mol/cm^3)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="s2">&quot;Diffusion constant (default = cm^2/s)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;Temperature (default = 293 K)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;peak shift (default = V)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="s2">&quot;E1/2 (default = V)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;electrode&quot;</span><span class="p">:</span> <span class="s2">&quot;electrode name as str or potential as float (default = standard_hydrogen_electrode)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;energy another geometry (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;energy_final&quot;</span><span class="p">:</span> <span class="s2">&quot;energy final (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;energy_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;energy initial (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fin_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;final entropy correction (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fin_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;final energy (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fin_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;final energy of solvation (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;geom_final&quot;</span><span class="p">:</span> <span class="s2">&quot;geometry final (default = A)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;geom_initial&quot;</span><span class="p">:</span> <span class="s2">&quot;geometry initial (default = A)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gs_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ground state energy at ion geometry (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gs_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;ground state optimized energy (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;i_p&quot;</span><span class="p">:</span> <span class="s2">&quot;peak current (default = A)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;i_s&quot;</span><span class="p">:</span> <span class="s2">&quot;list, current points (s)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;init_corr&quot;</span><span class="p">:</span> <span class="s2">&quot;initial entropy correction (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;init_eng&quot;</span><span class="p">:</span> <span class="s2">&quot;initial energy (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;init_eng_solv&quot;</span><span class="p">:</span> <span class="s2">&quot;initial energy of solvation (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ion_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ion energy at ground state geometry (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ion_opt&quot;</span><span class="p">:</span> <span class="s2">&quot;ion optimized energy (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;log_file&quot;</span><span class="p">:</span> <span class="s2">&quot;calculation output file. Must be readable with CCLIB&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;low_e&quot;</span><span class="p">:</span> <span class="s2">&quot;float, lowest voltage (V)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;middle_scan&quot;</span><span class="p">:</span> <span class="s2">&quot;optional, if i_p is not provided, scan data will be used to find i_p (default = None)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;number of electrons, default 1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;num_electrons&quot;</span><span class="p">:</span> <span class="s2">&quot;number of electrons (default = 1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;opt_energy&quot;</span><span class="p">:</span> <span class="s2">&quot;optimized energy (default = eV)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pulse_width&quot;</span><span class="p">:</span> <span class="s2">&quot;float, time width of a pulse (s)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;redox_density&quot;</span><span class="p">:</span> <span class="s2">&quot;density for redox-active molecule&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sample_interval&quot;</span><span class="p">:</span> <span class="s2">&quot;sample interval value (V)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;scan_data&quot;</span><span class="p">:</span> <span class="s2">&quot;optional, if e not provided, scan data will be used to find e (default = None)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot;SMILES string&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;solv_density&quot;</span><span class="p">:</span> <span class="s2">&quot;density for solvent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;spin_type&quot;</span><span class="p">:</span> <span class="s2">&quot;type of CCLIB spin to extract (default = Mulliken)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="s2">&quot;int, number of potentiostat sweeps&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;t_s&quot;</span><span class="p">:</span> <span class="s2">&quot;list, time points (s)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="s2">&quot;scan rate (default = V/s)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="s2">&quot;Volume&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="s2">&quot;actual weight&quot;</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
 
 <span class="c1"># ----------------------- Cyclic Voltammetry Calculators ------------------------------</span>
@@ -475,6 +523,78 @@
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">avg_e_half</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">sci_notation</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DirtyElectrodeDetector"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DirtyElectrodeDetector">[docs]</a><span class="k">class</span> <span class="nc">DirtyElectrodeDetector</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DirtyElectrodeDetector.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DirtyElectrodeDetector.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">max_current_range</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.00001</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect dirty electrode</span>
+
+<span class="sd">        Connection Points</span>
+<span class="sd">            :scan_data: optional, if e not provided, scan data will be used to find e (default = None)</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
+<span class="sd">        :param max_current_range: maximum rango of current points allowed for a clean electrode</span>
+<span class="sd">        :type max_current_range: float</span>
+
+<span class="sd">        :return: average E1/2 (in units V)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+
+        <span class="n">descriptor_cal</span> <span class="o">=</span> <span class="n">CVDescriptorCalculator</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_pairs</span><span class="p">)</span>
+        <span class="n">peaks_dict</span> <span class="o">=</span> <span class="n">descriptor_cal</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">forward_peak</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">peaks_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[])])</span>
+        <span class="n">reverse_peak</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">peaks_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="p">[])])</span>
+        <span class="n">current_range</span> <span class="o">=</span> <span class="n">forward_peak</span> <span class="o">-</span> <span class="n">reverse_peak</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dirty Electrode Detection CURRENT RANGE: &quot;</span><span class="p">,</span> <span class="n">current_range</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">current_range</span> <span class="o">&lt;</span> <span class="n">max_current_range</span> <span class="k">else</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="CAResistanceCalculator"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CAResistanceCalculator">[docs]</a><span class="k">class</span> <span class="nc">CAResistanceCalculator</span><span class="p">(</span><span class="n">D3Calculator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CAResistanceCalculator.calculate"><a class="viewcode-back" href="../../../d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CAResistanceCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">offset_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">return_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculator for calculating resistance after a CA experiment.</span>
+
+<span class="sd">        Connection Points</span>
+<span class="sd">            :i_s: list, current points (s)</span>
+<span class="sd">            :t_s: list, time points (s)</span>
+<span class="sd">            :pulse_width: float, time width of a pulse (s)</span>
+<span class="sd">            :steps: int, number of potentiostat sweeps</span>
+<span class="sd">            :low_e: float, lowest voltage (V)</span>
+
+<span class="sd">        :param data: data for calculation</span>
+<span class="sd">        :type data: dict</span>
+<span class="sd">        :param offset_factor: factor by which to consider the voltage offset</span>
+<span class="sd">        :type offset_factor: int</span>
+<span class="sd">        :param return_error: return error and resistance if True</span>
+<span class="sd">        :type return_error: bool</span>
+
+<span class="sd">        :return: array [resistance, resistance error] if return_error is True, else resistance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="s2">&quot;t_s&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;t_s&quot;</span><span class="p">])</span>  <span class="c1"># time interval per time measurement</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;pulse_width&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>  <span class="c1"># number of time measurements in a pulse</span>
+        <span class="n">n_pulses</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;steps&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># number of pulses</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">offset_factor</span>  <span class="c1"># a slight offset to measure voltage after switching</span>
+
+        <span class="n">max_i</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">-</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">j</span><span class="p">)])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_pulses</span><span class="p">)]</span>
+
+        <span class="n">avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">max_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_pulses</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">max_i</span><span class="p">)</span>
+
+        <span class="n">last_R</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">conns</span><span class="p">[</span><span class="s2">&quot;low_e&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">avg</span><span class="p">)</span>
+        <span class="n">last_dR</span> <span class="o">=</span> <span class="n">last_R</span> <span class="o">*</span> <span class="n">std</span> <span class="o">/</span> <span class="n">avg</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">last_R</span><span class="p">,</span> <span class="n">last_dR</span><span class="p">]</span> <span class="k">if</span> <span class="n">return_error</span> <span class="k">else</span> <span class="n">last_R</span></div></div>
 
 
 <span class="c1"># ------------------------- Molecular DFT Calculators --------------------------------</span>

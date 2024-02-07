@@ -181,17 +181,15 @@
 
 
 <div class="viewcode-block" id="D3talesData"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData">[docs]</a><span class="k">class</span> <span class="nc">D3talesData</span><span class="p">:</span>
-<div class="viewcode-block" id="D3talesData.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="D3talesData.__init__"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This class pulls data from the D3Tales database and outputs plots or Pandas dataframes</span>
 
 <span class="sd">        :param username: D3TaLES website username (must have REST API permissions)</span>
 <span class="sd">        :param password: D3TaLES website password (must have REST API permissions)</span>
-<span class="sd">        :param limit: limit query items to return</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span></div>
 
 <div class="viewcode-block" id="D3talesData.rgetkeys"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.rgetkeys">[docs]</a>    <span class="k">def</span> <span class="nf">rgetkeys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -210,7 +208,7 @@
 
         <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">_getkey</span><span class="p">,</span> <span class="p">[</span><span class="n">_dict</span><span class="p">]</span> <span class="o">+</span> <span class="n">keys</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="D3talesData.get_prop_data"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_prop_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">max_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;molecules&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="D3talesData.get_prop_data"><a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_prop_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">max_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;molecules&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get property data from D3TaLES database based on RESTAPI query</span>
 
@@ -218,6 +216,7 @@
 <span class="sd">        :param max_cutoff: float, maximum value to return for specified property</span>
 <span class="sd">        :param min_cutoff: float, minimum value to return for specified property</span>
 <span class="sd">        :param database: str, name of database to query</span>
+<span class="sd">        :param limit: limit query items to return</span>
 
 <span class="sd">        :return: pandas DataFrame with query data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -231,7 +230,7 @@
                           <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">prop_name</span> <span class="k">if</span> <span class="n">prop_category</span> <span class="o">==</span> <span class="s2">&quot;species_characterization&quot;</span> <span class="k">else</span> <span class="n">prop_name</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
-                           <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/&quot;</span> <span class="o">+</span> <span class="n">database</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/&quot;</span> <span class="o">+</span> <span class="n">rest_query</span> <span class="o">+</span> <span class="s2">&quot;=1/limit=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">),</span>
+                           <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;restapi/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">==true/</span><span class="si">{}</span><span class="s2">=1/limit=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">rest_query</span><span class="p">,</span> <span class="n">rest_query</span><span class="p">,</span> <span class="n">limit</span><span class="p">),</span>
                            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
                            <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">login_endpoint</span><span class="o">=</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span>
 
@@ -239,7 +238,8 @@
         <span class="n">data_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="n">data_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">clean_keys</span><span class="p">:</span>
-            <span class="n">data_df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgetkeys</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">prop_name</span><span class="p">],</span> <span class="n">clean_keys</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">data_df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="p">[</span><span class="n">prop_category</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgetkeys</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop_name</span><span class="p">),</span> <span class="n">clean_keys</span><span class="p">))</span>
+
         <span class="n">data_df</span> <span class="o">=</span> <span class="n">data_df</span><span class="p">[[</span><span class="n">column_name</span><span class="p">]]</span>
         <span class="n">data_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">data_df</span> <span class="o">=</span> <span class="n">data_df</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">data_df</span><span class="p">[</span><span class="n">column_name</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
@@ -340,9 +340,9 @@
     <span class="c1">#             url=&quot;https://d3tales.as.uky.edu&quot;, login_endpoint=&#39;login&#39;,</span>
     <span class="c1">#             params=dict(approved=&#39;on&#39;))</span>
 
-    <span class="c1"># print(D3talesData().get_prop_data(&#39;mol_characterization.oxidation_potential.0.value&#39;))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">D3talesData</span><span class="p">()</span><span class="o">.</span><span class="n">get_prop_data</span><span class="p">(</span><span class="s1">&#39;mol_characterization.oxidation_potential.0.value&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
     <span class="c1"># D3talesData().hist_1d(&#39;mol_characterization.oxidation_potential.0.value&#39;, min_cutoff=-10, max_cutoff=10)</span>
-    <span class="n">master_df</span> <span class="o">=</span> <span class="n">D3talesData</span><span class="p">()</span><span class="o">.</span><span class="n">get_master_df</span><span class="p">()</span>
+    <span class="c1"># master_df = D3talesData().get_master_df()</span>
 </pre></div>
 
            </div>

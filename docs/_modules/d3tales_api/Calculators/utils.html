@@ -153,7 +153,7 @@
 <span class="sd">    :type density: str</span>
 <span class="sd">    :return: float magnitude for the converted measurement </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">measurement</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">measurement</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="c1"># Set context in case conversion include mass--&gt;volume or volume--&gt;mass</span>
     <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
