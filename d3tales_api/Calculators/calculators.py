@@ -510,7 +510,8 @@ class CAResistanceCalculator(D3Calculator):
         n_pulses = math.floor(conns["steps"] / 2) - 1  # number of pulses
         offset = n / offset_factor  # a slight offset to measure voltage after switching
 
-        max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in range(n_pulses)]
+        max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in
+                 range(n_pulses)]
 
         avg = np.sum(max_i) / n_pulses
         std = np.std(max_i)
@@ -648,6 +649,8 @@ class DeltaGSolvCalc(D3Calculator):
         :return: delta G solv  (in units A)
         """
         conns = self.make_connections(data)
+        print(conns)
+        print(unit_conversion(conns["init_eng"], default_unit='eV'))
 
         g_gas_init = unit_conversion(conns["init_eng"], default_unit='eV') + unit_conversion(conns["init_corr"],
                                                                                              default_unit='eV')
@@ -692,8 +695,8 @@ class RedoxPotentialCalc(D3Calculator):
         conns = self.make_connections(data)
         delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
 
-        potential = -delta_g / conns.get("num_electrons", 1) + get_electrode_potential(
-            conns.get("electrode", "standard_hydrogen_electrode"))
+        std_potential = get_electrode_potential(conns["electrode"]) if conns.get("electrode") else 4.42
+        potential = -delta_g / conns.get("num_electrons", 1) + std_potential
 
         return float(np.format_float_scientific(potential, precision=precision))
 

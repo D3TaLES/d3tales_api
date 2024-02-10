@@ -158,6 +158,9 @@ data_collector = D3talesData(username='USERNAME', password='PASSWORD')
 data_collector.hist_2d("species_characterization.groundState.globular_volume.0.value", "mol_info.molecular_weight")
 ```
 
+There is also a Colab notebook with examples of how to access the D3TaLES data with these moduels: 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1oK1hOZs0rTpc_SoSFg54qQA5U4Qekqu8?usp=sharing)
+
 Note that the D<sup>3</sup>TaLES REST API is user restricted. This means that you must have a
 D<sup>3</sup>TaLES website account and user permission to access this tool. When using the 
 D<sup>3</sup>TaLES API `RESTAPI` class, you must include your D<sup>3</sup>TaLES website 
