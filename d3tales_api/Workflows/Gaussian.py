@@ -127,8 +127,7 @@ class GaussianBase(FiretaskBase):
                                             orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=solvent))
-                self.mol = get_db_geom(geometry_hash) or start_from_smiles(
-                    self.identifier) if geometry_hash else start_from_smiles(self.identifier)
+                self.mol = get_db_geom(geometry_hash) or start_from_smiles(self.identifier, self.smiles)
 
             # End job if the total number of atoms is greater than 200
             num_atoms = len(self.mol.sites)

@@ -229,7 +229,7 @@ def orig_conditions(functional, basis_set, tuning_parameter=None, solvent=None, 
     return data_dict
 
 
-def start_from_smiles(identifier):
+def start_from_smiles(identifier, smiles):
     """
     get input geometry frontend DB smiles
     :param identifier: str
@@ -240,9 +240,10 @@ def start_from_smiles(identifier):
                            url="https://d3tales.as.uky.edu", return_json=True).response[0]
         return Molecule.from_str(response.get("mol_info", {}).get('init_structure'), 'xyz')
     except:
-        response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
-                           url="https://d3tales.as.uky.edu", return_json=True).response[0]
-        smiles = response.get("mol_info", {}).get('smiles', '')
+        if not smiles:
+            response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
+                               url="https://d3tales.as.uky.edu", return_json=True).response
+            smiles = response[0].get("mol_info", {}).get('smiles', '')
         structure = find_lowest_e_conf(smiles)
         return Molecule.from_str(structure, 'xyz')
 
