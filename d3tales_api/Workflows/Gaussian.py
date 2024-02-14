@@ -95,8 +95,8 @@ class GaussianBase(FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier,
+        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier, self.smiles) or 0
+        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles,
                                                                                         prop='spin') or 1
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
         run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or False
@@ -348,8 +348,9 @@ class RunWtuning(FiretaskBase):
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier, self.smiles)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, self.smiles, prop='spin')
+        smiles = fw_spec.get("smiles", ) or self.get("smiles")
+        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier, smiles)
+        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, smiles, prop='spin')
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier, gaussian_file_name)
         check_if_already_run = fw_spec.get("check_if_already_run", ) or self.get("check_if_already_run") or False

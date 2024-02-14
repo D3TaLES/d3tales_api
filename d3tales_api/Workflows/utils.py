@@ -259,7 +259,7 @@ def get_groundState(identifier, smiles=None, prop='charge'):
         url="https://d3tales.as.uky.edu", return_json=True
     )
     if not r.response:
-        if not smiles:
+        if smiles:
             rdkmol = MolFromSmiles(smiles)
             rdkmol_hs = AddHs(rdkmol)
             AllChem.EmbedMolecule(rdkmol_hs)
