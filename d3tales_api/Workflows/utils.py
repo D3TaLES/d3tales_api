@@ -253,11 +253,13 @@ def get_groundState(identifier, prop='charge'):
     :param prop: str
     :return: int, ground state charge
     """
-    response = RESTAPI(
+    r = RESTAPI(
         method='get', endpoint="restapi/molecules/_id={}/mol_info.groundState_{}=1".format(identifier, prop),
         url="https://d3tales.as.uky.edu", return_json=True
-    ).response[0]
-    return int(response.get("mol_info", {}).get('groundState_'+str(prop)))
+    )
+    if not r.response:
+        raise ValueError(f"No ground state found for {identifier} with using endpoint {r.endpoint}")
+    return int(r.response[0].get("mol_info", {}).get('groundState_'+str(prop)))
 
 
 def get_db_geom(input_geometry_hash, error_raise=False):
@@ -356,3 +358,5 @@ def write_nto(tddft_log, excitation_num, tddft_chk=None):
     return nto_com, nto_chk
 
 
+if __name__ == "__main__":
+    get_groundState("05AATS")
