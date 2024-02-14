@@ -10,7 +10,8 @@ from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 
 from rdkit.Chem.rdmolops import AddHs
 from rdkit.Chem import MolFromSmiles, AllChem
-
+from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
+from rdkit.Chem.Descriptors import NumRadicalElectrons
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
@@ -246,7 +247,7 @@ def start_from_smiles(identifier):
         return Molecule.from_str(structure, 'xyz')
 
 
-def get_groundState(identifier, prop='charge'):
+def get_groundState(identifier, smiles=None, prop='charge'):
     """
     get input geometry frontend DB smiles
     :param identifier: str
@@ -258,7 +259,13 @@ def get_groundState(identifier, prop='charge'):
         url="https://d3tales.as.uky.edu", return_json=True
     )
     if not r.response:
-        raise ValueError(f"No ground state found for {identifier} with using endpoint {r.endpoint}")
+        if not smiles:
+            rdkmol = MolFromSmiles(smiles)
+            rdkmol_hs = AddHs(rdkmol)
+            AllChem.EmbedMolecule(rdkmol_hs)
+            return GetFormalCharge(rdkmol) if prop=='charge' else NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        raise ValueError(f"No ground state found for {identifier} with using endpoint {r.endpoint}. A SMILES must be specified")
+
     return int(r.response[0].get("mol_info", {}).get('groundState_'+str(prop)))
 
 

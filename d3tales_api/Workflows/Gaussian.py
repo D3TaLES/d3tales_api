@@ -35,6 +35,7 @@ class GaussianBase(FiretaskBase):
         self.calc_name = self['name']
         self.paramset = self["paramset"]
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier")
+        self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         self.check_if_already_run = fw_spec.get("check_if_already_run") or self.get("check_if_already_run") or False
         self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
@@ -347,8 +348,8 @@ class RunWtuning(FiretaskBase):
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, prop='spin')
+        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier, self.smiles)
+        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, self.smiles, prop='spin')
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier, gaussian_file_name)
         check_if_already_run = fw_spec.get("check_if_already_run", ) or self.get("check_if_already_run") or False
