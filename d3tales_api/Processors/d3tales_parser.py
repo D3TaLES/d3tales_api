@@ -224,7 +224,7 @@ class ProcessPotBase:
     """
 
     def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
-                 parsing_class=ParseChiCV, **kwargs):
+                 parsing_class=None, **kwargs):
         """
         :param filepath: str, filepath to
         :param _id: str, molecule ID
@@ -410,6 +410,7 @@ class ProcessCVMicro(ProcessPotBase):
 
         self.ParsedData = parsing_class(filepath, **kwargs)
 
+        self.e_ref = metadata.get("e_ref")
         radius = metadata.get("working_electrode_radius")
         print("RADIUS ", radius)
         if radius:
@@ -423,6 +424,7 @@ class ProcessCVMicro(ProcessPotBase):
         """
         cv_data = self.ParsedData.parsed_data
         cv_data.update(dict(conditions=self.pot_conditions,
+                            e_ref=self.e_ref,
                             plot_data=self.ParsedData.calculate_plotting("plot_data").get("abs_plot"),
                             ))
         all_data_dict = {
@@ -452,22 +454,41 @@ class ProcessCA(ProcessPotBase):
         """
         super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
 
+        self.calib_measured = metadata.get("calib_measured")
+        self.calib_true = metadata.get("calib_true")
+
         self.ParsedData = parsing_class(filepath, **kwargs)
+
+        self.resistance = 1/self.conductivity if self.conductivity else None
+
+    @property
+    def conductivity(self, raise_error=False):
+        """
+        Get conductivity based on calibration
+        """
+        c_measured = self.ParsedData.measured_conductivity
+        if self.calib_measured and self.calib_true:
+            return np.interp(c_measured, self.calib_measured, self.calib_measured)
+        error_msg = f"Conductivity calculation requires calibration values. Found only {self.calib_measured} " \
+                    f"and {self.calib_true} for calib_measured and calib_measured in metadata."
+        if raise_error:
+            raise ValueError(error_msg)
 
     @property
     def data_dict(self):
         """
         Dictionary of processed data (in accordance with D3TalES backend schema)
         """
-        cv_data = self.ParsedData.parsed_data
-        cv_data.update(dict(conditions=self.pot_conditions,
-                            # TODO add conductivity
+        ca_data = self.ParsedData.parsed_data
+        ca_data.update(dict(conditions=self.pot_conditions,
+                            resistance=self.resistance,
+                            conductivity=self.conductivity
                             ))
         all_data_dict = {
             "_id": self.hash_id,
             "mol_id": self.id,
             "submission_info": self.submission_info,
-            "data": cv_data
+            "data": ca_data
         }
         json_data = json.dumps(all_data_dict)
         return json.loads(json_data)

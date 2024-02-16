@@ -451,6 +451,7 @@ class RobotStatusDB(D3Database):
         return True if self.coll.find_one({"_id": self.id}) else False
 
     def check_wflow_name(self):
+        print("ID", self.id)
         current_wflow = self.coll.find_one({"_id": self.id}).get("current_wflow_name")
         if current_wflow == self.wflow_name:
             return True

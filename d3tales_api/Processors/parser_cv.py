@@ -341,6 +341,9 @@ class ParseChiCA(ParseChiBase):
         self.r_int = self.get_data_calcs(calc_name="Int", header="Reverse:")
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
+        self.measured_resistance = self.get_resistance()
+        self.measured_conductivity = 1 / self.measured_resistance
+
         self.conditions_data = {
             "data_source": 'ca',
             "high_e": getattr(self, 'high_e', {}),
@@ -362,13 +365,13 @@ class ParseChiCA(ParseChiBase):
             "r_slp": self.r_slp,
             "r_int": self.r_int,
             "r_cor": self.r_cor,
-            "resistance": self.resistance,
+            "measured_resistance": self.measured_resistance,
+            "measured_conductivity": self.measured_conductivity,
             "time": self.t.tolist(),
             "current": self.i.tolist(),
         }
 
-    @property
-    def resistance(self, **kwargs):
+    def get_resistance(self, **kwargs):
         connector = {
             "i_s": "i",
             "t_s": "t",

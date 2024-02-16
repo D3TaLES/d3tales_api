@@ -762,8 +762,8 @@ class CV2Front:
             "n": "num_electrodes",
 
             "e_half": "data.e_half.0",
-            "e_rev": "",  # TODO figure out connector for transfer rate
-            "T": "conditions.temperature",
+            "e_rev": "data.e_ref",
+            "T": "data.conditions.temperature",
             "D": "diffusion",
         }
 
@@ -776,10 +776,9 @@ class CV2Front:
         # Calculate charge transfer rates
         if self.verbose:
             print("Calculating {} charge transfer rate for oxidation {}...".format(curve_type, electron_num))
-        # transfer_cal = CVChargeTransferCalculatorMicro(connector=connector)
-        # instance.update(dict(diffusion=diffusion_coef))
-        # transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
-        transfer_rate = None  # TODO figure out connector for transfer rate
+        transfer_cal = CVChargeTransferCalculatorMicro(connector=connector)
+        instance.update(dict(diffusion=diffusion_coef))
+        transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
         return diffusion_coef, transfer_rate
 
     @property

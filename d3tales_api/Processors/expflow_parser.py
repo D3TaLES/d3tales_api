@@ -245,7 +245,7 @@ class ProcessExperimentRun(ProcessExpFlowObj):
         metadata = dict(
             experiment_run_id=self.object_id,
             molecule_id=self.molecule_id,
-            working_electrode_surface_area=self.property_by_action("measure_working_electrode_area"),
+            working_electrode_surface_area=self.property_by_action("process_working_electrode_area"),
             temperature=self.property_by_action(["heat_stir", "heat"]),
             instrument=self.instrument_name,
             electrode_counter=self.get_electrode("counter"),
