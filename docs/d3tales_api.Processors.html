@@ -224,6 +224,11 @@ Copyright 2021, University of Kentucky</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.cir_convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cir_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.cir_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.cir_convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.from_json" title="Permalink to this definition"></a></dt>
 <dd><p>Generate data class from data dict</p>
@@ -244,7 +249,7 @@ Copyright 2021, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.back2front.DOI2Front.get_mol_id">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_mol_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_group</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.get_mol_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.get_mol_id" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_mol_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_group</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/back2front.html#DOI2Front.get_mol_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.back2front.DOI2Front.get_mol_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -505,10 +510,40 @@ Copyright 2021, University of Kentucky</p>
 <section id="module-d3tales_api.Processors.d3tales_parser">
 <span id="d3tales-api-processors-d3tales-parser-module"></span><h2>d3tales_api.Processors.d3tales_parser module<a class="headerlink" href="#module-d3tales_api.Processors.d3tales_parser" title="Permalink to this heading"></a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCA'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCA" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase" title="d3tales_api.Processors.d3tales_parser.ProcessPotBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPotBase</span></code></a></p>
+<p>Class to process CA data
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCA'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCA.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCA.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – str, filepath to</p></li>
+<li><p><strong>_id</strong> – str, molecule ID</p></li>
+<li><p><strong>submission_info</strong> – dict, submission info</p></li>
+<li><p><strong>metadata</strong> – dict, metadata</p></li>
+<li><p><strong>parsing_class</strong> – class, class to use for file parsing (EX: ParseChiCA)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCA.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCA.data_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCV'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to process Gaussian logfiles.
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase" title="d3tales_api.Processors.d3tales_parser.ProcessPotBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPotBase</span></code></a></p>
+<p>Class to process CV data
 Copyright 2021, University of Kentucky</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">
@@ -527,52 +562,9 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.cv_conditions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cv_conditions</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.cv_conditions" title="Permalink to this definition"></a></dt>
-<dd><p>Dictionary of conditions (in accordance with D3TaLES backend schema)</p>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.data_dict">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.data_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV.data_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format" title="Permalink to this definition"></a></dt>
-<dd><p>Format measurement data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> – measurement data</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>formatted measurement data, EX: {“value”: 0.5, “unit”: “V”}</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.mol_info">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mol_info</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.mol_info" title="Permalink to this definition"></a></dt>
-<dd><p>Dictionary containing basic molecule information using the ID from the D3TalES database</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reagent_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessCV.reagent_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format" title="Permalink to this definition"></a></dt>
-<dd><p>Convert reagent data to D3TaLES schema format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reagents</strong> – reagent data or list of reagent data</p></li>
-<li><p><strong>purity</strong> – default purity value</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>formatted reagent data</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -664,7 +656,7 @@ Copyright 2021, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.from_dataframe">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlp_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_generated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">11,</span> <span class="pre">10,</span> <span class="pre">40,</span> <span class="pre">443831)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_dataframe" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlp_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_generated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">8,</span> <span class="pre">47,</span> <span class="pre">23,</span> <span class="pre">21362)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Translate pandas DataFrame from NLP extraction to JSON data conforming to the D3TaLES backend NLP
 schema: <a class="reference external" href="https://github.com/D3TaLES/schema/blob/main/schema_backend/nlp.schema.json">https://github.com/D3TaLES/schema/blob/main/schema_backend/nlp.schema.json</a>. Note that the DataFrame
 should contain the all the columns listed in the expected_columns variable, and no other columns.</p>
@@ -686,12 +678,12 @@ should contain the all the columns listed in the expected_columns variable, and 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.from_html">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">html_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_generated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">11,</span> <span class="pre">10,</span> <span class="pre">40,</span> <span class="pre">443834)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_html" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">html_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_generated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">8,</span> <span class="pre">47,</span> <span class="pre">23,</span> <span class="pre">21364)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_html" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_json" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.from_parsed_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_parsed_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_parsed_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_parsed_json" title="Permalink to this definition"></a></dt>
 <dd><p>Generate data class from JSON file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -702,6 +694,11 @@ should contain the all the columns listed in the expected_columns variable, and 
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.from_prop_list">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_prop_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlp_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_generated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">8,</span> <span class="pre">47,</span> <span class="pre">23,</span> <span class="pre">21365)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.from_prop_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_prop_list" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations">
@@ -723,6 +720,79 @@ should contain the all the columns listed in the expected_columns variable, and 
 <dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry">
 <span class="sig-name descname"><span class="pre">make_author_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">author</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessNlp.make_author_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">ProcessPotBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCV'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessPotBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for processing potentiostat files
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsing_class=&lt;class</span> <span class="pre">'d3tales_api.Processors.parser_cv.ParseChiCV'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessPotBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – str, filepath to</p></li>
+<li><p><strong>_id</strong> – str, molecule ID</p></li>
+<li><p><strong>submission_info</strong> – dict, submission info</p></li>
+<li><p><strong>metadata</strong> – dict, metadata</p></li>
+<li><p><strong>parsing_class</strong> – class, class to use for file parsing (EX: ParseChiCV)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_dict</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of processed data (in accordance with D3TalES backend schema)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_format">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessPotBase.data_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_format" title="Permalink to this definition"></a></dt>
+<dd><p>Format measurement data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – measurement data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>formatted measurement data, EX: {“value”: 0.5, “unit”: “V”}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.mol_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mol_info</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.mol_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary containing basic molecule information using the ID from the D3TalES database</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.pot_conditions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pot_conditions</span></span><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.pot_conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of conditions (in accordance with D3TaLES backend schema)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.ProcessPotBase.reagent_format">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reagent_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#ProcessPotBase.reagent_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.ProcessPotBase.reagent_format" title="Permalink to this definition"></a></dt>
+<dd><p>Convert reagent data to D3TaLES schema format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagents</strong> – reagent data or list of reagent data</p></li>
+<li><p><strong>purity</strong> – default purity value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>formatted reagent data</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -766,6 +836,11 @@ Copyright 2021, University of Kentucky</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Processors.d3tales_parser.float_from_str">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.d3tales_parser.</span></span><span class="sig-name descname"><span class="pre">float_from_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/d3tales_parser.html#float_from_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.d3tales_parser.float_from_str" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-d3tales_api.Processors.expflow_parser">
@@ -958,13 +1033,76 @@ NOTE: this only works if there is only one action of the given name</p>
 <section id="module-d3tales_api.Processors.parser_cv">
 <span id="d3tales-api-processors-parser-cv-module"></span><h2>d3tales_api.Processors.parser_cv module<a class="headerlink" href="#module-d3tales_api.Processors.parser_cv" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCV">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.parser_cv.</span></span><span class="sig-name descname"><span class="pre">ParseChiCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_scan_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCV" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.parser_cv.</span></span><span class="sig-name descname"><span class="pre">ParseChiBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiBase" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Extract data from raw Chi experiment files</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiBase.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> – str, filepath to experiment data file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiBase.extract_value_unit">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_value_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_break</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'str'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiBase.extract_value_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiBase.extract_value_unit" title="Permalink to this definition"></a></dt>
+<dd><p>Extract data value and unit from a Chi CV data line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> – str, data line</p></li>
+<li><p><strong>value_break</strong> – str, type of character which breaks the line</p></li>
+<li><p><strong>value_type</strong> – str, value datatype</p></li>
+<li><p><strong>return_dict</strong> – bool, return data dict if True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value or data dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.parser_cv.</span></span><span class="sig-name descname"><span class="pre">ParseChiCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCA" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Processors.parser_cv.ParseChiBase" title="d3tales_api.Processors.parser_cv.ParseChiBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParseChiBase</span></code></a></p>
+<p>Extract data from raw Chi CV experiment files</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCA.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCA.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> – str, filepath to experiment data file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCA.get_data_calcs">
+<span class="sig-name descname"><span class="pre">get_data_calcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calc_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Slp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Forward'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCA.get_data_calcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCA.get_data_calcs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCA.resistance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resistance</span></span><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCA.resistance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.parser_cv.</span></span><span class="sig-name descname"><span class="pre">ParseChiCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_scan_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCV" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Processors.parser_cv.ParseChiBase" title="d3tales_api.Processors.parser_cv.ParseChiBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParseChiBase</span></code></a></p>
 <p>Extract data from raw Chi CV experiment files</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCV.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_scan_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCV.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCV.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_scan_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCV.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCV.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_path</strong> – str, filepath to experiment data file</p>
@@ -1006,21 +1144,19 @@ NOTE: this only works if there is only one action of the given name</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiESI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Processors.parser_cv.</span></span><span class="sig-name descname"><span class="pre">ParseChiESI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Freq'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiESI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiESI" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#d3tales_api.Processors.parser_cv.ParseChiBase" title="d3tales_api.Processors.parser_cv.ParseChiBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParseChiBase</span></code></a></p>
+<p>Extract data from raw Chi CV experiment files</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiCV.extract_value_unit">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_value_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_break</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'str'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiCV.extract_value_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiCV.extract_value_unit" title="Permalink to this definition"></a></dt>
-<dd><p>Extract data value and unit from a Chi CV data line</p>
-<dl class="field-list simple">
+<dt class="sig sig-object py" id="d3tales_api.Processors.parser_cv.ParseChiESI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Freq'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Processors/parser_cv.html#ParseChiESI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Processors.parser_cv.ParseChiESI.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>line</strong> – str, data line</p></li>
-<li><p><strong>value_break</strong> – str, type of character which breaks the line</p></li>
-<li><p><strong>value_type</strong> – str, value datatype</p></li>
-<li><p><strong>return_dict</strong> – bool, return data dict if True</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>value or data dict</p>
+<dd class="field-odd"><p><strong>file_path</strong> – str, filepath to experiment data file</p>
 </dd>
 </dl>
 </dd></dl>

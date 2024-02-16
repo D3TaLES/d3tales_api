@@ -205,23 +205,37 @@ database or (2) fnd the ground state charge for the molecule with ID <code class
 <span class="n">response_2</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://d3tales.as.uky.edu&quot;</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span>
 </pre></div>
 </div>
-<p>Another class in the restapi module makes it easy to gather and plot D<sup>3</sup>TaLES data. the following
-example will gather all <code class="docutils literal notranslate"><span class="pre">oxidation_potential</span></code> properties in the database and produce a one-dimensional
+<p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">D3talesData</span></code> class, which produces a pandas DataFrame.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">D3talesData</span>
+
+<span class="c1"># Create data collector object </span>
+<span class="n">data_collector</span> <span class="o">=</span> <span class="n">D3talesData</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">)</span>
+<span class="c1"># Get 10 oxidation potentials </span>
+<span class="n">data_collector</span><span class="o">.</span><span class="n">get_prop_data</span><span class="p">(</span><span class="s1">&#39;mol_characterization.oxidation_potential.0.value&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This class will also gather all <code class="docutils literal notranslate"><span class="pre">oxidation_potential</span></code> properties in the database and produce a one-dimensional
 histogram of the resulting values. Note <code class="docutils literal notranslate"><span class="pre">USERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">PASSWORD</span></code> should be the user’s username and password.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">D3talesData</span>
 
+<span class="c1"># Create data collector object </span>
+<span class="n">data_collector</span> <span class="o">=</span> <span class="n">D3talesData</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">)</span>
 <span class="c1"># Plot 1 dimensional histogram</span>
-<span class="n">D3talesData</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hist_1d</span><span class="p">(</span><span class="s1">&#39;mol_characterization.oxidation_potential.0.value&#39;</span><span class="p">,</span> <span class="n">min_cutoff</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_cutoff</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">data_collector</span><span class="o">.</span><span class="n">hist_1d</span><span class="p">(</span><span class="s1">&#39;mol_characterization.oxidation_potential.0.value&#39;</span><span class="p">,</span> <span class="n">min_cutoff</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_cutoff</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Likewise, this example will gather all <code class="docutils literal notranslate"><span class="pre">molecular_weight</span></code> and associated <code class="docutils literal notranslate"><span class="pre">globular_volume</span></code> properties in the
 database and produce a two-dimensional histogram of the resulting values.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.D3database.restapi</span> <span class="kn">import</span> <span class="n">D3talesData</span>
 
+<span class="c1"># Create data collector object </span>
+<span class="n">data_collector</span> <span class="o">=</span> <span class="n">D3talesData</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">)</span>
 <span class="c1"># Plot 1 dimensional histogram</span>
-<span class="n">D3talesData</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hist_2d</span><span class="p">(</span><span class="s2">&quot;species_characterization.groundState.globular_volume.0.value&quot;</span><span class="p">,</span> <span class="s2">&quot;mol_info.molecular_weight&quot;</span><span class="p">)</span>
+<span class="n">data_collector</span><span class="o">.</span><span class="n">hist_2d</span><span class="p">(</span><span class="s2">&quot;species_characterization.groundState.globular_volume.0.value&quot;</span><span class="p">,</span> <span class="s2">&quot;mol_info.molecular_weight&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>There is also a Colab notebook with examples of how to access the D3TaLES data with these moduels:
+<a class="reference external" href="https://colab.research.google.com/drive/1oK1hOZs0rTpc_SoSFg54qQA5U4Qekqu8?usp=sharing"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>Note that the D<sup>3</sup>TaLES REST API is user restricted. This means that you must have a
 D<sup>3</sup>TaLES website account and user permission to access this tool. When using the
 D<sup>3</sup>TaLES API <code class="docutils literal notranslate"><span class="pre">RESTAPI</span></code> class, you must include your D<sup>3</sup>TaLES website

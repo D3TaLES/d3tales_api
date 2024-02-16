@@ -10,7 +10,8 @@ from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 
 from rdkit.Chem.rdmolops import AddHs
 from rdkit.Chem import MolFromSmiles, AllChem
-
+from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
+from rdkit.Chem.Descriptors import NumRadicalElectrons
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
@@ -228,7 +229,7 @@ def orig_conditions(functional, basis_set, tuning_parameter=None, solvent=None, 
     return data_dict
 
 
-def start_from_smiles(identifier):
+def start_from_smiles(identifier, smiles):
     """
     get input geometry frontend DB smiles
     :param identifier: str
@@ -239,25 +240,34 @@ def start_from_smiles(identifier):
                            url="https://d3tales.as.uky.edu", return_json=True).response[0]
         return Molecule.from_str(response.get("mol_info", {}).get('init_structure'), 'xyz')
     except:
-        response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
-                           url="https://d3tales.as.uky.edu", return_json=True).response[0]
-        smiles = response.get("mol_info", {}).get('smiles', '')
+        if not smiles:
+            response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
+                               url="https://d3tales.as.uky.edu", return_json=True).response
+            smiles = response[0].get("mol_info", {}).get('smiles', '')
         structure = find_lowest_e_conf(smiles)
         return Molecule.from_str(structure, 'xyz')
 
 
-def get_groundState(identifier, prop='charge'):
+def get_groundState(identifier, smiles=None, prop='charge'):
     """
     get input geometry frontend DB smiles
     :param identifier: str
     :param prop: str
     :return: int, ground state charge
     """
-    response = RESTAPI(
+    r = RESTAPI(
         method='get', endpoint="restapi/molecules/_id={}/mol_info.groundState_{}=1".format(identifier, prop),
         url="https://d3tales.as.uky.edu", return_json=True
-    ).response[0]
-    return int(response.get("mol_info", {}).get('groundState_'+str(prop)))
+    )
+    if not r.response:
+        if smiles:
+            rdkmol = MolFromSmiles(smiles)
+            rdkmol_hs = AddHs(rdkmol)
+            AllChem.EmbedMolecule(rdkmol_hs)
+            return GetFormalCharge(rdkmol) if prop=='charge' else NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        raise ValueError(f"No ground state found for {identifier} with using endpoint {r.endpoint}. A SMILES must be specified")
+
+    return int(r.response[0].get("mol_info", {}).get('groundState_'+str(prop)))
 
 
 def get_db_geom(input_geometry_hash, error_raise=False):
@@ -356,3 +366,5 @@ def write_nto(tddft_log, excitation_num, tddft_chk=None):
     return nto_com, nto_chk
 
 
+if __name__ == "__main__":
+    get_groundState("05AATS")

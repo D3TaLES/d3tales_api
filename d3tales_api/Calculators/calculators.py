@@ -31,9 +31,7 @@ class D3Calculator(abc.ABC):
         if connector:
             self.key_pairs = connector
         else:
-            with open("default_connector.json") as f:
-                connectors = json.load(f)
-            self.key_pairs = connectors[self.__class__.__name__]
+            self.key_pairs = {k: k for k in self.all_connections}
 
     def make_connections(self, obj):
         d = {}
@@ -41,7 +39,10 @@ class D3Calculator(abc.ABC):
             try:
                 d.update({key: rgetattr(obj, connection)})
             except:
-                d.update({key: rgetkeys(obj, connection)})
+                try:
+                    d.update({key: rgetkeys(obj, connection)})
+                except:
+                    continue
         return d
 
     def calculate(self, data):
@@ -49,6 +50,53 @@ class D3Calculator(abc.ABC):
 
     def description(self):
         print(self.__class__.__name__)
+
+    @property
+    def all_connections(self):
+        return {
+            "A": "electrode area (default = cm^2)",
+            "C": "concentration of the solution (default = mol/cm^3)",
+            "D": "Diffusion constant (default = cm^2/s)",
+            "T": "Temperature (default = 293 K)",
+            "X": "peak shift (default = V)",
+            "e": "E1/2 (default = V)",
+            "electrode": "electrode name as str or potential as float (default = standard_hydrogen_electrode)",
+            "energy": "energy another geometry (default = eV)",
+            "energy_final": "energy final (default = eV)",
+            "energy_initial": "energy initial (default = eV)",
+            "fin_corr": "final entropy correction (default = eV)",
+            "fin_eng": "final energy (default = eV)",
+            "fin_eng_solv": "final energy of solvation (default = eV)",
+            "geom_final": "geometry final (default = A)",
+            "geom_initial": "geometry initial (default = A)",
+            "gs_energy": "ground state energy at ion geometry (default = eV)",
+            "gs_opt": "ground state optimized energy (default = eV)",
+            "i_p": "peak current (default = A)",
+            "i_s": "list, current points (s)",
+            "init_corr": "initial entropy correction (default = eV)",
+            "init_eng": "initial energy (default = eV)",
+            "init_eng_solv": "initial energy of solvation (default = eV)",
+            "ion_energy": "ion energy at ground state geometry (default = eV)",
+            "ion_opt": "ion optimized energy (default = eV)",
+            "log_file": "calculation output file. Must be readable with CCLIB",
+            "low_e": "float, lowest voltage (V)",
+            "middle_scan": "optional, if i_p is not provided, scan data will be used to find i_p (default = None)",
+            "n": "number of electrons, default 1",
+            "num_electrons": "number of electrons (default = 1)",
+            "opt_energy": "optimized energy (default = eV)",
+            "pulse_width": "float, time width of a pulse (s)",
+            "redox_density": "density for redox-active molecule",
+            "sample_interval": "sample interval value (V)",
+            "scan_data": "optional, if e not provided, scan data will be used to find e (default = None)",
+            "smiles": "SMILES string",
+            "solv_density": "density for solvent",
+            "spin_type": "type of CCLIB spin to extract (default = Mulliken)",
+            "steps": "int, number of potentiostat sweeps",
+            "t_s": "list, time points (s)",
+            "v": "scan rate (default = V/s)",
+            "volume": "Volume",
+            "weight": "actual weight",
+        }
 
 
 # ----------------------- Cyclic Voltammetry Calculators ------------------------------
@@ -537,7 +585,8 @@ class CAResistanceCalculator(D3Calculator):
         n_pulses = math.floor(conns["steps"] / 2) - 1  # number of pulses
         offset = n / offset_factor  # a slight offset to measure voltage after switching
 
-        max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in range(n_pulses)]
+        max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in
+                 range(n_pulses)]
 
         avg = np.sum(max_i) / n_pulses
         std = np.std(max_i)
@@ -675,6 +724,8 @@ class DeltaGSolvCalc(D3Calculator):
         :return: delta G solv  (in units A)
         """
         conns = self.make_connections(data)
+        print(conns)
+        print(unit_conversion(conns["init_eng"], default_unit='eV'))
 
         g_gas_init = unit_conversion(conns["init_eng"], default_unit='eV') + unit_conversion(conns["init_corr"],
                                                                                              default_unit='eV')
@@ -719,8 +770,8 @@ class RedoxPotentialCalc(D3Calculator):
         conns = self.make_connections(data)
         delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
 
-        potential = -delta_g / conns.get("num_electrons", 1) + get_electrode_potential(
-            conns.get("electrode", "standard_hydrogen_electrode"))
+        std_potential = get_electrode_potential(conns["electrode"]) if conns.get("electrode") else 4.42
+        potential = -delta_g / conns.get("num_electrons", 1) + std_potential
 
         return float(np.format_float_scientific(potential, precision=precision))
 

@@ -35,6 +35,7 @@ class GaussianBase(FiretaskBase):
         self.calc_name = self['name']
         self.paramset = self["paramset"]
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier")
+        self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         self.check_if_already_run = fw_spec.get("check_if_already_run") or self.get("check_if_already_run") or False
         self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
@@ -55,7 +56,7 @@ class GaussianBase(FiretaskBase):
 
         # get calc directory
         if self.get("path", ):
-            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier,
+            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier or self.smiles,
                                               self.gaussian_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
@@ -94,8 +95,8 @@ class GaussianBase(FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier,
+        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier, self.smiles) or 0
+        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles,
                                                                                         prop='spin') or 1
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
         run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or False
@@ -123,11 +124,10 @@ class GaussianBase(FiretaskBase):
                 self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
             else:
                 geometry_hash = fw_spec.get("{}_hash".format(geometry),
-                                            orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
+                                            orig_hash_id(self.identifier or self.smiles, self.calc_name, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=solvent))
-                self.mol = get_db_geom(geometry_hash) or start_from_smiles(
-                    self.identifier) if geometry_hash else start_from_smiles(self.identifier)
+                self.mol = get_db_geom(geometry_hash) or start_from_smiles(self.identifier, self.smiles)
 
             # End job if the total number of atoms is greater than 200
             num_atoms = len(self.mol.sites)
@@ -205,7 +205,7 @@ class RunGaussianEnergy(GaussianBase):
                 return FWAction(
                     update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
                                  "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                 "{}_hash".format(self.full_name): get_hash_id(self.identifier, self.file_com,
+                                 "{}_hash".format(self.full_name): get_hash_id(self.identifier or self.smiles, self.file_com,
                                                                                self.calc_name),
                                  "iop_str": self.iop_str})
 
@@ -262,7 +262,7 @@ class RunGaussianOpt(GaussianBase):
 
             # run gaussian optimization
             if not os.path.isfile(self.file_log) or not os.path.isfile(self.file_chk) or runs != 1:
-                print('SUBMITTING GAUSSIAN OPT JOB {} for {}'.format(self.full_name, self.identifier))
+                print('SUBMITTING GAUSSIAN OPT JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
                 subprocess.call(self.gaussian_cmd + " " + self.file_com, shell=True)
             gout = GaussianOutput(self.file_log)
 
@@ -298,7 +298,7 @@ class RunGaussianOpt(GaussianBase):
 
             # run gaussian frequency
             if not os.path.isfile(self.freq_log) or not os.path.isfile(self.freq_chk) or runs != 1:
-                print('SUBMITTING GAUSSIAN FREQUENCY JOB {} for {}'.format(self.full_name, self.identifier))
+                print('SUBMITTING GAUSSIAN FREQUENCY JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
                 subprocess.call("{} {} > {}".format(self.gaussian_cmd, self.freq_com, self.freq_log), shell=True)
             fgout = GaussianOutput(self.freq_log)
 
@@ -347,10 +347,11 @@ class RunWtuning(FiretaskBase):
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, prop='spin')
+        smiles = fw_spec.get("smiles", ) or self.get("smiles")
+        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier, smiles)
+        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, smiles, prop='spin')
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
-        calc_dir = "{}/{}/{}".format(path, identifier, gaussian_file_name)
+        calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
         check_if_already_run = fw_spec.get("check_if_already_run", ) or self.get("check_if_already_run") or False
         submit = fw_spec.get("submit") or self.get("submit") or True
         restricted = fw_spec.get("restricted", True) if self.get("restricted", True) else self.get("restricted")
@@ -368,7 +369,7 @@ class RunWtuning(FiretaskBase):
             try:
                 mol = get_db_geom(geometry_hash)
             except LookupError:
-                mol = start_from_smiles(identifier)
+                mol = start_from_smiles(identifier, smiles)
 
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
@@ -443,7 +444,7 @@ class RunGaussianTDDFT(GaussianBase):
             self.run_check()
 
         # run gaussian16
-        print('SUBMITTING GAUSSIAN TDDFT JOB {} for {}'.format(self.full_name, self.identifier))
+        print('SUBMITTING GAUSSIAN TDDFT JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
         subprocess.call(self.gaussian_cmd + " " + self.file_com, shell=True)
 
         # check for normal termination of gaussian job

@@ -99,7 +99,21 @@
     <span class="kn">from</span> <span class="nn">elsapy.elsdoc</span> <span class="kn">import</span> <span class="n">AbsDoc</span>
     <span class="kn">from</span> <span class="nn">elsapy.elsclient</span> <span class="kn">import</span> <span class="n">ElsClient</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING. Elsevier&#39;s elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;WARNING. Elsevier&#39;s elsapy has not imported correctly! If you plan on performing NLP parsing, please resolve this issue.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="float_from_str"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.float_from_str">[docs]</a><span class="k">def</span> <span class="nf">float_from_str</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">normal_chars</span> <span class="o">=</span> <span class="s2">&quot;0123456789&quot;</span>
+    <span class="c1"># replace subscripts</span>
+    <span class="n">subscript_chars</span> <span class="o">=</span> <span class="s2">&quot;₀₁₂₃₄₅₆₇₈₉&quot;</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="n">subscript_chars</span><span class="p">,</span> <span class="n">normal_chars</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+    <span class="c1"># replace superscript</span>
+    <span class="n">superscript_chars</span> <span class="o">=</span> <span class="s2">&quot;⁰¹²³⁴⁵⁶⁷⁸⁹&quot;</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="n">superscript_chars</span><span class="p">,</span> <span class="n">normal_chars</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;x10^&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;×10&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;⁻&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="ProcessDFT"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT">[docs]</a><span class="k">class</span> <span class="nc">ProcessDFT</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -152,7 +166,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;is_groundState&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_groundState</span><span class="p">})</span>
         <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning. Could not connect to the database, so no &#39;is_groundState&#39; property was specified. DB_INFO_FILE may not be defined.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning. Could not connect to the database, so no &#39;is_groundState&#39; property was specified. DB_INFO_FILE may not be defined.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;freq&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DFTData</span><span class="o">.</span><span class="n">calculation_type</span><span class="p">:</span>
             <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
                 <span class="s2">&quot;gibbs_correction&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -277,13 +292,13 @@
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;The molecule does not have a specified groundState_charge.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProcessCV"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV">[docs]</a><span class="k">class</span> <span class="nc">ProcessCV</span><span class="p">:</span>
+<div class="viewcode-block" id="ProcessPotBase"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase">[docs]</a><span class="k">class</span> <span class="nc">ProcessPotBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to process Gaussian logfiles.</span>
+<span class="sd">    Base class for processing potentiostat files</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProcessCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="ProcessPotBase.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param filepath: str, filepath to</span>
@@ -312,27 +327,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ionic_liquids</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
             <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ionic_liquid&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">cv_data</span>
-        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peaks&quot;</span><span class="p">))</span>
-        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_conditions</span><span class="p">,</span>
-                            <span class="n">plot_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_plotting</span><span class="p">(</span><span class="s2">&quot;plot_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">),</span>
-                            <span class="n">reversibility</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;reversibility&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
-                            <span class="n">e_half</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;e_half&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
-                            <span class="n">peak_splittings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peak_splittings&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
-                            <span class="n">middle_sweep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;middle_sweep&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
-                            <span class="p">))</span>
+        <span class="n">pot_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">pot_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot_conditions</span><span class="p">})</span>
         <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
             <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">cv_data</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">pot_data</span>
         <span class="p">}</span>
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
@@ -352,13 +360,12 @@
                 <span class="s2">&quot;first.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cv_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">pot_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">conditions_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CVData</span><span class="o">.</span><span class="n">conditions_data</span>
+        <span class="n">conditions_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">conditions_data</span>
         <span class="n">conditions_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="s1">&#39;cv&#39;</span><span class="p">,</span>
             <span class="s2">&quot;working_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode</span><span class="p">,</span>
             <span class="s2">&quot;counter_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter_electrode</span><span class="p">,</span>
             <span class="s2">&quot;reference_electrode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_electrode</span><span class="p">,</span>
@@ -373,7 +380,7 @@
         <span class="p">})</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">conditions_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">}</span>
 
-<div class="viewcode-block" id="ProcessCV.reagent_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.reagent_format">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProcessPotBase.reagent_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.reagent_format">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reagent_format</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">purity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert reagent data to D3TaLES schema format</span>
@@ -382,6 +389,7 @@
 <span class="sd">        :param purity: default purity value</span>
 <span class="sd">        :return: formatted reagent data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">format_i</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">r_dict</span> <span class="o">=</span> <span class="n">r</span>
@@ -393,7 +401,7 @@
 
         <span class="k">return</span> <span class="p">[</span><span class="n">format_i</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">format_i</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProcessCV.data_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.data_format">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProcessPotBase.data_format"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_format">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">data_format</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format measurement data</span>
@@ -413,6 +421,87 @@
             <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
             <span class="n">pint_m</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">pint_m</span><span class="p">,</span> <span class="s1">&#39;magnitude&#39;</span><span class="p">)),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">pint_m</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">))}</span></div></div>
+
+
+<div class="viewcode-block" id="ProcessCV"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV">[docs]</a><span class="k">class</span> <span class="nc">ProcessCV</span><span class="p">(</span><span class="n">ProcessPotBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process CV data</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessCV.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission info</span>
+<span class="sd">        :param metadata: dict, metadata</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ParseChiCV)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peaks&quot;</span><span class="p">))</span>
+        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_conditions</span><span class="p">,</span>
+                            <span class="n">plot_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_plotting</span><span class="p">(</span><span class="s2">&quot;plot_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abs_plot&quot;</span><span class="p">),</span>
+                            <span class="n">reversibility</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;reversibility&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">e_half</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;e_half&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">peak_splittings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;peak_splittings&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="n">middle_sweep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">calculate_prop</span><span class="p">(</span><span class="s2">&quot;middle_sweep&quot;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+                            <span class="p">))</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+            <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">cv_data</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProcessCA"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCA">[docs]</a><span class="k">class</span> <span class="nc">ProcessCA</span><span class="p">(</span><span class="n">ProcessPotBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to process CA data</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProcessCA.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCA</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param filepath: str, filepath to</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission info</span>
+<span class="sd">        :param metadata: dict, metadata</span>
+<span class="sd">        :param parsing_class: class, class to use for file parsing (EX: ParseChiCA)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span> <span class="o">=</span> <span class="n">parsing_class</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ParsedData</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">cv_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_conditions</span><span class="p">,</span>
+                            <span class="c1"># TODO add conductivity</span>
+                            <span class="p">))</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+            <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">cv_data</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProcessUvVis"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis">[docs]</a><span class="k">class</span> <span class="nc">ProcessUvVis</span><span class="p">:</span>
@@ -481,13 +570,15 @@
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="ProcessNlp"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp">[docs]</a><span class="k">class</span> <span class="nc">ProcessNlp</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to process NLP data for backend database</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProcessNlp.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">els_apikey</span><span class="o">=</span><span class="s2">&quot;3a5b9e26201041e25eee70953c65782c&quot;</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s2">&quot;temp/&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessNlp.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">els_apikey</span><span class="o">=</span><span class="s2">&quot;3a5b9e26201041e25eee70953c65782c&quot;</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">download_dir</span><span class="o">=</span><span class="s2">&quot;temp/&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param doi: str, DOI or scopus id</span>
 <span class="sd">        :param instance: dict, NLP data. Instance data will override web-scrapped data.</span>
@@ -498,7 +589,8 @@
         <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doi</span> <span class="o">=</span> <span class="p">(</span><span class="n">doi</span> <span class="ow">or</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;https://doi.org/&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ProcessNlp requires a DOI. Either include doi as an argument or include doi as a key in the instance data.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">els_apikey</span> <span class="o">=</span> <span class="n">els_apikey</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
@@ -519,7 +611,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">data_dict</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_info</span>
         <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
         <span class="n">data_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">})</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">article_download</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_text</span><span class="p">:</span>
@@ -631,8 +723,8 @@
             <span class="n">affiliations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">affiliations</span></div>
 
-<div class="viewcode-block" id="ProcessNlp.from_json"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_json">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessNlp.from_parsed_json"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_parsed_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_parsed_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate data class from JSON file</span>
 
@@ -658,21 +750,25 @@
 <span class="sd">        :return: dict, JSON formatted data conforming to the D3TaLES backend   NLP schema</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check for DOI</span>
-        <span class="n">doi_str</span><span class="o">=</span> <span class="p">(</span><span class="n">doi</span> <span class="ow">or</span> <span class="n">base_instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)))</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;https://doi.org/&quot;</span><span class="p">)</span>
+        <span class="n">doi_str</span> <span class="o">=</span> <span class="p">(</span><span class="n">doi</span> <span class="ow">or</span> <span class="n">base_instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)))</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;https://doi.org/&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doi_str</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ProcessNlp.from_dataframe requires a DOI. Either include doi as an argument or include doi as a key in the base_instance data.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Check DF columns</span>
         <span class="n">expected_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;molecule&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;line_number&quot;</span><span class="p">,</span> <span class="s2">&quot;parent_sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;notes&quot;</span><span class="p">]</span>
         <span class="n">unexpected_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nlp_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_columns</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">unexpected_columns</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span>
-                <span class="s2">&quot;The column titles for the NLP DataFrame contain unexpected columns:  &quot;</span><span class="o">+</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unexpected_columns</span><span class="p">))</span>
+                <span class="s2">&quot;The column titles for the NLP DataFrame contain unexpected columns:  &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unexpected_columns</span><span class="p">))</span>
         <span class="n">missing_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">expected_columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nlp_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">missing_columns</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s2">&quot;The column titles for the NLP DataFrame do not contain columns: &quot;</span><span class="o">+</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span>
+                <span class="s2">&quot;The column titles for the NLP DataFrame do not contain columns: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">))</span>
 
         <span class="c1"># Check values in &quot;properties&quot; column</span>
+        <span class="n">nlp_df</span><span class="o">.</span><span class="n">property</span> <span class="o">=</span> <span class="n">nlp_df</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">nlp_df</span><span class="o">.</span><span class="n">property</span> <span class="o">=</span> <span class="n">nlp_df</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">expected_properties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;oxidation_potential&quot;</span><span class="p">,</span> <span class="s2">&quot;reduction_potential&quot;</span><span class="p">,</span> <span class="s2">&quot;solubility&quot;</span><span class="p">,</span> <span class="s2">&quot;stability&quot;</span><span class="p">,</span> <span class="s2">&quot;conductivity&quot;</span><span class="p">,</span>
                                <span class="s2">&quot;diffusion_coefficient&quot;</span><span class="p">,</span> <span class="s2">&quot;charge_transfer_rate&quot;</span><span class="p">]</span>
         <span class="n">unexpected_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">nlp_df</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_properties</span><span class="p">]</span>
@@ -699,7 +795,7 @@
                             <span class="s2">&quot;date_generated&quot;</span><span class="p">:</span> <span class="n">date_generated</span><span class="p">,</span>
                             <span class="s2">&quot;doi&quot;</span><span class="p">:</span> <span class="n">doi_str</span><span class="p">,</span>
                         <span class="p">},</span>
-                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;x10^&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)),</span>
+                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">float_from_str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
                         <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">unit</span>
                     <span class="p">}</span>
                     <span class="n">prop_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">p</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;line_number&quot;</span><span class="p">,</span> <span class="s2">&quot;parent_sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;notes&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">)})</span>
@@ -714,20 +810,28 @@
     <span class="k">def</span> <span class="nf">from_html</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">html_txt</span><span class="p">,</span> <span class="n">nlp_model</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_generated</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">nlp_dfs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">html_txt</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp.from_html found </span><span class="si">{}</span><span class="s2"> tables in the HTML string. There should be only one.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ProcessNlp.from_html found </span><span class="si">{}</span><span class="s2"> tables in the HTML string. There should be only one.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp.from_html no tables in the HTML string. There should be  one.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nlp_model</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="n">doi</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">=</span><span class="n">base_instance</span><span class="p">,</span> <span class="n">date_generated</span><span class="o">=</span><span class="n">date_generated</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">nlp_dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nlp_model</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="n">doi</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">=</span><span class="n">base_instance</span><span class="p">,</span> <span class="n">date_generated</span><span class="o">=</span><span class="n">date_generated</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="ProcessNlp.from_prop_list"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_prop_list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_prop_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prop_list</span><span class="p">,</span> <span class="n">nlp_model</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_generated</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prop_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ProcessNlp.from_prop_list no propreties in prop_list. There should be at least one.&quot;</span><span class="p">)</span>
+        <span class="n">nlp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">prop_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">nlp_df</span><span class="p">,</span> <span class="n">nlp_model</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="n">doi</span><span class="p">,</span> <span class="n">base_instance</span><span class="o">=</span><span class="n">base_instance</span><span class="p">,</span> <span class="n">date_generated</span><span class="o">=</span><span class="n">date_generated</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
     <span class="c1"># data = ProcessDFT(sys.argv[1], parsing_class=ProcessGausLog).data_dict</span>
     <span class="c1"># data = ProcessCV(sys.argv[1], parsing_class=ParseChiCV).data_dict</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">data_dict</span>
+    <span class="c1"># data = ProcessNlp(sys.argv[1], article_download=False).data_dict</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-
+    <span class="c1"># print(data)</span>
 </pre></div>
 
            </div>

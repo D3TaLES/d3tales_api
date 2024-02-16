@@ -105,17 +105,15 @@ class RESTAPI(object):
 
 
 class D3talesData:
-    def __init__(self, username=USERNAME, password=PASSWORD, limit=0):
+    def __init__(self, username=USERNAME, password=PASSWORD):
         """
         This class pulls data from the D3Tales database and outputs plots or Pandas dataframes
 
         :param username: D3TaLES website username (must have REST API permissions)
         :param password: D3TaLES website password (must have REST API permissions)
-        :param limit: limit query items to return
         """
         self.username = username
         self.password = password
-        self.limit = limit
 
     def rgetkeys(self, _dict, keys, **kwargs):
         """
@@ -134,7 +132,7 @@ class D3talesData:
 
         return functools.reduce(_getkey, [_dict] + keys.split('.'))
 
-    def get_prop_data(self, query, max_cutoff=None, min_cutoff=None, database='molecules'):
+    def get_prop_data(self, query, max_cutoff=None, min_cutoff=None, database='molecules', limit=0):
         """
         Get property data from D3TaLES database based on RESTAPI query
 
@@ -142,6 +140,7 @@ class D3talesData:
         :param max_cutoff: float, maximum value to return for specified property
         :param min_cutoff: float, minimum value to return for specified property
         :param database: str, name of database to query
+        :param limit: limit query items to return
 
         :return: pandas DataFrame with query data
         """
@@ -155,7 +154,7 @@ class D3talesData:
                           1] + "_" + prop_name if prop_category == "species_characterization" else prop_name
 
         response = RESTAPI(method='get',
-                           endpoint="restapi/" + database + "/{}/" + rest_query + "=1/limit=" + str(self.limit),
+                           endpoint="restapi/{}/{}==true/{}=1/limit={}".format(database, rest_query, rest_query, limit),
                            username=self.username, password=self.password,
                            url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
 
@@ -163,7 +162,8 @@ class D3talesData:
         data_df = pd.DataFrame(response)
         data_df.set_index('_id', inplace=True)
         if clean_keys:
-            data_df[column_name] = data_df.apply(lambda x: self.rgetkeys(x[prop_name], clean_keys), axis=1)
+            data_df[column_name] = data_df[prop_category].apply(lambda x: self.rgetkeys(x.get(prop_name), clean_keys))
+
         data_df = data_df[[column_name]]
         data_df.dropna(inplace=True)
         data_df = data_df[pd.to_numeric(data_df[column_name], errors='coerce').notna()]
@@ -264,6 +264,6 @@ if __name__ == "__main__":
     #             url="https://d3tales.as.uky.edu", login_endpoint='login',
     #             params=dict(approved='on'))
 
-    # print(D3talesData().get_prop_data('mol_characterization.oxidation_potential.0.value'))
+    print(D3talesData().get_prop_data('mol_characterization.oxidation_potential.0.value', limit=2))
     # D3talesData().hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
-    master_df = D3talesData().get_master_df()
+    # master_df = D3talesData().get_master_df()
