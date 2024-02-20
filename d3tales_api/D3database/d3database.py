@@ -400,13 +400,14 @@ class Expflow(D3Database):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, collection_name='experimentation', instance=None, create_hash=False):
+    def __init__(self, collection_name='experimentation', instance=None, create_hash=False, validate_schema=False, **kwargs):
         """
         :param collection_name: str, name of collection
         :param instance: dict, instance to insert or validate
         :param create_hash: bool, generate new instance hash id if True
         """
-        super().__init__("expflow", collection_name, instance, schema_db='backend')
+        super().__init__("expflow", collection_name, instance, schema_db='backend',
+                         validate_schema=validate_schema, **kwargs)
         if instance:
             # Identifier properties: must have id and frontend instance
             self.id = self.instance.get("_id")
