@@ -88,7 +88,7 @@ class GaussianBase(FiretaskBase):
         self.freq_log = "{}/freq_{}.log".format(self.working_dir, prefix)
 
         # create folders
-        os.system('mkdir -p {}'.format(self.working_dir))
+        os.makedirs(self.working_dir, exist_ok=True)
         os.chdir(self.working_dir)
 
     def setup_calc(self, fw_spec, calc_type='opt'):
@@ -373,7 +373,7 @@ class RunWtuning(FiretaskBase):
 
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
-        os.system("mkdir -p {}".format(working_dir))
+        os.makedirs(working_dir, exist_ok=True)
         os.chdir(working_dir)
         gauss_inp = generate_gaussian_input(paramset=paramset, mol=mol)
         gauss_inp.write_file('wtuning.com', cart_coords=True)
