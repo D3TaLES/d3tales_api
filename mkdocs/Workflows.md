@@ -2,7 +2,7 @@
 
 The Workflows module provides the [Fireworks](https://materialsproject.github.io/fireworks/)-based workflows 
 for the high-throughput [computational workflow](https://d3tales.as.uky.edu/docs/methodology/computational.html) 
-that populated the [D3TaLES database](https://d3tales.as.uky.edu/database). 
+that populated the [D<sup>3</sup>TaLES database](https://d3tales.as.uky.edu/database). 
 
 ## Modules 
 Important Fireworks-based modules include: 
@@ -21,7 +21,52 @@ by the Fireworks based modules. But, to summarize, these modules include:
 * `utils`: utility functions and environment variables 
 
 
-## Submitting basic workflow
+## Setup
+### Config Directory 
+
+The directory where jobs are launched should also contain a `config`
+directory. This should contain [fireworks configuration files](https://materialsproject.github.io/fireworks/config_tutorial.html), 
+including `FW_config.yaml`, `my_fireworker.yaml`, and `my_launchpad.yaml`. The directory
+`ex_config` provides an example for the config directory. Remember, the config 
+directory must be in the same parent directory as `d3tales_fw`.
+
+### Parameter file
+The `GausParamSet` class generates object-based parameters for the Workflows module to use throughout the design and launch
+of calculation workflows. The object parameters, `GausParamSet` reads a JSON file containing job parameters. The first-level
+keys in this parameter file should be the job names and the values should be the associated parameters. For example, 
+a JSON file with the following data would establish DFT parameters for `opt_groundState` and `opt_cation1` jobs. 
+```json
+{
+   "opt_groundState": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 1
+    },
+
+  "opt_cation1": {
+      "route_parameters":{
+          "opt": "",
+          "scf(maxcyc=512)" : ""
+      },
+      "functional": "LC-wHPBE",
+      "basis_set": "Def2SVP",
+      "charge": 1,
+      "multiplicity": 2
+  }
+}
+```
+
+**Note on charge and spin state**: The charge and multiplicity set in the parameters file assumes a non-radical, 
+neutrally-charged ground state. If a molecule has a charged or radical ground state that is represented in the 
+associated SMILES string, the Workflow code will automatically adjust the calculation charge and multiplicity. 
+
+
+## Adding a workflow
 
 The following code submits a basic workflow. 
 
@@ -46,10 +91,7 @@ wf = d3tales_wf(paramset, smiles="CCCC", wtune=True, solvent='acetonitrile')
 info = LaunchPad().from_file(lpad_file).add_wf(wf)
 ```
 
-### Config Directory 
+## Launch jobs
 
-The directory where jobs are launched should also contain a `config`
-directory. This should contain [fireworks configuration files](https://materialsproject.github.io/fireworks/config_tutorial.html), 
-including `FW_config.yaml`, `my_fireworker.yaml`, and `my_launchpad.yaml`. The directory
-`ex_config` provides an example for the config directory. Remember, the config 
-directory must be in the same parent directory as `d3tales_fw`.
+Once jobs are added to the launchpad, you can launch jobs from the commandline of any server with the Fireworks
+`rlaunch` commands. See the  [Fireworks documentation](https://materialsproject.github.io/fireworks/) for more detail. 

@@ -1,7 +1,7 @@
 # Calculators
 
 D<sup>3</sup>TaLES API Calculators allow users to calculate useful experimental and 
-computational properties from nested data. Additionally, all calulators contain unit conversion
+computational properties from nested data. Additionally, all calculators contain unit conversion
 features. 
 
 Full documentation can be found [here](d3tales_api.Calculators.html).
@@ -32,7 +32,7 @@ calculator class), `CONNECTOR`
 4. Establishing the calculator instance and calculating the property. The general format 
 for this final step is: `CALCULATOR_CLASS(connector=CONNECTOR).calculate(DATA)`. 
 
-Generally, calculating the property from a calcuator class instance requires calling the 
+Generally, calculating the property from a calculators class instance requires calling the 
 `calculate` method. However, there are some cases (EX: `CVDescriptorCalculator`) where several
 properties can be calculated from one class, so more specific methods must be called(EX: 
 `peaks`, `reversibility`, `e_half`). 
@@ -75,6 +75,9 @@ Useful molecular DFT calculations include:
 * `RadBuriedVolCalc`: Radical buried volume for the atom with the atom with the highest portion
         of spin. Uses [DBSTEP](https://github.com/patonlab/DBSTEP).
 * `RadicalSpinCalc`: Radical spin density. Uses [DBSTEP](https://github.com/patonlab/DBSTEP).
+
+For further examples of the D<sup>3</sup>TaLES API Calculators used for molecular DFT calculations, 
+see this Colab notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1q2O6-76WaGRU81g0QwwJqRQIDtfiYhD3?usp=sharing)
 
 ### Cyclic Voltammetry
 
@@ -156,12 +159,15 @@ print("Average diffusion", diffusion[0])
 print("Fitted diffusion", diffusion[1])
 ```
 
-Useful CV alculations include: 
+Useful CV calculations include: 
 * `ConcentrationCalculator`: Solution concentration.
 * `CVDescriptorCalculator`: Various CV properties including peaks, reversibility, E<sub>1/2</sub>,
 peak splitting, etc.
 * `CVDiffusionCalculator`: Diffusion constant using Randles-Scidwick equation.
 * `CVChargeTransferCalculator`: Charge transfer rate.
+
+For further examples of the D<sup>3</sup>TaLES API Calculators used for CV analysis, 
+see this Colab notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12E5Go9KujNtify6eUTx97WabZL7axU61?usp=share_link)
 
 ## Considering Units
 
