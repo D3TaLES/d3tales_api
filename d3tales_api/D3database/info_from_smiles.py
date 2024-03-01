@@ -102,7 +102,12 @@ class GenerateMolInfo:
         clean_smile = MolToSmiles(rdkmol)
         rdkmol_hs = AddHs(rdkmol)
         AllChem.EmbedMolecule(rdkmol_hs)
-        pcpmol = pcp.get_compounds(clean_smile, namespace="smiles")[0]
+        try:
+            pcpmol = pcp.get_compounds(clean_smile, namespace="smiles")[0]
+            mol_info.iupac_name = str(pcpmol.iupac_name)
+            synonyms = pcpmol.synonyms
+        except pcp.BadRequestError:
+            synonyms = []
 
         # Populate class
         mol_info.smiles = clean_smile
@@ -111,7 +116,6 @@ class GenerateMolInfo:
             mol_info.source_group = self.origin_group
         mol_info.inchi = MolToInchi(rdkmol)
         mol_info.inchi_key = MolToInchiKey(rdkmol)
-        mol_info.iupac_name = str(pcpmol.iupac_name)
         mol_info.molecular_formula = CalcMolFormula(rdkmol)
         mol_info.number_of_atoms = Mol.GetNumAtoms(rdkmol)
         mol_info.molecular_weight = CalcExactMolWt(rdkmol)
@@ -122,7 +126,7 @@ class GenerateMolInfo:
             mol_info.d2_image = image_to_base64(Draw.MolToImage(rdkmol))
             mol_info.init_structure = find_lowest_e_conf(clean_smile)
         try:
-            mol_info.synonyms = self.names + pcpmol.synonyms
+            mol_info.synonyms = self.names + synonyms
         except TypeError:
             mol_info.synonyms = self.names
 
