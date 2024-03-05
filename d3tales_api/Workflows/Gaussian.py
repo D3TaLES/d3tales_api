@@ -56,7 +56,7 @@ class GaussianBase(FiretaskBase):
 
         # get calc directory
         if self.get("path", ):
-            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier or self.smiles,
+            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier or self.full_name.replace(" ", ""),
                                               self.gaussian_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
@@ -124,7 +124,7 @@ class GaussianBase(FiretaskBase):
                 self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
             else:
                 geometry_hash = fw_spec.get("{}_hash".format(geometry),
-                                            orig_hash_id(self.identifier or self.smiles, self.calc_name, self.paramset.functional,
+                                            orig_hash_id(self.identifier or self.full_name.replace(" ", ""), self.calc_name, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=solvent))
                 self.mol = get_db_geom(geometry_hash) or start_from_smiles(self.identifier, self.smiles)
@@ -205,7 +205,7 @@ class RunGaussianEnergy(GaussianBase):
                 return FWAction(
                     update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
                                  "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                 "{}_hash".format(self.full_name): get_hash_id(self.identifier or self.smiles, self.file_com,
+                                 "{}_hash".format(self.full_name): get_hash_id(self.identifier or self.full_name.replace(" ", ""), self.file_com,
                                                                                self.calc_name),
                                  "iop_str": self.iop_str})
 
@@ -262,7 +262,7 @@ class RunGaussianOpt(GaussianBase):
 
             # run gaussian optimization
             if not os.path.isfile(self.file_log) or not os.path.isfile(self.file_chk) or runs != 1:
-                print('SUBMITTING GAUSSIAN OPT JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
+                print('SUBMITTING GAUSSIAN OPT JOB {} for {}'.format(self.full_name, self.identifier or self.full_name.replace(" ", "")))
                 subprocess.call(self.gaussian_cmd + " " + self.file_com, shell=True)
             gout = GaussianOutput(self.file_log)
 
@@ -298,7 +298,7 @@ class RunGaussianOpt(GaussianBase):
 
             # run gaussian frequency
             if not os.path.isfile(self.freq_log) or not os.path.isfile(self.freq_chk) or runs != 1:
-                print('SUBMITTING GAUSSIAN FREQUENCY JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
+                print('SUBMITTING GAUSSIAN FREQUENCY JOB {} for {}'.format(self.full_name, self.identifier or self.full_name.replace(" ", "")))
                 subprocess.call("{} {} > {}".format(self.gaussian_cmd, self.freq_com, self.freq_log), shell=True)
             fgout = GaussianOutput(self.freq_log)
 
@@ -444,7 +444,7 @@ class RunGaussianTDDFT(GaussianBase):
             self.run_check()
 
         # run gaussian16
-        print('SUBMITTING GAUSSIAN TDDFT JOB {} for {}'.format(self.full_name, self.identifier or self.smiles))
+        print('SUBMITTING GAUSSIAN TDDFT JOB {} for {}'.format(self.full_name, self.identifier or self.full_name.replace(" ", "")))
         subprocess.call(self.gaussian_cmd + " " + self.file_com, shell=True)
 
         # check for normal termination of gaussian job
