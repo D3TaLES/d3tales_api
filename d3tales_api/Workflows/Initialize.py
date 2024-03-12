@@ -1,9 +1,10 @@
 import os
 import smtplib, ssl
-from d3tales_api.D3database.d3database import FrontDB
 from rdkit.Chem import MolFromSmiles, MolToSmiles
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 from fireworks import FiretaskBase, explicit_serialize, FWAction
+from d3tales_api.D3database.restapi import RESTAPI
+from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
 
 
 @explicit_serialize
@@ -12,7 +13,12 @@ class MoleculeInit(FiretaskBase):
     def run_task(self, fw_spec):
         identifier = self.get('identifier', )
         if identifier:
-            return FWAction(update_spec={"identifier": identifier})
+            response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
+                               url="https://d3tales.as.uky.edu", return_json=True).response
+            if response:
+                smiles = response[0].get("mol_info", {}).get('smiles', '')
+                if smiles:
+                    return FWAction(update_spec={"identifier": identifier})
 
         smiles = self.get('smiles', )
         group = self.get('origin_group', 'Risko')

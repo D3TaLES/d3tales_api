@@ -184,8 +184,8 @@ def parse_tddft(tddft_logfile):
     return d_results
 
 
-def get_hash_id(identifier, filepath, calc_type, output_file=None):
-    metadata = {"calculation_type": calc_type, "mol_file": filepath, "wtuning_output": output_file}
+def get_hash_id(identifier, filepath, calc_type, output_file=None, **kwargs):
+    metadata = {"calculation_type": calc_type, "mol_file": filepath, "wtuning_output": output_file, **kwargs}
     process_data = ProcessDFT(_id=identifier, metadata=metadata)
     return process_data.hash_id
 
@@ -200,6 +200,7 @@ def orig_hash_id(_id, calculation_type, functional, basis_set, tuning_parameter=
         "calculation_type": calculation_type,
         "conditions": conditions,
     }
+    print("CONDITIONS", conditions, hash_dict)
     dhash = hashlib.md5()
     encoded = json.dumps(hash_dict, sort_keys=True).encode()
     dhash.update(encoded)
@@ -218,13 +219,15 @@ def orig_conditions(functional, basis_set, tuning_parameter=None, solvent=None, 
         "basis_set": basis_set,
     }
     if tuning_parameter:
+        if "." not in str(tuning_parameter):
+            tuning_parameter = float('0.{}'.format(tuning_parameter[1:5]))
         data_dict['tuning_parameter'] = tuning_parameter
     if solvent:
         dielectric_constant = {"acetonitrile": 35.688}
         data_dict['solvent'] = {
-            'name': solvent,
+            'name': solvent.capitalize(),
             'model': 'implicit_solvent',
-            'dielectric_constant': dielectric_constant.get(solvent)
+            'dielectric_constant': dielectric_constant.get(solvent.lower())
         }
     return data_dict
 

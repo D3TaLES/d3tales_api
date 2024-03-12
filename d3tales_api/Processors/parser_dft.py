@@ -17,6 +17,8 @@ class ProcessCCLIB:
         self.log_path = metadata.get('mol_file', )
         self.wtuning_output = metadata.get('wtuning_output', '')
         self.calculation_type = metadata.get('calculation_type', )
+        self.solvent = metadata.get('solvent', None)
+        self.dielectric_constant = metadata.get('dielectric_constant', None)
 
     def cclib_parse(self):
         """

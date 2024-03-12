@@ -183,7 +183,7 @@ class ProcessDFT:
         }
         if self.DFTData.tuning_parameter:
             data_dict['tuning_parameter'] = self.DFTData.tuning_parameter
-        if getattr(self.DFTData, "solvent", None):
+        if self.DFTData.solvent:
             data_dict['solvent'] = {
                 'name': self.DFTData.solvent,
                 'model': 'implicit_solvent',

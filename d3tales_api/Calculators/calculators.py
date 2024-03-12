@@ -37,12 +37,15 @@ class D3Calculator(abc.ABC):
         d = {}
         for key, connection in self.key_pairs.items():
             try:
-                d.update({key: rgetattr(obj, connection)})
+                reg_val = rgetattr(obj, connection)
             except:
                 try:
-                    d.update({key: rgetkeys(obj, connection)})
+                    reg_val = rgetkeys(obj, connection)
                 except:
-                    continue
+                    reg_val = None
+            value = reg_val if key != reg_val else None
+            if value:
+                d.update({key: value})
         return d
 
     def calculate(self, data):
@@ -771,6 +774,7 @@ class RedoxPotentialCalc(D3Calculator):
         delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
 
         std_potential = get_electrode_potential(conns["electrode"]) if conns.get("electrode") else 4.42
+        print(std_potential, conns.get("num_electrons", 1))
         potential = -delta_g / conns.get("num_electrons", 1) + std_potential
 
         return float(np.format_float_scientific(potential, precision=precision))
