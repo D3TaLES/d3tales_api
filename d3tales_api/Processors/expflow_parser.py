@@ -48,7 +48,17 @@ class ProcessExpFlowObj:
             return reagent_instance[0]
         else:
             warnings.warn(
-                "Error. ExpFlow object {} has {} redox molecule entries".format(self.object_id, len(reagent_instance)))
+                "Error. ExpFlow object {} has {} solvent entries".format(self.object_id, len(reagent_instance)))
+
+    @property
+    def electrolyte(self):
+        """Redox molecule instance"""
+        reagent_instance = [e for e in self.reagents if e.type == "electrolyte"]
+        if len(reagent_instance) == 1:
+            return reagent_instance[0]
+        else:
+            warnings.warn(
+                "Error. ExpFlow object {} has {} electrolyte entries".format(self.object_id, len(reagent_instance)))
 
     @property
     def redox_mol(self):
