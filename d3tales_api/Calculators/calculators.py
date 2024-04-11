@@ -44,7 +44,7 @@ class D3Calculator(abc.ABC):
                 except:
                     reg_val = None
             value = reg_val if key != reg_val else None
-            if value:
+            if value is not None:
                 d.update({key: value})
         return d
 
@@ -558,7 +558,7 @@ class DirtyElectrodeDetector(D3Calculator):
 
 class CAResistanceCalculator(D3Calculator):
 
-    def calculate(self, data: dict, offset_factor: float = 5, return_error: bool = False):
+    def calculate(self, data: dict, offset_factor: float = 1, return_error: bool = False):
         """
         Calculator for calculating resistance after a CA experiment.
 
