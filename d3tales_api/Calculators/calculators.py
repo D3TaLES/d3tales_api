@@ -43,7 +43,7 @@ class D3Calculator(abc.ABC):
                     reg_val = rgetkeys(obj, connection)
                 except:
                     reg_val = None
-            value = reg_val if key != reg_val else None
+            value = reg_val if key is reg_val else None
             if value is not None:
                 d.update({key: value})
         return d
