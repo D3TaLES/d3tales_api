@@ -563,7 +563,7 @@ class CAResistanceCalculator(D3Calculator):
         Calculator for calculating resistance after a CA experiment.
 
         Connection Points
-            :i_s: list, current points (s)
+            :i_s: list, current points (A)
             :t_s: list, time points (s)
             :pulse_width: float, time width of a pulse (s)
             :steps: int, number of potentiostat sweeps
@@ -576,7 +576,7 @@ class CAResistanceCalculator(D3Calculator):
         :param return_error: return error and resistance if True
         :type return_error: bool
 
-        :return: array [resistance, resistance error] if return_error is True, else resistance
+        :return: array [resistance, resistance error] if return_error is True, else resistance in Ohm
         """
         self.data = data
         self.n = data.__len__()

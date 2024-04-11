@@ -244,6 +244,7 @@ class ProcessPotBase:
         self.reference_electrode = metadata.get("electrode_reference", '')
         self.temperature = metadata.get("temperature", '')
         self.redox_mol_concentration = metadata.get("redox_mol_concentration", '')
+        self.electrolyte_concentration = metadata.get("electrolyte_concentration", '')
         self.working_electrode_surface_area = metadata.get("working_electrode_surface_area", '')
         self.solvents = metadata.get("solvent") if isinstance(metadata.get("solvent"), list) else [
             metadata.get("solvent")] if metadata.get("solvent") else []
@@ -300,6 +301,7 @@ class ProcessPotBase:
             "instrument": self.instrument,
             "working_electrode_surface_area": self.data_format(self.working_electrode_surface_area),
             "redox_mol_concentration": self.data_format(self.redox_mol_concentration),
+            "electrolyte_concentration": self.data_format(self.electrolyte_concentration),
             "temperature": self.data_format(self.temperature),
             "experiment_run_id": self.experiment_run_id
         })

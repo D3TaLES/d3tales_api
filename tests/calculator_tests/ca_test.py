@@ -1,6 +1,6 @@
 from d3tales_api.Processors.d3tales_parser import *
 
-ca_file = os.path.join(os.getcwd(), '../raw_data', 'pot_data', 'CA.csv')
+ca_file = os.path.join(os.getcwd(), '../raw_data', 'ca_data', 'CA.csv')
 ca_metadata = {"data_type": "cv",
                "electrode_counter": "standard_hydrogen_electrode",
                "electrode_reference": "standard_hydrogen_electrode",
@@ -19,25 +19,16 @@ ca_metadata = {"data_type": "cv",
                "temperature": "273 K",
                "working_electrode_surface_area": "0.05 cm^2"}
 
-_id = "06TNKR"
+# _id = "06TNKR"
 # instance = ProcessCA(ca_file, _id=_id, metadata=ca_metadata)
 # print(instance.data_dict)
-print(ParseChiCA(ca_file).resistance)
+
+for fn in os.listdir(os.path.join(os.getcwd(), '../raw_data', 'ca_data')):
+    f_path = os.path.join(os.path.join(os.getcwd(), '../raw_data', 'ca_data'), fn)
+    if not f_path.endswith(".csv"):
+        continue
+    resistance = ParseChiCA(f_path).measured_resistance
+    print("{}: \t{:.2f}".format(fn.strip(".csv"), resistance))
 
 
-connector = {
-    "A": "data.conditions.working_electrode_surface_area",
-    "v": "data.conditions.scan_rate",
-    "C": "data.conditions.redox_mol_concentration",
-    "n": "num_electrodes",
-    "T": "data.conditions.temperature",
-    "D": "diffusion",
-
-    "scan_data": "data.scan_data",
-    "variable_prop": "data.conditions.scan_rate.value"
-}
-
-# dirty_calc = DirtyElectrodeDetector(connector=connector)
-# dirty = dirty_calc.calculate(instance.data_dict)
-
-print("CV TESTING SUCCESSFUL")
+print("CA TESTING SUCCESSFUL")
