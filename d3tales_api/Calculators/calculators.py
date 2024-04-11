@@ -43,7 +43,10 @@ class D3Calculator(abc.ABC):
                     reg_val = rgetkeys(obj, connection)
                 except:
                     reg_val = None
-            value = reg_val if key != reg_val else None
+            value = reg_val
+            if isinstance(reg_val, str):
+                if key == reg_val:
+                    value = None
             if value is not None:
                 d.update({key: value})
         return d
@@ -558,7 +561,7 @@ class DirtyElectrodeDetector(D3Calculator):
 
 class CAResistanceCalculator(D3Calculator):
 
-    def calculate(self, data: dict, offset_factor: float = 1, return_error: bool = False):
+    def calculate(self, data: dict, offset_factor: float = 5, return_error: bool = False):
         """
         Calculator for calculating resistance after a CA experiment.
 
@@ -591,11 +594,8 @@ class CAResistanceCalculator(D3Calculator):
         max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in
                  range(n_pulses)]
 
-        avg = np.sum(max_i) / n_pulses
-        std = np.std(max_i)
-
-        last_R = abs(float(conns["low_e"]) / avg)
-        last_dR = last_R * std / avg
+        last_R = abs(float(conns["low_e"]) / np.mean(max_i))
+        last_dR = last_R * np.std(max_i) / np.mean(max_i)
 
         return [last_R, last_dR] if return_error else last_R
 
