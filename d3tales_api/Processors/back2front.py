@@ -788,6 +788,7 @@ class CV2Front:
             print("Calculating {} charge transfer rate for oxidation {}...".format(curve_type, electron_num))
         transfer_cal = CVChargeTransferCalculatorMicro(connector=connector)
         instance.update(dict(diffusion=diffusion_coef))
+        # raise Exception(instance)
         transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
         return diffusion_coef, transfer_rate
 

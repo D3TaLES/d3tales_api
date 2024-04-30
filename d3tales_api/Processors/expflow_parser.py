@@ -20,10 +20,11 @@ class ProcessExpFlowObj:
     Base class for Processing ExpFlow objects for data analysis
     """
 
-    def __init__(self, expflow_obj, source_group, **kwargs):
+    def __init__(self, expflow_obj, source_group, redox_id_error=True, **kwargs):
         """
         :param expflow_obj: obj or dict, ExpFlow object to process
         :param source_group: str, source group for ExpFlow object
+        :param mol_id_error: bool, raise error if no redox mol id found if true, else use SMILES
         :param kwargs: object for processing ExpFlow objects
         """
         expflow_dict = expflow_obj if isinstance(expflow_obj, dict) else json.loads(
@@ -39,6 +40,7 @@ class ProcessExpFlowObj:
         self.concentration_smiles = None
         self.concentration_volume = None
         self.concentration_mass = None
+        self.redox_id_error = redox_id_error
 
     @property
     def solvent(self):
@@ -75,14 +77,20 @@ class ProcessExpFlowObj:
         """Molecule ID"""
         if not self.redox_mol:
             return None
-        rdkmol = MolFromSmiles(self.redox_mol.smiles)
-        clean_smiles = MolToSmiles(rdkmol)
-        check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
-        if check_id:
-            return check_id
-        instance = GenerateMolInfo(clean_smiles, database="frontend").mol_info_dict
-        db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles,
-                               group=self.source_group)
+        try:
+            rdkmol = MolFromSmiles(self.redox_mol.smiles)
+            clean_smiles = MolToSmiles(rdkmol)
+            check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
+            if check_id:
+                return check_id
+            instance = GenerateMolInfo(clean_smiles, database="frontend").mol_info_dict
+            db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles,
+                                   group=self.source_group)
+        except Exception as e:
+            if self.redox_id_error:
+                raise e
+            else:
+                return None
         return db_insertion.id
 
     @property
@@ -217,8 +225,13 @@ class ProcessExpFlowObj:
             "weight": "concentration_mass",
             "volume": "concentration_volume"
         }
-        return {"value": ConcentrationCalculator(connector=connector).calculate(self), "unit": "M"}
-
+        try:
+            return {"value": ConcentrationCalculator(connector=connector).calculate(self), "unit": "M"}
+        except Exception as e:
+            if self.redox_id_error:
+                raise e
+            else:
+                return None
     @property
     def redox_mol_concentration(self):
         """Concentration of redox-active molecule"""

@@ -321,6 +321,7 @@ class ParseChiCVMicro(ParseChiBase):
             print("CVPlotter does not have function ", prop_name)
             return return_type()
 
+
 class ParseChiCA(ParseChiBase):
     """
     Extract data from raw Chi CV experiment files
