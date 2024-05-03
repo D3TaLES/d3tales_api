@@ -417,8 +417,8 @@ class ProcessCVMicro(ProcessPotBase):
         radius = unit_conversion(metadata.get("working_electrode_radius"), default_unit="cm")
         print("RADIUS ", radius)
         if radius:
-            self.pot_conditions.update(dict(working_electrode_radius=radius))
-            self.pot_conditions.update(dict(working_electrode_surface_area=math.pi*(radius**2)))
+            self.pot_conditions.update(dict(working_electrode_radius="{} cm".format(radius)))
+            self.pot_conditions.update(dict(working_electrode_surface_area="{} cm^2".format(math.pi*(radius**2))))
 
     @property
     def data_dict(self):
