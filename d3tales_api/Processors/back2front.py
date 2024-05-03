@@ -790,7 +790,7 @@ class CV2Front:
         instance.update(dict(diffusion=diffusion_coef))
         # raise Exception(instance)
         transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
-        return diffusion_coef, transfer_rate
+        return float(diffusion_coef), float(transfer_rate)
 
     @property
     def e_halfs(self):

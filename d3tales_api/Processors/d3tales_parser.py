@@ -11,6 +11,7 @@ from d3tales_api.database_info import db_info
 from d3tales_api.Processors.parser_cv import *
 from d3tales_api.Processors.parser_dft import *
 from d3tales_api.Processors.parser_uvvis import *
+from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.D3database.d3database import DBconnector
 from d3tales_api.D3database.schema2class import Schema2Class
 
@@ -413,7 +414,7 @@ class ProcessCVMicro(ProcessPotBase):
         self.ParsedData = parsing_class(filepath, **kwargs)
 
         self.e_ref = metadata.get("e_ref")
-        radius = metadata.get("working_electrode_radius")
+        radius = unit_conversion(metadata.get("working_electrode_radius"), default_unit="cm")
         print("RADIUS ", radius)
         if radius:
             self.pot_conditions.update(dict(working_electrode_radius=radius))
@@ -470,7 +471,7 @@ class ProcessCA(ProcessPotBase):
         """
         c_measured = self.ParsedData.measured_conductivity
         if self.calib_measured and self.calib_true:
-            return np.interp(c_measured, self.calib_measured, self.calib_measured)
+            return np.interp(c_measured, self.calib_measured, self.calib_true)
         error_msg = f"Conductivity calculation requires calibration values. Found only {self.calib_measured} " \
                     f"and {self.calib_true} for calib_measured and calib_measured in metadata."
         if raise_error:

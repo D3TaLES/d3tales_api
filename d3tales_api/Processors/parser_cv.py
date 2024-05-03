@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import dateutil.parser
 from scipy.ndimage import gaussian_filter1d
@@ -281,7 +283,8 @@ class ParseChiCVMicro(ParseChiBase):
         # Find the inflection point
         inflection_points = np.where(np.diff(np.sign(current_d2)))[0]
         if len(inflection_points) != 1:
-            raise Exception(f"Error calculating E1/2 with microelectrode. {inflection_points} inflection points found.")
+            warnings.warn(f"Error calculating E1/2 with microelectrode. {[potential[i] for i in inflection_points]} inflection points found.")
+            return None
         return potential[inflection_points[0]]
 
     def calculate_prop(self, prop_name, return_type=dict):
