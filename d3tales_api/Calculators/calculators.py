@@ -405,7 +405,7 @@ class CVDiffusionCalculatorMicro(D3Calculator):
         conns = self.make_connections(data)
         print(conns)
 
-        i_ss = unit_conversion(conns["i_ss"], default_unit='cm^2')
+        i_ss = unit_conversion(conns["i_ss"], default_unit='A')
         n = conns["n"]
         C = unit_conversion(conns["C"], default_unit='mol/cm^3')
         r = unit_conversion(conns["r"], default_unit='cm')
