@@ -3,8 +3,9 @@
 
 
 API designed for the [D<sup>3</sup>TaLES project](https://d3tales.as.uky.edu/). Includes 
-data processing, database access functions, and property calculators. Documentation for the
-D<sup>3</sup>TaLES API can be found [here](https://d3tales.github.io/d3tales_api/).  
+data processing, database access functions, and property calculators. 
+
+## [Website with full documentation for the D<sup>3</sup>TaLES API can be found here](https://d3tales.github.io/d3tales_api/).  
 
 ## Modules 
 This API contains three modules: 
