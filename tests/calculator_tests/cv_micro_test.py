@@ -14,9 +14,9 @@ ca_metadata = {"data_type": "cv",
                "working_electrode_radius": "0.001cm"}
 
 _id = "06TNKR"
-instance = ProcessCVMicro(ca_file, _id=_id, metadata=ca_metadata).data_dict
-
-instance.update(dict(num_electrodes=1))
+# instance = ProcessCVMicro(ca_file, _id=_id, metadata=ca_metadata).data_dict
+#
+# instance.update(dict(num_electrodes=1))
 connector = {
     "i_ss": "data.i_ss",
     "r": "data.conditions.working_electrode_radius",
@@ -24,12 +24,30 @@ connector = {
     "n": "num_electrodes",
 }
 
-diff_calc = CVDiffusionCalculatorMicro(connector=connector)
-diff = diff_calc.calculate(instance)
-print(diff)
+# diff_calc = CVDiffusionCalculatorMicro(connector=connector)
+# diff = diff_calc.calculate(instance)
+# print(diff)
+#
+# metadata_dict = CV2Front(backend_data=[instance], run_anodic=False, insert=False,
+#                          micro_electrodes=True).meta_dict
+# [print(k, v, '\n') for k, v in metadata_dict.items()]
 
-metadata_dict = CV2Front(backend_data=[instance], run_anodic=False, insert=False,
-                         micro_electrodes=True).meta_dict
-[print(k, v, '\n') for k, v in metadata_dict.items()]
+instance = {
+          "i_ss": "0.39e-6 A",
+          "r": "5e-6 m",
+          "C": "50 mM",
+          "n": 1,
+
+          "e_half": "0.26 V",
+          "e_rev": "0.3 V",
+          "T": "298 K",
+      }
+diffusion_coef = CVDiffusionCalculatorMicro({k: k for k in instance.keys()}).calculate(instance)
+
+instance.update(dict(D=diffusion_coef))
+transfer_cal = CVChargeTransferCalculatorMicro(connector={k: k for k in instance.keys()})
+transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
+
+print(diffusion_coef, transfer_rate)
 
 print("CV TESTING SUCCESSFUL")

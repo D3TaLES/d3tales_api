@@ -403,7 +403,6 @@ class CVDiffusionCalculatorMicro(D3Calculator):
         self.data = data
         self.n = data.__len__()
         conns = self.make_connections(data)
-        print(conns)
 
         i_ss = unit_conversion(conns["i_ss"], default_unit='A')
         n = conns["n"]
@@ -458,7 +457,7 @@ class CVChargeTransferCalculator(D3Calculator):
 
 class CVChargeTransferCalculatorMicro(D3Calculator):
 
-    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
+    def calculate(self, data: dict, precision: int = 3, sci_notation: bool = False):
         """
         Charge transfer rate calculation for CVs gathered with ultramicroelectrodes
 
