@@ -457,25 +457,18 @@ class ProcessCA(ProcessPotBase):
         """
         super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
 
-        self.calib_measured = metadata.get("calib_measured")
-        self.calib_true = metadata.get("calib_true")
-
         self.ParsedData = parsing_class(filepath, **kwargs)
 
+        self.cell_constant = metadata.get("cell_constant", 1)
         self.resistance = 1/self.conductivity if self.conductivity else None
 
     @property
-    def conductivity(self, raise_error=False):
+    def conductivity(self):
         """
-        Get conductivity based on calibration
+        Get conductivity based on cell constant
         """
-        c_measured = self.ParsedData.measured_conductivity
-        if self.calib_measured and self.calib_true:
-            return np.interp(c_measured, self.calib_measured, self.calib_true)
-        error_msg = f"Conductivity calculation requires calibration values. Found only {self.calib_measured} " \
-                    f"and {self.calib_true} for calib_measured and calib_measured in metadata."
-        if raise_error:
-            raise ValueError(error_msg)
+        c_measured = self.ParsedData.measured_conductance
+        return c_measured * self.cell_constant
 
     @property
     def data_dict(self):

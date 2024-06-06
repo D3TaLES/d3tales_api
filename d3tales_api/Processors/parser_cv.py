@@ -277,7 +277,7 @@ class ParseChiCVMicro(ParseChiBase):
         potential = [i[0] for i in sweep]
         current = [i[1] for i in sweep]
         # smooth current data
-        smooth_current = gaussian_filter1d(current, 100)
+        smooth_current = gaussian_filter1d(current, 10)
         # compute second derivative
         current_d2 = np.gradient(np.gradient(smooth_current))
         # Find the inflection point
@@ -346,7 +346,7 @@ class ParseChiCA(ParseChiBase):
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
         self.measured_resistance = self.get_resistance()
-        self.measured_conductivity = 1 / self.measured_resistance
+        self.measured_conductance = 1 / self.measured_resistance
 
         self.conditions_data = {
             "data_source": 'ca',
@@ -370,7 +370,7 @@ class ParseChiCA(ParseChiBase):
             "r_int": self.r_int,
             "r_cor": self.r_cor,
             "measured_resistance": self.measured_resistance,
-            "measured_conductivity": self.measured_conductivity,
+            "measured_conductance": self.measured_conductance,
             "time": self.t.tolist(),
             "current": self.i.tolist(),
         }
