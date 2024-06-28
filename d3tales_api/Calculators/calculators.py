@@ -584,16 +584,18 @@ class CAResistanceCalculator(D3Calculator):
         self.n = data.__len__()
 
         conns = self.make_connections(data)
+        pulse_width = unit_conversion(conns["pulse_width"], default_unit='s')
+        low_e = unit_conversion(conns["low_e"], default_unit='V')
 
         dt = conns["t_s"][-1] / len(conns["t_s"])  # time interval per time measurement
-        n = float(conns["pulse_width"] / dt)  # number of time measurements in a pulse
+        n = float(pulse_width / dt)  # number of time measurements in a pulse
         n_pulses = math.floor(conns["steps"] / 2) - 1  # number of pulses
         offset = n / offset_factor  # a slight offset to measure voltage after switching
 
         max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in
                  range(n_pulses)]
 
-        last_R = abs(float(conns["low_e"]) / np.mean(max_i))
+        last_R = abs(float(low_e) / np.mean(max_i))
         last_dR = last_R * np.std(max_i) / np.mean(max_i)
 
         return [last_R, last_dR] if return_error else last_R

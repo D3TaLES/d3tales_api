@@ -202,8 +202,9 @@ class ProcessDFT:
         if document:
             return document['mol_info']
         else:
-            raise IOError("No molecule with id {} exists in the frontend database. Create an instance in the frontend "
+            warnings.warn("No molecule with id {} exists in the frontend database. Create an instance in the frontend "
                           "database first.".format(self.id))
+            return {}
 
     @property
     def is_groundState(self):
@@ -243,8 +244,14 @@ class ProcessPotBase:
         self.working_electrode = metadata.get("electrode_working", '')
         self.counter_electrode = metadata.get("electrode_counter", '')
         self.reference_electrode = metadata.get("electrode_reference", '')
-        self.temperature = metadata.get("temperature", '')
-        self.redox_mol_concentration = metadata.get("redox_mol_concentration", '')
+        self.temperature = {
+            "value": unit_conversion(metadata.get("temperature", ''), default_unit="K"),
+            "unit": "K"
+        }
+        self.redox_mol_concentration = {
+            "value": unit_conversion(metadata.get("redox_mol_concentration", ''), default_unit="M"),
+            "unit": "M"
+        }
         self.electrolyte_concentration = metadata.get("electrolyte_concentration", '')
         self.working_electrode_surface_area = metadata.get("working_electrode_surface_area", '')
         self.solvents = metadata.get("solvent") if isinstance(metadata.get("solvent"), list) else [
@@ -417,8 +424,8 @@ class ProcessCVMicro(ProcessPotBase):
         radius = unit_conversion(metadata.get("working_electrode_radius"), default_unit="cm")
         print("RADIUS ", radius)
         if radius:
-            self.pot_conditions.update(dict(working_electrode_radius="{} cm".format(radius)))
-            self.pot_conditions.update(dict(working_electrode_surface_area="{} cm^2".format(math.pi*(radius**2))))
+            self.pot_conditions.update(dict(working_electrode_radius=dict(value=radius, unit="cm")))
+            self.pot_conditions.update(dict(working_electrode_surface_area=dict(value=math.pi*(radius**2), unit="cm^2")))
 
     @property
     def data_dict(self):
@@ -457,25 +464,18 @@ class ProcessCA(ProcessPotBase):
         """
         super().__init__(filepath, _id, submission_info, metadata, parsing_class, **kwargs)
 
-        self.calib_measured = metadata.get("calib_measured")
-        self.calib_true = metadata.get("calib_true")
-
         self.ParsedData = parsing_class(filepath, **kwargs)
 
-        self.resistance = 1/self.conductivity if self.conductivity else None
+        self.cell_constant = metadata.get("cell_constant", 1)
 
     @property
-    def conductivity(self, raise_error=False):
+    def conductivity(self):
         """
-        Get conductivity based on calibration
+        Get conductivity based on cell constant
         """
-        c_measured = self.ParsedData.measured_conductivity
-        if self.calib_measured and self.calib_true:
-            return np.interp(c_measured, self.calib_measured, self.calib_true)
-        error_msg = f"Conductivity calculation requires calibration values. Found only {self.calib_measured} " \
-                    f"and {self.calib_true} for calib_measured and calib_measured in metadata."
-        if raise_error:
-            raise ValueError(error_msg)
+        c_measured = unit_conversion(self.ParsedData.parsed_data.get("measured_conductance"), default_unit="mS")
+        cell_constant = unit_conversion(self.cell_constant, default_unit="cm^-1")
+        return {"value": c_measured * cell_constant, "unit": "mS/cm"}
 
     @property
     def data_dict(self):
@@ -484,7 +484,6 @@ class ProcessCA(ProcessPotBase):
         """
         ca_data = self.ParsedData.parsed_data
         ca_data.update(dict(conditions=self.pot_conditions,
-                            resistance=self.resistance,
                             conductivity=self.conductivity
                             ))
         all_data_dict = {

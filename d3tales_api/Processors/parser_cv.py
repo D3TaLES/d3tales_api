@@ -95,6 +95,8 @@ class ParseChiBase:
                 self.pulse_width = self.extract_value_unit(line, value_type='float', return_dict=True)
 
             if line.startswith(data_header):
+                self.x_unit = line.split(",")[0].split("/")[1].strip()
+                self.y_unit = line.split(",")[1].split("/")[1].strip()
                 break
 
         self.all_data = np.loadtxt(self.file_path, delimiter=delimiter, skiprows=line_count+1)
@@ -137,13 +139,13 @@ class ParseChiCV(ParseChiBase):
         potentials = self.all_data[:, 0]
 
         if not getattr(self, "sample_interval", None):
-            self.sample_interval = {"value": np.average(np.absolute(np.diff(potentials))), "unit": ''}
+            self.sample_interval = {"value": np.average(np.absolute(np.diff(potentials))), "unit": self.x_unit}
         if not getattr(self, "high_e", None):
-            self.high_e = {"value": max(potentials), "unit": ''}
+            self.high_e = {"value": max(potentials), "unit": self.x_unit}
         if not getattr(self, "low_e", None):
-            self.low_e = {"value": min(potentials), "unit": ''}
+            self.low_e = {"value": min(potentials), "unit": self.x_unit}
         if not getattr(self, "low_e", None):
-            self.init_e = {"value": potentials[0], "unit": ''}
+            self.init_e = {"value": potentials[0], "unit": self.x_unit}
 
         scan_data = [s for s in break_scan_data(self.all_data) if len(s) > min_scan_len]
         self.num_scans = len(scan_data)
@@ -229,20 +231,19 @@ class ParseChiCVMicro(ParseChiBase):
         self.current = self.all_data[:, 1]
 
         if not getattr(self, "sample_interval", None):
-            self.sample_interval = {"value": np.average(np.absolute(np.diff(self.potential))), "unit": ''}
+            self.sample_interval = {"value": np.average(np.absolute(np.diff(self.potential))), "unit": self.x_unit}
         if not getattr(self, "high_e", None):
-            self.high_e = {"value": max(self.potential), "unit": ''}
+            self.high_e = {"value": max(self.potential), "unit": self.x_unit}
         if not getattr(self, "low_e", None):
-            self.low_e = {"value": min(self.potential), "unit": ''}
+            self.low_e = {"value": min(self.potential), "unit": self.x_unit}
         if not getattr(self, "low_e", None):
-            self.init_e = {"value": self.potential[0], "unit": ''}
+            self.init_e = {"value": self.potential[0], "unit": self.x_unit}
 
         scan_data = [s for s in break_scan_data(self.all_data) if len(s) > min_scan_len]
         self.num_scans = len(scan_data)
         self.scan_data = scan_data
-        self.peak_potential = max(self.potential)
-        self.i_ss = max(self.current) - min(self.current)
-        self.e_half = self.get_e_half(scan_data[0])
+        self.i_ss = {"value": max(self.current) - min(self.current), "unit": self.y_unit}
+        self.e_half = {"value": self.get_e_half(scan_data[0]), "unit": self.x_unit}
 
         self.conditions_data = {
             "data_source": 'cv',
@@ -263,7 +264,7 @@ class ParseChiCVMicro(ParseChiBase):
             "sample_interval": getattr(self, 'sample_interval', {}),
             "quiet_time": getattr(self, 'quiet_time', {}),
             "sensitivity": getattr(self, 'sensitivity', {}),
-            "peak_potential": self.peak_potential,
+            "peak_potential": self.high_e,
             "i_ss": self.i_ss,
             "e_half": [self.e_half],
             "scan_data": self.scan_data,
@@ -273,19 +274,26 @@ class ParseChiCVMicro(ParseChiBase):
         self.sample_interval_value = self.sample_interval.get("value")
 
     @staticmethod
-    def get_e_half(sweep):
-        potential = [i[0] for i in sweep]
-        current = [i[1] for i in sweep]
+    def inflection_points(y_values, sigma=10):
         # smooth current data
-        smooth_current = gaussian_filter1d(current, 100)
+        smooth_current = gaussian_filter1d(y_values, sigma)
         # compute second derivative
         current_d2 = np.gradient(np.gradient(smooth_current))
         # Find the inflection point
-        inflection_points = np.where(np.diff(np.sign(current_d2)))[0]
-        if len(inflection_points) != 1:
-            warnings.warn(f"Error calculating E1/2 with microelectrode. {[potential[i] for i in inflection_points]} inflection points found.")
-            return None
-        return potential[inflection_points[0]]
+        return np.where(np.diff(np.sign(current_d2)))[0]
+
+    def get_e_half(self, sweep, sigma=None):
+        potential = [i[0] for i in sweep]
+        current = [i[1] for i in sweep]
+        test_sigmas = [sigma] if sigma else [5, 10, 20, 50, 100, 150, 200]
+        for sigma in test_sigmas:
+            inflection_points = self.inflection_points(current, sigma=sigma)
+            if len(inflection_points) == 1:
+                print(f"Inflection point {potential[inflection_points[0]]} found with sigma {sigma} ")
+                return potential[inflection_points[0]]
+        warnings.warn(
+            f"Error calculating E1/2 with microelectrode. Sigma {test_sigmas} tested. "
+            f" {[potential[i] for i in inflection_points]} inflection points found.")
 
     def calculate_prop(self, prop_name, return_type=dict):
         """
@@ -338,6 +346,10 @@ class ParseChiCA(ParseChiBase):
 
         self.t = self.all_data[:, 0]
         self.i = self.all_data[:, 1]
+        if self.x_unit != "s":
+            pass  # TODO convert to s and A if not already there.
+        if self.y_unit != "A":
+            pass
         self.f_slp = self.get_data_calcs(calc_name="Slp", header="Forward:")
         self.f_int = self.get_data_calcs(calc_name="Int", header="Forward:")
         self.f_cor = self.get_data_calcs(calc_name="Cor", header="Forward:")
@@ -346,7 +358,7 @@ class ParseChiCA(ParseChiBase):
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
         self.measured_resistance = self.get_resistance()
-        self.measured_conductivity = 1 / self.measured_resistance
+        self.measured_conductance = 1 / self.measured_resistance
 
         self.conditions_data = {
             "data_source": 'ca',
@@ -369,8 +381,8 @@ class ParseChiCA(ParseChiBase):
             "r_slp": self.r_slp,
             "r_int": self.r_int,
             "r_cor": self.r_cor,
-            "measured_resistance": self.measured_resistance,
-            "measured_conductivity": self.measured_conductivity,
+            "measured_resistance": {"value": self.measured_resistance, "unit": "Ohm"},
+            "measured_conductance": {"value": self.measured_conductance, "unit": "S"},
             "time": self.t.tolist(),
             "current": self.i.tolist(),
         }
@@ -379,9 +391,9 @@ class ParseChiCA(ParseChiBase):
         connector = {
             "i_s": "i",
             "t_s": "t",
-            "pulse_width": "pulse_width.value",
+            "pulse_width": "pulse_width",
             "steps": "step",
-            "low_e": "low_e.value",
+            "low_e": "low_e",
         }
         r_calculator = CAResistanceCalculator(connector=connector)
         return r_calculator.calculate(self.__dict__, **kwargs)

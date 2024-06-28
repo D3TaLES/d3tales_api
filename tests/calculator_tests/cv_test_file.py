@@ -10,22 +10,26 @@ ROBOT_DATA = True
 ONLY_ONE = True
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_TEMPERATURE = "293K"
-DEFAULT_WORKING_ELECTRODE_AREA = "0.03142cm^2"
+DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
+DEFAULT_WORKING_ELECTRODE_AREA = f"{(math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2))}cm^2"
 print("Concentration: ", DEFAULT_CONCENTRATION)
 
 if ROBOT_DATA:
     cv_dir = "../raw_data/robotic_data"
-    cv_locations = sorted([os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")])
+    cv_locations = sorted([os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv") or f.endswith(".txt")])
     if ONLY_ONE:
-        print(cv_locations[7])
-        cv_locations = [cv_locations[7]]
-    cv_entries = [ProcessCV(loc, _id="test", submission_info={}, metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE, "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA}, parsing_class=ParseChiCV).data_dict for loc in cv_locations]
+        print(cv_locations[0])
+        cv_locations = [cv_locations[0]]
+    cv_entries = [ProcessCVMicro(loc, _id="test", submission_info={},
+                            metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
+                                      "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA},
+                            parsing_class=ParseChiCV).data_dict for loc in cv_locations]
 else:
     cv_data = ProcessCV("../raw_data/aman_cv2.csv", _id='test', parsing_class=ParseChiCV).data_dict
     cv_entries = [cv_data]
 
 [d.update({"num_electrons": NUM_ELECTRONS}) for d in cv_entries]
-[d.update({"current_cathodic": d.get("data", {}).get("forward", [[]])[NUM_ELECTRONS - 1][1]}) for d in cv_entries]
+# [d.update({"current_cathodic": d.get("data", {}).get("forward", [[]])[NUM_ELECTRONS - 1][1]}) for d in cv_entries]
 
 
 connector = {
@@ -60,17 +64,18 @@ connector = {
 # print(cv_entries[0].get("data", {}).get("scan_data"))
 # print(cv_entries[0].get("data", {}).get("conditions"))
 
-descriptor_cal = CVDescriptorCalculator(connector=connector)
-print(descriptor_cal.peaks(cv_entries[0]))
-print(descriptor_cal.reversibility(cv_entries[0]))
-print(descriptor_cal.e_half(cv_entries[0]))
+# descriptor_cal = CVDescriptorCalculator(connector=connector)
+# print(descriptor_cal.peaks(cv_entries[0]))
+# print(descriptor_cal.reversibility(cv_entries[0]))
+# print(descriptor_cal.e_half(cv_entries[0]))
 # descriptor_cal.peak_splittings(cv_entries[0])
 # len(descriptor_cal.middle_sweep(cv_entries[0]))
 #
 # cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[0], fig_path="cv_test.png", self_standard=SELF_STD,
 #                                                                   title="CV Plot", xlabel="x", ylabel='y')
-cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD,
-                                                                  title="CV Plot", xlabel="Potential (V) vs Ag/$Ag^+$", ylabel=None,
-                                                                  legend_title="Scan Rate (V/s)", a_to_ma=True, current_density=True)
+# cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=SELF_STD,
+#                                                                   title="CV Plot", xlabel="Potential (V) vs Ag/$Ag^+$", ylabel=None,
+#                                                                   legend_title="Scan Rate (V/s)", a_to_ma=True, current_density=True)
 
+print(cv_entries[0])
 print("CV TESTING SUCCESSFUL")
