@@ -1,7 +1,9 @@
-from d3tales_api.Processors.d3tales_parser import *
-from d3tales_api.Processors.back2front import CV2Front
+import os
+from d3tales_api.Processors.parser_echem import ProcessChiCV
+from d3tales_api.Calculators.calculators import CVChargeTransferCalculatorMicro, CVDiffusionCalculatorMicro
 
-ca_file = os.path.join(os.getcwd(), '../raw_data', 'robotic_data', 'cycle04_cv01_14_43_42.txt')
+
+ca_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'CV_microelectrode.csv')
 ca_metadata = {"data_type": "cv",
                "electrode_counter": "pt_working_electrode",
                "electrode_reference": "ag_reference_electrode",
@@ -10,11 +12,12 @@ ca_metadata = {"data_type": "cv",
                "instrument": "robot_potentiostat",
                "redox_mol_concentration": "0.05 M",
                "solvent": ["ACN"],
+               "e_rev": "0.3 V",
                "temperature": "293 K",
                "working_electrode_radius": "0.00055cm"}
 
 _id = "06TNKR"
-instance = ProcessCVMicro(ca_file, _id=_id, metadata=ca_metadata).data_dict
+instance = ProcessChiCV(ca_file, _id=_id, metadata=ca_metadata, micro_electrodes=True).data_dict
 
 instance.update(dict(num_electrodes=1))
 connector = {
@@ -22,6 +25,10 @@ connector = {
     "r": "data.conditions.working_electrode_radius",
     "C": "data.conditions.redox_mol_concentration",
     "n": "num_electrodes",
+    "e_half": "data.e_half",
+    "e_rev": "data.e_rev",
+    "T": "data.conditions.temperature",
+    "D": "D",
 }
 
 # diff_calc = CVDiffusionCalculatorMicro(connector=connector)
@@ -42,11 +49,11 @@ connector = {
 #           "e_rev": "0.3 V",
 #           "T": "298 K",
 #       }
-diffusion_coef = CVDiffusionCalculatorMicro({k: k for k in instance.keys()}).calculate(instance)
+print(instance["data"].keys())
+diffusion_coef = CVDiffusionCalculatorMicro(connector=connector).calculate(instance)
 
 instance.update(dict(D=diffusion_coef))
-transfer_cal = CVChargeTransferCalculatorMicro(connector={k: k for k in instance.keys()})
-transfer_rate = transfer_cal.calculate(instance, sci_notation=True)
+transfer_rate = CVChargeTransferCalculatorMicro(connector=connector).calculate(instance, sci_notation=True)
 #
 # print(diffusion_coef, transfer_rate)
 

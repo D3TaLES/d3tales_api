@@ -7,32 +7,17 @@ Python-based interaction with the [D<sup>3</sup>TaLES REST API](https://d3tales.
 
 Full documentation can be found [here](d3tales_api.D3database.html).
 
-### Basic Data Generation
 
-The `GenerateMolInfo` module can be used to generate several 2D molecular descriptors 
-from a SMILES string input. The descriptors can be accessed as attributes of the resulting
-class or accessed as a dictionary with the `mol_info_dict` attribute. These descriptors include
-`smiles`, `selfies`, `inchi`, `inchi_key`, `iupac_name`, `synonyms`, `init_structure` (coordinates 
-for estimated 3D geometry), `molecular_formula`, `groundState_charge`, `number_of_atoms`, 
-`molecular_weight`, `d2_image` (bit string for molecule image), `source_group`, and `groundState_spin`. 
-
-```python
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
-
-# Generate basic molecule information using the GenerateMolInfo module
-smiles = "CC"
-instance = GenerateMolInfo(smiles, database="frontend")
-print(instance.mol_info_dict)
-```
 ## Data Insertion
 
 
 The following example show the insertion of generated molecule information (see above)
 into the frontend database. Note that information will be inserted into the database 
-specified in the `DB_INFO_FILE`. 
+specified in the `DB_INFO_FILE`.
+
 ```python
 from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 # Generate basic molecule information using the GenerateMolInfo module
 smiles = "CC"

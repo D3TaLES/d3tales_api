@@ -8,7 +8,6 @@ import pandas as pd
 import seaborn as sns
 from scipy import stats
 from pathlib import Path
-from d3tales_api.D3database.d3database import FrontDB
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 USERNAME = ''  # for pulling data

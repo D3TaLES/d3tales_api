@@ -1,7 +1,7 @@
 import json
 from sys import argv
 from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 
 if __name__ == "__main__":

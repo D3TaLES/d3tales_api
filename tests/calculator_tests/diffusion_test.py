@@ -6,7 +6,7 @@ Testing of diffusion calculator for ferricynide
 
 import os
 from d3tales_api.Calculators.calculators import *
-from d3tales_api.Processors.d3tales_parser import ProcessCV, ParseChiCV
+from d3tales_api.Processors.parser_echem import ProcessChiCV
 
 num_electrons = 1
 temperature = "298 K"
@@ -19,7 +19,7 @@ multi_data = []
 cv_dir = os.path.abspath(os.path.join(os.path.join(os.getcwd(), os.pardir), 'raw_data', 'cv_data'))
 for f in [f for f in os.listdir(cv_dir)]:
     print("Parsing file ", f, "...")
-    cv_i_data = ProcessCV(os.path.join(cv_dir, f), _id='test', parsing_class=ParseChiCV).data_dict
+    cv_i_data = ProcessChiCV(filepath=os.path.join(cv_dir, f), _id='test').data_dict
     multi_data.append(cv_i_data)
 
 # Iterate through each data item, setting global variables for each one

@@ -1,4 +1,4 @@
-from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
+from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
 from d3tales_api.D3database.d3database import DBconnector
 from d3tales_api.database_info import db_info
 from tqdm import tqdm

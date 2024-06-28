@@ -33,7 +33,7 @@ def db_info_generator(db_file=None):
         return json.load(f)
 
 
-def source_groups_generator(group_file=None):
+def source_groups_generator(group_file=None, verbose=0):
     """
     Get information about database connections. This function requires either a group_file argument
     or a GROUP_FILE environment variable. This argument or  environment variable should be a path
@@ -41,12 +41,13 @@ def source_groups_generator(group_file=None):
     and the values should be strings with two digit numbers, e.g., {"Risko": "06"}.
 
     :param group_file: str, path to database info JSON file
+    :param verbose: int,
 
     :return: JSON object containing information about source group codes
     """
     group_file = group_file or os.environ.get('GROUP_FILE') or os.getenv('GROUP_FILE')
     if not group_file:
-        print("Environment variable GROUP_FILE not defined. Default group information is in ues. ")
+        print("Environment variable GROUP_FILE not defined. Default group information is in ues. ") if verbose else None
         return {
             "": '00',
             "unknown": '00',

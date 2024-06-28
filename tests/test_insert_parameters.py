@@ -1,5 +1,5 @@
 from d3tales_api.D3database.d3database import ParamsDB
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 electrode_dict = {
     "_id": "standard hydrogen electrode",

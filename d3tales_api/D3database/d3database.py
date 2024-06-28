@@ -8,7 +8,7 @@ from datetime import datetime
 from monty.json import jsanitize
 from d3tales_api.database_info import db_info, source_groups
 from d3tales_api.D3database.schema2class import Schema2Class
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 from pymongo import MongoClient
 

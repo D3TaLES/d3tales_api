@@ -1,7 +1,8 @@
 import os
 from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
-from d3tales_api.Processors.d3tales_parser import *
+from d3tales_api.Processors.parser_echem import ProcessChiCV
+
 
 SELF_STD = True
 NUM_ELECTRONS = 1
@@ -20,12 +21,13 @@ if ROBOT_DATA:
     if ONLY_ONE:
         print(cv_locations[0])
         cv_locations = [cv_locations[0]]
-    cv_entries = [ProcessCVMicro(loc, _id="test", submission_info={},
-                            metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
-                                      "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA},
-                            parsing_class=ParseChiCV).data_dict for loc in cv_locations]
+    cv_entries = [ProcessChiCV(loc, _id="test", submission_info={}, micro_electrodes=True,
+                               metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION,
+                                         "temperature": DEFAULT_TEMPERATURE,
+                                         "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA},
+                               ).data_dict for loc in cv_locations]
 else:
-    cv_data = ProcessCV("../raw_data/aman_cv2.csv", _id='test', parsing_class=ParseChiCV).data_dict
+    cv_data = ProcessChiCV("../raw_data/aman_cv2.csv", _id='test').data_dict
     cv_entries = [cv_data]
 
 [d.update({"num_electrons": NUM_ELECTRONS}) for d in cv_entries]

@@ -66,6 +66,7 @@ class D3Calculator(abc.ABC):
             "T": "Temperature (default = 293 K)",
             "X": "peak shift (default = V)",
             "e": "E1/2 (default = V)",
+            "e_rev": "formal potential (default = V)",
             "electrode": "electrode name as str or potential as float (default = standard_hydrogen_electrode)",
             "energy": "energy another geometry (default = eV)",
             "energy_final": "energy final (default = eV)",
@@ -467,7 +468,7 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
             :n: number of electrons
             :T: Temperature (default = 293 K)
             :D: Diffusion constant (default = cm^2/s)
-            :r: radius of ultramicroelectrode (default = cm)
+            :r: radius of ultra-microelectrode (default = cm)
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)

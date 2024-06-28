@@ -12,7 +12,6 @@ from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import *
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.D3database.d3database import D3Database
 from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 
 logger = get_logger(__name__)
@@ -597,6 +596,7 @@ class RunGaussianDihedRot(GaussianBase):
                 "runtimes": {int(degree): runtime},
                 "backbone_length": {int(degree): backbone_len}
             }
+            from d3tales_api.D3database.d3database import D3Database
             D3Database(database="random", collection_name="dihed_rot", instance=insert_data).insert(self.identifier,
                                                                                                     nested=True)
 

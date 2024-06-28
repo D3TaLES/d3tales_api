@@ -1,30 +1,210 @@
 import re
+import hashlib
 from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
+from d3tales_api.database_info import db_info
+from d3tales_api.D3database.d3database import DBconnector
 from pymatgen.io.gaussian import GaussianOutput, GaussianInput
 
 
-class ProcessCCLIB:
+class ProcessDFTBase:
     """
-    Class to process most logfiles using https://cclib.github.io/index.html.
+    Class to process molecular DFT output files.
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, metadata=None):
+    def __init__(self, _id: str = None, filepath: str = None, submission_info: dict = None, metadata: dict = None):
         """
+        :param _id: str, molecule ID
+        :param filepath: str, log file path
+        :param submission_info: dict, submission information
         :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
         """
+        submission_info = submission_info or {}
+        self.energy_unit = ""
+        self.data_path = filepath or metadata.get("mol_file")
+        self.id = _id
+        self.submission_info = json.loads(json.dumps(submission_info, ))
+
         self.log_path = metadata.get('mol_file', )
         self.wtuning_output = metadata.get('wtuning_output', '')
         self.calculation_type = metadata.get('calculation_type', )
         self.solvent = metadata.get('solvent', None)
         self.dielectric_constant = metadata.get('dielectric_constant', None)
 
+    @property
+    def data_dict(self):
+        """
+        Dictionary of processed data (in accordance with D3TalES backend schema)
+        """
+        if self.calculation_type == 'wtuning':
+            all_data_dict = {
+                "_id": self.hash_id,
+                "mol_id": self.id,
+                "submission_info": self.submission_info,
+                "calculation_type": self.calculation_type,
+                "data": {
+                    "conditions": self.conditions,
+                    "omega": self.omega
+                }
+            }
+            json_data = json.dumps(all_data_dict)
+            return json.loads(json_data)
+        data_dict = {
+            "conditions": self.conditions,
+            "charge": self.charge,
+            "spin_multiplicity": self.spin_multiplicity,
+            "number_of_electrons": sum(self.electrons)
+        }
+        try:
+            data_dict.update({"is_groundState": self.is_groundState})
+        except ConnectionError:
+            print("Warning. Could not connect to the database, so no 'is_groundState' property was specified. "
+                  "DB_INFO_FILE may not be defined.")
+        if 'freq' in self.calculation_type:
+            data_dict.update({
+                "gibbs_correction": {
+                    "value": self.gibbs_correction * 27.2114,  # convert to eV
+                    "unit": self.energy_unit
+                },
+                "frequency_dict": self.frequency_dicts
+            })
+        elif 'opt' in self.calculation_type or 'energy' in self.calculation_type:
+            data_dict.update({
+                "scf_total_energy": {
+                    "value": self.final_energy,
+                    "unit": self.energy_unit
+                },
+                "scf_dipole_moment": {
+                    "value": self.dipole_moments[-1],
+                    "unit": "Debye"
+                },
+                "homo": {
+                    "value": self.homo,
+                    "unit": self.energy_unit
+                },
+                "lumo": {
+                    "value": self.lumo,
+                    "unit": self.energy_unit
+                },
+                "homo_1": {
+                    "value": self.homo_1,
+                    "unit": self.energy_unit
+                },
+                "lumo_1": {
+                    "value": self.lumo_1,
+                    "unit": self.energy_unit
+                },
+            })
+            if 'opt' in self.calculation_type:
+                if (int(self.spin_multiplicity) % 2) == 0:
+                    rss_dict = self.get_radical_stability_score(spin_type="mulliken")
+                    if rss_dict:
+                        data_dict.update(rss_dict)
+                data_dict.update({"geometry": self.final_structure})
+        elif 'tddft' in self.calculation_type:
+            data_dict.update({
+                "excitations": self.tddft_excitations,
+                "singlet_plotting": self.tddft_spectra_data,
+                "scf_dipole_moment": {
+                    "value": self.dipole_moments[-1],
+                    "unit": "Debye"
+                },
+            })
+        all_data_dict = {
+            "_id": self.hash_id,
+            "mol_id": self.id,
+            "submission_info": self.submission_info,
+            "calculation_type": self.calculation_type,
+            "runtime": self.runtime,
+            "data": data_dict
+        }
+        json_data = json.dumps(all_data_dict)
+        return json.loads(json_data)
+
+    @property
+    def hash_id(self):
+        """
+        Hash ID
+        """
+        hash_dict = {
+            "_id": self.id,
+            "calculation_type": self.calculation_type,
+            "conditions": self.conditions,
+        }
+        dhash = hashlib.md5()
+        encoded = json.dumps(hash_dict, sort_keys=True).encode()
+        dhash.update(encoded)
+        return dhash.hexdigest()
+
+    @property
+    def conditions(self):
+        """
+        Dictionary of conditions (in accordance with D3TaLES backend schema)
+        """
+        data_dict = {
+            "data_source": 'dft',
+            "code_name": getattr(self, "code_name", None),
+            "code_version": getattr(self, "code_version", None),
+            "functional": getattr(self, "functional", None),
+            "basis_set": getattr(self, "basis_set", None),
+        }
+        if getattr(self, "tuning_parameter", None):
+            data_dict['tuning_parameter'] = getattr(self, "tuning_parameter")
+        if self.solvent:
+            data_dict['solvent'] = {
+                'name': self.solvent,
+                'model': 'implicit_solvent',
+                'dielectric_constant': self.dielectric_constant
+            }
+        return data_dict
+
+    @property
+    def mol_info(self):
+        """
+        Dictionary containing basic molecule information using the ID from the D3TalES database
+        """
+        base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+        document = base_coll.find_one({"_id": self.id})
+        if document:
+            return document['mol_info']
+        else:
+            warnings.warn("No molecule with id {} exists in the frontend database. Create an instance in the frontend "
+                          "database first.".format(self.id))
+            return {}
+
+    @property
+    def is_groundState(self):
+        """
+        True if current species is the ground state, else False
+        """
+        mol_info = self.mol_info
+        if 'groundState_charge' in mol_info.keys():
+            gs_charge = mol_info['groundState_charge']
+            return True if gs_charge == self.charge else False
+        else:
+            raise IOError("The molecule does not have a specified groundState_charge.")
+
+    @property
+    def runtime(self):
+        raise NotImplementedError
+
+    def get_radical_stability_score(self, spin_type=''):
+        raise NotImplementedError
+
+
+class ProcessCCLIBMixin:
+    """
+    Class to process most logfiles using https://cclib.github.io/index.html.
+    Copyright 2021, University of Kentucky
+    """
+    log_path: str
+
     def cclib_parse(self):
         """
         Use CCLIB to parse data file
         """
-        if not self.wtuning_output:
+        if not getattr(self, "wtuning_output", None):
             self.cmol = cclib.io.ccopen(self.log_path).parse()
             # self.functional = self.cmol.functional  # TODO basis set
             # self.basis_set = self.cmol.basis_set  # TODO basis set
@@ -88,30 +268,30 @@ class ProcessCCLIB:
                     radical_stability_score={"value": RSSCalc(connector=connector).calculate(c_data)})
 
 
-class ProcessPsi4Log(ProcessCCLIB):
+class ProcessPsi4Log(ProcessDFTBase, ProcessCCLIBMixin):
     """
     Class to process Psi4 logfiles.
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, metadata=None):
-        super().__init__(metadata=metadata)
-
+    def __init__(self, _id: str = None, filepath: str = None, submission_info: dict = None, metadata: dict = None):
+        super().__init__(_id=_id, filepath=filepath, submission_info=submission_info, metadata=metadata)
         # TODO finish
 
 
-class ProcessGausLog(ProcessCCLIB):
+class ProcessGausLog(ProcessDFTBase, ProcessCCLIBMixin):
     """
     Class to process Gaussian logfiles.
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, metadata=None):
+    def __init__(self, _id: str = None, filepath: str = None, submission_info: dict = None, metadata: dict = None):
         """
         :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
         """
-        super().__init__(metadata=metadata)
+        super().__init__(_id=_id, filepath=filepath, submission_info=submission_info, metadata=metadata)
 
+        self.energy_unit = "eV"
         self.log_path = metadata.get('mol_file', )
         self.wtuning_output = metadata.get('wtuning_output', '')
         self.calculation_type = metadata.get('calculation_type', )

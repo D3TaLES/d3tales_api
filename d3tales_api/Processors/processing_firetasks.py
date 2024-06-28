@@ -7,14 +7,16 @@ import zipfile
 import paramiko
 import traceback
 from pathlib import Path
-from multiprocessing import Process
 from atomate.utils.utils import env_chk
-from d3tales_api.D3database.d3database import *
-from d3tales_api.D3database.restapi import RESTAPI
-from d3tales_api.Processors.d3tales_parser import *
 from fireworks.core.firework import FiretaskBase, FWAction
 from fireworks.utilities.fw_utilities import explicit_serialize
-from d3tales_api.Processors.back2front import Gaus2FrontCharacterization
+
+from d3tales_api.D3database.d3database import *
+from d3tales_api.D3database.restapi import RESTAPI
+from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
+from d3tales_api.Processors.utils import *
+from d3tales_api.Processors.parser_dft import ProcessGausLog
+from d3tales_api.Processors.parser_echem import ProcessChiCV
 
 # Copyright 2021, University of Kentucky
 TESTING = os.environ.get('TESTING') or os.getenv('TESTING') or False
@@ -22,37 +24,22 @@ LOCAL_STORAGE = os.environ.get('LOCAL_STORAGE') or os.getenv('LOCAL_STORAGE') or
 RMSD_DEFAULT = os.environ.get('RMSD_DEFAULT') or os.getenv('RMSD_DEFAULT') or False
 
 
-def mkdir_p(sftp, remote_directory):
-    dir_path = str()
-    for dir_folder in remote_directory.split("/"):
-        if dir_folder == "":
-            continue
-        dir_path += r"/{0}".format(dir_folder)
-        try:
-            sftp.listdir(dir_path)
-        except IOError:
-            sftp.mkdir(dir_path)
-
-def test_path(sftp, destination_path):
-    folder_name = destination_path.split("/")[-1]
-    folder_dir = "/".join(destination_path.split("/")[:-1])
-    return True if folder_name in sftp.listdir(folder_dir) else False
-
 @explicit_serialize
 class FileTransferTask(FiretaskBase):
     """
     A Firetask to Transfer files. Note that
 
-    :param mode: str, - move, mv, copy, cv, copy2, copytree, copyfile, rtransfer
-    :param files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing 'src' and 'dest' keys
+    Firetask Arguments:
+    mode: str, - move, mv, copy, cv, copy2, copytree, copyfile, transfer
+    files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing 'src' and 'dest' keys
 
-    :param dest: str, optional, destination directory, if not specified within files parameter (else optional)
-    :param server: str, optional, server host for remote transfer
-    :param user: str, optional, user to authenticate with on remote server
-    :param key_filename: str, optional, optional SSH key location for remote transfer
-    :param max_retry: int, optional, number of times to retry failed transfers; defaults to `0` (no retries)
-    :param retry_delay: int, optional, number of seconds to wait between retries; defaults to `10`
-    :param ignore_errors: bool, optional, Whether to ignore errors. Defaults to False.
+    dest: str, optional, destination directory, if not specified within files parameter (else optional)
+    server: str, optional, server host for remote transfer
+    user: str, optional, user to authenticate with on remote server
+    key_filename: str, optional, optional SSH key location for remote transfer
+    max_retry: int, optional, number of times to retry failed transfers; defaults to `0` (no retries)
+    retry_delay: int, optional, number of seconds to wait between retries; defaults to `10`
+    ignore_errors: bool, optional, Whether to ignore errors. Defaults to False.
     """
     _fw_name = 'FileTransferTask'
 
@@ -137,14 +124,14 @@ class ProcessFile(FiretaskBase):
                     logfile = [f for f in names if ".log" in f][0]
                     mol_file = target_zip.extract(member=logfile)
                 metadata["mol_file"] = mol_file
-                data = ProcessDFT(_id=mol_id, submission_info=submission_data, metadata=metadata).data_dict
+                data = ProcessGausLog(_id=mol_id, submission_info=submission_data, metadata=metadata).data_dict
                 if automatic_approval:
                     Gaus2FrontCharacterization.from_data(data, rmsd=RMSD_DEFAULT)
                     pass
             if data_type == 'cv':
                 file = [f for f in names if ".txt" in f or "csv" in f][0]
                 datafile = target_zip.extract(member=file)
-                data = ProcessCV(datafile, _id=mol_id, submission_info=submission_data,
+                data = ProcessChiCV(datafile, _id=mol_id, submission_info=submission_data,
                                  metadata=metadata).data_dict
         target_zip.close()
 
@@ -259,7 +246,7 @@ class UpdateUserDB(FiretaskBase):
     _fw_name = "UpdateUserDB"
 
     def run_task(self, fw_spec):
-        processing_id = str(self.fw_id)
+        processing_id = str(getattr(fw_spec, "fw_id", ""))
         hash_id = fw_spec["hash_id"]
         automatic_approval = fw_spec.get("automatic_approval") or self.get("automatic_approval", False)
         processed_data = json.loads(json.dumps(fw_spec["processed_data"]["data"]))

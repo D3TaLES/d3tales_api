@@ -1,11 +1,10 @@
-import warnings
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.Calculators.utils import dict2obj
 from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 
 def get_id(o):
