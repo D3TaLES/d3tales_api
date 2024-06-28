@@ -803,7 +803,7 @@ class CV2Front:
         self.e_halfs_id = e_half_data.get("_id")
         self.e_halfs_conditions = e_half_data.get("data", {}).get("conditions")
         e_halfs = e_half_data.get("data", {}).get("e_half")
-        return [self.prop_dict(e_half, unit="V", order=i + 1, hashes=[self.e_halfs_id],
+        return [self.prop_dict(e_half.get("value"), unit=e_half.get("unit"), order=i + 1, hashes=[self.e_halfs_id],
                                conditions=self.e_halfs_conditions) for i, e_half in enumerate(e_halfs)]
 
     @classmethod
