@@ -131,6 +131,27 @@ class D3talesData:
                 return _dict[int(key)]
 
         return functools.reduce(_getkey, [_dict] + keys.split('.'))
+    def get_prop_data_raw(self, query, database='molecules', limit=0):
+        """
+        Get property data from D3TaLES database based on RESTAPI query
+
+        :param query: str, D3TaLES REST API query
+        :param database: str, name of database to query
+        :param limit: limit query items to return
+
+        :return: pandas DataFrame with query data
+        """
+        # Gather property data from REST API
+        rest_query = re.split(r"\.0\.", query)[0].strip('.')
+        response = RESTAPI(method='get',
+                           endpoint="restapi/{}/{}==true/{}=1/limit={}".format(database, rest_query, rest_query, limit),
+                           username=self.username, password=self.password,
+                           url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
+
+        # Clean data
+        data_df = pd.DataFrame(response)
+        data_df.set_index('_id', inplace=True)
+        return data_df
 
     def get_prop_data(self, query, max_cutoff=None, min_cutoff=None, database='molecules', limit=0):
         """
@@ -144,23 +165,14 @@ class D3talesData:
 
         :return: pandas DataFrame with query data
         """
-        # Gather property data from REST API
         split_query = re.split(r"\.0\.", query)
         clean_keys = '0.' + split_query[-1] if len(split_query) > 1 else None
         rest_query = split_query[0].strip('.')
         prop_category = rest_query.split('.')[0]
         prop_name = rest_query.split('.')[-1]
-        column_name = rest_query.split('.')[
-                          1] + "_" + prop_name if prop_category == "species_characterization" else prop_name
+        column_name = rest_query.split('.')[1] + "_" + prop_name if prop_category == "species_characterization" else prop_name
 
-        response = RESTAPI(method='get',
-                           endpoint="restapi/{}/{}==true/{}=1/limit={}".format(database, rest_query, rest_query, limit),
-                           username=self.username, password=self.password,
-                           url="https://d3tales.as.uky.edu", login_endpoint='login', return_json=True).response
-
-        # Clean data
-        data_df = pd.DataFrame(response)
-        data_df.set_index('_id', inplace=True)
+        data_df = self.get_prop_data_raw(query=query, database=database, limit=limit)
         if clean_keys:
             data_df[column_name] = data_df[prop_category].apply(lambda x: self.rgetkeys(x.get(prop_name), clean_keys))
 
