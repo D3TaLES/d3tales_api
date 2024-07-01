@@ -245,7 +245,7 @@ class ProcessChiCV(ProcessPotBase, ParseChiMixin):
     """
 
     def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None,
-                 min_scan_len=MIN_SCAN_LEN, micro_electrodes=False):
+                 min_scan_len=MIN_SCAN_LEN, micro_electrodes=False, **kwargs):
         """
         :param filepath: str, filepath to experiment data file
         """
@@ -327,7 +327,7 @@ class ProcessChiCA(ProcessPotBase, ParseChiMixin):
     Extract data from raw Chi CV experiment files
     """
 
-    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None):
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None, **kwargs):
         """
         :param filepath: str, filepath to experiment data file
         """
@@ -405,7 +405,7 @@ class ProcessChiESI(ProcessPotBase, ParseChiMixin):
     Extract data from raw Chi ESI experiment files
     """
 
-    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None):
+    def __init__(self, filepath, _id: str = None, submission_info: dict = None, metadata: dict = None, **kwargs):
         """
         :param filepath: str, filepath to experiment data file
         """

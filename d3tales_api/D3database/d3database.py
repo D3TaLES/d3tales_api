@@ -424,7 +424,7 @@ class RobotStatusDB(D3Database):
     """
 
     def __init__(self, apparatus_type: str, _id: str = None, instance: dict = None, override_lists: bool = True,
-                 wflow_name: str = None):
+                 wflow_name: str = None, validate_schema=False):
         """
         Initiate class
         :param apparatus_type: str, name of apparatus
@@ -433,7 +433,8 @@ class RobotStatusDB(D3Database):
         :param override_lists: bool,
         :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
         """
-        super().__init__("robotics", 'status_' + apparatus_type, instance, schema_db='robot')
+        super().__init__("robotics", 'status_' + apparatus_type, instance, schema_db='robot',
+                         validate_schema=validate_schema)
         self.id = _id or self.instance.get("_id")
         self.wflow_name = wflow_name
         if instance:
