@@ -8,7 +8,7 @@ class Schema2Class:
     Get D3TaLES schema from GitHub and load it to a class
     Copyright 2021, University of Kentucky
     """
-    def __init__(self, database=None, schema_name=None, schema_directory=None, named_only=False):
+    def __init__(self, database=None, schema_name=None, schema_directory=None, named_only=False, schema_version=None):
         """
 
         :param database: str, database name
@@ -19,9 +19,10 @@ class Schema2Class:
 
         # fetch schema
         self.database = database
+        self.branch = schema_version or "main"
         self.schema_name = '{}/{}'.format(schema_directory, schema_name) if schema_directory else schema_name
-        schema_url = "https://raw.githubusercontent.com/D3TaLES/schema/main/schema_{}/{}.schema.json".format(
-            self.database, self.schema_name).replace("robotics_", "")
+        schema_url = "https://raw.githubusercontent.com/D3TaLES/schema/{}/schema_{}/{}.schema.json".format(
+            self.branch, self.database, self.schema_name).replace("robotics_", "")
         # print(schema_url)
         response = request.urlopen(schema_url)
         self.schema = json.loads(response.read().decode())

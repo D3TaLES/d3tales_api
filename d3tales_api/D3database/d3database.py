@@ -75,7 +75,7 @@ class D3Database:
     """
 
     def __init__(self, database=None, collection_name=None, instance=None, schema_layer="", schema_directory=None,
-                 public=None, schema_db=None, default_id=None, validate_schema=True):
+                 public=None, schema_db=None, default_id=None, validate_schema=True, verbose=1, schema_version=None):
         """
         :param database: str, name of database (should be a key in the DB_INFO_FILE)
         :param collection_name: str, name of collection
@@ -90,6 +90,7 @@ class D3Database:
         self.collection_name = collection_name
         self.instance = {schema_layer: self.dot2dict(instance)} if schema_layer else self.dot2dict(instance)
         self.database = database
+        self.verbose = verbose
         self.public = public
         self.dbc = DBconnector(db_info.get(self.database))
         self.coll = self.dbc.get_collection(self.collection_name)
@@ -98,7 +99,8 @@ class D3Database:
         # validate
         if instance and validate_schema:
             self.instance['_id'] = self.instance.get("_id") or default_id
-            self.s2c = Schema2Class(schema_name=collection_name, database=schema_db, schema_directory=schema_directory)
+            self.s2c = Schema2Class(schema_name=collection_name, database=schema_db, schema_directory=schema_directory,
+                                    schema_version=schema_version)
             jsonschema.validate(schema=self.s2c.schema, instance=self.instance)
 
     def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=False):
@@ -130,7 +132,7 @@ class D3Database:
             else:
                 self.coll.update_one({"_id": _id}, {"$set": {path: v}}, upsert=True)
 
-        print("{} {}... inserted into the {} database.".format(_id, str(instance)[:15], self.database))
+        print("{} {}... inserted into the {} database.".format(_id, str(instance)[:15], self.database)) if self.verbose > 1 else None
 
     def path_insert(self, _id, path, value):
         """
@@ -230,20 +232,19 @@ class FrontDB(D3Database):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base",
-                 generate_mol=False, public=None):
+    def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base_new",
+                 generate_mol=False, insert_overwrite=True, **kwargs):
         """
         :param schema_layer: str, schema layer
         :param instance: dict, instance to insert or validate
         :param _id: str, default instance ID
         :param collection_name: str, name of collection
-        :param public: bool, instance is marked as public if True
         :param smiles: str, SMILES string for a new molecule
         :param group: str, origin group for instance
         :param generate_mol: bool, generate new molecule instance if True
         """
         super().__init__("frontend", collection_name=collection_name, instance=instance, schema_layer=schema_layer,
-                         public=public, default_id=_id, validate_schema=True if _id else False)
+                         default_id=_id, validate_schema=True if _id else False, **kwargs)
         self.new_molecule = generate_mol
 
         # Identifier properties: must have either id or smiles and group
@@ -252,13 +253,17 @@ class FrontDB(D3Database):
 
         if instance:
             self.id = _id if _id else self.generate_id()
-            self.insert(self.id, nested=True)
+            if insert_overwrite:
+                self.coll.update_one({"_id": self.id}, {"$set": self.instance})
+                print("{} {}... inserted into the {} database.".format(_id, str(self.instance)[:15],
+                                                                       self.database)) if self.verbose > 1 else None
+            else:
+                self.insert(self.id, nested=True)
 
         if self.new_molecule and schema_layer != "mol_info":
             self.id = _id if _id else self.generate_id()
-            self.public = public
-            instance = GenerateMolInfo(self.smiles, origin_group=self.group, database=self.database).mol_info_dict
-            FrontDB(schema_layer='mol_info', instance=instance, _id=self.id)
+            instance = GenerateMolInfo(self.smiles, origin_group=self.group).mol_info_dict
+            FrontDB(schema_layer='mol_info', instance=instance, _id=self.id, collection_name=collection_name, **kwargs)
 
     def check_if_in_db(self):
         """

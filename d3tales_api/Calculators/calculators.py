@@ -696,9 +696,9 @@ class RMSDCalc(D3Calculator):
         :return: RMSD (in units A)
         """
         conns = self.make_connections(data)
-        geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
-        geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
         try:
+            geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
+            geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
             print("Finding best RMS...this may take a few minutes...")
             with timeout(120, exception=RuntimeError):
                 rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
@@ -729,8 +729,6 @@ class DeltaGSolvCalc(D3Calculator):
         :return: delta G solv  (in units A)
         """
         conns = self.make_connections(data)
-        print(conns)
-        print(unit_conversion(conns["init_eng"], default_unit='eV'))
 
         g_gas_init = unit_conversion(conns["init_eng"], default_unit='eV') + unit_conversion(conns["init_corr"],
                                                                                              default_unit='eV')
@@ -776,7 +774,6 @@ class RedoxPotentialCalc(D3Calculator):
         delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
 
         std_potential = get_electrode_potential(conns["electrode"]) if conns.get("electrode") else 4.42
-        print(std_potential, conns.get("num_electrons", 1))
         potential = -delta_g / conns.get("num_electrons", 1) + std_potential
 
         return float(np.format_float_scientific(potential, precision=precision))

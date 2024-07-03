@@ -366,7 +366,6 @@ class RunWtuning(FiretaskBase):
         radical_electrons = (gs_spin - 1 - paramset.charge) % 2
         paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
         paramset.charge += gs_charge
-        print(paramset.charge, paramset.multiplicity)
         geometry = fw_spec.get("geometry", ) or self.get("geometry", )
         geometry_sites = fw_spec.get("{}_geom".format(geometry), )
         if geometry_sites:
