@@ -55,7 +55,7 @@ if __name__ == "__main__":
     docs_to_update = list(new_coll.find({"species_characterization": {"$exists": False}}, {"mol_characterization.omega": 1}).limit(limit))  # mol_characterization.oxidation_potential
     random.shuffle(docs_to_update)
     print(f"Starting multiprocessing with {multiprocessing.cpu_count()} CPUs to insert props for {len(docs_to_update)} ids")
-    # for d in docs_to_update:
-    #     update_doc(d)
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        executor.map(try_update_hashes, docs_to_update)
+    for d in docs_to_update:
+        update_doc(d)
+    #with ThreadPoolExecutor(max_workers=8) as executor:
+    #    executor.map(try_update_hashes, docs_to_update)
