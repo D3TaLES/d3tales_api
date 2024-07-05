@@ -103,7 +103,7 @@ class D3Database:
                                     schema_version=schema_version)
             jsonschema.validate(schema=self.s2c.schema, instance=self.instance)
 
-    def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=False):
+    def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=True):
         """
         Upserts a dictionary into a collection
 
