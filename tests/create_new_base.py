@@ -45,19 +45,18 @@ def try_update_hashes(doc):
         except pymongo.errors.BulkWriteError:
             pass
 
-def update_ox_ids(front_coll, old_front_coll, limit=1000):
-    print("Getting ox ids...")
-    ox_ids = old_front_coll.find({"mol_characterization.oxidation_potential": {"$exists": True}}).distinct("_id")
+
+def update_ids(front_coll, limit=2000):
     print("Getting docs to update...")
-    docs_to_update = list(
-        front_coll.find({"species_characterization": {"$exists": False}}, {"mol_characterization.omega": 1}).limit(
-            limit))  # mol_characterization.oxidation_potential
-    random.shuffle(docs_to_update)
-    print(
-        f"Starting multiprocessing with {multiprocessing.cpu_count()} CPUs to insert props for {len(docs_to_update)} ids")
-    for d in docs_to_update:
-        if d["_id"] in ox_ids:
-            try_update_hashes(d)
+    pipeline = [
+        {"$match": {"species_characterization": {"$exists": False}}},
+        {"$sample": {"size": limit}},  # Adjust the sample size as needed
+        {"$project": {"mol_characterization.omega": 1}}
+    ]
+    docs_to_update = list(front_coll.aggregate(pipeline))
+    print(f"Multiprocessing with {multiprocessing.cpu_count()} CPUs to insert {len(docs_to_update)} prop sets")
+    for d in docs_to_update[:round(limit/2)]:
+        try_update_hashes(d)
 
 
 def update_geoms(front_coll, limit=1000):
@@ -66,12 +65,9 @@ def update_geoms(front_coll, limit=1000):
         front_coll.find({"species_characterization.groundState.geometry": {"$exists": False},
                          "species_characterization": {"$exists": True}},
                         {"mol_characterization.omega": 1}).limit(limit))
-    random.shuffle(docs_to_update)
-    print(
-        f"Starting multiprocessing with {multiprocessing.cpu_count()} CPUs to insert props for {len(docs_to_update)} ids")
+    print(f"Multiprocessing with {multiprocessing.cpu_count()} CPUs to insert {len(docs_to_update)} prop sets")
     for d in docs_to_update:
         try_update_hashes(d)
-
 
 
 if __name__ == "__main__":
@@ -79,10 +75,8 @@ if __name__ == "__main__":
     new_coll = DBconnector(db_info.get("frontend")).get_collection("base_new")
 
     # initialize_new_db(new_coll, old_coll)
-    # update_ox_ids(new_coll, old_coll, limit=1000)
-    update_geoms(new_coll, limit=1000)
-
-
+    update_ids(new_coll, limit=1000)
+    # update_geoms(new_coll, limit=1000)
 
     # with ThreadPoolExecutor(max_workers=8) as executor:
     #     executor.map(try_update_hashes, docs_to_update)
