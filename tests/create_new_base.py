@@ -60,12 +60,16 @@ def update_ids(front_coll, limit=2000):
 
 
 def update_geoms(front_coll, limit=1000):
-    print("Getting docs to update...")
-    docs_to_update = list(
-        front_coll.find({"species_characterization.groundState.geometry": {"$exists": False},
-                         "species_characterization": {"$exists": True}},
-                        {"mol_characterization.omega": 1}).limit(limit))
-    print(f"Multiprocessing with {multiprocessing.cpu_count()} CPUs to insert {len(docs_to_update)} prop sets")
+    print("Getting docs to update geometries...")
+    pipeline = [
+        {"$match": {"species_characterization.groundState.geometry": {"$exists": False},
+                    "species_characterization": {"$exists": True}}},
+        {"$sample": {"size": limit}},  # Adjust the sample size as needed
+        {"$project": {"mol_characterization.omega": 1}}
+    ]
+    docs_to_update = list(front_coll.aggregate(pipeline))
+    print(f"Processing {len(docs_to_update)} prop sets")
+    random.shuffle(docs_to_update)
     for d in docs_to_update:
         try_update_hashes(d)
 
@@ -75,8 +79,8 @@ if __name__ == "__main__":
     new_coll = DBconnector(db_info.get("frontend")).get_collection("base_new")
 
     # initialize_new_db(new_coll, old_coll)
-    update_ids(new_coll, limit=10)
-    # update_geoms(new_coll, limit=1000)
+    # update_ids(new_coll, limit=50)
+    update_geoms(new_coll, limit=50)
 
     # with ThreadPoolExecutor(max_workers=8) as executor:
     #     executor.map(try_update_hashes, docs_to_update)
