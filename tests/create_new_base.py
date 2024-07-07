@@ -75,7 +75,7 @@ if __name__ == "__main__":
     new_coll = DBconnector(db_info.get("frontend")).get_collection("base_new")
 
     # initialize_new_db(new_coll, old_coll)
-    update_ids(new_coll, limit=1000)
+    update_ids(new_coll, limit=10)
     # update_geoms(new_coll, limit=1000)
 
     # with ThreadPoolExecutor(max_workers=8) as executor:
