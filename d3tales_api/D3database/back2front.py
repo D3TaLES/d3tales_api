@@ -12,7 +12,7 @@ from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 DEFAULT_SOLV = {"name": "Acetonitrile", "model": "implicit_solvent", "dielectric_constant": 35.688}
 RMSD_DEFAULT = False
-FRONT_COLL = "base_new"
+FRONT_COLL = "base"
 SCHEMA_VERSION = "v2"
 
 

@@ -191,26 +191,26 @@ class D3talesData:
             "mol_info.groundState_charge",
             "mol_info.number_of_atoms",
             "mol_info.molecular_weight",
-            "mol_characterization.reorganization_energy.0.value",
-            "mol_characterization.vertical_ionization_energy.0.value",
-            "mol_characterization.vertical_ionization_energy_2.0.value",
-            "mol_characterization.vertical_electron_affinity.0.value",
-            "mol_characterization.redox_potential.0.value",
-            "mol_characterization.rmsd_groundState_cation1.0.value",
-            "mol_characterization.rmsd_cation1_cation2.0.value",
-            "mol_characterization.omega.0.value",
-            "species_characterization.ground_state.globular_volume.0.value",
-            "species_characterization.ground_state.homo_lumo_gap.0.value",
-            "species_characterization.ground_state.dipole_moment.0.value",
-            "species_characterization.ground_state.solvation_energy.0.value",
-            "species_characterization.cation1.globular_volume.0.value",
-            "species_characterization.cation1.homo_lumo_gap.0.value",
-            "species_characterization.cation1.dipole_moment.0.value",
-            "species_characterization.cation1.solvation_energy.0.value",
-            "species_characterization.cation2.globular_volume.0.value",
-            "species_characterization.cation2.homo_lumo_gap.0.value",
-            "species_characterization.cation2.dipole_moment.0.value",
-            "species_characterization.cation2.solvation_energy.0.value",
+            "mol_characterization.reorganization_energy.value",
+            "mol_characterization.vertical_ionization_energy.value",
+            "mol_characterization.vertical_ionization_energy_2.value",
+            "mol_characterization.vertical_electron_affinity.value",
+            "mol_characterization.redox_potential.value",
+            "mol_characterization.rmsd_groundState_cation1.value",
+            "mol_characterization.rmsd_cation1_cation2.value",
+            "mol_characterization.omega.value",
+            "species_characterization.ground_state.globular_volume.value",
+            "species_characterization.ground_state.homo_lumo_gap.value",
+            "species_characterization.ground_state.dipole_moment.value",
+            "species_characterization.ground_state.solvation_energy.value",
+            "species_characterization.cation1.globular_volume.value",
+            "species_characterization.cation1.homo_lumo_gap.value",
+            "species_characterization.cation1.dipole_moment.value",
+            "species_characterization.cation1.solvation_energy.value",
+            "species_characterization.cation2.globular_volume.value",
+            "species_characterization.cation2.homo_lumo_gap.value",
+            "species_characterization.cation2.dipole_moment.value",
+            "species_characterization.cation2.solvation_energy.value",
         ]
 
         master = pd.DataFrame()
@@ -263,6 +263,6 @@ if __name__ == "__main__":
     #             url="https://d3tales.as.uky.edu", login_endpoint='login',
     #             params=dict(approved='on'))
 
-    print(D3talesData().get_prop_data('mol_characterization.oxidation_potential.0.value', limit=2))
-    # D3talesData().hist_1d('mol_characterization.oxidation_potential.0.value', min_cutoff=-10, max_cutoff=10)
+    print(D3talesData().get_prop_data('mol_characterization.oxidation_potential.value', limit=2))
+    # D3talesData().hist_1d('mol_characterization.oxidation_potential.value', min_cutoff=-10, max_cutoff=10)
     # master_df = D3talesData().get_master_df()

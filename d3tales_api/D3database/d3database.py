@@ -232,7 +232,7 @@ class FrontDB(D3Database):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base_new",
+    def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base",
                  generate_mol=False, insert_overwrite=True, **kwargs):
         """
         :param schema_layer: str, schema layer

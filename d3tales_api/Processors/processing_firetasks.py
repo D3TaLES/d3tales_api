@@ -319,14 +319,14 @@ class ApproveJobs(FiretaskBase):
     def run_task(self, fw_spec):
         data_category = self["data_category"] or "computation"
 
-        frontend_db = FrontDB(collection_name="submission")
+        frontend_db = D3Database(database="ui", collection_name="submission", validate_schema=False)
         unapproved_cursor = frontend_db.coll.find({'$and': [
             {"approved": False},
             {"data_category": data_category},
             {"processed_data": {'$ne': {}}}
         ]
         })
-        frontend_db = FrontDB(collection_name='submission')
+        frontend_db = D3Database(database="ui", collection_name="submission", validate_schema=False)
         for mol in unapproved_cursor:
             h_id = mol.get('processing_id')
             while frontend_db.coll.count_documents({'processing_id': h_id}) > 1:

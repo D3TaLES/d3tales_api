@@ -18,17 +18,17 @@ def initialize_new_db(front_coll, old_front_coll, limit=0):
     front_coll.insert_many(new_inti_data)
 
 
-def update_doc(doc):
+def update_doc(doc, verbose=1):
     mol_id = doc.get("_id")
     print("Starting {}...".format(mol_id))
     omega_q = doc.get("mol_characterization", {}).get("omega")
-    omega = math.floor(omega_q["value"] * 10000) / 10000
+    omega = omega_q["value"]  # math.floor(omega_q["value"] * 10000) / 10000
     cond = omega_q["conditions"]
     cond.update({"tuning_parameter": omega})
     g2c = Gaus2FrontCharacterization(
         _id=mol_id,
         conditions=cond,
-        verbose=0,
+        verbose=verbose,
         all_props=True
     )
     g2c.insert_all_species()
@@ -80,7 +80,14 @@ if __name__ == "__main__":
 
     # initialize_new_db(new_coll, old_coll)
     # update_ids(new_coll, limit=50)
-    update_geoms(new_coll, limit=50)
+    # update_geoms(new_coll, limit=500)
 
     # with ThreadPoolExecutor(max_workers=8) as executor:
     #     executor.map(try_update_hashes, docs_to_update)
+
+    doc = new_coll.find_one({"_id": "10SBZT"}, {"mol_characterization.omega": 1})
+    print(doc)
+    # update_doc(doc)
+
+    # print(",".join(new_coll.find({"species_characterization.groundState.geometry": {"$exists": False},
+    #                 "species_characterization": {"$exists": True}}).distinct("_id")))

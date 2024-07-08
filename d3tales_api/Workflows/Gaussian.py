@@ -108,7 +108,7 @@ class GaussianBase(FiretaskBase):
                 url="https://d3tales.as.uky.edu", return_json=True
             ).response
             try:
-                tuned_w = molecule_data[0]["mol_characterization"]['omega'][0]['value']
+                tuned_w = molecule_data[0]["mol_characterization"]['omega']['value']
                 self.iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
             except Exception:
                 pass
