@@ -144,7 +144,7 @@ class Gaus2FrontCharacterization:
 
     def species_descriptors(self, calculation_type, skip_geom=False):
         """Descriptor dict for species descriptors"""
-        species_data, _hash = getattr(self, calculation_type)
+        species_data, _hash = getattr(self, calculation_type, None)
         if not species_data:
             print(f"No {calculation_type} data for {self.id}") if self.verbose > 1 else None
             return {}
