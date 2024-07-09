@@ -126,7 +126,7 @@ class ProcessFile(FiretaskBase):
                 metadata["mol_file"] = mol_file
                 data = ProcessGausLog(_id=mol_id, submission_info=submission_data, metadata=metadata).data_dict
                 if automatic_approval:
-                    Gaus2FrontCharacterization.from_data(data, rmsd=RMSD_DEFAULT)
+                    Gaus2FrontCharacterization.from_data(data, rmsd=RMSD_DEFAULT, insert=True)
                     pass
             if data_type == 'cv':
                 file = [f for f in names if ".txt" in f or "csv" in f][0]
@@ -306,7 +306,7 @@ class UpdateFrontendDB(FiretaskBase):
 
         if data_type == 'gaussian':
             conditions = data.get("conditions", )
-            Gaus2FrontCharacterization(mol_id, calculation_type=calc_type, conditions=conditions, rmsd=RMSD_DEFAULT)
+            Gaus2FrontCharacterization(mol_id, calculation_type=calc_type, conditions=conditions, rmsd=RMSD_DEFAULT, insert=True)
 
 
 @explicit_serialize
