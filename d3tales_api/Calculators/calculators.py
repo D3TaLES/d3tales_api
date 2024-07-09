@@ -66,6 +66,7 @@ class D3Calculator(abc.ABC):
             "T": "Temperature (default = 293 K)",
             "X": "peak shift (default = V)",
             "e": "E1/2 (default = V)",
+            "e_rev": "formal potential (default = V)",
             "electrode": "electrode name as str or potential as float (default = standard_hydrogen_electrode)",
             "energy": "energy another geometry (default = eV)",
             "energy_final": "energy final (default = eV)",
@@ -467,7 +468,7 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
             :n: number of electrons
             :T: Temperature (default = 293 K)
             :D: Diffusion constant (default = cm^2/s)
-            :r: radius of ultramicroelectrode (default = cm)
+            :r: radius of ultra-microelectrode (default = cm)
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
@@ -584,16 +585,18 @@ class CAResistanceCalculator(D3Calculator):
         self.n = data.__len__()
 
         conns = self.make_connections(data)
+        pulse_width = unit_conversion(conns["pulse_width"], default_unit='s')
+        low_e = unit_conversion(conns["low_e"], default_unit='V')
 
         dt = conns["t_s"][-1] / len(conns["t_s"])  # time interval per time measurement
-        n = float(conns["pulse_width"] / dt)  # number of time measurements in a pulse
+        n = float(pulse_width / dt)  # number of time measurements in a pulse
         n_pulses = math.floor(conns["steps"] / 2) - 1  # number of pulses
         offset = n / offset_factor  # a slight offset to measure voltage after switching
 
         max_i = [max([abs(conns["i_s"][int(2 * (i + 1) * n - offset + j)]) for j in range(int(n))]) for i in
                  range(n_pulses)]
 
-        last_R = abs(float(conns["low_e"]) / np.mean(max_i))
+        last_R = abs(float(low_e) / np.mean(max_i))
         last_dR = last_R * np.std(max_i) / np.mean(max_i)
 
         return [last_R, last_dR] if return_error else last_R
@@ -693,9 +696,9 @@ class RMSDCalc(D3Calculator):
         :return: RMSD (in units A)
         """
         conns = self.make_connections(data)
-        geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
-        geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
         try:
+            geom1 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_initial"]]))[0]
+            geom2 = pmgmol_to_rdmol(Molecule.from_sites([Site.from_dict(sd) for sd in conns["geom_final"]]))[0]
             print("Finding best RMS...this may take a few minutes...")
             with timeout(120, exception=RuntimeError):
                 rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
@@ -726,8 +729,6 @@ class DeltaGSolvCalc(D3Calculator):
         :return: delta G solv  (in units A)
         """
         conns = self.make_connections(data)
-        print(conns)
-        print(unit_conversion(conns["init_eng"], default_unit='eV'))
 
         g_gas_init = unit_conversion(conns["init_eng"], default_unit='eV') + unit_conversion(conns["init_corr"],
                                                                                              default_unit='eV')
@@ -773,7 +774,6 @@ class RedoxPotentialCalc(D3Calculator):
         delta_g = DeltaGSolvCalc(connector=self.key_pairs).calculate(data)
 
         std_potential = get_electrode_potential(conns["electrode"]) if conns.get("electrode") else 4.42
-        print(std_potential, conns.get("num_electrons", 1))
         potential = -delta_g / conns.get("num_electrons", 1) + std_potential
 
         return float(np.format_float_scientific(potential, precision=precision))

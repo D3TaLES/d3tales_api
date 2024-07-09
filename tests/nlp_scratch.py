@@ -62,7 +62,7 @@ def nlp_pd2json(nlp_df, doi, nlp_model, date_generated=datetime.now()):
 
 
 # NLP D3TALES API CODE
-from d3tales_api.Processors.d3tales_parser import ProcessNlp
+from d3tales_api.Processors.parser_nlp import ProcessNlp
 
 DOI = "10.1039/c7cs00569e"
 NLP_MODLE = ""

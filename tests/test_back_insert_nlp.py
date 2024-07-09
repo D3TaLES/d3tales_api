@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from d3tales_api.D3database.d3database import BackDB
-from d3tales_api.Processors.d3tales_parser import ProcessNlp
+from d3tales_api.Processors.parser_nlp import ProcessNlp
 
 FROM_TEST_FILE = False
 FROM_DATAFRAME= False

@@ -4,7 +4,7 @@ from rdkit.Chem import MolFromSmiles, MolToSmiles
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.D3database.restapi import RESTAPI
 from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.D3database.info_from_smiles import GenerateMolInfo
+from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 
 @explicit_serialize

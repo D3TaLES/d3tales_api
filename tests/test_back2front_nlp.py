@@ -1,4 +1,4 @@
-from d3tales_api.Processors.back2front import DOI2Front
+from d3tales_api.D3database.back2front import DOI2Front
 import os
 
 DOI = '10.1016/j.chempr.2019.04.021'

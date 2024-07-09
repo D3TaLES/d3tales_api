@@ -1,7 +1,7 @@
 import os
 import zipfile
 from d3tales_api.D3database.d3database import *
-from d3tales_api.Processors.d3tales_parser import *
+from d3tales_api.Processors.parser_dft import ProcessGausLog
 
 ID='05XICU'
 home = os.path.join(os.getcwd(), 'raw_data', "computation_data", ID, "zips")
@@ -23,6 +23,6 @@ for zip_file in os.listdir(home):
             logfile = [f for f in names if ".log" in f][0]
             mol_file = target_zip.extract(member=logfile)
         metadata["mol_file"] = mol_file
-        data = ProcessDFT(_id=ID, metadata=metadata).data_dict
+        data = ProcessGausLog(_id=ID, metadata=metadata).data_dict
         BackDB(collection_name='computation', instance=data)
         print(data.get("_id"))

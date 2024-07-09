@@ -1,7 +1,12 @@
 import pint
 import functools
 from monty.serialization import loadfn
-from d3tales_api.D3database.d3database import ParamsDB
+
+
+DEFAULT_POTENTIALS = {
+    "standard_hydrogen_electrode": {"value": 4.42, "unit": "eV"},
+    "silver_electrode": 0
+}
 
 
 def rgetattr(obj, attr, *args):
@@ -66,7 +71,20 @@ def json2obj(json_file, **kwargs):
     return dict2obj(d, **kwargs)
 
 
-def unit_conversion(measurement, default_unit: str, density=None):
+def float_from_str(text):
+    normal_chars = "0123456789"
+    # replace subscripts
+    subscript_chars = "₀₁₂₃₄₅₆₇₈₉"
+    mapping = str.maketrans(subscript_chars, normal_chars)
+    text = text.translate(mapping)
+    # replace superscript
+    superscript_chars = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+    mapping = str.maketrans(superscript_chars, normal_chars)
+    text = text.translate(mapping)
+    return float(text.replace(" ", "").replace("x10^", "e").replace("×10", "e").replace("⁻", "-").encode("ascii", "ignore").decode())
+
+
+def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):
     """
     Convert a measurement into a default unit using pint. 
     
@@ -97,24 +115,25 @@ def unit_conversion(measurement, default_unit: str, density=None):
     # Convert measurement to default unit
     unit = default_unit if unit == "dimensionless" else unit
     pint_unit = ureg("{}{}".format(value, unit))
+    if return_dict:
+        return {"value": pint_unit.to(default_unit, 'mol_density').magnitude, "unit": default_unit}
     return pint_unit.to(default_unit, 'mol_density').magnitude
 
 
-def get_electrode_potential(electrode):
+def get_electrode_potential(electrode, potentials_dict=DEFAULT_POTENTIALS):
     """
     Get electrode potential by searching the D3TaLES electrode parameters database
     :param electrode: name of an electrode or the electrode potential
+    :param potentials_dict: dictionary of potentials
     :return:
     """
     if str(electrode).replace(".", "").replace("-", "").isdigit():
         return float(electrode)
-    params_db = ParamsDB(collection_name="electrode", schema_directory="materials")
-    electrode_data = params_db.coll.find_one({"_id": electrode})
-    abs_potential = electrode_data.get("absolute_potential")
-    if abs_potential:
-        return abs_potential.get("value")
+    potential = potentials_dict.get(electrode)
+    if potential:
+        return unit_conversion(potential, default_unit="eV")
     else:
-        raise ValueError(f"Electrode {electrode} not found in the D3TaLES parameters database")
+        raise ValueError(f"Electrode {electrode} not found in the potentials dictionary, {potentials_dict}")
 
 
 def get_periodic_table():

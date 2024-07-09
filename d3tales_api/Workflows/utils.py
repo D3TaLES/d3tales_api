@@ -1,14 +1,16 @@
 import os
+import re
+import json
+import hashlib
 import zipfile
-from d3tales_api.Processors.d3tales_parser import *
 from d3tales_api.D3database.restapi import RESTAPI
-from d3tales_api.D3database.info_from_smiles import find_lowest_e_conf
+from d3tales_api.Processors.parser_dft import ProcessGausLog
+from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf
 
 from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
 from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 
-from rdkit.Chem.rdmolops import AddHs
 from rdkit.Chem import MolFromSmiles, AllChem
 from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
 from rdkit.Chem.Descriptors import NumRadicalElectrons
@@ -186,7 +188,7 @@ def parse_tddft(tddft_logfile):
 
 def get_hash_id(identifier, filepath, calc_type, output_file=None, **kwargs):
     metadata = {"calculation_type": calc_type, "mol_file": filepath, "wtuning_output": output_file, **kwargs}
-    process_data = ProcessDFT(_id=identifier, metadata=metadata)
+    process_data = ProcessGausLog(_id=identifier, metadata=metadata)
     return process_data.hash_id
 
 

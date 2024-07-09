@@ -5,7 +5,6 @@ from PIL import Image
 from tqdm import tqdm
 from io import BytesIO
 import pubchempy as pcp
-from d3tales_api.D3database.schema2class import Schema2Class
 
 from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
@@ -76,13 +75,10 @@ class GenerateMolInfo:
     :param origin_group: which group the molecule comes from
     :return: mol_info class object
     """
-    def __init__(self, smiles, origin_group="", names=[], extra_info=True, database='frontend', schema_name="mol_info",
-                 ground_spin=None, ground_charge=None):
+    def __init__(self, smiles, origin_group="", names=None, extra_info=True, ground_spin=None, ground_charge=None):
         self.smiles = smiles
         self.origin_group = origin_group
-        self.names = names
-        self.database = database
-        self.schema_name = schema_name
+        self.names = names or []
         self.extra_info = extra_info
         self.ground_spin = ground_spin
         self.ground_charge = ground_charge
@@ -94,9 +90,7 @@ class GenerateMolInfo:
 
         :return: mol_info as dict
         """
-        # Fetch schema and build class
-        s2c = Schema2Class(schema_name=self.schema_name, database=self.database)
-        mol_info = s2c.MolInfo()
+        mol_info = {}
         # Generate rdkit mol and final (cleaned) smiles
         rdkmol = MolFromSmiles(self.smiles)
         clean_smile = MolToSmiles(rdkmol)
@@ -104,31 +98,31 @@ class GenerateMolInfo:
         AllChem.EmbedMolecule(rdkmol_hs)
         try:
             pcpmol = pcp.get_compounds(clean_smile, namespace="smiles")[0]
-            mol_info.iupac_name = str(pcpmol.iupac_name)
+            mol_info["iupac_name"] = str(pcpmol.iupac_name)
             synonyms = pcpmol.synonyms
         except pcp.BadRequestError:
             synonyms = []
 
         # Populate class
-        mol_info.smiles = clean_smile
-        mol_info.selfies = sf.encoder(clean_smile)
+        mol_info["smiles"] = clean_smile
+        mol_info["selfies"] = sf.encoder(clean_smile)
         if self.origin_group:
-            mol_info.source_group = self.origin_group
-        mol_info.inchi = MolToInchi(rdkmol)
-        mol_info.inchi_key = MolToInchiKey(rdkmol)
-        mol_info.molecular_formula = CalcMolFormula(rdkmol)
-        mol_info.number_of_atoms = Mol.GetNumAtoms(rdkmol)
-        mol_info.molecular_weight = CalcExactMolWt(rdkmol)
-        mol_info.groundState_charge = self.ground_charge or GetFormalCharge(rdkmol)
-        mol_info.groundState_spin = self.ground_spin or NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
-        mol_info.sa_score = round(sascorer.calculateScore(rdkmol), 2)
+            mol_info["source_group"] = self.origin_group
+        mol_info["inchi"] = MolToInchi(rdkmol)
+        mol_info["inchi_key"] = MolToInchiKey(rdkmol)
+        mol_info["molecular_formula"] = CalcMolFormula(rdkmol)
+        mol_info["number_of_atoms"] = Mol.GetNumAtoms(rdkmol)
+        mol_info["molecular_weight"] = CalcExactMolWt(rdkmol)
+        mol_info["groundState_charge"] = self.ground_charge or GetFormalCharge(rdkmol)
+        mol_info["groundState_spin"] = self.ground_spin or NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        mol_info["sa_score"] = round(sascorer.calculateScore(rdkmol), 2)
         if self.extra_info:
-            mol_info.d2_image = image_to_base64(Draw.MolToImage(rdkmol))
-            mol_info.init_structure = find_lowest_e_conf(clean_smile)
+            mol_info["d2_image"] = image_to_base64(Draw.MolToImage(rdkmol))
+            mol_info["init_structure"] = find_lowest_e_conf(clean_smile)
         try:
-            mol_info.synonyms = self.names + synonyms
+            mol_info["synonyms"] = self.names + synonyms
         except TypeError:
-            mol_info.synonyms = self.names
+            mol_info["synonyms"] = self.names
 
-        return mol_info.as_dict()
+        return mol_info
 

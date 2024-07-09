@@ -1,4 +1,6 @@
-from d3tales_api.Processors.d3tales_parser import *
+import os
+from d3tales_api.Processors.parser_echem import ProcessChiCA
+
 
 ca_file = os.path.join(os.getcwd(), '../raw_data', 'ca_data', 'CA.csv')
 ca_metadata = {"data_type": "cv",
@@ -27,7 +29,7 @@ for fn in os.listdir(os.path.join(os.getcwd(), '../raw_data', 'ca_data')):
     f_path = os.path.join(os.path.join(os.getcwd(), '../raw_data', 'ca_data'), fn)
     if not f_path.endswith(".csv"):
         continue
-    resistance = ParseChiCA(f_path).measured_resistance
+    resistance = ProcessChiCA(f_path, metadata=ca_metadata).measured_resistance
     print("{}: \t{:.2f}".format(fn.strip(".csv"), resistance))
 
 

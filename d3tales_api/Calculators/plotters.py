@@ -1,4 +1,3 @@
-import numpy as np
 from scipy.stats import norm
 import scipy.constants as cst
 import matplotlib.pyplot as plt

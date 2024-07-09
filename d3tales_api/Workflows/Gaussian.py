@@ -2,6 +2,7 @@ import abc
 import subprocess
 import multiprocessing
 import uuid
+import numpy as np
 from six import add_metaclass
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -12,7 +13,6 @@ from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import *
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.D3database.d3database import D3Database
 from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 
 logger = get_logger(__name__)
@@ -95,7 +95,8 @@ class GaussianBase(FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier, self.smiles) or 0
+        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier,
+                                                                                              self.smiles) or 0
         self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles,
                                                                                         prop='spin') or 1
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
@@ -109,7 +110,7 @@ class GaussianBase(FiretaskBase):
                 url="https://d3tales.as.uky.edu", return_json=True
             ).response
             try:
-                tuned_w = molecule_data[0]["mol_characterization"]['omega'][0]['value']
+                tuned_w = molecule_data[0]["mol_characterization"]['omega']['value']
                 self.iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
             except Exception:
                 pass
@@ -150,7 +151,8 @@ class GaussianBase(FiretaskBase):
 
     def existing_data(self, _hash=None):
         # check if this job has already run and been uploaded to the backend DB
-        _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional, self.paramset.basis_set,
+        _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
+                                      self.paramset.basis_set,
                                       tuning_parameter=self.iop_str, solvent=self.solvent)
         response = RESTAPI(method='get', endpoint="restapi/rawdata/computation/_id={}".format(_hash),
                            url="https://d3tales.as.uky.edu", return_json=True).response
@@ -205,7 +207,8 @@ class RunGaussianEnergy(GaussianBase):
                 return FWAction(
                     update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
                                  "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                 "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
+                                 "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
+                                     "value"),
                                  "{}_hash".format(self.full_name): get_hash_id(self.identifier, self.file_com,
                                                                                self.calc_name),
                                  "iop_str": self.iop_str})
@@ -264,8 +267,10 @@ class RunGaussianOpt(GaussianBase):
                                      "{}_hash".format(self.full_name): opt_hash,
                                      "{}_hash".format(freq_name): freq_hash,
                                      "{}_geom".format(self.full_name): existing_data.get("geometry"),
-                                     "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
-                                     "{}_gibb".format(self.full_name): self.existing_data(_hash=freq_hash).get("gibbs_correction", {}).get("value"),
+                                     "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
+                                         "value"),
+                                     "{}_gibb".format(self.full_name): self.existing_data(_hash=freq_hash).get(
+                                         "gibbs_correction", {}).get("value"),
                                      "iop_str": self.iop_str})
 
             # run gaussian optimization
@@ -367,7 +372,6 @@ class RunWtuning(FiretaskBase):
         radical_electrons = (gs_spin - 1 - paramset.charge) % 2
         paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
         paramset.charge += gs_charge
-        print(paramset.charge, paramset.multiplicity)
         geometry = fw_spec.get("geometry", ) or self.get("geometry", )
         geometry_sites = fw_spec.get("{}_geom".format(geometry), )
         if geometry_sites:
@@ -597,6 +601,7 @@ class RunGaussianDihedRot(GaussianBase):
                 "runtimes": {int(degree): runtime},
                 "backbone_length": {int(degree): backbone_len}
             }
+            from d3tales_api.D3database.d3database import D3Database
             D3Database(database="random", collection_name="dihed_rot", instance=insert_data).insert(self.identifier,
                                                                                                     nested=True)
 
