@@ -2,6 +2,7 @@ import abc
 import subprocess
 import multiprocessing
 import uuid
+import numpy as np
 from six import add_metaclass
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -94,7 +95,8 @@ class GaussianBase(FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier, self.smiles) or 0
+        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier,
+                                                                                              self.smiles) or 0
         self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles,
                                                                                         prop='spin') or 1
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
@@ -149,7 +151,8 @@ class GaussianBase(FiretaskBase):
 
     def existing_data(self, _hash=None):
         # check if this job has already run and been uploaded to the backend DB
-        _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional, self.paramset.basis_set,
+        _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
+                                      self.paramset.basis_set,
                                       tuning_parameter=self.iop_str, solvent=self.solvent)
         response = RESTAPI(method='get', endpoint="restapi/rawdata/computation/_id={}".format(_hash),
                            url="https://d3tales.as.uky.edu", return_json=True).response
@@ -204,7 +207,8 @@ class RunGaussianEnergy(GaussianBase):
                 return FWAction(
                     update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
                                  "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                 "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
+                                 "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
+                                     "value"),
                                  "{}_hash".format(self.full_name): get_hash_id(self.identifier, self.file_com,
                                                                                self.calc_name),
                                  "iop_str": self.iop_str})
@@ -263,8 +267,10 @@ class RunGaussianOpt(GaussianBase):
                                      "{}_hash".format(self.full_name): opt_hash,
                                      "{}_hash".format(freq_name): freq_hash,
                                      "{}_geom".format(self.full_name): existing_data.get("geometry"),
-                                     "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
-                                     "{}_gibb".format(self.full_name): self.existing_data(_hash=freq_hash).get("gibbs_correction", {}).get("value"),
+                                     "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
+                                         "value"),
+                                     "{}_gibb".format(self.full_name): self.existing_data(_hash=freq_hash).get(
+                                         "gibbs_correction", {}).get("value"),
                                      "iop_str": self.iop_str})
 
             # run gaussian optimization

@@ -233,7 +233,7 @@ class FrontDB(D3Database):
     """
 
     def __init__(self, schema_layer=None, instance=None, _id=None, smiles=None, group=None, collection_name="base",
-                 generate_mol=False, insert_overwrite=True, **kwargs):
+                 generate_mol=False, insert_overwrite=False, **kwargs):
         """
         :param schema_layer: str, schema layer
         :param instance: dict, instance to insert or validate

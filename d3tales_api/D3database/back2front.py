@@ -45,7 +45,8 @@ class Gaus2FrontCharacterization:
         self.calculation_type = calculation_type
         self.bare_conditions = copy.deepcopy(conditions)
         self.solvent = self.bare_conditions.pop("solvent") if self.bare_conditions.get("solvent") else DEFAULT_SOLV
-        self.groundState_charge = self.front_coll.find_one({"_id": self.id})["mol_info"]["groundState_charge"] if gs_charge is None else gs_charge
+        self.groundState_charge = self.front_coll.find_one({"_id": self.id})["mol_info"][
+            "groundState_charge"] if gs_charge is None else gs_charge
         print("Starting query for all backend {} data...".format(self.id)) if verbose else None
         self.mol_data = list(self.back_coll.find({"mol_id": self.id}) or [])
         self.mol_hashes = [d.get("_id") for d in self.mol_data]
@@ -93,14 +94,15 @@ class Gaus2FrontCharacterization:
         if insert:
             self.insert()
 
-    def insert(self):
+    def insert(self, **kwargs):
         # Get and insert species data
         if not self.calculation_type:
-            print(f"No data for {self.id} inserted because no calculation type specified.") if self.verbose > 1 else None
+            print(
+                f"No data for {self.id} inserted because no calculation type specified.") if self.verbose > 1 else None
             return None
-        species_dict = self.species_descriptors(self.calculation_type)
+        species_dict = self.species_descriptors(self.calculation_type, **kwargs)
         FrontDB(schema_layer="species_characterization", instance=species_dict, _id=self.id,
-                        verbose=self.verbose, schema_version=self.schema_version)
+                verbose=self.verbose, schema_version=self.schema_version)
 
         # Get and insert mol data
         mol_char_dict = {}
@@ -110,17 +112,18 @@ class Gaus2FrontCharacterization:
             except ValueError as e:
                 print(e) if self.verbose > 1 else None
         FrontDB(schema_layer="mol_characterization", instance=mol_char_dict, _id=self.id,
-                        verbose=self.verbose, schema_version=self.schema_version)
+                verbose=self.verbose, schema_version=self.schema_version)
 
-    def insert_all_species(self):
+    def insert_all_species(self, **kwargs):
         # Get and insert all species data
         print(f"Inserting all data for molecule {self.id}...") if self.verbose else None
         all_species_data = {s: {} for s in self.species_dict.keys()}
         for calc_type in self.all_calcs:
-            species_dict = self.species_descriptors(calc_type)
+            species_dict = self.species_descriptors(calc_type, **kwargs)
             if species_dict:
                 for species, s_data in species_dict.items():
                     all_species_data[species].update(s_data)
+
         FrontDB(schema_layer="species_characterization", instance=all_species_data, _id=self.id,
                 verbose=self.verbose, schema_version=self.schema_version)
         [print(s, ':\t', list(s_data.keys())) for s, s_data in all_species_data.items()] if self.verbose > 1 else None
@@ -137,7 +140,7 @@ class Gaus2FrontCharacterization:
         FrontDB(schema_layer="mol_characterization", instance=mol_char_dict, _id=self.id,
                 verbose=self.verbose, schema_version=self.schema_version)
 
-    def species_descriptors(self, calculation_type):
+    def species_descriptors(self, calculation_type, skip_geom=False):
         """Descriptor dict for species descriptors"""
         species_data, _hash = getattr(self, calculation_type)
         if not species_data:
@@ -161,33 +164,44 @@ class Gaus2FrontCharacterization:
             except ValueError as e:
                 print(e) if self.verbose > 1 else None
         elif "opt" in calculation_type:
-            gap = species_data["lumo"]["value"] - species_data["homo"]["value"]
+            data_dict[species].update({"homo": self.prop_entry(hashes=[_hash], conditions=conditions,
+                                                               value=species_data["homo"]["value"],
+                                                               unit=species_data["homo"]["unit"])})
+            data_dict[species].update({"lumo": self.prop_entry(hashes=[_hash], conditions=conditions,
+                                                               value=species_data["lumo"]["value"],
+                                                               unit=species_data["lumo"]["unit"])})
             if species_data["lumo"]["unit"] == species_data["homo"]["unit"]:
+                gap = species_data["lumo"]["value"] - species_data["homo"]["value"]
                 unit = species_data["lumo"]["unit"]
-                homo_lumo_data = self.prop_entry(hashes=[_hash], conditions=conditions, value=gap, unit=unit)
-                data_dict[species].update({"homo_lumo_gap": homo_lumo_data})
+                data_dict[species].update({"homo_lumo_gap": self.prop_entry(hashes=[_hash], conditions=conditions,
+                                                                            value=gap, unit=unit)})
             dipole_moment = self.prop_entry(hashes=[_hash], conditions=conditions,
-                                            value=np.linalg.norm(np.asarray(species_data["scf_dipole_moment"]["value"])),
+                                            value=np.linalg.norm(
+                                                np.asarray(species_data["scf_dipole_moment"]["value"])),
                                             unit=species_data["scf_dipole_moment"]["unit"])
             data_dict[species].update({"dipole_moment": dipole_moment})
-            pmg_mol = Molecule.from_sites([Site.from_dict(sd) for sd in species_data["geometry"]])
-            try:
-                rdmol = pmgmol_to_rdmol(pmg_mol)[0]
-                vol = ComputeMolVolume(rdmol)
-                globular_volume = self.prop_entry(hashes=[_hash], conditions=conditions, value=round(vol, 3), unit="A^3")
-                data_dict[species].update({"globular_volume": globular_volume})
-            except Chem.rdchem.AtomValenceException:
-                pass
-            geom_data = self.prop_entry(hashes=[_hash], conditions=conditions, sites=species_data["geometry"])
-            data_dict[species].update({"geometry": geom_data})
             for opt_descriptor in ["radical_buried_vol", "radical_spin", "radical_stability_score"]:
                 if species_data.get(opt_descriptor):
                     species_data[opt_descriptor].update({"conditions": conditions})
-                    data_dict[species].update({opt_descriptor: self.prop_entry(hashes=[_hash], **species_data[opt_descriptor])})
+                    data_dict[species].update(
+                        {opt_descriptor: self.prop_entry(hashes=[_hash], **species_data[opt_descriptor])})
+            if not skip_geom:
+                pmg_mol = Molecule.from_sites([Site.from_dict(sd) for sd in species_data["geometry"]])
+                try:
+                    rdmol = pmgmol_to_rdmol(pmg_mol)[0]
+                    vol = ComputeMolVolume(rdmol)
+                    globular_volume = self.prop_entry(hashes=[_hash], conditions=conditions, value=round(vol, 3),
+                                                      unit="A^3")
+                    data_dict[species].update({"globular_volume": globular_volume})
+                except Chem.rdchem.AtomValenceException:
+                    pass
+                geom_data = self.prop_entry(hashes=[_hash], conditions=conditions, sites=species_data["geometry"])
+                data_dict[species].update({"geometry": geom_data})
         elif "tddft" in calculation_type:
             if species_data.get("dipole_moment"):
                 dipole_moment = self.prop_entry(hashes=[_hash], conditions=conditions,
-                                                value=np.linalg.norm(np.asarray(species_data["scf_dipole_moment"]["value"])),
+                                                value=np.linalg.norm(
+                                                    np.asarray(species_data["scf_dipole_moment"]["value"])),
                                                 unit=species_data["scf_dipole_moment"]["unit"])
                 data_dict[species].update({"dipole_moment": dipole_moment})
             if species_data["excitations"].get("Singlet"):
@@ -222,9 +236,9 @@ class Gaus2FrontCharacterization:
     @staticmethod
     def prop_entry(hashes=None, conditions=None, **kwargs):
         prop_dict = {
-                        "source_hash_ids": hashes or [],
-                        "conditions": conditions or {},
-                    }
+            "source_hash_ids": hashes or [],
+            "conditions": conditions or {},
+        }
         prop_dict.update(kwargs)
         return prop_dict
 
@@ -317,7 +331,7 @@ class Gaus2FrontCharacterization:
                      "energy_initial": f"{gas_phase}.scf_total_energy.value"}
         solv_eng = EnergyDiffCalc(connector=connector).calculate(c_data)
         return self.mol_descriptor_dict(solv_eng, unit='eV', hashes=h_ids, name="solvation_energy",
-                                           condition_addition={"solvent": self.solvent})
+                                        condition_addition={"solvent": self.solvent})
 
     def omega(self):
         """Descriptor dict for the hole reorganization energy"""
@@ -325,7 +339,7 @@ class Gaus2FrontCharacterization:
         w_conditions.pop("tuning_parameter") if w_conditions.get("tuning_parameter") else None
         c_data, h_id = self.find_data("wtuning", conditions=w_conditions)
         if c_data:
-            omega = math.floor(c_data.get("omega", 0)*10000)/10000
+            omega = math.floor(c_data.get("omega", 0) * 10000) / 10000
             return {"omega": self.prop_entry(hashes=[h_id], conditions=w_conditions, value=omega, unit="")}
 
         raise ValueError
@@ -493,7 +507,7 @@ class Gaus2FrontCharacterization:
                      "electrode": "electrode", "num_electrons": "num_electrons"}
         energy = -RedoxPotentialCalc(connector=connector).calculate(c_data)
         return self.mol_descriptor_dict(energy, unit='eV', hashes=h_ids, name="oxidation_potential",
-                                           condition_addition={"reference_electrode": electrode, "solvent": self.solvent})
+                                        condition_addition={"reference_electrode": electrode, "solvent": self.solvent})
 
     def reduction_potential(self, electrode="standard_hydrogen_electrode", num_electrons=1):
         """Descriptor dict for the reduction potential"""
@@ -510,7 +524,7 @@ class Gaus2FrontCharacterization:
                      "electrode": "electrode", "num_electrons": "num_electrons"}
         energy = RedoxPotentialCalc(connector=connector).calculate(c_data)
         return self.mol_descriptor_dict(energy, unit='eV', hashes=h_ids, name="reduction_potential",
-                                           condition_addition={"reference_electrode": electrode, "solvent": self.solvent})
+                                        condition_addition={"reference_electrode": electrode, "solvent": self.solvent})
 
     def get_all_data(self):
         """
@@ -851,7 +865,10 @@ if __name__ == "__main__":
     # chg = d["data"]["charge"]
 
     mol_id = "80MJUY"
-    omega_q = front_coll.find_one({"_id": mol_id}, {"mol_characterization.omega": 1}).get("mol_characterization", {}).get("omega", [None])[0]
+    omega_q = \
+    front_coll.find_one({"_id": mol_id}, {"mol_characterization.omega": 1}).get("mol_characterization", {}).get("omega",
+                                                                                                                [None])[
+        0]
     cond = omega_q["conditions"]
     cond.update({"tuning_parameter": omega_q["value"]})
     g2c = Gaus2FrontCharacterization(
