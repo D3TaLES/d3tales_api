@@ -22,8 +22,8 @@ class Gaus2FrontCharacterization:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id, conditions, calculation_type=None, insert=False, rmsd=RMSD_DEFAULT, gs_charge=None,
-                 all_props=False, verbose=2, schema_version=SCHEMA_VERSION):
+    def __init__(self, _id, conditions, calculation_type=None, insert=False, data=None, rmsd=RMSD_DEFAULT,
+                 gs_charge=None, all_props=False, verbose=2, schema_version=SCHEMA_VERSION):
         """
 
         :param _id: str, molecule ID
@@ -49,6 +49,8 @@ class Gaus2FrontCharacterization:
             "groundState_charge"] if gs_charge is None else gs_charge
         print("Starting query for all backend {} data...".format(self.id)) if verbose else None
         self.mol_data = list(self.back_coll.find({"mol_id": self.id}) or [])
+        if data:
+            self.mol_data.append(data)
         self.mol_hashes = [d.get("_id") for d in self.mol_data]
         print("Found {} backend data documents for {}...".format(len(self.mol_data), self.id)) if verbose else None
 
@@ -231,7 +233,7 @@ class Gaus2FrontCharacterization:
         m_id = processing_data.get("mol_id")
         calculation_type = processing_data.get("calculation_type")
         conditions = processing_data.get("data", {}).get("conditions")
-        return cls(_id=m_id, calculation_type=calculation_type, conditions=conditions, **kwargs)
+        return cls(_id=m_id, calculation_type=calculation_type, conditions=conditions, data=processing_data, **kwargs)
 
     @staticmethod
     def prop_entry(hashes=None, conditions=None, **kwargs):
