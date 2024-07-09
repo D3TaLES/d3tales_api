@@ -400,7 +400,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
                 return float(calc)
 
 
-class ProcessChiESI(ParseChiMixinProcessPotBase):
+class ProcessChiESI(ParseChiMixin, ProcessPotBase):
     """
     Extract data from raw Chi ESI experiment files
     """
