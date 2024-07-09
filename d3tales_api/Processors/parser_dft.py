@@ -268,7 +268,7 @@ class ProcessCCLIBMixin:
                     radical_stability_score={"value": RSSCalc(connector=connector).calculate(c_data)})
 
 
-class ProcessPsi4Log(ProcessDFTBase, ProcessCCLIBMixin):
+class ProcessPsi4Log(ProcessCCLIBMixin, ProcessDFTBase):
     """
     Class to process Psi4 logfiles.
     Copyright 2021, University of Kentucky
@@ -279,7 +279,7 @@ class ProcessPsi4Log(ProcessDFTBase, ProcessCCLIBMixin):
         # TODO finish
 
 
-class ProcessGausLog(ProcessDFTBase, ProcessCCLIBMixin):
+class ProcessGausLog(ProcessCCLIBMixin, ProcessDFTBase):
     """
     Class to process Gaussian logfiles.
     Copyright 2021, University of Kentucky

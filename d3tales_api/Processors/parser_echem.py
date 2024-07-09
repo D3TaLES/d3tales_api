@@ -239,7 +239,7 @@ class ParseChiMixin:
             return value
 
 
-class ProcessChiCV(ProcessPotBase, ParseChiMixin):
+class ProcessChiCV(ParseChiMixin, ProcessPotBase):
     """
     Extract data from raw Chi CV experiment files
     """
@@ -322,7 +322,7 @@ class ProcessChiCV(ProcessPotBase, ParseChiMixin):
         warnings.warn(f"Error calculating E1/2 with microelectrode data. Sigma {test_sigmas} tested. ")
 
 
-class ProcessChiCA(ProcessPotBase, ParseChiMixin):
+class ProcessChiCA(ParseChiMixin, ProcessPotBase):
     """
     Extract data from raw Chi CV experiment files
     """
@@ -400,7 +400,7 @@ class ProcessChiCA(ProcessPotBase, ParseChiMixin):
                 return float(calc)
 
 
-class ProcessChiESI(ProcessPotBase, ParseChiMixin):
+class ProcessChiESI(ParseChiMixinProcessPotBase):
     """
     Extract data from raw Chi ESI experiment files
     """
