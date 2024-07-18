@@ -67,7 +67,6 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
     mol_opt_params = paramset.hf_opt_groundState if hf_mol_opt else paramset.opt_groundState
     f26 = MolOpt(paramset=mol_opt_params, parents=f10, **kwargs)
     f30 = WTuning(paramset=paramset.wtuning, parents=f26, **kwargs)
-    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=f30, **kwargs)
 
     opt_parents = f30 if wtune else f10
 
@@ -91,7 +90,7 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
     fws = [f10, f35, f36, f45, f46, f55, f56, f65, f66]
 
     if wtune:
-        fws.extend([f26, f30, f31])
+        fws.extend([f26, f30])
 
     if email:
         fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))

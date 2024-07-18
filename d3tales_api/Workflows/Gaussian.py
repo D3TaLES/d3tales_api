@@ -37,11 +37,11 @@ class GaussianBase(FiretaskBase):
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
         self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        self.check_if_already_run = fw_spec.get("check_if_already_run") or self.get("check_if_already_run") or False
+        self.check_if_already_run = fw_spec.get("check_if_already_run", True) if self.get("check_if_already_run") else self.get("check_if_already_run", True)
         self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
-        self.submit = fw_spec.get("submit", True) if self.get("submit", True) else self.get("submit")
-        self.restricted = fw_spec.get("restricted", True) if self.get("restricted", True) else self.get("restricted")
+        self.submit = fw_spec.get("submit", True) if self.get("submit") else self.get("submit", True)
+        self.restricted = fw_spec.get("restricted", True) if self.get("restricted") else self.get("restricted", True)
         self.run_nto = fw_spec.get("run_nto") or self.get("run_nto") or False
 
         self.gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
@@ -365,7 +365,7 @@ class RunWtuning(FiretaskBase):
         gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, smiles, prop='spin')
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
-        check_if_already_run = fw_spec.get("check_if_already_run", ) or self.get("check_if_already_run") or False
+        check_if_already_run = fw_spec.get("check_if_already_run", True) if fw_spec.get("check_if_already_run") else self.get("check_if_already_run", True)
         submit = fw_spec.get("submit") or self.get("submit") or True
         restricted = fw_spec.get("restricted", True) if self.get("restricted", True) else self.get("restricted")
 
@@ -396,13 +396,12 @@ class RunWtuning(FiretaskBase):
                                  endpoint="restapi/molecules/_id={}/mol_characterization.omega=1".format(identifier),
                                  url="https://d3tales.as.uky.edu", return_json=True).response
             if init_query:
-                omega_dict_list = init_query[0].get("mol_characterization", {}).get('omega')
-                if isinstance(omega_dict_list, list):
-                    tuned_w = omega_dict_list[0].get('value')
-                    iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
-                    return FWAction(
-                        update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier,
-                                     "gs_charge": gs_charge, "gs_spin": gs_spin})
+                omega_dict = init_query[0].get("mol_characterization", {}).get('omega')
+                tuned_w = omega_dict.get('value')
+                iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
+                return FWAction(
+                    update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier,
+                                 "gs_charge": gs_charge, "gs_spin": gs_spin})
 
         # generate the input for wtuning in gaussian and run tuning
         functional = paramset.functional if restricted else "R{}".format(paramset.functional)
