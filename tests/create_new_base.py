@@ -85,7 +85,13 @@ def update_geoms(front_coll, limit=1000):
 
 
 if __name__ == "__main__":
+    old_coll = DBconnector(db_info.get("ui")).get_collection("old_base")
     new_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+    old_ids = old_coll.find().distinct("_id")
+    new_ids = new_coll.find().distinct("_id")
+
+    extras = [i for i in old_ids if i not in new_ids]
+    print({i: old_coll.find_one({"_id": i})["mol_info"]["smiles"] for i in extras})
 
     # initialize_new_db(new_coll, old_coll)
     # update_ids(new_coll, limit=50)
