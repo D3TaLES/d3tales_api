@@ -45,6 +45,8 @@ class ProcessPotBase:
                                                        default_unit="M", return_dict=True)
         self.electrolyte_concentration = unit_conversion(metadata.get("electrolyte_concentration"),
                                                          default_unit="M", return_dict=True)
+        self.redox_mol_fraction = metadata.get("redox_mol_fraction")
+        self.electrolyte_mol_fraction = metadata.get("electrolyte_mol_fraction")
         self.working_electrode_radius = unit_conversion(metadata.get("working_electrode_radius"),
                                                         default_unit="cm", return_dict=True)
         self.working_electrode_surface_area = unit_conversion(metadata.get("working_electrode_surface_area"),
@@ -110,6 +112,8 @@ class ProcessPotBase:
             "working_electrode_surface_area": self.working_electrode_surface_area,
             "redox_mol_concentration": self.redox_mol_concentration,
             "electrolyte_concentration": self.electrolyte_concentration,
+            "redox_mol_fraction": self.redox_mol_fraction,
+            "electrolyte_mol_fraction": self.electrolyte_mol_fraction,
             "temperature": self.temperature,
             "experiment_run_id": self.experiment_run_id,
 

@@ -482,6 +482,7 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
         self.data = data
         self.n = data.__len__()
         conns = self.make_connections(data)
+        print(conns)
 
         e_half = unit_conversion(conns["e_half"], default_unit='V')
         e_rev = unit_conversion(conns["e_rev"], default_unit='V')

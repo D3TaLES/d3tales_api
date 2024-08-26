@@ -3,7 +3,7 @@ from d3tales_api.Processors.parser_echem import ProcessChiCV
 from d3tales_api.Calculators.calculators import CVChargeTransferCalculatorMicro, CVDiffusionCalculatorMicro
 
 
-ca_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'CV_microelectrode.csv')
+ca_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'cycle10_cv05_17_07_15.txt')
 ca_metadata = {"data_type": "cv",
                "electrode_counter": "pt_working_electrode",
                "electrode_reference": "ag_reference_electrode",
@@ -49,12 +49,13 @@ connector = {
 #           "e_rev": "0.3 V",
 #           "T": "298 K",
 #       }
+
 print(instance["data"].keys())
 diffusion_coef = CVDiffusionCalculatorMicro(connector=connector).calculate(instance)
 
 instance.update(dict(D=diffusion_coef))
 transfer_rate = CVChargeTransferCalculatorMicro(connector=connector).calculate(instance, sci_notation=True)
 #
-# print(diffusion_coef, transfer_rate)
+print(diffusion_coef, transfer_rate)
 
 print("CV TESTING SUCCESSFUL")

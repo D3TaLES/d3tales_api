@@ -82,7 +82,7 @@ class ProcessExpFlowObj:
             check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
             if check_id:
                 return check_id
-            instance = GenerateMolInfo(clean_smiles, database="frontend").mol_info_dict
+            instance = GenerateMolInfo(clean_smiles).mol_info_dict
             db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles,
                                    group=self.source_group)
         except Exception as e:

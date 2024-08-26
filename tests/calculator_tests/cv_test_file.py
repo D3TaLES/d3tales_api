@@ -12,7 +12,6 @@ ONLY_ONE = True
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
-DEFAULT_WORKING_ELECTRODE_AREA = f"{(math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2))}cm^2"
 print("Concentration: ", DEFAULT_CONCENTRATION)
 
 if ROBOT_DATA:
@@ -24,7 +23,7 @@ if ROBOT_DATA:
     cv_entries = [ProcessChiCV(loc, _id="test", submission_info={}, micro_electrodes=True,
                                metadata={"redox_mol_concentration": DEFAULT_CONCENTRATION,
                                          "temperature": DEFAULT_TEMPERATURE,
-                                         "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA},
+                                         "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS},
                                ).data_dict for loc in cv_locations]
 else:
     cv_data = ProcessChiCV("../raw_data/aman_cv2.csv", _id='test').data_dict
