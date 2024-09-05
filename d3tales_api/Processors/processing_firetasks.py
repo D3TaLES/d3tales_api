@@ -251,7 +251,7 @@ class UpdateUserDB(FiretaskBase):
         automatic_approval = fw_spec.get("automatic_approval") or self.get("automatic_approval", False)
         processed_data = json.loads(json.dumps(fw_spec["processed_data"]["data"]))
 
-        dbc = DBconnector(db_info.get("frontend"))
+        dbc = DBconnector(db_info.get("ui"))
         coll = dbc.get_collection('submission')
         try:
             _id = coll.find_one({"processing_id": processing_id})["_id"]
@@ -260,7 +260,6 @@ class UpdateUserDB(FiretaskBase):
         coll.update_one({"_id": _id}, {"$set": {"processing_id": hash_id}}, upsert=True)
         coll.update_one({"_id": _id}, {"$set": {"processed_data": processed_data}}, upsert=True)
         if automatic_approval:
-            pass
             coll.update_one({"_id": _id}, {"$set": {"approved": True}}, upsert=True)
 
 
