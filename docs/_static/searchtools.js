@@ -17,7 +17,7 @@ if (typeof Scorer === "undefined") {
   var Scorer = {
     // Implement the following function to further tweak the score for each result
     // The function takes a result array [docname, title, anchor, descr, score, filename]
-    // and returns the new score.
+    // and returns the snaps_20240828 score.
     /*
     score: result => {
       const [docname, title, anchor, descr, score, filename] = result

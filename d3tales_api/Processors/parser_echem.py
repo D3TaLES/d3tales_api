@@ -37,9 +37,9 @@ class ProcessPotBase:
         self.experiment_run_id = metadata.get("experiment_run_id", '')
         self.working_electrode = metadata.get("electrode_working", '')
         self.counter_electrode = metadata.get("electrode_counter", '')
-        self.reference_electrode = metadata.get("electrode_reverence", '')
+        self.reference_electrode = metadata.get("electrode_reference", '')
 
-        self.e_rev = unit_conversion(metadata.get("e_rev"), default_unit="V", return_dict=True)
+        self.e_ref = unit_conversion(metadata.get("e_ref"), default_unit="V", return_dict=True)
         self.temperature = unit_conversion(metadata.get("temperature"), default_unit="K", return_dict=True)
         self.redox_mol_concentration = unit_conversion(metadata.get("redox_mol_concentration"),
                                                        default_unit="M", return_dict=True)
@@ -294,7 +294,7 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
         if self.micro_electrodes:
             p_data.update({
                 "i_ss": getattr(self, 'i_ss', None),
-                "e_rev": getattr(self, 'e_rev', None),
+                "e_ref": getattr(self, 'e_ref', None),
             })
         else:
             p_data.update({

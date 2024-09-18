@@ -66,7 +66,7 @@ class D3Calculator(abc.ABC):
             "T": "Temperature (default = 293 K)",
             "X": "peak shift (default = V)",
             "e": "E1/2 (default = V)",
-            "e_rev": "formal potential (default = V)",
+            "e_ref": "formal potential (default = V)",
             "electrode": "electrode name as str or potential as float (default = standard_hydrogen_electrode)",
             "energy": "energy another geometry (default = eV)",
             "energy_final": "energy final (default = eV)",
@@ -464,7 +464,7 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
 
         Connection Points:
             :e_half: measured half-wave potential of steady-state sigmoid (default = V)
-            :e_rev: formal potential of redox couple in reversible conditions (default = V)
+            :e_ref: formal potential of redox couple in reversible conditions (default = V)
             :n: number of electrons
             :T: Temperature (default = 293 K)
             :D: Diffusion constant (default = cm^2/s)
@@ -485,14 +485,14 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
         print(conns)
 
         e_half = unit_conversion(conns["e_half"], default_unit='V')
-        e_rev = unit_conversion(conns["e_rev"], default_unit='V')
+        e_ref = unit_conversion(conns["e_ref"], default_unit='V')
         n = conns["n"]
         T = unit_conversion(conns["T"], default_unit='K')
         D = unit_conversion(conns["D"], default_unit='cm^2/s')
         r = unit_conversion(conns["r"], default_unit='cm')
         F = 96485.3321  # Faraday constant, s A / mol
         R = 8.314  # molar gas constant, J / K / mol
-        k = 2 * D / (r * (1 - (math.exp(n * F * (e_half - e_rev) / (R * T)))))
+        k = 2 * D / (r * (1 - (math.exp(n * F * (e_half - e_ref) / (R * T)))))
         return np.format_float_scientific(k) if sci_notation else float(k)
 
 

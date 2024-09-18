@@ -340,7 +340,7 @@
   };
 
   // Internal function to wrap or shallow-copy an ArrayBuffer,
-  // typed array or DataView to a new view, reusing the buffer.
+  // typed array or DataView to a snaps_20240828 view, reusing the buffer.
   function toBufferView(bufferSource) {
     return new Uint8Array(
       bufferSource.buffer || bufferSource,
@@ -386,7 +386,7 @@
         // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
       case '[object String]':
         // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
-        // equivalent to `new String("5")`.
+        // equivalent to `snaps_20240828 String("5")`.
         return '' + a === '' + b;
       case '[object Number]':
         // `NaN`s are equivalent, but non-reflexive.
@@ -606,7 +606,7 @@
     return function(){};
   }
 
-  // An internal function for creating a new object that inherits from another.
+  // An internal function for creating a snaps_20240828 object that inherits from another.
   function baseCreate(prototype) {
     if (!isObject(prototype)) return {};
     if (nativeCreate) return nativeCreate(prototype);

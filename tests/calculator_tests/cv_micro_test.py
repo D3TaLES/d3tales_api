@@ -12,7 +12,7 @@ ca_metadata = {"data_type": "cv",
                "instrument": "robot_potentiostat",
                "redox_mol_concentration": "0.05 M",
                "solvent": ["ACN"],
-               "e_rev": "0.3 V",
+               "e_ref": "0.3 V",
                "temperature": "293 K",
                "working_electrode_radius": "0.00055cm"}
 
@@ -26,7 +26,7 @@ connector = {
     "C": "data.conditions.redox_mol_concentration",
     "n": "num_electrodes",
     "e_half": "data.e_half",
-    "e_rev": "data.e_rev",
+    "e_ref": "data.e_ref",
     "T": "data.conditions.temperature",
     "D": "D",
 }
@@ -46,7 +46,7 @@ connector = {
 #           "n": 1,
 #
 #           "e_half": "0.26 V",
-#           "e_rev": "0.3 V",
+#           "e_ref": "0.3 V",
 #           "T": "298 K",
 #       }
 

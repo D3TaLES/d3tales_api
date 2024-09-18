@@ -161,7 +161,7 @@ class WtuningJob:
             oldomega = self.omega
             self.log_add({'Super Cycle': self.ocycle, 'cycle init with w': self.omega})
             omega = self.omega_tune(dis=dis, tol=tol)[0]
-            self.log_add({'new': omega, 'snaps_20240813_orig': oldomega})
+            self.log_add({'snaps_20240828': omega, 'snaps_20240813_orig': oldomega})
             if abs(omega - oldomega) <= eps and self.ocycle > 0:
                 self.omega = omega
                 break
@@ -178,7 +178,7 @@ class WtuningJob:
             self.log_add(
                 {'Super Cycle': self.ocycle, 'a': self.alpha, 'Elapsed Time': dt.datetime.now() - self.start_time})
             alpha = self.alpha_tune(dis=dis, tol=tol)[0]
-            self.log_add({'new': alpha, 'snaps_20240813_orig': oldalpha})
+            self.log_add({'snaps_20240828': alpha, 'snaps_20240813_orig': oldalpha})
             if abs(alpha - oldalpha) <= eps and self.ocycle > 0:
                 self.alpha = alpha
                 break

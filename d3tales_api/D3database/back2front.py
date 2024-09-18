@@ -703,11 +703,12 @@ class CV2Front:
         diffusions, charge_transfers = [], []
         if self.verbose:
             print("STARTING META PROPERTY PROCESSING...This could take a few minutes.")
-            print("E 1/2s: ", ", ".join([str(e.get("value")) for e in self.e_halfs]))
 
         self.meta_dict.update({f"{self.redox_event}_potential": self.e_halfs})
 
         for i, e_half in enumerate(self.e_halfs):
+            if self.verbose:
+                print("E 1/2s: ", ", ".join([str(e.get("value")) for e in self.e_halfs]))
             c_diffusion_coef, c_transfer_rate = self.meta_calcs_func(electron_num=i + 1, curve_type="cathodic")
             diffusions.append(self.prop_dict(c_diffusion_coef, unit="cm^2/s", order=i + 1, notes="cathodic"))
             charge_transfers.append(self.prop_dict(c_transfer_rate, unit="cm/s", order=i + 1, notes="cathodic"))
@@ -806,8 +807,8 @@ class CV2Front:
             "C": "data.conditions.redox_mol_concentration",
             "n": "num_electrodes",
 
-            "e_half": "data.e_half.0",
-            "e_rev": "data.e_ref",
+            "e_half": "data.e_half",
+            "e_ref": "data.e_ref",
             "T": "data.conditions.temperature",
             "D": "diffusion",
         }
@@ -838,8 +839,13 @@ class CV2Front:
         self.e_halfs_id = e_half_data.get("_id")
         self.e_halfs_conditions = e_half_data.get("data", {}).get("conditions")
         e_halfs = e_half_data.get("data", {}).get("e_half")
-        return [self.prop_dict(e_half.get("value"), unit=e_half.get("unit"), order=i + 1, hashes=[self.e_halfs_id],
-                               conditions=self.e_halfs_conditions) for i, e_half in enumerate(e_halfs)]
+        print(e_halfs)
+        if isinstance(e_halfs, list):
+            return [self.prop_dict(e_half.get("value"), unit=e_half.get("unit"), order=i + 1, hashes=[self.e_halfs_id],
+                                   conditions=self.e_halfs_conditions) for i, e_half in enumerate(e_halfs)]
+        elif isinstance(e_halfs, dict):
+            return [self.prop_dict(e_halfs.get("value"), unit=e_halfs.get("unit"), order=1, hashes=[self.e_halfs_id],
+                                   conditions=self.e_halfs_conditions)]
 
     @classmethod
     def from_json(cls, json_path, **kwargs):
@@ -868,9 +874,10 @@ if __name__ == "__main__":
 
     mol_id = "80MJUY"
     omega_q = \
-    front_coll.find_one({"_id": mol_id}, {"mol_characterization.omega": 1}).get("mol_characterization", {}).get("omega",
-                                                                                                                [None])[
-        0]
+        front_coll.find_one({"_id": mol_id}, {"mol_characterization.omega": 1}).get("mol_characterization", {}).get(
+            "omega",
+            [None])[
+            0]
     cond = omega_q["conditions"]
     cond.update({"tuning_parameter": omega_q["value"]})
     g2c = Gaus2FrontCharacterization(

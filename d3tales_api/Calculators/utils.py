@@ -106,7 +106,7 @@ def unit_conversion(measurement, default_unit: str, density=None, return_dict=Fa
     ureg.add_context(c)
     # Get measurement value and unit
     if not isinstance(measurement, (str, float, int, dict)):
-        value, unit = getattr(measurement, "value"), getattr(measurement, "unit")
+        value, unit = getattr(measurement, "magnitude"), getattr(measurement, "units")
     else:
         value = measurement.get("value") if isinstance(measurement, dict) else measurement
         unit = ""

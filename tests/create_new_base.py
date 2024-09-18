@@ -11,7 +11,7 @@ def initialize_new_db(front_coll, old_front_coll, limit=0):
     query = {"mol_characterization.omega.0": {"$exists": True}, "mol_characterization.omega.1": {"$exists": False}}
     init_data = list(old_front_coll.find(query, {"mol_characterization.omega": 1, "mol_info": 1}).limit(limit))
 
-    print("Inserting {} new documents...".format(len(init_data)))
+    print("Inserting {} snaps_20240828 documents...".format(len(init_data)))
     new_inti_data = [{"_id": d["_id"], "mol_info": d["mol_info"],
                       "mol_characterization": {"omega": d["mol_characterization"]["omega"][0]}} for d in init_data]
     front_coll.insert_many(new_inti_data)
