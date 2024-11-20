@@ -3,21 +3,21 @@ from d3tales_api.Processors.parser_echem import ProcessChiCV
 from d3tales_api.Calculators.calculators import CVChargeTransferCalculatorMicro, CVDiffusionCalculatorMicro
 
 
-ca_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'cycle10_cv05_17_07_15.txt')
-ca_metadata = {"data_type": "cv",
+cv_file = os.path.join(os.getcwd(), '../raw_data', 'cv_data', 'chamini_CV_microelectrode.csv')
+metadata = {"data_type": "cv",
                "electrode_counter": "pt_working_electrode",
                "electrode_reference": "ag_reference_electrode",
                "electrode_working": "pt_counter_electrode",
                "electrolyte": ["0.1M TBAPF6"],
                "instrument": "robot_potentiostat",
-               "redox_mol_concentration": "0.05 M",
+               "redox_mol_concentration": "0.01 M",
                "solvent": ["ACN"],
                "e_ref": "0.3 V",
-               "temperature": "293 K",
-               "working_electrode_radius": "0.00055cm"}
+               "temperature": "298 K",
+               "working_electrode_radius": "0.0005cm"}
 
 _id = "06TNKR"
-instance = ProcessChiCV(ca_file, _id=_id, metadata=ca_metadata, micro_electrodes=True).data_dict
+instance = ProcessChiCV(cv_file, _id=_id, metadata=metadata, micro_electrodes=True).data_dict
 
 instance.update(dict(num_electrodes=1))
 connector = {
@@ -51,6 +51,7 @@ connector = {
 #       }
 
 print(instance["data"].keys())
+print(instance["data"]["i_ss"])
 diffusion_coef = CVDiffusionCalculatorMicro(connector=connector).calculate(instance)
 
 instance.update(dict(D=diffusion_coef))

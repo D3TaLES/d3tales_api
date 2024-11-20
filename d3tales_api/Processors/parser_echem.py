@@ -381,7 +381,8 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         """
         c_measured = unit_conversion(self.measured_conductance, default_unit="mS")
         cell_constant = unit_conversion(self.cell_constant, default_unit="cm^-1")
-        return {"value": c_measured * cell_constant, "unit": "mS/cm"}
+        if cell_constant:
+            return {"value": c_measured * cell_constant, "unit": "mS/cm"}
 
     def get_resistance(self, **kwargs):
         connector = {
