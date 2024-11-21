@@ -1,3 +1,4 @@
+import json
 import os
 from d3tales_api.Processors.parser_echem import ProcessChiCV
 from d3tales_api.Calculators.calculators import CVChargeTransferCalculatorMicro, CVDiffusionCalculatorMicro
@@ -49,6 +50,8 @@ connector = {
 #           "e_ref": "0.3 V",
 #           "T": "298 K",
 #       }
+# with open("parsed_micro_data.json", 'w') as fn:
+#     json.dump(instance, fn)
 
 print(instance["data"].keys())
 print(instance["data"]["i_ss"])

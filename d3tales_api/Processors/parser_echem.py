@@ -2,7 +2,9 @@ import uuid
 import json
 import math
 import warnings
+import pandas as pd
 import dateutil.parser
+from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 
 from d3tales_api.Processors.utils import *
@@ -275,13 +277,56 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
         self.plot_data = CVPlotter().plot_data(self.__dict__).get("abs_plot")
 
         if micro_electrodes:
-            self.i_ss = {"value": max(self.current) - min(self.current), "unit": self.y_unit}
+            self.i_ss = {"value": self.get_i_ss(self.potential, self.current), "unit": self.y_unit}
+            print("I_SS ", self.i_ss)
             self.e_half = {"value": self.get_micro_e_half(self.scan_data[0]), "unit": self.x_unit}
         else:
             self.reversibility = CVDescriptorCalculator().reversibility(self.__dict__)
             self.e_half = {"value": CVDescriptorCalculator().e_half(self.__dict__), "unit": self.x_unit}
             self.peak_splittings = {"value": CVDescriptorCalculator().peak_splittings(self.__dict__), "unit": self.x_unit}
             self.middle_sweep = CVDescriptorCalculator().middle_sweep(self.__dict__)
+
+    @staticmethod
+    def get_i_ss(potential, current, current_range_percentage=10, window_length=11, poly_order=2):
+        """
+        Determines the steady-state current for a UME CV scan by analyzing the derivative of current
+        with respect to potential.
+
+        Parameters:
+            potential (list): List of potential values
+            current (list): List of current values
+            current_range_percentage (float): Percentage of the total current range to set as the threshold for di/dE
+                steady-state region.
+            window_length (int): Window length for Savitzky-Golay filter (must be odd).
+            poly_order (int): Polynomial order for Savitzky-Golay filter.
+
+        Returns:
+            steady_state_current (float): Estimated steady-state current value.
+        """
+        # Calculate total current range and determine i_derr_ss
+        full_cv_data = pd.DataFrame({"potential": potential, "current": current})
+        current_range = full_cv_data['current'].max() - full_cv_data['current'].min()
+        i_derr_ss = (current_range_percentage / 100) * current_range
+
+        # Smooth the current data to compute derivatives
+        smooth_current = savgol_filter(full_cv_data['current'], window_length, poly_order)
+        current_derivative = np.gradient(smooth_current, full_cv_data['potential'])
+
+        # Identify all steady-state regions (di/dE ≤ i_derr_ss)
+        steady_state_indices = np.abs(current_derivative) <= i_derr_ss
+        steady_state_regions_all = full_cv_data[steady_state_indices]
+
+        # Get only top steady state regions
+        max_derivative_idx = np.nanargmax(current_derivative)
+        max_derivative_potential = full_cv_data['potential'].iloc[max_derivative_idx]
+        steady_state_regions = steady_state_regions_all[steady_state_regions_all.potential > max_derivative_potential]
+
+        # Calculate the mean current value across all steady-state regions
+        if not steady_state_regions.empty:
+            steady_state_current = steady_state_regions['current'].mean()
+            return steady_state_current
+        else:
+            raise ValueError(f"No steady-state regions identified with the threshold {current_range_percentage}%.")
 
     @property
     def parsed_data(self):
