@@ -111,20 +111,15 @@ test_dict = [{
 
 def get_diffusion(processed_data, num_electrons=1, anodic=True):
     for data_dict in processed_data:
-        if anodic:
-            data_dict["current"] = data_dict.get("forward", {})[num_electrons][1]
-        else:
-            data_dict["current"] = data_dict.get("reverse", {})[num_electrons][1]
         data_dict["n"] = num_electrons
     connector = {
-        "i_p": "current",
         "A": "conditions.working_electrode_surface_area.value",
         "v": "conditions.scan_rate.value",
         "C": "conditions.redox_mol_concentration.value",
         "n": "n"
     }
     diffusion_cal = CVDiffusionCalculator(connector=connector)
-    return diffusion_cal.calculate(processed_data)
+    return diffusion_cal.calculate(processed_data, cathodic_anodic="anodic" if anodic else "cathodic")
 
 
 x = get_diffusion(test_dict)

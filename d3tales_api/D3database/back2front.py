@@ -763,14 +763,11 @@ class CV2Front:
             try:
                 data_dict = i.get('data')
                 data_dict["n"] = electron_num
-                data_dict["current_cathodic"] = data_dict.get("forward", {})[electron_num - 1][1]
-                data_dict["current_anodic"] = data_dict.get("reverse", {})[electron_num - 1][1]
                 processed_data.append(data_dict)
             except:
                 pass
         connector = {
             "n": "n",
-            "i_p": "current_{}".format(curve_type),
             "X": "peak_splittings.{}".format(electron_num - 1),
             "v": "conditions.scan_rate",
             "T": "conditions.temperature",
@@ -785,7 +782,7 @@ class CV2Front:
         if self.verbose:
             print("Calculating {} diffusion coefficient for oxidation {}...".format(curve_type, electron_num))
         diffusion_cal = CVDiffusionCalculator(connector=connector)
-        diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True)
+        diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True, cathodic_anodic=curve_type)
 
         # Calculate charge transfer rates
         if self.verbose:

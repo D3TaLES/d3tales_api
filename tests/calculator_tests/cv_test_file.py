@@ -30,12 +30,10 @@ else:
     cv_entries = [cv_data]
 
 [d.update({"num_electrons": NUM_ELECTRONS}) for d in cv_entries]
-# [d.update({"current_cathodic": d.get("data", {}).get("forward", [[]])[NUM_ELECTRONS - 1][1]}) for d in cv_entries]
 
 
 connector = {
     "n": "num_electrons",
-    "i_p": "current_cathodic",
     "A": "data.conditions.working_electrode_surface_area",
     "v": "data.conditions.scan_rate",
     "C": "data.conditions.redox_mol_concentration",
