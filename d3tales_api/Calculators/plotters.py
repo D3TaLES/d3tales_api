@@ -145,6 +145,85 @@ class CVPlotter(D3Plotter):
             plt.show()
 
 
+class CAPlotter(D3Plotter):
+
+    def plot_data(self, data, a_to_ma=False):
+        """
+        CV plot data for plotly
+
+        Connection Points:
+            :t_s: time points
+            :i_s: current points
+
+        :param data: data for calculation
+        :type data: dict
+        :param a_to_ma: convert current values (assumed to be in A) to mA if True
+        :type a_to_ma: bool
+
+        :return: plot data for plotly
+        """
+
+        self.data = data
+        conns = self.make_connections(data)
+        print(conns)
+
+        x = conns["t_s"]
+        y = conns["i_s"]
+        if a_to_ma:
+            y = [c*1000 for c in y]
+
+        if len(x) != len(y):
+            raise ValueError(f"Cannot plot time and current arrays of different lengths: "
+                             f"{len(x)} and {len(y)}, respectively.")
+
+        # Convert to current density
+
+        plotting_data = [{
+            "x": x,
+            "y": y,
+            "modeplot_data": 'lines',
+            "name": "ca",
+            "line": {
+                "color": "#003396",
+                "width": 1
+            }
+        }]
+        return {"abs_plot": plotting_data, "x": x, "y": y}
+
+    def live_plot(self, data, fig_path=None, a_to_ma=False, **plt_kwargs):
+        """
+        Live Matplotlib plot for data
+
+        Connection Points:
+            :scan_data: scanned data from CV file
+
+        :param data: data for calculation
+        :type data: dict
+        :param fig_path: path to which to save the figure
+        :type fig_path: str
+        :param a_to_ma: convert current values (assumed to be in A) to mA if True
+        :type a_to_ma: bool
+
+        :return: shows matplotlib plot
+        """
+        plt_data = self.plot_data(data, a_to_ma=a_to_ma)
+        plt.plot(plt_data["x"], plt_data["y"], color="red", linewidth=1)
+        if not plt_kwargs.get("xlabel"):
+            plt_kwargs.update({"xlabel": f"Time (s)"})
+        if not plt_kwargs.get("ylabel"):
+            current_unit = "mA" if a_to_ma else "A"
+            plt_kwargs.update({"ylabel": f"Current ({current_unit})"})
+
+        plt.gca().update(dict(**plt_kwargs))
+        plt.tight_layout()
+
+        if fig_path:
+            plt.savefig(fig_path, dpi=300)
+            plt.close()
+        else:
+            plt.show()
+
+
 class DFTSpecPlotter(D3Plotter):
 
     def plot_data(self, data):

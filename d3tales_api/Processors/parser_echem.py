@@ -8,8 +8,8 @@ from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 
 from d3tales_api.Processors.utils import *
-from d3tales_api.Calculators.plotters import CVPlotter
 from d3tales_api.Calculators.utils import unit_conversion
+from d3tales_api.Calculators.plotters import CVPlotter, CAPlotter
 from d3tales_api.Calculators.calculators import CVDescriptorCalculator, CAResistanceCalculator
 
 MIN_SCAN_LEN = 5
@@ -282,9 +282,9 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
             self.e_half = {"value": self.get_micro_e_half(self.scan_data[0]), "unit": self.x_unit}
         else:
             self.reversibility = CVDescriptorCalculator().reversibility(self.__dict__)
-            self.e_half = {"value": CVDescriptorCalculator().e_half(self.__dict__), "unit": self.x_unit}
-            self.peak_splittings = {"value": CVDescriptorCalculator().peak_splittings(self.__dict__), "unit": self.x_unit}
             self.middle_sweep = CVDescriptorCalculator().middle_sweep(self.__dict__)
+            self.e_half = [{"value": v, "unit": self.x_unit} for v in CVDescriptorCalculator().e_half(self.__dict__)]
+            self.peak_splittings = [{"value": v, "unit": self.x_unit} for v in CVDescriptorCalculator().peak_splittings(self.__dict__)]
 
     @staticmethod
     def get_i_ss(potential, current, current_range_percentage=10, window_length=11, poly_order=2):
@@ -398,6 +398,8 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         self.r_int = self.get_data_calcs(calc_name="Int", header="Reverse:")
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
+        self.plot_data = CAPlotter().plot_data({"t_s": self.t.tolist(), "i_s": self.i.tolist()}).get("abs_plot")
+
         self.measured_resistance = self.get_resistance()
         self.measured_conductance = 1 / self.measured_resistance
 
@@ -416,6 +418,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
             "conductivity": self.conductivity,
             "time": self.t.tolist(),
             "current": self.i.tolist(),
+            "plot_data": getattr(self, 'plot_data', None),
         })
         return p_data
 
