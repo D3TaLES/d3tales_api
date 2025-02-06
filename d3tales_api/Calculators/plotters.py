@@ -165,7 +165,6 @@ class CAPlotter(D3Plotter):
 
         self.data = data
         conns = self.make_connections(data)
-        print(conns)
 
         x = conns["t_s"]
         y = conns["i_s"]

@@ -400,8 +400,8 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
 
         self.plot_data = CAPlotter().plot_data({"t_s": self.t.tolist(), "i_s": self.i.tolist()}).get("abs_plot")
 
-        self.measured_resistance = self.get_resistance()
-        self.measured_conductance = 1 / self.measured_resistance
+        self.measured_resistance = self.get_resistance()  # Assumed to be in Ohm
+        self.measured_conductance = 1 / self.measured_resistance  # Assumed to be in sS
 
     @property
     def parsed_data(self):
@@ -427,7 +427,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         """
         Get conductivity based on cell constant
         """
-        c_measured = unit_conversion(self.measured_conductance, default_unit="mS")
+        c_measured = unit_conversion({"value": self.measured_conductance, "unit": "S"}, default_unit="mS")
         cell_constant = unit_conversion(self.cell_constant, default_unit="cm^-1")
         if cell_constant:
             return {"value": c_measured * cell_constant, "unit": "mS/cm"}
@@ -473,7 +473,8 @@ class ProcessChiESI(ParseChiMixin, ProcessPotBase):
         self.z = self.all_data[:, 3]
         self.phase = self.all_data[:, 4]
 
-        self.resistance = min(zip(self.z_real, self.z_img), key=lambda x: abs(x[1]))[0]
+        self.resistance = self.z_real[0]
+        # self.resistance = max(zip(self.z_real, -self.z_img), key=lambda x: x[1])[0]
 
         if not getattr(self, "high_f", None):
             self.high_f = {"value": max(self.freq), "unit": 'Hz'}
