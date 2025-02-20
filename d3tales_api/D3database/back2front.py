@@ -641,7 +641,7 @@ class CV2Front:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1,
+    def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1, max_scan_rate=None,
                  run_anodic=False, run_processing=True, insert=True, redox_event="oxidation", micro_electrodes=False,
                  verbose=1, backend_db="backend"):
         """
@@ -673,6 +673,7 @@ class CV2Front:
         self.conditions = self.get_conditions()
         self.p_ids = [d.get("_id") for d in self.multi_data]
         self.e_half_scan_rate = e_half_scan_rate
+        self.max_scan_rate = max_scan_rate
         self.run_anodic = run_anodic
         self.redox_event = redox_event
 
@@ -760,12 +761,14 @@ class CV2Front:
     def cv_meta_calcs(self, electron_num=1, curve_type="anodic"):
         processed_data = []
         for i in self.multi_data:
-            try:
-                data_dict = i.get('data')
-                data_dict["n"] = electron_num
-                processed_data.append(data_dict)
-            except:
-                pass
+            data_dict = i.get('data', {})
+            scan_rate = unit_conversion(data_dict.get("conditions", {}).get("scan_rate", 0), default_unit='V/s')
+            if self.max_scan_rate:
+                if scan_rate > self.max_scan_rate:
+                    print(f"WARNING! Data with scan rate {scan_rate} skipped because max scan rate is {self.max_scan_rate}")
+                    continue
+            data_dict["n"] = electron_num
+            processed_data.append(data_dict)
         connector = {
             "n": "n",
             "X": "peak_splittings.{}".format(electron_num - 1),

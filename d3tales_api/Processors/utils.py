@@ -1,3 +1,4 @@
+import pint
 import numpy as np
 
 MIN_SCAN_LEN = 5
@@ -46,3 +47,20 @@ def test_path(sftp, destination_path):
     folder_name = destination_path.split("/")[-1]
     folder_dir = "/".join(destination_path.split("/")[:-1])
     return True if folder_name in sftp.listdir(folder_dir) else False
+
+
+def convert_list_units(convert_list: list, existing_units: str, target_units: str):
+    """
+    Convert a list of numerical values from one unit to another using the pint package.
+
+    :param convert_list: List of numerical values to be converted.
+    :param existing_units: The current unit of the values in the list.
+    :param target_units: The unit to convert the values into.
+    :return: List of converted values.
+    """
+    # Create a UnitRegistry instance
+    ureg = pint.UnitRegistry()
+    conversion_factor = ureg(existing_units).to(target_units).magnitude
+
+    # Apply conversion factor directly
+    return [value * conversion_factor for value in convert_list]

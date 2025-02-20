@@ -159,10 +159,10 @@ class ParseChiMixin:
     """
     Extract data from raw Chi experiment files
     """
+    filepath: str
 
     def parse(self, data_header="Potential", delimiter=","):
         """
-        :param filepath: str, filepath to experiment data file
         :param data_header: str,
         :param delimiter: str, 
         """
@@ -332,7 +332,7 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
     def parsed_data(self):
         p_data = super().parsed_data
         p_data.update({
-            "peak_potential": getattr(self, 'high_e', None),
+            "peak_current": {"value": max(self.current), "unit": self.y_unit},
             "e_half": getattr(self, 'e_half', None),
             "plot_data": getattr(self, 'plot_data', None),
         })
@@ -385,12 +385,18 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         self.cell_constant = metadata.get("cell_constant", 1)
         self.parse(data_header="Time", delimiter=",")
 
-        self.t = self.all_data[:, 0]
-        self.i = self.all_data[:, 1]
         if self.x_unit != "s":
-            pass  # TODO convert to s and A if not already there.
+            self.t = convert_list_units(self.all_data[:, 0], existing_units=self.x_unit, target_units="s")
+            self.x_unit = "s"
+        else:
+            self.t = self.all_data[:, 0]
+
         if self.y_unit != "A":
-            pass
+            self.t = convert_list_units(self.all_data[:, 1], existing_units=self.y_unit, target_units="A")
+            self.y_unit = "A"
+        else:
+            self.i = self.all_data[:, 1]
+
         self.f_slp = self.get_data_calcs(calc_name="Slp", header="Forward:")
         self.f_int = self.get_data_calcs(calc_name="Int", header="Forward:")
         self.f_cor = self.get_data_calcs(calc_name="Cor", header="Forward:")
@@ -398,7 +404,8 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         self.r_int = self.get_data_calcs(calc_name="Int", header="Reverse:")
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
-        self.plot_data = CAPlotter().plot_data({"t_s": self.t.tolist(), "i_s": self.i.tolist()}).get("abs_plot")
+        self.plot_data = CAPlotter().plot_data({"t_s": np.array(self.t).tolist(),
+                                                "i_s": np.array(self.i).tolist()}).get("abs_plot")
 
         self.measured_resistance = self.get_resistance()  # Assumed to be in Ohm
         self.measured_conductance = 1 / self.measured_resistance  # Assumed to be in sS
@@ -416,8 +423,8 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
             "measured_resistance": {"value": self.measured_resistance, "unit": "Ohm"},
             "measured_conductance": {"value": self.measured_conductance, "unit": "S"},
             "conductivity": self.conductivity,
-            "time": self.t.tolist(),
-            "current": self.i.tolist(),
+            "time": np.array(self.t).tolist(),
+            "current": np.array(self.i).tolist(),
             "plot_data": getattr(self, 'plot_data', None),
         })
         return p_data
