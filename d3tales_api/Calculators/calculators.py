@@ -424,7 +424,10 @@ class CVDiffusionCalculator(D3Calculator):
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
             descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
-            i_p_raw = descriptor_cal.peak_currents(obj, cathodic_anodic=cathodic_anodic)
+            if conns.get("i_p"):
+                i_p_raw = conns["i_p"]
+            else:
+                i_p_raw = descriptor_cal.peak_currents(obj, cathodic_anodic=cathodic_anodic)
             i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
@@ -439,6 +442,7 @@ class CVDiffusionCalculator(D3Calculator):
 
         results = [np.format_float_scientific(diffusion_constants.mean(), precision=precision),
                    np.format_float_scientific(diffusion_fitted, precision=precision)]
+        print("DIFFUSION: ", results)
         return results if sci_notation else [float(x) for x in results]
 
 

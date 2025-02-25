@@ -51,7 +51,19 @@ connector = {
 # cv_plotter = CVPlotter(connector=connector).live_plot(cv_entries[3], fig_path="cv_test.png", self_standard=True)
 # cv_plotter_multi = CVPlotter(connector=connector).live_plot_multi(cv_entries, fig_path="cv_test_multi.png", self_standard=True)
 
-dirty_calc = DirtyElectrodeDetector(connector=connector)
-dirty = dirty_calc.calculate(cv_entries[0])
+# dirty_calc = DirtyElectrodeDetector(connector=connector)
+# dirty = dirty_calc.calculate(cv_entries[0])
 
 print("CV TESTING SUCCESSFUL")
+
+cv_entries = [
+    {"i_p": "0.044mA", "A": "0.0314", "v": "50mV/s", "n": 1, "C": "5mM"},
+    {"i_p": "0.055mA", "A": "0.0314", "v": "100mV/s", "n": 1, "C": "5mM"},
+    {"i_p": "0.075mA", "A": "0.0314", "v": "150mV/s", "n": 1, "C": "5mM"},
+    {"i_p": "0.079mA", "A": "0.0314", "v": "200mV/s", "n": 1, "C": "5mM"},
+    {"i_p": "0.085mA", "A": "0.0314", "v": "250mV/s", "n": 1, "C": "5mM"},
+    {"i_p": "0.091mA", "A": "0.0314", "v": "300mV/s", "n": 1, "C": "5mM"},
+]
+diffusion_cal = CVDiffusionCalculator(connector={"i_p": "i_p", "A": "A", "v": "v", "n": "n", "C": "C"})
+diffusion = diffusion_cal.calculate(cv_entries)
+print(diffusion)
