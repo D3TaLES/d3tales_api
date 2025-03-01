@@ -42,8 +42,8 @@ class ProcessExpFlowObj:
         self.concentration_volume = None
         self.concentration_mass = None
 
-        self.molecule_id = self.get_molecule_id(try_restapi=try_restapi)
         self.redox_id_error = redox_id_error
+        self.molecule_id = self.get_molecule_id(try_restapi=try_restapi)
 
     @property
     def solvent(self):
