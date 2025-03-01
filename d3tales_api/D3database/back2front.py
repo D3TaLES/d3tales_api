@@ -658,16 +658,18 @@ class CV2Front:
         :param backend_db: str, backend DB key word
         """
 
-        # connect to databases
-        self.front_coll = DBconnector(db_info.get("frontend")).get_collection(FRONT_COLL)
-        self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
-
         # Basic variables
         self.verbose = verbose
         if not id_list and not backend_data:
             raise ValueError(
                 "The CV2Front class requires either the 'id_list' kwarg or 'backend_data' kwarg. Neither were provided. ")
-        self.multi_data = backend_data or [self.back_coll.find_one({"_id": i}) for i in id_list]
+
+        if backend_data:
+            self.multi_data = backend_data
+        else:
+            self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
+            self.multi_data = [self.back_coll.find_one({"_id": i}) for i in id_list]
+
         if not self.multi_data or not self.multi_data[0]:
             raise ValueError("No backend data found for IDs {} and no backend data provided.".format(id_list))
         self.conditions = self.get_conditions()
