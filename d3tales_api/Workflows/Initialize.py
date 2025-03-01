@@ -28,7 +28,7 @@ class MoleculeInit(FiretaskBase):
         name_list = [name] if name else []
         rdkmol = MolFromSmiles(smiles)
         clean_smiles = MolToSmiles(rdkmol)
-        instance = GenerateMolInfo(clean_smiles, names=name_list, origin_group=group, database="frontend").mol_info_dict
+        instance = GenerateMolInfo(clean_smiles, names=name_list, origin_group=group).mol_info_dict
         gs_charge = instance.get('groundState_charge')
         gs_spin = instance.get('groundState_spin')
         db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles, group=group, public=public)
