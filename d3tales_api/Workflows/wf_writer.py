@@ -305,3 +305,40 @@ def specialized_job(paramset, identifier=None, smiles=None, solvent='acetonitril
 
     wf = Workflow(fws, name="special_{}".format(identifier or smiles))
     return wf
+
+
+def molDisc_wf(paramset, identifier=None, smiles=None, wtune=True,
+               email=None, username=None, wf_tag="", **kwargs):
+    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
+
+    f26 = MolOpt(paramset=paramset.opt_groundState, parents=f10, **kwargs)
+    f30 = WTuning(paramset=paramset.wtuning, parents=f26, **kwargs)
+
+    opt_parents = f30 if wtune else f10
+    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=opt_parents, **kwargs)
+    f35 = Optimization(paramset=paramset.opt_anion1, species="anion1", parents=opt_parents, **kwargs)
+    f37 = Optimization(paramset=paramset.opt_cation1, species="cation1", parents=opt_parents, **kwargs)
+
+    f45 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_anion1", parents=[f35],
+                 **kwargs)
+    f46 = Energy(paramset=paramset.energy_anion1, species="anion1", geometry="opt_groundState", parents=[f31], **kwargs)
+    f47 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_cation1", parents=[f37],
+                 **kwargs)
+    f48 = Energy(paramset=paramset.energy_cation1, species="cation1", geometry="opt_groundState", parents=[f31],
+                 **kwargs)
+
+    # Establish fireworks in workflow
+    fws = [f10, f31, f35, f37, f45, f46, f47, f48]
+    if wtune:
+        fws.extend([f26, f30])
+
+    if email:
+        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
+        fws.append(
+            EmailEnd(identifier=identifier, email=email, username=username, parents=[f45, f46, f47, f48]))
+
+    wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
+
+    return wf
+
+
