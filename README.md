@@ -22,7 +22,7 @@ data files as well as [ExpFlow](https://d3tales.as.uky.edu/expflow) run objects.
 This module can be installed with pip install by running the following code: 
 
 ```bash
-pip install git+https://github.com/d3tales/d3tales_api.git
+pip install d3tales_api
 ```
 
 >**Installation Notes**: 

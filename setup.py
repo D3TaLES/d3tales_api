@@ -1,11 +1,14 @@
 import sys
 import setuptools
-from d3tales_api import __version__, __author__, __credits__
+from pathlib import Path
+from d3tales_api import __version__, __author__
 
-with open("README.md", "r", encoding="utf-8") as fh:
+BASE_DIR = Path(__file__).resolve().parent
+
+with open(BASE_DIR / "README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("requirements.txt", "r", encoding="utf-8") as f:
+with open(BASE_DIR / "requirements.txt", "r", encoding="utf-8") as f:
     requirements = f.read().splitlines()
 if sys.version_info.major <=3 and sys.version_info.minor <=8:
     pass
@@ -23,7 +26,7 @@ setuptools.setup(
     project_urls={
         "Bug Tracker": "https://github.com/D3TaLES/d3tales_api/issues"
     },
-    license=__credits__,
+    license="MIT",
     packages=['d3tales_api', 'd3tales_api.Calculators', 'd3tales_api.D3database', 'd3tales_api.Processors', 'd3tales_api.Workflows'],
     install_requires=requirements,
 )

@@ -4,7 +4,7 @@
 This module can be installed with pip install by running the following code: 
 
 ```bash
-pip install git+https://github.com/d3tales/d3tales_api.git
+pip install d3tales_api
 ```
 
 **Note**: If your python version is greater than 3.8, then you will need to install 
