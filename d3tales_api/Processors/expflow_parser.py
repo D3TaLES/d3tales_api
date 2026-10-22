@@ -1,3 +1,7 @@
+import json
+import warnings
+import numpy as np
+from rdkit.Chem.Descriptors import ExactMolWt
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
@@ -5,6 +9,7 @@ from d3tales_api.Calculators.calculators import *
 from d3tales_api.Calculators.utils import dict2obj
 from d3tales_api.D3database.restapi import RESTAPI
 from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.Calculators.utils import dict2obj, unit_conversion
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 
@@ -41,7 +46,6 @@ class ProcessExpFlowObj:
         self.concentration_smiles = None
         self.concentration_volume = None
         self.concentration_mass = None
-
         self.redox_id_error = redox_id_error
         self.molecule_id = self.get_molecule_id(try_restapi=try_restapi)
 
@@ -145,9 +149,9 @@ class ProcessExpFlowObj:
                 action_value = action_instance[0].parameters[parameter_idx].value
                 action_unit = action_instance[0].parameters[parameter_idx].unit
                 return {"value": float(action_value), "unit": action_unit}
-        warnings.warn(
-            "Error. ExpFlow object {} has {} instances of {}. ExpFlow submissions must have 1 instance of {}".format(
-                self.object_id, len(action_instance), action_name, action_name))
+            warnings.warn(
+                "Error. ExpFlow object {} has {} instances of {}. ExpFlow submissions must have 1 instance of {}".format(
+                    self.object_id, len(action_instance), action_name, action_name))
 
     def get_apparatus(self, apparatus_type, get_uuid=False):
         """
@@ -209,7 +213,7 @@ class ProcessExpFlowObj:
         """
         if not solvent_uuids or not redox_uuid or not beaker_uuid:
             return None
-        self.concentration_smiles = [r for r in self.reagents if get_id(r) == redox_uuid][0].smiles
+        smiles = [r for r in self.reagents if get_id(r) == redox_uuid][0].smiles
         redox_actions = [a for a in self.workflow if
                          a.start_uuid == redox_uuid and a.end_uuid == beaker_uuid and a.name == 'transfer_solid']
         if len(redox_actions) != 1:
@@ -218,14 +222,19 @@ class ProcessExpFlowObj:
                     self.object_id, len(redox_actions)))
             return None
         else:
-            self.concentration_mass = self.get_param_quantity(redox_actions[0].parameters)
+            mass = self.get_param_quantity(redox_actions[0].parameters)
         solvent_actions = [a for a in self.workflow if
                            a.start_uuid in solvent_uuids and a.end_uuid == beaker_uuid and a.name == 'transfer_liquid']
         if len(solvent_actions) != 1:
             print("Error. ExpFlow object {} has {} transfer_liquid actions".format(self.object_id, len(redox_actions)))
             return None
         else:
-            self.concentration_volume = self.get_param_quantity(solvent_actions[0].parameters)
+            volume = self.get_param_quantity(solvent_actions[0].parameters)
+
+        # Calculate concentration
+        mol_weight = ExactMolWt(MolFromSmiles(smiles))
+        concentration = (unit_conversion(mass, default_unit='g') / unit_conversion(mol_weight, default_unit='g/mol')) / unit_conversion(volume, default_unit='L')
+        return {"value": float(np.format_float_scientific(concentration, precision=3)), "unit": "M"}
 
         # Use D3TaLES concentration calculator
         connector = {
