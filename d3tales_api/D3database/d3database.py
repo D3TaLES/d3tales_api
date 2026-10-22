@@ -25,6 +25,7 @@ class DBconnector:
         :param db_information: dictionary of database info
         """
 
+        self.db_information = db_information
         self.host = db_information.get("host", )
         self.password = db_information.get("admin_password", )
         self.user = db_information.get("admin_user", )
@@ -48,8 +49,7 @@ class DBconnector:
 
             db = conn[self.database]
         except:
-            raise ConnectionError
-
+            raise ConnectionError("Error connecting to the MongoDB database with the following credentials: ", self.db_information)
         return db
 
     def get_collection(self, coll_name=None):

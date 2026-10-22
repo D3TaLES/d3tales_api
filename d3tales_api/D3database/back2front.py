@@ -641,7 +641,7 @@ class CV2Front:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1,
+    def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1, max_scan_rate=None,
                  run_anodic=False, run_processing=True, insert=True, redox_event="oxidation", micro_electrodes=False,
                  verbose=1, backend_db="backend"):
         """
@@ -658,21 +658,24 @@ class CV2Front:
         :param backend_db: str, backend DB key word
         """
 
-        # connect to databases
-        self.front_coll = DBconnector(db_info.get("frontend")).get_collection(FRONT_COLL)
-        self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
-
         # Basic variables
         self.verbose = verbose
         if not id_list and not backend_data:
             raise ValueError(
                 "The CV2Front class requires either the 'id_list' kwarg or 'backend_data' kwarg. Neither were provided. ")
-        self.multi_data = backend_data or [self.back_coll.find_one({"_id": i}) for i in id_list]
+
+        if backend_data:
+            self.multi_data = backend_data
+        else:
+            self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
+            self.multi_data = [self.back_coll.find_one({"_id": i}) for i in id_list]
+
         if not self.multi_data or not self.multi_data[0]:
             raise ValueError("No backend data found for IDs {} and no backend data provided.".format(id_list))
         self.conditions = self.get_conditions()
         self.p_ids = [d.get("_id") for d in self.multi_data]
         self.e_half_scan_rate = e_half_scan_rate
+        self.max_scan_rate = max_scan_rate
         self.run_anodic = run_anodic
         self.redox_event = redox_event
 
@@ -760,17 +763,16 @@ class CV2Front:
     def cv_meta_calcs(self, electron_num=1, curve_type="anodic"):
         processed_data = []
         for i in self.multi_data:
-            try:
-                data_dict = i.get('data')
-                data_dict["n"] = electron_num
-                data_dict["current_cathodic"] = data_dict.get("forward", {})[electron_num - 1][1]
-                data_dict["current_anodic"] = data_dict.get("reverse", {})[electron_num - 1][1]
-                processed_data.append(data_dict)
-            except:
-                pass
+            data_dict = i.get('data', {})
+            scan_rate = unit_conversion(data_dict.get("conditions", {}).get("scan_rate", 0), default_unit='V/s')
+            if self.max_scan_rate:
+                if scan_rate > self.max_scan_rate:
+                    print(f"WARNING! Data with scan rate {scan_rate} skipped because max scan rate is {self.max_scan_rate}")
+                    continue
+            data_dict["n"] = electron_num
+            processed_data.append(data_dict)
         connector = {
             "n": "n",
-            "i_p": "current_{}".format(curve_type),
             "X": "peak_splittings.{}".format(electron_num - 1),
             "v": "conditions.scan_rate",
             "T": "conditions.temperature",
@@ -785,7 +787,7 @@ class CV2Front:
         if self.verbose:
             print("Calculating {} diffusion coefficient for oxidation {}...".format(curve_type, electron_num))
         diffusion_cal = CVDiffusionCalculator(connector=connector)
-        diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True)
+        diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True, cathodic_anodic=curve_type)
 
         # Calculate charge transfer rates
         if self.verbose:
@@ -839,7 +841,7 @@ class CV2Front:
         self.e_halfs_id = e_half_data.get("_id")
         self.e_halfs_conditions = e_half_data.get("data", {}).get("conditions")
         e_halfs = e_half_data.get("data", {}).get("e_half")
-        print(e_halfs)
+        print("E Half: ", e_halfs)
         if isinstance(e_halfs, list):
             return [self.prop_dict(e_half.get("value"), unit=e_half.get("unit"), order=i + 1, hashes=[self.e_halfs_id],
                                    conditions=self.e_halfs_conditions) for i, e_half in enumerate(e_halfs)]

@@ -5,7 +5,9 @@ from rdkit.Chem.Descriptors import ExactMolWt
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
-
+from d3tales_api.Calculators.calculators import *
+from d3tales_api.Calculators.utils import dict2obj
+from d3tales_api.D3database.restapi import RESTAPI
 from d3tales_api.D3database.d3database import FrontDB
 from d3tales_api.Calculators.utils import dict2obj, unit_conversion
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
@@ -23,11 +25,12 @@ class ProcessExpFlowObj:
     Base class for Processing ExpFlow objects for data analysis
     """
 
-    def __init__(self, expflow_obj, source_group, redox_id_error=True, **kwargs):
+    def __init__(self, expflow_obj, source_group, redox_id_error=True, try_restapi=False, **kwargs):
         """
         :param expflow_obj: obj or dict, ExpFlow object to process
         :param source_group: str, source group for ExpFlow object
         :param mol_id_error: bool, raise error if no redox mol id found if true, else use SMILES
+        :param mol_id_error: bool, try restapi when searching for an id
         :param kwargs: object for processing ExpFlow objects
         """
         expflow_dict = expflow_obj if isinstance(expflow_obj, dict) else json.loads(
@@ -40,7 +43,11 @@ class ProcessExpFlowObj:
         self.apparatus = self.expflow_obj.apparatus or []
         self.instruments = self.expflow_obj.instruments or []
         self.kwargs = dict(**kwargs)
+        self.concentration_smiles = None
+        self.concentration_volume = None
+        self.concentration_mass = None
         self.redox_id_error = redox_id_error
+        self.molecule_id = self.get_molecule_id(try_restapi=try_restapi)
 
     @property
     def solvent(self):
@@ -72,8 +79,7 @@ class ProcessExpFlowObj:
             warnings.warn(
                 "Error. ExpFlow object {} has {} redox molecule entries".format(self.object_id, len(reagent_instance)))
 
-    @property
-    def molecule_id(self):
+    def get_molecule_id(self, try_restapi=False):
         """Molecule ID"""
         if not self.redox_mol:
             return None
@@ -83,6 +89,12 @@ class ProcessExpFlowObj:
             check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
             if check_id:
                 return check_id
+            if try_restapi:
+                response = RESTAPI(method='get',
+                                   endpoint="restapi/molecules/mol_info.smiles={}/_id=1".format(clean_smiles),
+                                   url="https://d3tales.as.uky.edu", return_json=True).response
+                if response:
+                    return response[0].get("_id")
             instance = GenerateMolInfo(clean_smiles).mol_info_dict
             db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles,
                                    group=self.source_group)
@@ -224,6 +236,20 @@ class ProcessExpFlowObj:
         concentration = (unit_conversion(mass, default_unit='g') / unit_conversion(mol_weight, default_unit='g/mol')) / unit_conversion(volume, default_unit='L')
         return {"value": float(np.format_float_scientific(concentration, precision=3)), "unit": "M"}
 
+        # Use D3TaLES concentration calculator
+        connector = {
+            "smiles": "concentration_smiles",
+            "weight": "concentration_mass",
+            "volume": "concentration_volume"
+        }
+        try:
+            return {"value": ConcentrationCalculator(connector=connector).calculate(self), "unit": "M"}
+        except Exception as e:
+            if self.redox_id_error:
+                raise e
+            else:
+                return None
+
     @property
     def redox_mol_concentration(self):
         """Concentration of redox-active molecule"""
@@ -266,6 +292,21 @@ class ProcessExperimentRun(ProcessExpFlowObj):
             electrode_counter=self.get_electrode("counter"),
             electrode_reference=self.get_electrode("reference"),
             electrode_working=self.get_electrode("working"),
+            solvent=self.get_reagents("solvent"),
+            electrolyte=self.get_reagents("electrolyte"),
+            ionic_liquid=self.get_reagents("ionic_liquid"),
+            redox_mol_concentration=self.redox_mol_concentration,
+        )
+        return {k: v for k, v in metadata.items() if v}
+
+    @property
+    def ca_metadata(self):
+        """Dictionary of CA metadata"""
+        metadata = dict(
+            experiment_run_id=self.object_id,
+            molecule_id=self.molecule_id,
+            temperature=self.property_by_action(["heat_stir", "heat"]),
+            instrument=self.instrument_name,
             solvent=self.get_reagents("solvent"),
             electrolyte=self.get_reagents("electrolyte"),
             ionic_liquid=self.get_reagents("ionic_liquid"),

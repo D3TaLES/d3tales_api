@@ -16,7 +16,7 @@ from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
 from rdkit.Chem.Descriptors import ExactMolWt
 from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
-
+from scipy.stats import linregress
 
 class D3Calculator(abc.ABC):
     """
@@ -78,7 +78,6 @@ class D3Calculator(abc.ABC):
             "geom_initial": "geometry initial (default = A)",
             "gs_energy": "ground state energy at ion geometry (default = eV)",
             "gs_opt": "ground state optimized energy (default = eV)",
-            "i_p": "peak current (default = A)",
             "i_s": "list, current points (s)",
             "init_corr": "initial entropy correction (default = eV)",
             "init_eng": "initial energy (default = eV)",
@@ -87,7 +86,7 @@ class D3Calculator(abc.ABC):
             "ion_opt": "ion optimized energy (default = eV)",
             "log_file": "calculation output file. Must be readable with CCLIB",
             "low_e": "float, lowest voltage (V)",
-            "middle_scan": "optional, if i_p is not provided, scan data will be used to find i_p (default = None)",
+            "middle_scan": "middle of scan data",
             "n": "number of electrons, default 1",
             "num_electrons": "number of electrons (default = 1)",
             "opt_energy": "optimized energy (default = eV)",
@@ -325,10 +324,75 @@ class CVDescriptorCalculator(D3Calculator):
             values.append(list(orig_data[[peaks_data[0][idx]], :][0]))
         return values
 
+    def peak_currents(self, data: dict, cathodic_anodic: str = 'cathodic', percent_for_baseline: float = 0.2):
+        """
+        Gather CV peaks
+
+        Connection Points:
+            :scan_data: scanned data from CV file
+
+        :param data: data for calculation (rows of voltage, current)
+        :type data: dict
+        :param cathodic_anodic:
+        :type cathodic_anodic: str
+        :param percent_for_baseline:
+        :type percent_for_baseline: float
+
+        :return: dictionary containing list of forward peaks and list of reverse peaks
+        """
+
+        forward_data, reverse_data = self.middle_sweep(data)
+        forward_sweep = pd.DataFrame(forward_data, columns=['potential', 'current'])
+        reverse_sweep = pd.DataFrame(reverse_data, columns=['potential', 'current'])
+
+        full_cv_data = pd.concat([forward_sweep, reverse_sweep], ignore_index=True)
+
+        if cathodic_anodic == "cathodic":
+            # Identify baseline region and fit regression for cathodic peak determination
+            forward_baseline_region = forward_sweep.iloc[:int(len(forward_sweep) * percent_for_baseline)]
+            forward_slope, forward_intercept, _, _, _ = linregress(forward_baseline_region['potential'],
+                                                                   forward_baseline_region['current'])
+
+            # Extend forward baseline for plotting
+            forward_baseline_potentials = np.linspace(forward_sweep['potential'].min(),
+                                                      forward_sweep['potential'].max(), 100)
+
+            # Find cathodic peak (maximum current for IUPAC convention)
+            cathodic_peak_idx = full_cv_data['current'].idxmax()
+            cathodic_peak_potential = full_cv_data['potential'][cathodic_peak_idx]
+            cathodic_peak_current = full_cv_data['current'][cathodic_peak_idx]
+
+            # Calculate baseline current at cathodic peak potential
+            cathodic_baseline_current = forward_slope * cathodic_peak_potential + forward_intercept
+            cathodic_peak_relative_current = cathodic_peak_current - cathodic_baseline_current
+            return cathodic_peak_relative_current
+        if cathodic_anodic == "anodic":
+            # Identify baseline region and fit regression for anodic peak determination
+            reverse_baseline_region = reverse_sweep.iloc[:int(len(reverse_sweep) * percent_for_baseline)]
+            reverse_slope, reverse_intercept, _, _, _ = linregress(reverse_baseline_region['potential'],
+                                                                   reverse_baseline_region['current'])
+
+            # Extend reverse baseline for plotting
+            reverse_baseline_potentials = np.linspace(reverse_sweep['potential'].min(),
+                                                      reverse_sweep['potential'].max(), 100)
+
+            # Find anodic peak (minimum current for IUPAC convention)
+            anodic_peak_idx = full_cv_data['current'].idxmin()
+            anodic_peak_potential = full_cv_data['potential'][anodic_peak_idx]
+            anodic_peak_current = full_cv_data['current'][anodic_peak_idx]
+
+            # Calculate baseline current at anodic peak potential
+            anodic_baseline_current = reverse_slope * anodic_peak_potential + reverse_intercept
+            anodic_peak_relative_current = anodic_peak_current - anodic_baseline_current
+            return anodic_peak_relative_current
+        else:
+            raise ValueError(f"Function peak_currents requires argument cathodic_anodic to be either 'cathodic' or "
+                             f"'anodic'. Instead, cathodic_anodic={cathodic_anodic}.")
+
 
 class CVDiffusionCalculator(D3Calculator):
 
-    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False):
+    def calculate(self, data: list, precision: int = 3, sci_notation: bool = False, cathodic_anodic: str = 'cathodic'):
         """
         Diffusion constant using Randles-Scidwick equation
 
@@ -338,15 +402,16 @@ class CVDiffusionCalculator(D3Calculator):
             :v: scan rate (default = V/s)
             :n: number of electrons, default 1
             :C: concentration of the solution (default = mol/cm^3)
-            :middle_scan: optional, if i_p is not provided, scan data will be used to find i_p (default = None)
-            :scan_data: optional, if i_p is not provided and middle_scan not provided, scan data will be used to find i_p (default = None)
+            :scan_data: if i_p is not provided and middle_scan not provided, scan data will be used to find i_p
 
         :param data: data for calculation
         :param precision: number of significant figures (in scientific notation)
         :param sci_notation: return in scientific notation if True
+        :param cathodic_anodic:
         :type data: list
         :type precision: int
         :type sci_notation: bool
+        :type sci_notation: str
 
         :return: average diffusion constant for single redox event (cm^2/s)
         """
@@ -358,24 +423,26 @@ class CVDiffusionCalculator(D3Calculator):
         vs = np.zeros(self.n)
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            # print(conns)
-            scan_data = conns.get("scan_data", [])
-            middle_scan = conns.get("middle_scan", scan_data[int(len(scan_data) / 2 - 1):int(len(scan_data) / 2 + 1)])
-            i_p_raw = conns.get("i_p") or max([d[1] for d in sum(middle_scan, [])])
-
+            descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
+            if conns.get("i_p"):
+                i_p_raw = conns["i_p"]
+            else:
+                i_p_raw = descriptor_cal.peak_currents(obj, cathodic_anodic=cathodic_anodic)
             i_p = unit_conversion(i_p_raw, default_unit='A')
             A = unit_conversion(conns["A"], default_unit='cm^2')
             v = unit_conversion(conns["v"], default_unit='V/s')
             C = unit_conversion(conns["C"], default_unit='mol/cm^3')
+            n = conns.get("n", 1)
             i_ps[idx] = i_p
             vs[idx] = pow(v, 1 / 2)
             diffusion_constants[idx] = (
-                pow(i_p / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C * pow(v, 1 / 2)), 2))
+                pow(i_p / (2.692e5 * pow(n, (3 / 2)) * A * C * pow(v, 1 / 2)), 2))
         slope = np.polyfit(vs, i_ps, 1)[0]
-        diffusion_fitted = pow(slope / (2.692e5 * pow(conns.get("n", 1), (3 / 2)) * A * C), 2)
+        diffusion_fitted = pow(slope / (2.692e5 * pow(n, (3 / 2)) * A * C), 2)
 
         results = [np.format_float_scientific(diffusion_constants.mean(), precision=precision),
                    np.format_float_scientific(diffusion_fitted, precision=precision)]
+        print("DIFFUSION: ", results)
         return results if sci_notation else [float(x) for x in results]
 
 
@@ -411,6 +478,10 @@ class CVDiffusionCalculatorMicro(D3Calculator):
         r = unit_conversion(conns["r"], default_unit='cm')
         F = 96485.3321  # Faraday constant, s A / mol
         D = i_ss / (4 * n * F * C * r)
+
+        print(conns)
+        print(i_ss, 1000*i_ss/(2*r*math.pi))
+        print(D)
         return np.format_float_scientific(D) if sci_notation else float(D)
 
 
@@ -443,7 +514,6 @@ class CVChargeTransferCalculator(D3Calculator):
         long_terms = []
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
-            # print(conns)
             X = unit_conversion(conns["X"], default_unit='V') * 1000  # convert to mV
             D = unit_conversion(conns["D"], default_unit='cm^2/s')
             v = unit_conversion(conns["v"], default_unit='V/s')
@@ -482,7 +552,6 @@ class CVChargeTransferCalculatorMicro(D3Calculator):
         self.data = data
         self.n = data.__len__()
         conns = self.make_connections(data)
-        print(conns)
 
         e_half = unit_conversion(conns["e_half"], default_unit='V')
         e_ref = unit_conversion(conns["e_ref"], default_unit='V')

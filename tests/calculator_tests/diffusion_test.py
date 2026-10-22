@@ -30,13 +30,11 @@ for i in multi_data:
     data_dict["temperature"] = temperature
     data_dict["redox_mol_concentration"] = redox_mol_concentration
     data_dict["working_electrode_surface_area"] = working_electrode_surface_area
-    data_dict["current"] = data_dict.get("forward", {})[num_electrons - 1][1] if curve_type == "anodic" else \
     data_dict.get("reverse", {})[num_electrons - 1][1]
     processed_data.append(data_dict)
 
 # Establish the D3TaLES API Calculator connector
 connector = {
-    "i_p": "current",
     "middle_scan": "middle_sweep",
     "v": "conditions.scan_rate",
     "X": "peak_splittings.{}".format(num_electrons - 1),

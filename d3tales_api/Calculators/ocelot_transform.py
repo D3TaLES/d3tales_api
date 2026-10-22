@@ -51,7 +51,6 @@ def clean_charges(mol):
                 ps = rxn.RunReactants((fragment,))
                 fragment = ps[0][0]
                 Chem.SanitizeMol(fragment)
-                # print(Chem.MolToSmiles(fragment))
         if i == 0:
             mol = fragment
         else:
@@ -165,8 +164,6 @@ class ACParser:
                 possible_valence = [x for x in atomic_valence[atomicNum] if x >= valence]
             valences_list_of_lists.append(possible_valence)
             iatom += 1
-        # from pprint import pprint
-        # pprint(valences_list_of_lists)
 
         # convert [[4],[2,1]] to [[4,2],[4,1]]
         valences_list = list(itertools.product(*valences_list_of_lists))

@@ -31,7 +31,6 @@ if REST_API:
         data_dict["current"] = data_dict.get("forward", {})[num_electrons-1][1]
         data_dict["n"] = num_electrons
     connector = {
-        "i_p": "current",
         "A": "conditions.working_electrode_surface_area",
         "v": "conditions.scan_rate",
         "C": "conditions.redox_mol_concentration",
@@ -42,7 +41,6 @@ else:
     df = pd.read_csv("fecn.csv")
     data = [df.to_dict('records')]
     connector = {
-        "i_p": "Current_anode",
         "A": "Anodic",
         "v": "scan rate",
         "C": "conc",

@@ -3,12 +3,14 @@ import json
 import math
 import warnings
 import numpy as np
+import pandas as pd
 import dateutil.parser
+from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 
 from d3tales_api.Processors.utils import *
-from d3tales_api.Calculators.plotters import CVPlotter
 from d3tales_api.Calculators.utils import unit_conversion
+from d3tales_api.Calculators.plotters import CVPlotter, CAPlotter
 from d3tales_api.Calculators.calculators import CVDescriptorCalculator, CAResistanceCalculator
 
 MIN_SCAN_LEN = 5
@@ -158,10 +160,10 @@ class ParseChiMixin:
     """
     Extract data from raw Chi experiment files
     """
+    filepath: str
 
     def parse(self, data_header="Potential", delimiter=","):
         """
-        :param filepath: str, filepath to experiment data file
         :param data_header: str,
         :param delimiter: str, 
         """
@@ -276,19 +278,62 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
         self.plot_data = CVPlotter().plot_data(self.__dict__).get("abs_plot")
 
         if micro_electrodes:
-            self.i_ss = {"value": max(self.current) - min(self.current), "unit": self.y_unit}
+            self.i_ss = {"value": self.get_i_ss(self.potential, self.current), "unit": self.y_unit}
+            print("I_SS ", self.i_ss)
             self.e_half = {"value": self.get_micro_e_half(self.scan_data[0]), "unit": self.x_unit}
         else:
             self.reversibility = CVDescriptorCalculator().reversibility(self.__dict__)
-            self.e_half = {"value": CVDescriptorCalculator().e_half(self.__dict__), "unit": self.x_unit}
-            self.peak_splittings = {"value": CVDescriptorCalculator().peak_splittings(self.__dict__), "unit": self.x_unit}
             self.middle_sweep = CVDescriptorCalculator().middle_sweep(self.__dict__)
+            self.e_half = [{"value": v, "unit": self.x_unit} for v in CVDescriptorCalculator().e_half(self.__dict__)]
+            self.peak_splittings = [{"value": v, "unit": self.x_unit} for v in CVDescriptorCalculator().peak_splittings(self.__dict__)]
+
+    @staticmethod
+    def get_i_ss(potential, current, current_range_percentage=10, window_length=11, poly_order=2):
+        """
+        Determines the steady-state current for a UME CV scan by analyzing the derivative of current
+        with respect to potential.
+
+        Parameters:
+            potential (list): List of potential values
+            current (list): List of current values
+            current_range_percentage (float): Percentage of the total current range to set as the threshold for di/dE
+                steady-state region.
+            window_length (int): Window length for Savitzky-Golay filter (must be odd).
+            poly_order (int): Polynomial order for Savitzky-Golay filter.
+
+        Returns:
+            steady_state_current (float): Estimated steady-state current value.
+        """
+        # Calculate total current range and determine i_derr_ss
+        full_cv_data = pd.DataFrame({"potential": potential, "current": current})
+        current_range = full_cv_data['current'].max() - full_cv_data['current'].min()
+        i_derr_ss = (current_range_percentage / 100) * current_range
+
+        # Smooth the current data to compute derivatives
+        smooth_current = savgol_filter(full_cv_data['current'], window_length, poly_order)
+        current_derivative = np.gradient(smooth_current, full_cv_data['potential'])
+
+        # Identify all steady-state regions (di/dE ≤ i_derr_ss)
+        steady_state_indices = np.abs(current_derivative) <= i_derr_ss
+        steady_state_regions_all = full_cv_data[steady_state_indices]
+
+        # Get only top steady state regions
+        max_derivative_idx = np.nanargmax(current_derivative)
+        max_derivative_potential = full_cv_data['potential'].iloc[max_derivative_idx]
+        steady_state_regions = steady_state_regions_all[steady_state_regions_all.potential > max_derivative_potential]
+
+        # Calculate the mean current value across all steady-state regions
+        if not steady_state_regions.empty:
+            steady_state_current = steady_state_regions['current'].mean()
+            return steady_state_current
+        else:
+            raise ValueError(f"No steady-state regions identified with the threshold {current_range_percentage}%.")
 
     @property
     def parsed_data(self):
         p_data = super().parsed_data
         p_data.update({
-            "peak_potential": getattr(self, 'high_e', None),
+            "peak_current": {"value": max(self.current), "unit": self.y_unit},
             "e_half": getattr(self, 'e_half', None),
             "plot_data": getattr(self, 'plot_data', None),
         })
@@ -341,12 +386,18 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         self.cell_constant = metadata.get("cell_constant", 1)
         self.parse(data_header="Time", delimiter=",")
 
-        self.t = self.all_data[:, 0]
-        self.i = self.all_data[:, 1]
         if self.x_unit != "s":
-            pass  # TODO convert to s and A if not already there.
+            self.t = convert_list_units(self.all_data[:, 0], existing_units=self.x_unit, target_units="s")
+            self.x_unit = "s"
+        else:
+            self.t = self.all_data[:, 0]
+
         if self.y_unit != "A":
-            pass
+            self.t = convert_list_units(self.all_data[:, 1], existing_units=self.y_unit, target_units="A")
+            self.y_unit = "A"
+        else:
+            self.i = self.all_data[:, 1]
+
         self.f_slp = self.get_data_calcs(calc_name="Slp", header="Forward:")
         self.f_int = self.get_data_calcs(calc_name="Int", header="Forward:")
         self.f_cor = self.get_data_calcs(calc_name="Cor", header="Forward:")
@@ -354,8 +405,11 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         self.r_int = self.get_data_calcs(calc_name="Int", header="Reverse:")
         self.r_cor = self.get_data_calcs(calc_name="Cor", header="Reverse:")
 
-        self.measured_resistance = self.get_resistance()
-        self.measured_conductance = 1 / self.measured_resistance
+        self.plot_data = CAPlotter().plot_data({"t_s": np.array(self.t).tolist(),
+                                                "i_s": np.array(self.i).tolist()}).get("abs_plot")
+
+        self.measured_resistance = self.get_resistance()  # Assumed to be in Ohm
+        self.measured_conductance = 1 / self.measured_resistance  # Assumed to be in sS
 
     @property
     def parsed_data(self):
@@ -370,8 +424,9 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
             "measured_resistance": {"value": self.measured_resistance, "unit": "Ohm"},
             "measured_conductance": {"value": self.measured_conductance, "unit": "S"},
             "conductivity": self.conductivity,
-            "time": self.t.tolist(),
-            "current": self.i.tolist(),
+            "time": np.array(self.t).tolist(),
+            "current": np.array(self.i).tolist(),
+            "plot_data": getattr(self, 'plot_data', None),
         })
         return p_data
 
@@ -380,9 +435,10 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         """
         Get conductivity based on cell constant
         """
-        c_measured = unit_conversion(self.measured_conductance, default_unit="mS")
+        c_measured = unit_conversion({"value": self.measured_conductance, "unit": "S"}, default_unit="mS")
         cell_constant = unit_conversion(self.cell_constant, default_unit="cm^-1")
-        return {"value": c_measured * cell_constant, "unit": "mS/cm"}
+        if cell_constant:
+            return {"value": c_measured * cell_constant, "unit": "mS/cm"}
 
     def get_resistance(self, **kwargs):
         connector = {
@@ -425,7 +481,8 @@ class ProcessChiESI(ParseChiMixin, ProcessPotBase):
         self.z = self.all_data[:, 3]
         self.phase = self.all_data[:, 4]
 
-        self.resistance = min(zip(self.z_real, self.z_img), key=lambda x: abs(x[1]))[0]
+        self.resistance = self.z_real[0]
+        # self.resistance = max(zip(self.z_real, -self.z_img), key=lambda x: x[1])[0]
 
         if not getattr(self, "high_f", None):
             self.high_f = {"value": max(self.freq), "unit": 'Hz'}
