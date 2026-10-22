@@ -2,6 +2,7 @@ import uuid
 import json
 import math
 import warnings
+import numpy as np
 import dateutil.parser
 from scipy.ndimage import gaussian_filter1d
 
@@ -253,7 +254,7 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
         """
         :param filepath: str, filepath to experiment data file
         """
-        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata)
+        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata, **kwargs)
         self.data_source = "cv"
         self.micro_electrodes = micro_electrodes
         self.parse(data_header="Potential", delimiter=",")
@@ -335,7 +336,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         """
         :param filepath: str, filepath to experiment data file
         """
-        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata)
+        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata, **kwargs)
         self.data_source = "ca"
         self.cell_constant = metadata.get("cell_constant", 1)
         self.parse(data_header="Time", delimiter=",")
@@ -413,7 +414,7 @@ class ProcessChiESI(ParseChiMixin, ProcessPotBase):
         """
         :param filepath: str, filepath to experiment data file
         """
-        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata)
+        super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata, **kwargs)
         self.data_source = "esi"
         self.parse(data_header="Freq", delimiter=",")
         self.scan_data = self.all_data
