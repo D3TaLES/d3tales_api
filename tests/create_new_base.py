@@ -85,7 +85,13 @@ def update_geoms(front_coll, limit=1000):
 
 
 if __name__ == "__main__":
+    old_coll = DBconnector(db_info.get("ui")).get_collection("old_base")
     new_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+    old_ids = old_coll.find().distinct("_id")
+    new_ids = new_coll.find().distinct("_id")
+
+    extras = [i for i in old_ids if i not in new_ids]
+    print({i: old_coll.find_one({"_id": i})["mol_info"]["smiles"] for i in extras})
 
     # initialize_new_db(new_coll, old_coll)
     # update_ids(new_coll, limit=50)
@@ -97,18 +103,18 @@ if __name__ == "__main__":
     # doc = new_coll.find_one({"_id": "90UCRC"}, {"species_characterization.groundState.homo_lumo_gap.conditions": 1})
     # update_doc_from_gs(doc, verbose=1, mol_props=False, skip_geom=True)
 
-    # print(",".join(new_coll.find({"species_characterization.groundState.geometry": {"$exists": False},
+    # print(",".join(new_coll.find({"species_characterization.anion1.geometry": {"$exists": False},
     #                 "species_characterization": {"$exists": True}}).distinct("_id")))
 
-    STATE = "anion1"
-    DATA = new_coll.find({f'species_characterization.{STATE}.homo_lumo_gap': {'$exists': True},
-                          f'species_characterization.{STATE}.homo': {'$exists': False}},
-                         {f"species_characterization.{STATE}.homo_lumo_gap.conditions": 1}).limit(5000)
-    docs = [d for d in DATA]
-    print("{} IDs collected.".format(len(docs)))
-    for d in tqdm.tqdm(docs):
-        try:
-            update_doc_from_state(d, state=STATE, verbose=0, mol_props=False, skip_geom=True)
-        except Exception as e:
-            print("ERROR FOR ", d["_id"])
-            print(e)
+    # STATE = "anion1"
+    # DATA = new_coll.find({f'species_characterization.{STATE}.homo_lumo_gap': {'$exists': True},
+    #                       f'species_characterization.{STATE}.homo': {'$exists': False}},
+    #                      {f"species_characterization.{STATE}.homo_lumo_gap.conditions": 1}).limit(5000)
+    # docs = [d for d in DATA]
+    # print("{} IDs collected.".format(len(docs)))
+    # for d in tqdm.tqdm(docs):
+    #     try:
+    #         update_doc_from_state(d, state=STATE, verbose=0, mol_props=False, skip_geom=True)
+    #     except Exception as e:
+    #         print("ERROR FOR ", d["_id"])
+    #         print(e)

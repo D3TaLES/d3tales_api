@@ -65,25 +65,6 @@ class TDDFT(Firework):
         super(TDDFT, self).__init__(t, parents=parents, spec=spec, name="{}tddft_{}".format(name_tag, species))
 
 
-# RETIRED CLASS. This class needs the OCELOT API to be installed.
-
-# class LowestEConformer(Firework):
-#     def __init__(self, parents=None, priority=None, name_tag='', **kwargs):
-#         spec = {'_category': CALC_CATEGORY, '_priority': priority} if priority else {'_category': CALC_CATEGORY}
-#         t = [GetLowestEConformer(name="conformers", name_tag=name_tag, g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY, path=PATH,
-#                                  runfile_log=RUNFILE_LOG, type="gas_phase", **kwargs)]
-#         super(LowestEConformer, self).__init__(t, parents=parents, spec=spec, name="{}conformers".format(name_tag))
-
-
-class DihedRot(Firework):
-    def __init__(self, geometry="groundState", dihed_degree=0, parents=None, priority=None, name_tag='', **kwargs):
-        spec = {'_category': CALC_CATEGORY, '_priority': priority} if priority else {'_category': CALC_CATEGORY}
-        name = "dihedrot_" + str(dihed_degree).zfill(3)
-        t = [RunGaussianDihedRot(name=name, name_tag=name_tag, dihed_degree=dihed_degree, g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY, path=PATH, runfile_log=RUNFILE_LOG,
-                                 geometry=geometry, type="gas_phase", subtype=str(dihed_degree).zfill(3), **kwargs)]
-        super(DihedRot, self).__init__(t, parents=parents, spec=spec, name="{}{}".format(name_tag, name))
-
-
 class EmailStart(Firework):
     def __init__(self, parents=None, priority=None, name_tag='', identifier="", email="", username="", **kwargs):
         spec = {'_category': 'processing', '_priority': priority} if priority else {'_category': 'processing'}
