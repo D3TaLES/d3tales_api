@@ -2,18 +2,19 @@ import os
 import re
 import json
 import hashlib
+import glob
 import zipfile
-from d3tales_api.D3database.restapi import RESTAPI
-from d3tales_api.Processors.parser_dft import ProcessGausLog
-from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf
+from monty.json import MontyEncoder
 
 from pymatgen.core.sites import Site
 from pymatgen.core.structure import Molecule
 from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 
-from rdkit.Chem import MolFromSmiles, AllChem
+from rdkit.Chem import MolFromSmiles, AllChem, MolToInchiKey
 from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
 from rdkit.Chem.Descriptors import NumRadicalElectrons
+from d3tales_api.Workflows.d3tales_utils import (d3t_get_smiles, d3t_get_init_structure, d3t_get_ground_state,
+                                                 d3t_get_omega, d3t_get_raw_computation)
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
@@ -32,6 +33,135 @@ MA_DEF2 = ">>ma_def2<<"
 PATH = ">>path<<"
 RUNFILE_LOG = ">>runfile_log<<"
 PROC_VM_KEY = ">>processing_vm_key<<"
+LOCAL_OUTPUT_DIR = ">>local_output_dir<<"  # optional; set under `env:` in my_fworker.yaml
+
+# DATA STORES
+# "d3tales": read/write through the D3TaLES website + databases (original behavior, default)
+# "local":   no database; each calculation's record is written as a JSON file
+DATA_STORES = ("d3tales", "local")
+DEFAULT_DATA_STORE = "d3tales"
+LOCAL_RESULTS_DIR = "results"  # used under the calculation directory when no local_output_dir is set
+WTUNING_KEY = "wtuning"
+
+
+# DATA STORE FUNCTIONS
+def get_data_store(task=None, fw_spec=None):
+    """
+    Get the data store for a FireTask. Precedence: fw_spec, then task parameter, then DEFAULT_DATA_STORE.
+    """
+    fw_spec = fw_spec or {}
+    store = fw_spec.get("data_store") or (task.get("data_store") if task else None) or DEFAULT_DATA_STORE
+    store = str(store).lower()
+    if store not in DATA_STORES:
+        raise ValueError("data_store must be one of {}, not {}".format(DATA_STORES, store))
+    return store
+
+
+def get_local_output_dir(task=None, fw_spec=None):
+    """
+    Folder for local JSON records. Precedence:
+        1. `local_output_dir` in the fw_spec or task kwargs (a path, or an env key such as ">>local_output_dir<<")
+        2. `local_output_dir` in the FireWorker env (my_fworker.yaml), same mechanism as g16_cmd
+        3. None -> records go to <calc_dir>/results
+    Unlike env_chk(strict=True), a missing FireWorker key returns None instead of raising.
+    """
+    fw_spec = fw_spec or {}
+    val = fw_spec.get("local_output_dir") or (task.get("local_output_dir") if task else None) or LOCAL_OUTPUT_DIR
+    if isinstance(val, str) and val.startswith(">>") and val.endswith("<<"):
+        val = fw_spec.get("_fw_env", {}).get(val[2:-2])
+    return val or None
+
+
+def get_store_dir(identifier, local_output_dir=None, calc_dir=None):
+    """
+    Directory holding the local JSON records for one molecule.
+        local_output_dir set: <local_output_dir>/<identifier>
+        otherwise:            <calc_dir>/results
+    Always absolute, because tasks chdir into their working directories.
+    """
+    if local_output_dir:
+        return os.path.join(os.path.abspath(os.path.expandvars(os.path.expanduser(str(local_output_dir)))),
+                            str(identifier))
+    if calc_dir:
+        return os.path.join(os.path.abspath(calc_dir), LOCAL_RESULTS_DIR)
+    return None
+
+
+def local_identifier(smiles):
+    """Database-free molecule identifier (InChIKey; filesystem safe)."""
+    return MolToInchiKey(MolFromSmiles(smiles))
+
+
+def omega_to_iop(tuned_w):
+    return str(int(tuned_w * 1e4)).zfill(5) + "00000"
+
+
+def local_record(_hash, identifier, calc_type, data):
+    """Envelope that mirrors a D3TaLES backend computation document."""
+    return {"_id": _hash, "mol_id": identifier, "calculation_type": calc_type, "data": data}
+
+
+def write_json(filename, data):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    tmp_filename = filename + ".tmp"
+    with open(tmp_filename, 'w') as fn:
+        json.dump(data, fn, cls=MontyEncoder, indent=2)
+    os.replace(tmp_filename, filename)  # atomic: safe when several Fireworks write to the same folder
+
+
+def save_local_result(store_dir, record):
+    """Write a record to <store_dir>/<calculation_type>__<_id>.json (one file per calculation)."""
+    filename = os.path.join(store_dir, "{}__{}.json".format(record["calculation_type"], record["_id"]))
+    write_json(filename, record)
+    return filename
+
+
+def read_local_result(store_dir, key):
+    """Return the `data` dict of the record whose _id is `key` (newest if several); {} if none."""
+    if not store_dir or not key:
+        return {}
+    matches = sorted(glob.glob(os.path.join(store_dir, "*__{}.json".format(key))), key=os.path.getmtime)
+    if not matches:
+        return {}
+    with open(matches[-1], 'r') as fn:
+        return json.load(fn).get("data", {})
+
+
+def parse_gaussian_log(logfile, conditions=None):
+    """
+    Minimal, database-free summary of a Gaussian log file. Keys mirror the D3TaLES backend `data` fields
+    used by the workflow and by back2front (geometry, scf_total_energy, gibbs_correction, charge, ...).
+    Energies are in Hartree.
+    """
+    gout = GaussianOutput(logfile)
+    data = {"conditions": conditions or {}, "log_file": os.path.abspath(logfile),
+            "properly_terminated": gout.properly_terminated,
+            "charge": gout.charge, "spin_multiplicity": gout.spin_multiplicity}
+    try:
+        data["geometry"] = gout.final_structure.as_dict()['sites']
+    except Exception:
+        pass
+    if gout.final_energy is not None:
+        data["scf_total_energy"] = {"value": gout.final_energy, "unit": "Hartree"}
+    gibbs = (gout.corrections or {}).get("Gibbs Free Energy")
+    if gibbs is not None:
+        data["gibbs_correction"] = {"value": gibbs, "unit": "Hartree"}
+    return data
+
+
+def get_omega(identifier, data_store=DEFAULT_DATA_STORE, store_dir=None):
+    """Return a previously tuned omega value (float) or None."""
+    if data_store == "d3tales":
+        return d3t_get_omega(identifier)
+    return read_local_result(store_dir, WTUNING_KEY).get("omega")
+
+
+def get_existing_data(_hash, data_store=DEFAULT_DATA_STORE, store_dir=None):
+    """Return the stored data dict for a calculation, or {} if it has not been run."""
+    if data_store == "d3tales":
+        return d3t_get_raw_computation(_hash) or {}
+    return read_local_result(store_dir, _hash)
+
 
 # FUNCTIONS
 
@@ -187,6 +317,7 @@ def parse_tddft(tddft_logfile):
 
 
 def get_hash_id(identifier, filepath, calc_type, output_file=None, **kwargs):
+    from d3tales_api.Processors.parser_dft import ProcessGausLog  # lazy: Processors is the next module to decouple
     metadata = {"calculation_type": calc_type, "mol_file": filepath, "wtuning_output": output_file, **kwargs}
     process_data = ProcessGausLog(_id=identifier, metadata=metadata)
     return process_data.hash_id
@@ -234,62 +365,55 @@ def orig_conditions(functional, basis_set, tuning_parameter=None, solvent=None, 
     return data_dict
 
 
-def start_from_smiles(identifier, smiles):
+def start_from_smiles(identifier, smiles, data_store=DEFAULT_DATA_STORE):
     """
-    get input geometry frontend DB smiles
-    :param identifier: str
+    get input geometry (from the frontend DB if data_store is d3tales, else from SMILES)
     :return: pymatgen mol object
     """
-    try:
-        response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.init_structure=1".format(identifier),
-                           url="https://d3tales.as.uky.edu", return_json=True).response[0]
-        return Molecule.from_str(response.get("mol_info", {}).get('init_structure'), 'xyz')
-    except:
-        if not smiles:
-            response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
-                               url="https://d3tales.as.uky.edu", return_json=True).response
-            smiles = response[0].get("mol_info", {}).get('smiles', '')
-        structure = find_lowest_e_conf(smiles)
-        return Molecule.from_str(structure, 'xyz')
+    if data_store == "d3tales":
+        try:
+            return d3t_get_init_structure(identifier)
+        except Exception:
+            smiles = smiles or d3t_get_smiles(identifier)
+    if not smiles:
+        raise ValueError("Cannot generate a starting geometry for {}: no SMILES provided.".format(identifier))
+    from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf  # lazy: see get_hash_id
+    structure = find_lowest_e_conf(smiles)
+    return Molecule.from_str(structure, 'xyz')
 
 
-def get_groundState(identifier, smiles=None, prop='charge'):
+def get_groundState(identifier, smiles=None, prop='charge', data_store=DEFAULT_DATA_STORE):
     """
-    get input geometry frontend DB smiles
-    :param identifier: str
-    :param prop: str
-    :return: int, ground state charge
+    get ground state charge or spin (from the frontend DB if data_store is d3tales, else from SMILES)
+    :return: int
     """
-    r = RESTAPI(
-        method='get', endpoint="restapi/molecules/_id={}/mol_info.groundState_{}=1".format(identifier, prop),
-        url="https://d3tales.as.uky.edu", return_json=True
-    )
-    if not r.response:
-        if smiles:
-            rdkmol = MolFromSmiles(smiles)
-            rdkmol_hs = AddHs(rdkmol)
-            AllChem.EmbedMolecule(rdkmol_hs)
-            return GetFormalCharge(rdkmol) if prop=='charge' else NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
-        raise ValueError(f"No ground state found for {identifier} with using endpoint {r.endpoint}. A SMILES must be specified")
-
-    return int(r.response[0].get("mol_info", {}).get('groundState_'+str(prop)))
+    if data_store == "d3tales":
+        value = d3t_get_ground_state(identifier, prop)
+        if value is not None:
+            return value
+    if smiles:
+        rdkmol = MolFromSmiles(smiles)
+        rdkmol_hs = AddHs(rdkmol)
+        AllChem.EmbedMolecule(rdkmol_hs)
+        return GetFormalCharge(rdkmol) if prop == 'charge' else NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+    raise ValueError(f"No ground state found for {identifier} (data_store={data_store}). A SMILES must be specified")
 
 
-def get_db_geom(input_geometry_hash, error_raise=False):
+def get_db_geom(input_geometry_hash, error_raise=False, data_store=DEFAULT_DATA_STORE, store_dir=None):
     """
-    get input geometry from DB
-    :param input_geometry_hash: str
+    get input geometry from the data store
+    :param store_dir: str, folder holding local JSON records (local data store only)
     :return: pymatgen mol object
     """
-    response = RESTAPI(
-        method='get', endpoint="restapi/rawdata/computation/_id={}/data.geometry=1".format(input_geometry_hash),
-        url="https://d3tales.as.uky.edu", return_json=True
-    ).response
-    if not response:
+    if data_store == "d3tales":
+        record = d3t_get_raw_computation(input_geometry_hash, fields="data.geometry")
+    else:
+        record = read_local_result(store_dir, input_geometry_hash) or None
+    if record is None:
         if error_raise:
             raise LookupError("Starting geometry with hash {} not found.".format(input_geometry_hash))
         return None
-    dict_sites = response[0].get("data", {}).get('geometry')
+    dict_sites = record.get('geometry')
     if not dict_sites:
         if error_raise:
             raise LookupError("There is not starting gemetry for computation item {}".format(input_geometry_hash))

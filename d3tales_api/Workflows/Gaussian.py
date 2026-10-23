@@ -10,7 +10,7 @@ from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import *
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
+from d3tales_api.Workflows.d3tales_utils import d3t_submit_calculation
 
 logger = get_logger(__name__)
 cpus = [multiprocessing.cpu_count() if multiprocessing.cpu_count() < 16 else 16]
@@ -26,6 +26,7 @@ class GaussianBase(FiretaskBase):
 
     def setup_files(self, fw_spec, calc_type='opt'):
         # get parameters
+        self.data_store = get_data_store(self, fw_spec)
         self.gaussian_cmd = env_chk(self.get("g16_cmd"), fw_spec)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.full_name = name_tag + self['name']
@@ -57,6 +58,9 @@ class GaussianBase(FiretaskBase):
                                               self.gaussian_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
+
+        # folder for local JSON records (local data store only)
+        self.store_dir = get_store_dir(self.identifier, get_local_output_dir(self, fw_spec), self.calc_dir)
 
         # get the type of gaussian optimization calculation
         if self.get("type", ):
@@ -92,25 +96,20 @@ class GaussianBase(FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier,
-                                                                                              self.smiles) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles,
-                                                                                        prop='spin') or 1
+        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
+            self.identifier, self.smiles, data_store=self.data_store) or 0
+        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
+            self.identifier, self.smiles, prop='spin', data_store=self.data_store) or 1
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
         run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or False
 
         # get iop string (omega value) for the calculation
         self.iop_str = fw_spec.get("iop_str", ) or self.get("iop_str", )
         if not self.iop_str and use_iop:
-            molecule_data = RESTAPI(
-                method='get', endpoint="restapi/molecules/_id={}/mol_characterization.omega=1".format(self.identifier),
-                url="https://d3tales.as.uky.edu", return_json=True
-            ).response
-            try:
-                tuned_w = molecule_data[0]["mol_characterization"]['omega']['value']
-                self.iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
-            except Exception:
-                pass
+            tuned_w = get_omega(self.identifier, data_store=self.data_store, store_dir=self.store_dir)
+            if tuned_w:
+                self.iop_str = omega_to_iop(tuned_w)
+        self.result_iop_str = self.iop_str  # fixed copy used for local record hashes
 
         # get starting geometry for calculation
         geometry = fw_spec.get("geometry", ) or self.get("geometry", )
@@ -125,7 +124,8 @@ class GaussianBase(FiretaskBase):
                                             orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=self.solvent))
-                self.mol = get_db_geom(geometry_hash) or start_from_smiles(self.identifier, self.smiles)
+                self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir) \
+                    or start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
 
             # End job if the total number of atoms is greater than 200
             num_atoms = len(self.mol.sites)
@@ -146,36 +146,41 @@ class GaussianBase(FiretaskBase):
         if self.solvent:
             self.paramset.route_parameters.update({"SCRF": "(PCM,Solvent={})".format(self.solvent)})
 
-    def existing_data(self, _hash=None):
-        # check if this job has already run and been uploaded to the backend DB
+    def local_conditions(self):
+        return orig_conditions(self.paramset.functional, self.paramset.basis_set,
+                               tuning_parameter=self.result_iop_str, solvent=self.solvent)
+
+    def local_key(self, calc_name=None):
+        # key for local (database-free) records; same hash scheme as the D3TaLES backend
+        return orig_hash_id(self.identifier, calc_name or self.calc_name, self.paramset.functional,
+                            self.paramset.basis_set, tuning_parameter=self.result_iop_str, solvent=self.solvent)
+
+    def existing_data(self, _hash=None, calc_name=None):
+        # check if this job has already run and been stored in the data store
+        if self.data_store == "local":
+            return get_existing_data(self.local_key(calc_name), data_store=self.data_store, store_dir=self.store_dir)
         _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
                                       self.paramset.basis_set,
                                       tuning_parameter=self.iop_str, solvent=self.solvent)
-        response = RESTAPI(method='get', endpoint="restapi/rawdata/computation/_id={}".format(_hash),
-                           url="https://d3tales.as.uky.edu", return_json=True).response
-        if response:
-            return response[0].get("data", {})
-        return {}
+        return get_existing_data(_hash, data_store=self.data_store)
 
     def post_job(self, upload_files=None, delete_files=None, calc_type=None, name_tag=''):
-        # Upload data to database through website
+        # Store data (D3TaLES: upload through website; local: write JSON record)
         upload_files = upload_files or [self.file_log, self.file_fchk]
         delete_files = []  # delete_files or [self.file_chk, self.file_com, self.file_fchk, self.file_log]
         calc_type = calc_type or self.calc_name
         _hash = get_hash_id(self.identifier, self.file_log, self.calc_name) if os.path.isfile(self.file_log) else None
-        upload_names = [f.split('/')[-1] for f in upload_files]
-        zip_path = zip_files(upload_names, zip_name='{}_{}.zip'.format(self.identifier, name_tag + self.full_name))
-        if self.submit:
-            submission = RESTAPI(method='post', endpoint='tools/upload/computation-gaussian',
-                                 url="https://d3tales.as.uky.edu", expected_endpoint="tools/user_uploads",
-                                 upload_file=zip_path,
-                                 params=dict(molecule_id=self.identifier, calculation_type=calc_type))
-            if not submission.successful:
-                raise Exception("Calculation files not successfully submitted with endpoint {}. Response endpoint "
-                                "was {}, not {}. \nSubmission Params: {} \n Zip path: {}".format(
-                    submission.endpoint, submission.response.request.url, submission.expected_endpoint,
-                    submission.params, zip_path))
-            print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
+        if self.data_store == "d3tales":
+            upload_names = [f.split('/')[-1] for f in upload_files]
+            zip_path = zip_files(upload_names, zip_name='{}_{}.zip'.format(self.identifier, name_tag + self.full_name))
+            if self.submit:
+                d3t_submit_calculation(zip_path, self.identifier, calc_type)
+                print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
+        else:
+            logfile = next((f for f in upload_files if f.endswith(".log")), self.file_log)
+            record = local_record(self.local_key(calc_type), self.identifier, calc_type,
+                                  parse_gaussian_log(logfile, conditions=self.local_conditions()))
+            print("Record saved to", save_local_result(self.store_dir, record))
         # Write runfile to runfile_log so the runfile can be deleted after calculation
         with open(self.runfile_log, 'a') as fn:
             fn.write("{}, {}\n".format(_hash, self.working_dir))
@@ -266,7 +271,8 @@ class RunGaussianOpt(GaussianBase):
                                      "{}_geom".format(self.full_name): existing_data.get("geometry"),
                                      "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
                                          "value"),
-                                     "{}_gibb".format(self.full_name): self.existing_data(_hash=freq_hash).get(
+                                     "{}_gibb".format(self.full_name): self.existing_data(
+                                         _hash=freq_hash, calc_name=freq_name).get(
                                          "gibbs_correction", {}).get("value"),
                                      "iop_str": self.iop_str})
 
@@ -353,15 +359,19 @@ class RunWtuning(FiretaskBase):
 
     def run_task(self, fw_spec):
         # get parameters
+        data_store = get_data_store(self, fw_spec)
         path = env_chk(self.get('path'), fw_spec)
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
         smiles = fw_spec.get("smiles", ) or self.get("smiles")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(identifier, smiles)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(identifier, smiles, prop='spin')
+        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
+            identifier, smiles, data_store=data_store)
+        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
+            identifier, smiles, prop='spin', data_store=data_store)
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
+        store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
         check_if_already_run = fw_spec.get("check_if_already_run", True) if fw_spec.get("check_if_already_run") else self.get("check_if_already_run", True)
         submit = fw_spec.get("submit") or self.get("submit") or True
         restricted = fw_spec.get("restricted", True) if self.get("restricted", True) else self.get("restricted")
@@ -375,10 +385,8 @@ class RunWtuning(FiretaskBase):
             mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
         else:
             geometry_hash = fw_spec.get("{}_hash".format(geometry), )
-            try:
-                mol = get_db_geom(geometry_hash)
-            except LookupError:
-                mol = start_from_smiles(identifier, smiles)
+            mol = get_db_geom(geometry_hash, data_store=data_store, store_dir=store_dir) \
+                or start_from_smiles(identifier, smiles, data_store=data_store)
 
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
@@ -389,13 +397,9 @@ class RunWtuning(FiretaskBase):
 
         # check if job has already run
         if check_if_already_run:
-            init_query = RESTAPI(method='get',
-                                 endpoint="restapi/molecules/_id={}/mol_characterization.omega=1".format(identifier),
-                                 url="https://d3tales.as.uky.edu", return_json=True).response
-            if init_query:
-                omega_dict = init_query[0].get("mol_characterization", {}).get('omega')
-                tuned_w = omega_dict.get('value')
-                iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
+            tuned_w = get_omega(identifier, data_store=data_store, store_dir=store_dir)
+            if tuned_w:
+                iop_str = omega_to_iop(tuned_w)
                 return FWAction(
                     update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier,
                                  "gs_charge": gs_charge, "gs_spin": gs_spin})
@@ -413,20 +417,20 @@ class RunWtuning(FiretaskBase):
         with open("output.log", "r") as f:
             output = f.read()
         tuned_w = float(output.strip().split()[-3])
-        iop_str = str(int(tuned_w * 1e4)).zfill(5) + "00000"
+        iop_str = omega_to_iop(tuned_w)
 
-        # Upload data to database through website
-        file_list = ['wtuning.com', 'output.log']
-        zip_name = zip_files(file_list, zip_name='{}/{}_wtuning.zip'.format(working_dir, identifier))
-        if submit:
-            submission = RESTAPI(method='post', endpoint='tools/upload/computation-gaussian',
-                                 url="https://d3tales.as.uky.edu", expected_endpoint="tools/user_uploads",
-                                 upload_file=zip_name,
-                                 params=dict(molecule_id=identifier, calculation_type=self['name']))
-            if not submission.successful:
-                raise Exception("Calculation files not successfully submitted with endpoint {}. Responce endpoint "
-                                "was {}, not {}".format(submission.endpoint, submission.response.request.url,
-                                                        submission.expected_endpoint))
+        # Store data (D3TaLES: upload through website; local: write JSON record)
+        if data_store == "d3tales":
+            file_list = ['wtuning.com', 'output.log']
+            zip_name = zip_files(file_list, zip_name='{}/{}_wtuning.zip'.format(working_dir, identifier))
+            if submit:
+                d3t_submit_calculation(zip_name, identifier, self['name'])
+        else:
+            conditions = orig_conditions(paramset.functional, paramset.basis_set)  # no tuning_parameter, as in back2front
+            record = local_record(WTUNING_KEY, identifier, self['name'],
+                                  {"omega": tuned_w, "conditions": conditions,
+                                   "output_file": os.path.join(working_dir, "output.log")})
+            print("Record saved to", save_local_result(store_dir, record))
         data_hash = get_hash_id(identifier, 'wtuning.com', self['name'], output_file='output.log')
         with open(runfile_log, 'a') as fn:
             fn.write("{}, {}\n".format(data_hash, working_dir))

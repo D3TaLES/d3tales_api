@@ -1,90 +1,50 @@
 import os
-import smtplib, ssl
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from fireworks import FiretaskBase, explicit_serialize, FWAction
-from d3tales_api.D3database.restapi import RESTAPI
-from d3tales_api.D3database.d3database import FrontDB
-from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
+from d3tales_api.Workflows.utils import (get_data_store, get_groundState, local_identifier, get_store_dir,
+                                         get_local_output_dir, write_json)
+from d3tales_api.Workflows.d3tales_utils import d3t_get_smiles, d3t_register_molecule
+# Backward compatibility: these classes used to live in this module, and FireWorks already stored in a
+# LaunchPad reference them as d3tales_api.Workflows.Initialize.<Class>. Keep this import so they still load.
+from d3tales_api.Workflows.d3tales_utils import Mail, EmailStarting, EmailFinished  # noqa: F401
 
 
 @explicit_serialize
 class MoleculeInit(FiretaskBase):
     # Copyright 2021, University of Kentucky
     def run_task(self, fw_spec):
+        data_store = get_data_store(self, fw_spec)
         identifier = self.get('identifier', )
-        if identifier:
-            response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info.smiles=1".format(identifier),
-                               url="https://d3tales.as.uky.edu", return_json=True).response
-            if response:
-                smiles = response[0].get("mol_info", {}).get('smiles', '')
-                if smiles:
-                    return FWAction(update_spec={"identifier": identifier})
-
         smiles = self.get('smiles', )
-        group = self.get('origin_group', 'Risko')
         name = self.get('mol_name', )
-        public = self.get('public', False)
-
         name_list = [name] if name else []
-        rdkmol = MolFromSmiles(smiles)
-        clean_smiles = MolToSmiles(rdkmol)
-        instance = GenerateMolInfo(clean_smiles, names=name_list, origin_group=group).mol_info_dict
-        gs_charge = instance.get('groundState_charge')
-        gs_spin = instance.get('groundState_spin')
-        db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=clean_smiles, group=group, public=public)
-        return FWAction(update_spec={"identifier": db_insertion.id, "gs_charge": gs_charge, "gs_spin": gs_spin})
 
+        if data_store == "local":
+            if not smiles:
+                if identifier:
+                    return FWAction(update_spec={"identifier": identifier, "data_store": data_store})
+                raise ValueError("MoleculeInit requires a SMILES (or an identifier) when data_store='local'.")
+            clean_smiles = MolToSmiles(MolFromSmiles(smiles))
+            identifier = identifier or local_identifier(clean_smiles)
+            gs_charge = get_groundState(identifier, clean_smiles, prop='charge', data_store=data_store)
+            gs_spin = get_groundState(identifier, clean_smiles, prop='spin', data_store=data_store)
 
-class Mail:
+            # Molecule-level record (local stand-in for the frontend mol_info entry)
+            local_output_dir = get_local_output_dir(self, fw_spec)
+            if local_output_dir:
+                write_json(os.path.join(get_store_dir(identifier, local_output_dir), "mol_info.json"),
+                           {"_id": identifier, "mol_info": {"smiles": clean_smiles, "names": name_list,
+                                                            "groundState_charge": gs_charge,
+                                                            "groundState_spin": gs_spin}})
+            return FWAction(update_spec={"identifier": identifier, "smiles": clean_smiles, "gs_charge": gs_charge,
+                                         "gs_spin": gs_spin, "data_store": data_store})
 
-    def __init__(self):
-        self.port = 465
-        self.smtp_server_domain_name = "smtp.gmail.com"
-        self.sender_mail = "d3tales@gmail.com" or os.environ["EMAIL_USER"]
-        self.password = "hvcfylnzlyroxniw" or os.environ["EMAIL_PASS"]
-
-    def send(self, emails, subject, content):
-        ssl_context = ssl.create_default_context()
-        service = smtplib.SMTP_SSL(self.smtp_server_domain_name, self.port, context=ssl_context)
-        service.login(self.sender_mail, self.password)
-
-        for email in emails:
-            result = service.sendmail(self.sender_mail, email, f"Subject: {subject}\n\n{content}")
-
-        service.quit()
-
-
-@explicit_serialize
-class EmailStarting(FiretaskBase):
-    # Copyright 2021, University of Kentucky
-    def run_task(self, fw_spec):
-        identifier = fw_spec.get("identifier", "")
-        email_address = self.get('email', "")
-        username = self.get('username') or "D3TaLES User"
-        content = str(username)+""",
-        Your submitted molecule, """+str(identifier)+""", has been approved. Calculations for this molecule have begun. You will receive another email when calculations have finished.
-        
-        Thank you, 
-        D3TaLES Computational Team"""
-
-        mail = Mail()
-        mail.send([email_address], "D3TaLES Molecule Calculations", content)
-        return FWAction(update_spec={"identifier": identifier})
-
-
-@explicit_serialize
-class EmailFinished(FiretaskBase):
-    # Copyright 2021, University of Kentucky
-    def run_task(self, fw_spec):
-        identifier = fw_spec.get("identifier", "")
-        email_address = self.get('email', "")
-        username = self.get('username', ) or "D3TaLES User"
-        content = str(username)+""",
-        Calculations for your submitted molecule, """+str(identifier)+""", have finished. You may now view the computed properties for this molecule at https://d3tales.as.uky.edu/database/"""+str(identifier)+"""
-        
-        Thank you, 
-        D3TaLES Computational Team"""
-
-        mail = Mail()
-        mail.send([email_address], "D3TaLES Molecule Calculations", content)
-        return FWAction(update_spec={"identifier": identifier})
+        # data_store == "d3tales" (original behavior)
+        if identifier and d3t_get_smiles(identifier):
+            return FWAction(update_spec={"identifier": identifier})
+        group = self.get('origin_group', 'Risko')
+        public = self.get('public', False)
+        clean_smiles = MolToSmiles(MolFromSmiles(smiles))
+        new_id, gs_charge, gs_spin = d3t_register_molecule(clean_smiles, names=name_list, origin_group=group,
+                                                           public=public)
+        return FWAction(update_spec={"identifier": new_id, "gs_charge": gs_charge, "gs_spin": gs_spin})

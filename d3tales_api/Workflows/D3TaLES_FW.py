@@ -2,6 +2,8 @@ from fireworks import Firework
 from d3tales_api.Workflows.Gaussian import *
 from d3tales_api.Workflows.Initialize import *
 from d3tales_api.Workflows.utils import G16_CMD, PATH, PROC_VM_KEY, RUNFILE_LOG
+# D3TaLES-specific Fireworks now live in d3tales_utils; re-exported so `from D3TaLES_FW import *` still works
+from d3tales_api.Workflows.d3tales_utils import EmailStart, EmailEnd  # noqa: F401
 
 # Copyright 2021-2022, University of Kentucky
 
@@ -63,19 +65,3 @@ class TDDFT(Firework):
         t = [RunGaussianTDDFT(smiles=smiles, name=name, name_tag=name_tag, path=PATH, runfile_log=RUNFILE_LOG, g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY, type='tddft',
                               geometry="{}{}".format(geom_prefix, species), prefix=tddft_prefix+species, solvent=solvent, **kwargs)]
         super(TDDFT, self).__init__(t, parents=parents, spec=spec, name="{}tddft_{}".format(name_tag, species))
-
-
-class EmailStart(Firework):
-    def __init__(self, parents=None, priority=None, name_tag='', identifier="", email="", username="", **kwargs):
-        spec = {'_category': 'processing', '_priority': priority} if priority else {'_category': 'processing'}
-        t = [EmailStarting(identifier=identifier, email=email, username=username)]
-        super(EmailStart, self).__init__(t, parents=parents, spec=spec, name="{}email_starting".format(name_tag))
-
-
-class EmailEnd(Firework):
-    def __init__(self, parents=None, priority=None, name_tag='', identifier="", email="", username="", **kwargs):
-        spec = {'_category': 'processing', '_priority': priority} if priority else {'_category': 'processing'}
-        t = [EmailFinished(identifier=identifier, email=email, username=username)]
-        super(EmailEnd, self).__init__(t, parents=parents, spec=spec, name="{}email_finished".format(name_tag))
-
-
