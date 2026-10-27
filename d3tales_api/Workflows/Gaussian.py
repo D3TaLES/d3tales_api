@@ -2,10 +2,7 @@ import abc
 import subprocess
 import multiprocessing
 import uuid
-import numpy as np
 from six import add_metaclass
-from rdkit.Chem.rdMolTransforms import SetDihedralDeg
-from pymatgen.core.structure import IMolecule
 from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import *
@@ -35,11 +32,11 @@ class GaussianBase(FiretaskBase):
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
         self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        self.check_if_already_run = fw_spec.get("check_if_already_run", True) if self.get("check_if_already_run") else self.get("check_if_already_run", True)
         self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
-        self.submit = fw_spec.get("submit", True) if self.get("submit") else self.get("submit", True)
-        self.restricted = fw_spec.get("restricted", True) if self.get("restricted") else self.get("restricted", True)
+        self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
+        self.submit = spec_or_task(self, fw_spec, "submit", True)
+        self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = fw_spec.get("run_nto") or self.get("run_nto") or False
 
         self.gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
@@ -374,9 +371,9 @@ class RunWtuning(FiretaskBase):
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
-        check_if_already_run = fw_spec.get("check_if_already_run", True) if fw_spec.get("check_if_already_run") else self.get("check_if_already_run", True)
-        submit = fw_spec.get("submit") or self.get("submit") or True
-        restricted = fw_spec.get("restricted", True) if self.get("restricted", True) else self.get("restricted")
+        check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
+        submit = spec_or_task(self, fw_spec, "submit", True)
+        restricted = spec_or_task(self, fw_spec, "restricted", True)
 
         radical_electrons = (gs_spin - 1 - paramset.charge) % 2
         paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule

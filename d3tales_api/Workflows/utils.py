@@ -127,28 +127,6 @@ def read_local_result(store_dir, key):
         return json.load(fn).get("data", {})
 
 
-def parse_gaussian_log(logfile, conditions=None):
-    """
-    Minimal, database-free summary of a Gaussian log file. Keys mirror the D3TaLES backend `data` fields
-    used by the workflow and by back2front (geometry, scf_total_energy, gibbs_correction, charge, ...).
-    Energies are in Hartree.
-    """
-    gout = GaussianOutput(logfile)
-    data = {"conditions": conditions or {}, "log_file": os.path.abspath(logfile),
-            "properly_terminated": gout.properly_terminated,
-            "charge": gout.charge, "spin_multiplicity": gout.spin_multiplicity}
-    try:
-        data["geometry"] = gout.final_structure.as_dict()['sites']
-    except Exception:
-        pass
-    if gout.final_energy is not None:
-        data["scf_total_energy"] = {"value": gout.final_energy, "unit": "Hartree"}
-    gibbs = (gout.corrections or {}).get("Gibbs Free Energy")
-    if gibbs is not None:
-        data["gibbs_correction"] = {"value": gibbs, "unit": "Hartree"}
-    return data
-
-
 def get_omega(identifier, data_store=DEFAULT_DATA_STORE, store_dir=None):
     """Return a previously tuned omega value (float) or None."""
     if data_store == "d3tales":
@@ -333,7 +311,6 @@ def orig_hash_id(_id, calculation_type, functional, basis_set, tuning_parameter=
         "calculation_type": calculation_type,
         "conditions": conditions,
     }
-    print("CONDITIONS", conditions, hash_dict)
     dhash = hashlib.md5()
     encoded = json.dumps(hash_dict, sort_keys=True).encode()
     dhash.update(encoded)
@@ -494,6 +471,12 @@ def write_nto(tddft_log, excitation_num, tddft_chk=None):
     ginp.write_file(nto_com, cart_coords=True)
     return nto_com, nto_chk
 
+def spec_or_task(task, fw_spec, key, default=None):
+    """fw_spec value if set, else task value if set, else default. Explicit False/0 are respected."""
+    val = fw_spec.get(key)
+    if val is None:
+        val = task.get(key)
+    return default if val is None else val
 
 if __name__ == "__main__":
     get_groundState("05AATS")

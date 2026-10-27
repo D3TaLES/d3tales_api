@@ -2,10 +2,9 @@ import json
 import warnings
 import numpy as np
 from rdkit.Chem.Descriptors import ExactMolWt
-from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
-from d3tales_api.Workflows.utils import local_identifier
+from rdkit.Chem import MolFromSmiles, MolToSmiles, MolToInchiKey
 from d3tales_api.Calculators.utils import dict2obj, unit_conversion
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
@@ -22,7 +21,7 @@ class ProcessExpFlowObj:
     Base class for Processing ExpFlow objects for data analysis
     """
 
-    def __init__(self, expflow_obj, source_group, redox_id_error=True, try_restapi=False, **kwargs):
+    def __init__(self, expflow_obj, source_group, redox_id_error=False, try_restapi=False, **kwargs):
         """
         :param expflow_obj: obj or dict, ExpFlow object to process
         :param source_group: str, source group for ExpFlow object
@@ -101,7 +100,7 @@ class ProcessExpFlowObj:
             if self.redox_id_error:
                 raise e
             else:
-                return local_identifier(clean_smiles)
+                return MolToInchiKey(MolFromSmiles(clean_smiles))
         return db_insertion.id
 
     @property
