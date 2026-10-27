@@ -2,7 +2,6 @@ import uuid
 import json
 import math
 import warnings
-import numpy as np
 import pandas as pd
 import dateutil.parser
 from scipy.signal import savgol_filter
