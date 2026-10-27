@@ -109,9 +109,9 @@ def write_json(filename, data):
     os.replace(tmp_filename, filename)  # atomic: safe when several Fireworks write to the same folder
 
 
-def save_local_result(store_dir, record):
-    """Write a record to <store_dir>/<calculation_type>__<_id>.json (one file per calculation)."""
-    filename = os.path.join(store_dir, "{}__{}.json".format(record["calculation_type"], record["_id"]))
+def save_local_result(store_dir, record, key=None):
+    """Write a record to <store_dir>/<calculation_type>__<key or _id>.json (one file per calculation)."""
+    filename = os.path.join(store_dir, "{}__{}.json".format(record["calculation_type"], key or record["_id"]))
     write_json(filename, record)
     return filename
 

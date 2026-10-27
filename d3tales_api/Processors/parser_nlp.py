@@ -28,7 +28,7 @@ class ProcessNlp:
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, doi=None, instance=None, els_apikey="3a5b9e26201041e25eee70953c65782c", article_download=False,
+    def __init__(self, doi=None, instance=None, els_apikey=None, article_download=False,
                  download_dir="temp/"):
         """
         :param doi: str, DOI or scopus id
@@ -42,7 +42,7 @@ class ProcessNlp:
         if not self.doi:
             raise ValueError("ProcessNlp requires a DOI. Either include doi as an argument or include doi as a "
                              "key in the instance data.")
-        self.els_apikey = els_apikey
+        self.els_apikey = els_apikey or os.environ.get("ELS_APIKEY")
         self.instance = instance or {}
         self.publisher, self.main_text = "", ""
         self.article_download = article_download

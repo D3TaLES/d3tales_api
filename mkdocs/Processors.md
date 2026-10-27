@@ -158,6 +158,9 @@ print(cv_data.data_dict)
 Here we generate metadata for an article based on its DOI. To do this, we 
 simply import the `parser_nlp` module and use the `ProcessNlp`
 module to generate the article metadata. 
+
+Note that you will need to set the environment variable `ELS_APIKEY` as your Elsevier API key.
+
 ```python    
 from d3tales_api.Processors.parser_nlp import ProcessNlp
 

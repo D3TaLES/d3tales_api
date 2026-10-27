@@ -2,8 +2,6 @@ import re
 import hashlib
 from d3tales_api.Calculators.plotters import *
 from d3tales_api.Calculators.calculators import *
-from d3tales_api.database_info import db_info
-from d3tales_api.D3database.d3database import DBconnector
 from pymatgen.io.gaussian import GaussianOutput, GaussianInput
 
 
@@ -21,6 +19,7 @@ class ProcessDFTBase:
         :param metadata: dict, metadata (`mol_file` should be a key to the filepath of the file to be processed)
         """
         submission_info = submission_info or {}
+        metadata = metadata or {}
         self.energy_unit = ""
         self.data_path = filepath or metadata.get("mol_file")
         self.id = _id
@@ -31,6 +30,8 @@ class ProcessDFTBase:
         self.calculation_type = metadata.get('calculation_type', )
         self.solvent = metadata.get('solvent', None)
         self.dielectric_constant = metadata.get('dielectric_constant', None)
+        # Optional molecule info (e.g., {"groundState_charge": 0}). If given, the frontend DB is never queried.
+        self._mol_info = metadata.get('mol_info', None)
 
     @property
     def data_dict(self):
@@ -58,9 +59,9 @@ class ProcessDFTBase:
         }
         try:
             data_dict.update({"is_groundState": self.is_groundState})
-        except ConnectionError:
-            print("Warning. Could not connect to the database, so no 'is_groundState' property was specified. "
-                  "DB_INFO_FILE may not be defined.")
+        except OSError:  # includes ConnectionError
+            print("Warning. No ground state charge available (no `mol_info` metadata and no database connection), "
+                  "so no 'is_groundState' property was specified.")
         if 'freq' in self.calculation_type:
             data_dict.update({
                 "gibbs_correction": {
@@ -162,10 +163,18 @@ class ProcessDFTBase:
     @property
     def mol_info(self):
         """
-        Dictionary containing basic molecule information using the ID from the D3TalES database
+        Dictionary containing basic molecule information. Uses `mol_info` from the metadata if given;
+        otherwise looks up the ID in the D3TaLES frontend database.
         """
-        base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
-        document = base_coll.find_one({"_id": self.id})
+        if self._mol_info is not None:
+            return self._mol_info
+        try:
+            from d3tales_api.database_info import db_info  # lazy: only needed for the D3TaLES database
+            from d3tales_api.D3database.d3database import DBconnector
+            base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+            document = base_coll.find_one({"_id": self.id})
+        except Exception as e:
+            raise ConnectionError("Could not query the D3TaLES frontend database: {}".format(e))
         if document:
             return document['mol_info']
         else:

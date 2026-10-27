@@ -177,10 +177,12 @@ class GaussianBase(FiretaskBase):
                 d3t_submit_calculation(zip_path, self.identifier, calc_type)
                 print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
         else:
+            from d3tales_api.Processors.parser_dft import ProcessGausLog
             logfile = next((f for f in upload_files if f.endswith(".log")), self.file_log)
-            record = local_record(self.local_key(calc_type), self.identifier, calc_type,
-                                  parse_gaussian_log(logfile, conditions=self.local_conditions()))
-            print("Record saved to", save_local_result(self.store_dir, record))
+            record = ProcessGausLog(_id=self.identifier, metadata={
+                "mol_file": logfile, "calculation_type": calc_type,
+                "mol_info": {"groundState_charge": self.gs_charge}}).data_dict
+            print("Record saved to", save_local_result(self.store_dir, record, key=self.local_key(calc_type)))
         # Write runfile to runfile_log so the runfile can be deleted after calculation
         with open(self.runfile_log, 'a') as fn:
             fn.write("{}, {}\n".format(_hash, self.working_dir))

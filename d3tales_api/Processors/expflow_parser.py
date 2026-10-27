@@ -5,10 +5,7 @@ from rdkit.Chem.Descriptors import ExactMolWt
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder
-from d3tales_api.Calculators.calculators import *
-from d3tales_api.Calculators.utils import dict2obj
-from d3tales_api.D3database.restapi import RESTAPI
-from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.Workflows.utils import local_identifier
 from d3tales_api.Calculators.utils import dict2obj, unit_conversion
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
@@ -83,9 +80,11 @@ class ProcessExpFlowObj:
         """Molecule ID"""
         if not self.redox_mol:
             return None
+        rdkmol = MolFromSmiles(self.redox_mol.smiles)
+        clean_smiles = MolToSmiles(rdkmol)
         try:
-            rdkmol = MolFromSmiles(self.redox_mol.smiles)
-            clean_smiles = MolToSmiles(rdkmol)
+            from d3tales_api.D3database.restapi import RESTAPI  # lazy: D3TaLES database only
+            from d3tales_api.D3database.d3database import FrontDB
             check_id = FrontDB(smiles=clean_smiles).check_if_in_db()
             if check_id:
                 return check_id
@@ -102,7 +101,7 @@ class ProcessExpFlowObj:
             if self.redox_id_error:
                 raise e
             else:
-                return None
+                return local_identifier(clean_smiles)
         return db_insertion.id
 
     @property
