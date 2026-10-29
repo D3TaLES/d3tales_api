@@ -294,6 +294,7 @@ class RunGaussianOpt(GaussianBase):
 
             if self.skip_freq:
                 final_structure = gout.final_structure.as_dict()['sites']
+                final_energy = gout.final_energy
                 converged = True
                 break
 
