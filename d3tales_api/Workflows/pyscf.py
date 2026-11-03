@@ -28,6 +28,10 @@ What changes because the engine is PySCF (there is no Gaussian input/output text
 Requires: pyscf, geometric (geomeTRIC; for geometry optimization), scipy (omega tuning).
 """
 import abc
+import hashlib
+import json
+import os
+import re
 import multiprocessing
 import time
 import uuid
@@ -40,7 +44,25 @@ from fireworks import FiretaskBase, explicit_serialize, FWAction
 from pyscf import gto, scf, dft, lib
 import pyscf
 
-from d3tales_api.Workflows.utils import *
+from d3tales_api.Workflows.utils import (
+    ElectronicStructureTaskMixin,
+    Molecule,
+    Site,
+    get_data_store,
+    get_db_geom,
+    get_groundState,
+    get_local_output_dir,
+    get_omega,
+    get_store_dir,
+    local_record,
+    omega_to_iop,
+    orig_conditions,
+    parse_tddft,
+    read_local_result,
+    save_local_result,
+    spec_or_task,
+    start_from_smiles
+)
 from d3tales_api.Workflows.wtuning import WtuningJob
 
 logger = get_logger(__name__)
@@ -491,7 +513,11 @@ def write_nto(td, mf, filename_stem, state=1, weight_cutoff=1e-3):
 # FireTasks
 # ----------------------------------------------------------------------------------------------------------------------
 @add_metaclass(abc.ABCMeta)
-class PySCFBase(FiretaskBase):
+class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
+    engine_name = "PySCF"
+    conditions_function = staticmethod(pyscf_conditions)
+    hash_function = staticmethod(pyscf_hash_id)
+    result_data_store = "local"
     _fw_name = "PySCFBase"
 
     def setup_files(self, fw_spec, calc_type='opt'):
@@ -624,18 +650,8 @@ class PySCFBase(FiretaskBase):
             density_fit=self.density_fit, xc=self.get("xc"))
         self.charge, self.multiplicity = self.paramset.charge, self.paramset.multiplicity
 
-    def local_conditions(self):
-        return pyscf_conditions(self.paramset.functional, self.paramset.basis_set,
-                                tuning_parameter=self.result_iop_str, solvent=self.solvent)
 
-    def local_key(self, calc_name=None):
-        # key for local records; same hash scheme as the D3TaLES backend, but with PySCF conditions
-        return pyscf_hash_id(self.identifier, calc_name or self.calc_name, self.paramset.functional,
-                             self.paramset.basis_set, tuning_parameter=self.result_iop_str, solvent=self.solvent)
 
-    def existing_data(self, _hash=None, calc_name=None):
-        # check if this job has already run and been stored (PySCF results only live in the local store)
-        return get_existing_data(_hash or self.local_key(calc_name), data_store="local", store_dir=self.store_dir)
 
     def post_job(self, data=None, upload_files=None, delete_files=None, calc_type=None, name_tag=''):
         # Store data: a local JSON record (PySCF output is not uploadable to the D3TaLES website)

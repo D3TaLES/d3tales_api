@@ -1,5 +1,5 @@
 from fireworks import Workflow
-from d3tales_api.Workflows.D3TaLES_FW import *
+from d3tales_api.Workflows.Fireworks import *
 
 
 # Copyright 2021, University of Kentucky

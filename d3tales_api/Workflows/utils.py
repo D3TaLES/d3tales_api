@@ -478,5 +478,73 @@ def spec_or_task(task, fw_spec, key, default=None):
         val = task.get(key)
     return default if val is None else val
 
+
+class ElectronicStructureTaskMixin:
+    """Shared storage, hashing, cache, run-log, and FWAction helpers for DFT FireTasks.
+
+    Engine classes provide ``conditions_function`` and ``hash_function`` when
+    their records must use engine-specific conditions. The defaults preserve
+    the existing Gaussian schema.
+    """
+
+    conditions_function = staticmethod(orig_conditions)
+    hash_function = staticmethod(orig_hash_id)
+    result_data_store = None
+
+    def local_conditions(self):
+        functional = getattr(self, "record_functional", None)
+        if functional is None:
+            functional = getattr(self, "functional", None)
+        if functional is None and hasattr(self, "paramset"):
+            functional = _parameter_value(self.paramset, "functional")
+        basis = getattr(self, "record_basis", None)
+        if basis is None:
+            basis = getattr(self, "basis", None)
+        if basis is None and hasattr(self, "paramset"):
+            basis = _parameter_value(self.paramset, "basis_set")
+        tuning = getattr(self, "result_iop_str", getattr(self, "iop_str", None))
+        return self.conditions_function(functional, basis, tuning_parameter=tuning, solvent=getattr(self, "solvent", None))
+
+    def local_key(self, calc_name=None):
+        conditions = self.local_conditions()
+        return self.hash_function(
+            self.identifier, calc_name or self.calc_name,
+            conditions["functional"], conditions["basis_set"],
+            tuning_parameter=getattr(self, "result_iop_str", getattr(self, "iop_str", None)),
+            solvent=getattr(self, "solvent", None),
+        )
+
+    def existing_data(self, _hash=None, calc_name=None):
+        data_store = self.result_data_store or self.data_store
+        key = _hash or self.local_key(calc_name)
+        return get_existing_data(key, data_store=data_store, store_dir=self.store_dir)
+
+    def append_runfile_log(self, data_hash):
+        if not getattr(self, "runfile_log", None):
+            return
+        with open(self.runfile_log, "a", encoding="utf-8") as handle:
+            handle.write("{}, {}\n".format(data_hash, self.working_dir))
+
+    def common_update_spec(self, run_dir=None, **extra):
+        run_dir = run_dir or self.calc_dir
+        engine = getattr(self, "engine_name", "electronic_structure").lower()
+        update = {
+            "identifier": self.identifier,
+            "gs_charge": self.gs_charge,
+            "gs_spin": self.gs_spin,
+            "iop_str": getattr(self, "iop_str", None),
+            "electronic_structure_run_dir": run_dir,
+            "gaussrun_dir": run_dir,
+            "{}run_dir".format(engine): run_dir,
+        }
+        update.update(extra)
+        return update
+
+
+def _parameter_value(paramset, name, default=None):
+    if isinstance(paramset, dict):
+        return paramset.get(name, default)
+    return getattr(paramset, name, default)
+
 if __name__ == "__main__":
     get_groundState("05AATS")

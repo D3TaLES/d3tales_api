@@ -1,11 +1,36 @@
 import abc
+import os
 import subprocess
 import multiprocessing
 import uuid
 from six import add_metaclass
 from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
-from d3tales_api.Workflows.utils import *
+from d3tales_api.Workflows.utils import (
+    ElectronicStructureTaskMixin,
+    GaussianInput,
+    GaussianOutput,
+    Molecule,
+    Site,
+    WTUNING_KEY,
+    generate_gaussian_input,
+    get_data_store,
+    get_db_geom,
+    get_groundState,
+    get_hash_id,
+    get_local_output_dir,
+    get_omega,
+    get_store_dir,
+    local_record,
+    omega_to_iop,
+    orig_conditions,
+    orig_hash_id,
+    save_local_result,
+    spec_or_task,
+    start_from_smiles,
+    write_nto,
+    zip_files
+)
 from d3tales_api.Workflows.wtuning import WtuningJob
 from d3tales_api.Workflows.d3tales_utils import d3t_submit_calculation
 
@@ -18,7 +43,8 @@ nprocs = str(cpus[0])
 
 
 @add_metaclass(abc.ABCMeta)
-class GaussianBase(FiretaskBase):
+class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
+    engine_name = "Gaussian"
     _fw_name = "GaussianBase"
 
     def setup_files(self, fw_spec, calc_type='opt'):
@@ -143,23 +169,8 @@ class GaussianBase(FiretaskBase):
         if self.solvent:
             self.paramset.route_parameters.update({"SCRF": "(PCM,Solvent={})".format(self.solvent)})
 
-    def local_conditions(self):
-        return orig_conditions(self.paramset.functional, self.paramset.basis_set,
-                               tuning_parameter=self.result_iop_str, solvent=self.solvent)
 
-    def local_key(self, calc_name=None):
-        # key for local (database-free) records; same hash scheme as the D3TaLES backend
-        return orig_hash_id(self.identifier, calc_name or self.calc_name, self.paramset.functional,
-                            self.paramset.basis_set, tuning_parameter=self.result_iop_str, solvent=self.solvent)
 
-    def existing_data(self, _hash=None, calc_name=None):
-        # check if this job has already run and been stored in the data store
-        if self.data_store == "local":
-            return get_existing_data(self.local_key(calc_name), data_store=self.data_store, store_dir=self.store_dir)
-        _hash = _hash or orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
-                                      self.paramset.basis_set,
-                                      tuning_parameter=self.iop_str, solvent=self.solvent)
-        return get_existing_data(_hash, data_store=self.data_store)
 
     def post_job(self, upload_files=None, delete_files=None, calc_type=None, name_tag=''):
         # Store data (D3TaLES: upload through website; local: write JSON record)
