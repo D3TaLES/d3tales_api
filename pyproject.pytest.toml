@@ -1,0 +1,23 @@
+# Merge these sections into the repository pyproject.toml if one already exists.
+[project.optional-dependencies]
+test = [
+  "pytest>=7",
+  "pytest-cov>=4",
+  "pytest-mock>=3",
+  "pytest-timeout>=2",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["d3tales_api"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 70
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+]

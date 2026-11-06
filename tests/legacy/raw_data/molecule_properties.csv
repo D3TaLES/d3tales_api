@@ -1,0 +1,12 @@
+molecule,property,value,unit,line_number,parent_sentence,notes
+TMAP-TEMPO,solubility,4.62,M
+TMAP-TEMPO,oxidation_potential,0.81,V vs SHE
+4-OH-TEMPO,solubility,2.1,M
+4-OH-TEMPO,oxidation_potential,0.8,V vs SHE
+BTMAP-Vi,solubility,0.36,M
+BTMAP-Vi,oxidation_potential,2.2,V vs SHE
+MV,oxidation_potential,1.06,V
+FcNCl,oxidation_potential,0.75,V
+TEMPTMA,oxidation_potential,1.42,V
+TEMPO-4-sulfate,oxidation_potential,1.44,V
+NMe-TEMPO/[(NPr)2TTz]Cl4,oxidation_potential,1.44,V
