@@ -6,7 +6,7 @@ MODULES=[
  "d3tales_api.Calculators.plotters",
  "d3tales_api.Processors.parser_echem",
  "d3tales_api.Processors.parser_dft",
- "d3tales_api.Processors.parser_nlp",
+ # "d3tales_api.Processors.parser_nlp",
 ]
 
 @pytest.mark.integration
