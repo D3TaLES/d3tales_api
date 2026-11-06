@@ -171,7 +171,7 @@ class SendToStorage(FiretaskBase):
         destination = os.path.join(destination_path, filepath.split("/")[-1]).replace("//", "/")
 
         # Update submission DB stored_location field
-        dbc = DBconnector(db_info.get("backend"))
+        dbc = DBconnector(db_info().get("backend"))
         coll = dbc.get_collection(data_category)
         identifier_dict = {"_id": hash_id}
         coll.update_one(identifier_dict, {"$set": {'submission_info.stored_location': destination}}, upsert=True)
@@ -251,7 +251,7 @@ class UpdateUserDB(FiretaskBase):
         automatic_approval = fw_spec.get("automatic_approval") or self.get("automatic_approval", False)
         processed_data = json.loads(json.dumps(fw_spec["processed_data"]["data"]))
 
-        dbc = DBconnector(db_info.get("ui"))
+        dbc = DBconnector(db_info().get("ui"))
         coll = dbc.get_collection('submission')
         try:
             _id = coll.find_one({"processing_id": processing_id})["_id"]
@@ -277,7 +277,7 @@ class UpdateApprovalStatus(FiretaskBase):
         approved_status = self['approved_status']
         data_category = self["data_category"]
 
-        dbc = DBconnector(db_info.get("backend"))
+        dbc = DBconnector(db_info().get("backend"))
         coll = dbc.get_collection(data_category)
         identifier_dict = {"_id": hash_id}
         coll.update_one(identifier_dict, {"$set": {'submission_info.approved': approved_status}}, upsert=True)
@@ -294,7 +294,7 @@ class UpdateFrontendDB(FiretaskBase):
         hash_id = self["hash_id"]
         data_category = self["data_category"]
 
-        dbc = DBconnector(db_info.get("backend"))
+        dbc = DBconnector(db_info().get("backend"))
         coll = dbc.get_collection(data_category)
         backend_data = coll.find_one({"_id": hash_id})
 

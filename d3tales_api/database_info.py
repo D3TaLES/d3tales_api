@@ -3,7 +3,7 @@ import json
 import warnings
 
 
-def db_info_generator(db_file=None):
+def db_info(db_file=None, db_file_warning=True):
     """
     Get information about database connections. This function requires either a db_file argument
     or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
@@ -11,12 +11,14 @@ def db_info_generator(db_file=None):
     names such as `frontend`, `backend`, `expflow`, and `fireworks`.
 
     :param db_file: str, path to database info JSON file
+    :param db_file_warning: bool, give no db file warning if True
 
     :return: JSON object containing information about database connections
     """
     db_file = db_file or os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
     if not db_file:
-        warnings.warn("Environment variable DB_INFO_FILE not defined. Default database information is in ues. ")
+        if db_file_warning:
+            warnings.warn("Environment variable DB_INFO_FILE not defined. Default database information is in ues. ")
         return {
             "frontend":
                 {
@@ -33,7 +35,7 @@ def db_info_generator(db_file=None):
         return json.load(f)
 
 
-def source_groups_generator(group_file=None, verbose=0):
+def source_groups(group_file=None, verbose=0):
     """
     Get information about database connections. This function requires either a group_file argument
     or a GROUP_FILE environment variable. This argument or  environment variable should be a path
@@ -74,6 +76,3 @@ def source_groups_generator(group_file=None, verbose=0):
     with open(group_file, "r") as f:
         return json.load(f)
 
-
-db_info = db_info_generator()
-source_groups = source_groups_generator()

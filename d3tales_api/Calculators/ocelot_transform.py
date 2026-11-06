@@ -61,19 +61,44 @@ def clean_charges(mol):
 
 def valence_electron(element):
     """
-    count valence electrons based on electronic configuration
-    if a subshell has > 10 electrons, this subshell is ignored
+    Count valence electrons from the element's neutral electronic
+    configuration.
+
+    Supports both older and newer Pymatgen Element.data formats.
     """
     configuration = element.data["Electronic structure"]
-    list_split = configuration.split('.')
+
+    # Newer Pymatgen versions store electronic structures by oxidation state.
+    if isinstance(configuration, dict):
+        configuration = configuration.get("0")
+
+        if configuration is None:
+            raise ValueError(
+                f"No neutral electronic structure found for {element}"
+            )
 
     valence_electrons = 0
 
-    for i in range(len(list_split)):
-        if 'sup' in list_split[i]:
-            electrons = re.search('<sup>(.*)</sup>', list_split[i])
-            if not int(electrons.group(1)) >= 10:
-                valence_electrons += int(electrons.group(1))
+    for subshell in configuration.split("."):
+        # Modern format, e.g. "2s2", "2p4", "3d10"
+        match = re.search(r"[spdf](\d+)$", subshell)
+
+        if match:
+            electrons = int(match.group(1))
+
+            if electrons < 10:
+                valence_electrons += electrons
+
+            continue
+
+        # Legacy HTML-style format
+        match = re.search(r"<sup>(\d+)</sup>", subshell)
+
+        if match:
+            electrons = int(match.group(1))
+
+            if electrons < 10:
+                valence_electrons += electrons
 
     return valence_electrons
 

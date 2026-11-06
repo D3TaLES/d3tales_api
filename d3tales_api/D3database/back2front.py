@@ -32,9 +32,9 @@ class Gaus2FrontCharacterization:
         :param insert: bool, insert generated data to the frontend D3TaLES database if True
         """
         # connect to databases
-        self.front_dbc = DBconnector(db_info.get("frontend"))
+        self.front_dbc = DBconnector(db_info().get("frontend"))
         self.front_coll = self.front_dbc.get_collection(FRONT_COLL)
-        self.back_dbc = DBconnector(db_info.get("backend"))
+        self.back_dbc = DBconnector(db_info().get("backend"))
         self.back_coll = self.back_dbc.get_collection("computation")
         self.schema_version = schema_version
         self.all_props = all_props
@@ -554,8 +554,8 @@ class DOI2Front:
         """
 
         # connect to databases
-        self.front_coll = DBconnector(db_info.get("frontend")).get_collection(FRONT_COLL)
-        self.back_coll = DBconnector(db_info.get("backend")).get_collection("nlp")
+        self.front_coll = DBconnector(db_info().get("frontend")).get_collection(FRONT_COLL)
+        self.back_coll = DBconnector(db_info().get("backend")).get_collection("nlp")
 
         # Basic variables
         if not doi and not backend_data:
@@ -667,7 +667,7 @@ class CV2Front:
         if backend_data:
             self.multi_data = backend_data
         else:
-            self.back_coll = DBconnector(db_info.get(backend_db)).get_collection("experimentation")
+            self.back_coll = DBconnector(db_info().get(backend_db)).get_collection("experimentation")
             self.multi_data = [self.back_coll.find_one({"_id": i}) for i in id_list]
 
         if not self.multi_data or not self.multi_data[0]:
@@ -864,8 +864,8 @@ class CV2Front:
 
 
 if __name__ == "__main__":
-    front_coll = DBconnector(db_info.get("frontend")).get_collection(FRONT_COLL)
-    back_dbc = DBconnector(db_info.get("backend"))
+    front_coll = DBconnector(db_info().get("frontend")).get_collection(FRONT_COLL)
+    back_dbc = DBconnector(db_info().get("backend"))
     back_coll = back_dbc.get_collection("computation")
     # _id = "28ef46bbcbb793fc0a8a4656e01aba3e"  # 502dc467c4780db94cc0c324a12c2b6b
     # d = back_coll.find_one({"_id": _id})

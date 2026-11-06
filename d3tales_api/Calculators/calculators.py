@@ -772,8 +772,8 @@ class RMSDCalc(D3Calculator):
             print("Finding best RMS...this may take a few minutes...")
             with timeout(120, exception=RuntimeError):
                 rmsd = rdMolAlign.GetBestRMS(geom1, geom2)
-        except:
-            raise ValueError("Error finding RMSD")
+        except RuntimeError as e:
+            raise ValueError("Error finding RMSD: ", e)
         return float(np.format_float_scientific(rmsd, precision=precision))
 
 

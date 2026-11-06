@@ -164,7 +164,7 @@ class ProcessDFTBase:
         """
         Dictionary containing basic molecule information using the ID from the D3TalES database
         """
-        base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+        base_coll = DBconnector(db_info().get("frontend")).get_collection("base")
         document = base_coll.find_one({"_id": self.id})
         if document:
             return document['mol_info']

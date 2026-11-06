@@ -138,7 +138,8 @@ class WtuningJob:
     def iop_route_params(self):
         return 'iop(3/107={}, 3/108={})'.format(self.omega_iopstr, self.omega_iopstr)
 
-    def geo_opt(self, rps={}):
+    def geo_opt(self, rps=None):
+        rps = {} if rps==None else rps
         rps[self.iop_route_params] = ''
         rps['opt'] = ''
         fnin = gauss_in_gen(
