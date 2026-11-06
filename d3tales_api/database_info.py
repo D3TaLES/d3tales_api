@@ -3,7 +3,7 @@ import json
 import warnings
 
 
-def db_info_generator(db_file=None):
+def db_info(db_file=None):
     """
     Get information about database connections. This function requires either a db_file argument
     or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
@@ -33,7 +33,7 @@ def db_info_generator(db_file=None):
         return json.load(f)
 
 
-def source_groups_generator(group_file=None, verbose=0):
+def source_groups(group_file=None, verbose=0):
     """
     Get information about database connections. This function requires either a group_file argument
     or a GROUP_FILE environment variable. This argument or  environment variable should be a path
@@ -74,6 +74,3 @@ def source_groups_generator(group_file=None, verbose=0):
     with open(group_file, "r") as f:
         return json.load(f)
 
-
-db_info = db_info_generator()
-source_groups = source_groups_generator()

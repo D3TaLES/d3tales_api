@@ -12,9 +12,9 @@ CALC_TYPE = 'opt_cation1'
 CHECK = ''  # species_characterization.groundState.globular_volume
 
 if __name__ == "__main__":
-    front_dbc = DBconnector(db_info.get("frontend"))
+    front_dbc = DBconnector(db_info().get("frontend"))
     front_coll = front_dbc.get_collection("base")
-    back_dbc = DBconnector(db_info.get("backend"))
+    back_dbc = DBconnector(db_info().get("backend"))
     back_coll = back_dbc.get_collection("computation")
     if len(argv) > 1:
         IDS = argv[1:]

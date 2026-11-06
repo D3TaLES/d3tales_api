@@ -1,6 +1,6 @@
 from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
 from d3tales_api.D3database.d3database import DBconnector
-from d3tales_api.database_info import db_info_obj
+from d3tales_api.database_info import db_info
 from tqdm import tqdm
 from sys import argv
 
@@ -12,9 +12,9 @@ CALC_TYPE = 'opt_cation1'
 CHECK = ''  # species_characterization.groundState.globular_volume
 
 if __name__ == "__main__":
-    front_dbc = DBconnector(db_info_obj.get("frontend"))
+    front_dbc = DBconnector(db_info().get("frontend"))
     front_coll = front_dbc.get_collection("base")
-    back_dbc = DBconnector(db_info_obj.get("backend"))
+    back_dbc = DBconnector(db_info().get("backend"))
     back_coll = back_dbc.get_collection("computation")
     if len(argv) > 1:
         IDS = argv[1:]

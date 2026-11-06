@@ -11,7 +11,7 @@ LEGACY_DATA_DIR = TESTS_DIR / "legacy" / "raw_data"
 def db_info():
     from d3tales_api.database_info import db_info
 
-    return db_info(db_file_warning=False)
+    return db_info()(db_file_warning=False)
 
 @pytest.fixture(scope="session")
 def data_dir() -> Path:

@@ -3,7 +3,7 @@ import tqdm
 import random
 import pymongo
 import multiprocessing
-from d3tales_api.D3database.d3database import DBconnector, db_info
+from d3tales_api.D3database.d3database import DBconnector, db_info()
 from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
 
 
@@ -49,7 +49,7 @@ def update_doc(mol_id, cond, verbose=1, mol_props=True, species_props=True, **kw
 
 def try_update_hashes(doc):
     used_hashes = update_doc_from_omega(doc)
-    hash_coll = DBconnector(db_info.get("frontend")).get_collection("used_hashes")
+    hash_coll = DBconnector(db_info().get("frontend")).get_collection("used_hashes")
     try:
         hash_coll.insert_many([{"_id": h} for h in used_hashes], ordered=False)
     except pymongo.errors.BulkWriteError:
@@ -85,8 +85,8 @@ def update_geoms(front_coll, limit=1000):
 
 
 if __name__ == "__main__":
-    old_coll = DBconnector(db_info.get("ui")).get_collection("old_base")
-    new_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+    old_coll = DBconnector(db_info().get("ui")).get_collection("old_base")
+    new_coll = DBconnector(db_info().get("frontend")).get_collection("base")
     old_ids = old_coll.find().distinct("_id")
     new_ids = new_coll.find().distinct("_id")
 

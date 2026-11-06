@@ -171,7 +171,7 @@ class ProcessDFTBase:
         try:
             from d3tales_api.database_info import db_info  # lazy: only needed for the D3TaLES database
             from d3tales_api.D3database.d3database import DBconnector
-            base_coll = DBconnector(db_info.get("frontend")).get_collection("base")
+            base_coll = DBconnector(db_info().get("frontend")).get_collection("base")
             document = base_coll.find_one({"_id": self.id})
         except Exception as e:
             raise ConnectionError("Could not query the D3TaLES frontend database: {}".format(e))

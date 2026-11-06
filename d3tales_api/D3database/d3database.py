@@ -92,7 +92,7 @@ class D3Database:
         self.database = database
         self.verbose = verbose
         self.public = public
-        self.dbc = DBconnector(db_info.get(self.database))
+        self.dbc = DBconnector(db_info().get(self.database))
         self.coll = self.dbc.get_collection(self.collection_name)
         schema_db = schema_db or database
 
@@ -289,7 +289,7 @@ class FrontDB(D3Database):
         id_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
         if self.smiles and self.group:
-            group_num = source_groups.get(self.group.title(), '10')
+            group_num = source_groups().get(self.group.title(), '10')
             if self.coll.count_documents({"mol_info.smiles": self.smiles}) == 0:
                 self.new_molecule = True
                 rand = generate(id_chars, size=4)

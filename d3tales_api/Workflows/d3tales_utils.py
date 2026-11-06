@@ -261,8 +261,8 @@ def d3t_register_molecule(smiles, names=None, origin_group='Risko', public=False
     from d3tales_api.Processors.info_from_smiles import GenerateMolInfo  # Processors: next module to decouple
     instance = GenerateMolInfo(smiles, names=names or [], origin_group=origin_group).mol_info_dict
 
-    coll = DBconnector(db_info.get("frontend")).get_collection(FRONT_COLL)
-    _id = _generate_mol_id(coll, smiles, origin_group, source_groups)
+    coll = DBconnector(db_info().get("frontend")).get_collection(FRONT_COLL)
+    _id = _generate_mol_id(coll, smiles, origin_group, source_groups())
     if isinstance(public, bool):
         coll.update_one({"_id": _id}, {"$set": {"public": public}}, upsert=True)
     _nested_set(coll, _id, "mol_info", jsanitize(instance, allow_bson=True))
