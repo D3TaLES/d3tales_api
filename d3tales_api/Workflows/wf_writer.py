@@ -60,12 +60,10 @@ def d3tales_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acet
     return wf
 
 
-def billion_mols_wf(paramset, identifier=None, smiles=None, wtune=True, wf_tag="", **kwargs):
+def billion_mols_wf(paramset, identifier=None, smiles=None, mol_opt_geom=None, wtune=True, wf_tag="", **kwargs):
     # TODO figure out how to insert xtb geometries, not smiles
-    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
-
-    f26 = MolOpt(paramset=paramset.opt_groundState, parents=f10, **kwargs)
-    f30 = WTuning(paramset=paramset.wtuning, parents=f26, **kwargs)
+    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, mol_opt_geom=mol_opt_geom, **kwargs)
+    f30 = WTuning(paramset=paramset.wtuning, parents=f10, **kwargs)
 
     opt_parents = f30 if wtune else f10
     f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=opt_parents, **kwargs)
@@ -87,7 +85,7 @@ def billion_mols_wf(paramset, identifier=None, smiles=None, wtune=True, wf_tag="
     # Establish fireworks in workflow
     fws = [f10, f31, f35, f37, f45, f46, f47, f48, f61, f65, f67, ]
     if wtune:
-        fws.extend([f26, f30])
+        fws.extend([f30])
 
     wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
 
@@ -294,11 +292,11 @@ def just_initialize(paramset, identifier=None, smiles=None, solvent='acetonitril
     return wf
 
 
-# RETIRED WORKFLOW. This class needs the OCELOT API to be installed.
+# # RETIRED WORKFLOW. This class needs the OCELOT API to be installed.
 # def dihed_rot(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, email=None,
 #               username=None, **kwargs):
 #     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
-#     # f12 = LowestEConformer(smiles=smiles, paramset=paramset.semi_empirical, parents=f10, **kwargs)
+#     f12 = LowestEConformer(smiles=smiles, paramset=paramset.semi_empirical, parents=f10, **kwargs)
 #     f26 = Optimization(paramset=paramset.opt_groundState, geometry="conformer", species='groundState', parents=f12,
 #                        **kwargs)
 #     f30 = WTuning(paramset=paramset.wtuning, parents=f26, **kwargs)

@@ -17,12 +17,13 @@ class MoleculeInit(FiretaskBase):
         identifier = self.get('identifier', )
         smiles = self.get('smiles', )
         name = self.get('mol_name', )
+        mol_opt_geom = self.get('mol_opt_geom', None)
         name_list = [name] if name else []
 
         if data_store == "local":
             if not smiles:
                 if identifier:
-                    return FWAction(update_spec={"identifier": identifier, "data_store": data_store})
+                    return FWAction(update_spec={"identifier": identifier, "data_store": data_store, "mol_opt_geom": mol_opt_geom})
                 raise ValueError("MoleculeInit requires a SMILES (or an identifier) when data_store='local'.")
             clean_smiles = MolToSmiles(MolFromSmiles(smiles))
             identifier = identifier or local_identifier(clean_smiles)
@@ -37,7 +38,7 @@ class MoleculeInit(FiretaskBase):
                                                             "groundState_charge": gs_charge,
                                                             "groundState_spin": gs_spin}})
             return FWAction(update_spec={"identifier": identifier, "smiles": clean_smiles, "gs_charge": gs_charge,
-                                         "gs_spin": gs_spin, "data_store": data_store})
+                                         "gs_spin": gs_spin, "data_store": data_store, "mol_opt_geom": mol_opt_geom})
 
         # data_store == "d3tales" (original behavior)
         if identifier and d3t_get_smiles(identifier):
@@ -47,4 +48,4 @@ class MoleculeInit(FiretaskBase):
         clean_smiles = MolToSmiles(MolFromSmiles(smiles))
         new_id, gs_charge, gs_spin = d3t_register_molecule(clean_smiles, names=name_list, origin_group=group,
                                                            public=public)
-        return FWAction(update_spec={"identifier": new_id, "gs_charge": gs_charge, "gs_spin": gs_spin})
+        return FWAction(update_spec={"identifier": new_id, "gs_charge": gs_charge, "gs_spin": gs_spin, "mol_opt_geom": mol_opt_geom})
