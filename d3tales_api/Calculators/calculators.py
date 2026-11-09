@@ -505,7 +505,7 @@ class CVChargeTransferCalculator(D3Calculator):
         :type precision: int
         :type sci_notation: bool
 
-        :return: array[["scan_rate", "k_0_i"]] for ith CV (cm/s)
+        :return: charge transfer rate (cm/s)
         """
         self.data = data
         self.n = data.__len__()
