@@ -1,0 +1,52 @@
+{
+  "O": [
+    {
+      "name": "O",
+      "species": [
+        {
+          "element": "O",
+          "occu": 1
+        }
+      ],
+      "xyz": [
+        0.0,
+        0.117652,
+        0.0
+      ],
+      "properties": {},
+      "label": "O"
+    },
+    {
+      "name": "H",
+      "species": [
+        {
+          "element": "H",
+          "occu": 1
+        }
+      ],
+      "xyz": [
+        0.756359,
+        -0.470544,
+        0.0
+      ],
+      "properties": {},
+      "label": "H"
+    },
+    {
+      "name": "H",
+      "species": [
+        {
+          "element": "H",
+          "occu": 1
+        }
+      ],
+      "xyz": [
+        -0.756359,
+        -0.470672,
+        -0.0
+      ],
+      "properties": {},
+      "label": "H"
+    }
+  ]
+}

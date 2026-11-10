@@ -31,6 +31,11 @@ class GausParamSet(MSONable):
         for calc, params in kwargs.items():
             exec("self.{} = sett(params, GaussianParameters())".format(calc))
 
+    def as_dict(self):
+        d = {"@module": type(self).__module__, "@class": type(self).__name__, "name": self.name}
+        d.update({k: v.as_dict() for k, v in vars(self).items() if isinstance(v, GaussianParameters)})
+        return d
+
     @staticmethod
     def from_json(jsonfile):
         d = loadfn(jsonfile)

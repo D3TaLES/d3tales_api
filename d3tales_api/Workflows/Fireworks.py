@@ -70,6 +70,7 @@ def _calc_spec(software, priority=None):
 
 def _task_kwargs(software, **kwargs):
     """Add only executable/runtime kwargs relevant to the selected engine."""
+    kwargs["software"] = software
     if software == "gaussian":
         kwargs.update(g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY)
     return kwargs
@@ -103,7 +104,6 @@ class MolOpt(Firework):
             runfile_log=RUNFILE_LOG,
             skip_freq=True,
             use_iop=False,
-            software=software,
             **kwargs,
         )
         t = [task_cls(**task_kwargs)]
@@ -124,7 +124,6 @@ class WTuning(Firework):
             name=name,
             name_tag=name_tag,
             geometry="opt_mol",
-            software=software,
             **kwargs,
         )
         t = [task_cls(**task_kwargs)]
@@ -151,7 +150,6 @@ class Optimization(Firework):
             type=_type,
             subtype=species,
             solvent=solvent,
-            software=software,
             **kwargs,
         )
         t = [task_cls(**task_kwargs)]
@@ -185,7 +183,6 @@ class Energy(Firework):
             type=_type,
             subtype=species,
             solvent=solvent,
-            software=software,
             **kwargs,
         )
         t = [task_cls(**task_kwargs)]
@@ -223,7 +220,6 @@ class TDDFT(Firework):
             geometry="{}{}".format(geom_prefix, species),
             prefix=tddft_prefix + species,
             solvent=solvent,
-            software=software,
             **kwargs,
         )
         t = [task_cls(**task_kwargs)]

@@ -399,6 +399,14 @@ class RunWtuning(FiretaskBase):
             mol = get_db_geom(geometry_hash, data_store=data_store, store_dir=store_dir) \
                 or start_from_smiles(identifier, smiles, data_store=data_store)
 
+        # FireWorks only propagates update_spec to direct children. Forward the molecule inputs so the
+        # optimizations downstream of w-tuning see the same geometry/SMILES as they would with wtune=False.
+        forward_spec = {"data_store": data_store}
+        if smiles:
+            forward_spec["smiles"] = smiles
+        if geometry and geometry_sites:
+            forward_spec["{}_geom".format(geometry)] = geometry_sites
+
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
         os.makedirs(working_dir, exist_ok=True)
@@ -413,7 +421,7 @@ class RunWtuning(FiretaskBase):
                 iop_str = omega_to_iop(tuned_w)
                 return FWAction(
                     update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier,
-                                 "gs_charge": gs_charge, "gs_spin": gs_spin})
+                                 "gs_charge": gs_charge, "gs_spin": gs_spin, **forward_spec})
 
         # generate the input for wtuning in gaussian and run tuning
         functional = paramset.functional if restricted else "R{}".format(paramset.functional)
@@ -448,7 +456,7 @@ class RunWtuning(FiretaskBase):
         os.system("rm -rf *.chk *.fchk tuning_wtuning_ocycle*")
         return FWAction(
             update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier, "gs_charge": gs_charge,
-                         "gs_spin": gs_spin})
+                         "gs_spin": gs_spin, **forward_spec})
 
 
 @explicit_serialize
