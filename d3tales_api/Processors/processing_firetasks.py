@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import os
 import time
+import json
 import shutil
 import pymongo
 import zipfile
@@ -11,10 +12,11 @@ from atomate.utils.utils import env_chk
 from fireworks.core.firework import FiretaskBase, FWAction
 from fireworks.utilities.fw_utilities import explicit_serialize
 
-from d3tales_api.D3database.d3database import *
+from d3tales_api.database_info import db_info
+from d3tales_api.D3database.d3database import DBconnector, BackDB, D3Database
 from d3tales_api.D3database.restapi import RESTAPI
 from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
-from d3tales_api.Processors.utils import *
+from d3tales_api.Processors.utils import mkdir_p
 from d3tales_api.Processors.parser_dft import ProcessGausLog
 from d3tales_api.Processors.parser_echem import ProcessChiCV
 

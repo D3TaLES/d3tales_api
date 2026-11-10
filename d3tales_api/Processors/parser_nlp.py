@@ -1,10 +1,11 @@
 import os
 import sys
+import json
+import warnings
+import pandas as pd
 from datetime import datetime
 from articledownloader.articledownloader import ArticleDownloader
 
-from d3tales_api.Processors.parser_dft import *
-from d3tales_api.Processors.parser_uvvis import *
 from d3tales_api.Calculators.utils import float_from_str
 from d3tales_api.D3database.schema2class import Schema2Class
 
