@@ -7,7 +7,7 @@ from d3tales_api.Processors.parser_echem import ProcessChiCV
 SELF_STD = True
 NUM_ELECTRONS = 1
 
-ROBOT_DATA = False
+ROBOT_DATA = True
 ONLY_ONE = True
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_TEMPERATURE = "293K"
@@ -15,7 +15,7 @@ DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
 print("Concentration: ", DEFAULT_CONCENTRATION)
 
 if ROBOT_DATA:
-    cv_dir = "../raw_data/robotic_data"
+    cv_dir = "../../integration/raw_data/robotic_data"
     cv_locations = sorted([os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv") or f.endswith(".txt")])
     if ONLY_ONE:
         print(cv_locations[0])
@@ -26,7 +26,7 @@ if ROBOT_DATA:
                                          "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS},
                                ).data_dict for loc in cv_locations]
 else:
-    cv_data = ProcessChiCV("../raw_data/aman_cv2.csv", _id='test').data_dict
+    cv_data = ProcessChiCV("../../integration/raw_data/aman_cv2.csv", _id='test').data_dict
     cv_entries = [cv_data]
 
 [d.update({"num_electrons": NUM_ELECTRONS}) for d in cv_entries]

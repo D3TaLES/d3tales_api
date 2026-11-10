@@ -1,0 +1,302 @@
+{
+    "name": "D3TaLES_v01",
+    "coupling": {
+        "route_parameters": {
+            "nosymm": "",
+            "pop": "full",
+            "int": {
+                "acc2e": "12"
+            },
+            "iop(3/33=1,3/59=8)": "",
+            "scf(maxcyc=512)": ""
+        },
+        "functional": "PBEPBE",
+        "basis_set": "6-31G(d,p)",
+        "charge": 0,
+        "multiplicity": 1
+    },
+
+    "opt_groundState": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 1
+    },
+
+    "opt_cation1": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 1,
+        "multiplicity": 2
+    },
+
+    "opt_cation2": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 2,
+        "multiplicity": 1
+    },
+
+    "opt_anion1": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": -1,
+        "multiplicity": 2
+    },
+
+    "opt_anion2": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=512)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": -2,
+        "multiplicity": 1
+    },
+
+    "singlet": {
+        "route_parameters": {
+          "td": {
+            "singlets": "",
+            "nstates": 15
+          }
+        },
+          "charge": 0,
+          "multiplicity": 1,
+          "basis_set": "Def2TZVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "triplet": {
+      "route_parameters": {
+          "td": {
+            "triplets": "",
+            "nstates": 15
+          }
+        },
+          "charge": 0,
+          "multiplicity": 1,
+          "basis_set": "Def2TZVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "wtuning": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 0
+    },
+
+    "opt_triplet": {
+        "route_parameters": {
+            "opt": "",
+            "scf(maxcyc=512, qc)" : ""
+        },
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 3
+    },
+
+    "tddft_groundState": {
+        "route_parameters": {
+          "td": {
+            "50-50": "",
+            "nstates": 15
+          }
+        },
+          "charge": 0,
+          "multiplicity": 1,
+          "basis_set": "Def2SVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "tddft_cation1": {
+        "route_parameters": {
+          "td": {
+            "50-50": "",
+            "nstates": 15
+          }
+        },
+          "charge": 1,
+          "multiplicity": 2,
+          "basis_set": "Def2SVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "tddft_cation2": {
+        "route_parameters": {
+          "td": {
+            "50-50": "",
+            "nstates": 15
+          }
+        },
+          "charge": 2,
+          "multiplicity": 1,
+          "basis_set": "Def2SVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "tddft_anion1": {
+        "route_parameters": {
+          "td": {
+            "50-50": "",
+            "nstates": 15
+          }
+        },
+          "charge": -1,
+          "multiplicity": 2,
+          "basis_set": "Def2SVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "tddft_anion2": {
+        "route_parameters": {
+          "td": {
+            "50-50": "",
+            "nstates": 15
+          }
+        },
+          "charge": -2,
+          "multiplicity": 1,
+          "basis_set": "Def2SVP",
+          "functional": "LC-wHPBE"
+    },
+
+    "reorgenergy": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2TZVP"
+
+    },
+
+    "energy_groundState": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 1
+
+    },
+
+    "energy_cation1": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 1,
+        "multiplicity": 2
+    },
+
+    "energy_cation2": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": 2,
+        "multiplicity": 1
+    },
+
+    "energy_anion1": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": -1,
+        "multiplicity": 2
+
+    },
+
+    "energy_anion2": {
+        "functional": "LC-wHPBE",
+        "basis_set": "Def2SVP",
+        "charge": -2,
+        "multiplicity": 1
+
+    },
+
+    "hf_opt_groundState": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=1024)" : ""
+        },
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 1
+    },
+
+    "hf_opt_cation1": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=1024)" : ""
+        },
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 1,
+        "multiplicity": 2
+    },
+
+    "hf_opt_cation2": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=1024)" : ""
+        },
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 2,
+        "multiplicity": 1
+    },
+
+    "hf_opt_anion1": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=1024)" : ""
+        },
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": -1,
+        "multiplicity": 2
+    },
+
+    "hf_opt_anion2": {
+        "route_parameters":{
+            "opt": "",
+            "scf(maxcyc=1024)" : ""
+        },
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": -2,
+        "multiplicity": 1
+    },
+
+    "hfgeom_energy_groundState": {
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 0,
+        "multiplicity": 1
+    },
+
+    "hfgeom_energy_cation1": {
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 1,
+        "multiplicity": 2
+    },
+
+    "hfgeom_energy_cation2": {
+        "functional": "hf",
+        "basis_set": "Def2SVP",
+        "charge": 2,
+        "multiplicity": 1
+    }
+
+}
