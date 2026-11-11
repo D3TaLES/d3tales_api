@@ -119,10 +119,16 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
-            self.identifier, self.smiles, data_store=self.data_store) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
-            self.identifier, self.smiles, prop='spin', data_store=self.data_store) or 1
+        self.gs_charge = spec_or_task(self, fw_spec, "gs_charge")
+        if self.gs_charge is None:
+            self.gs_charge = get_groundState(
+                self.identifier, self.smiles, data_store=self.data_store
+            )
+        self.gs_spin = spec_or_task(self, fw_spec, "gs_spin")
+        if self.gs_spin is None:
+            self.gs_spin = get_groundState(
+                self.identifier, self.smiles, prop='spin', data_store=self.data_store
+            )
         use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
         run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or False
 
@@ -197,8 +203,9 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
                 "mol_info": {"groundState_charge": self.gs_charge}}).data_dict
             print("Record saved to", save_local_result(self.store_dir, record, key=self.local_key(calc_type)))
         # Write runfile to runfile_log so the runfile can be deleted after calculation
-        with open(self.runfile_log, 'a') as fn:
-            fn.write("{}, {}\n".format(_hash, self.working_dir))
+        if self.runfile_log:
+            with open(self.runfile_log, 'a') as fn:
+                fn.write("{}, {}\n".format(_hash, self.working_dir))
         # TODO write script that checks process status, approves, and deletes run dir
         # Remove excess files
         os.chdir(self.working_dir)
@@ -221,14 +228,15 @@ class RunGaussianEnergy(GaussianBase):
         if self.check_if_already_run:
             existing_data = self.existing_data()
             if existing_data:
-                return FWAction(
-                    update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
-                                 "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                 "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
-                                     "value"),
-                                 "{}_hash".format(self.full_name): get_hash_id(self.identifier, self.file_com,
-                                                                               self.calc_name),
-                                 "iop_str": self.iop_str})
+                return FWAction(update_spec=self.common_update_spec(
+                    gaussrun_dir=self.calc_dir,
+                    **{
+                        "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
+                        "{}_hash".format(self.full_name): get_hash_id(
+                            self.identifier, self.file_com, self.calc_name
+                        ),
+                    }
+                ))
 
         # run gaussian16
         print('SUBMITTING GAUSSIAN  ENERGY JOB {} for {}'.format(self.full_name, self.identifier))
@@ -247,10 +255,10 @@ class RunGaussianEnergy(GaussianBase):
 
             # Clean up files and transfer to website processing
             self.post_job(delete_files=[self.file_log, self.file_chk, self.file_fchk, self.file_com])
-        return FWAction(
-            update_spec={"gaussrun_dir": self.working_dir, "identifier": self.identifier, "iop_str": self.iop_str,
-                         "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                         "{}_eng".format(self.full_name): final_energy})
+        return FWAction(update_spec=self.common_update_spec(
+            gaussrun_dir=self.working_dir,
+            **{"{}_eng".format(self.full_name): final_energy}
+        ))
 
 
 @explicit_serialize
@@ -278,18 +286,18 @@ class RunGaussianOpt(GaussianBase):
             if self.check_if_already_run:
                 existing_data = self.existing_data()
                 if existing_data:
-                    return FWAction(
-                        update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier,
-                                     "gs_charge": self.gs_charge, "gs_spin": self.gs_spin,
-                                     "{}_hash".format(self.full_name): opt_hash,
-                                     "{}_hash".format(freq_name): freq_hash,
-                                     "{}_geom".format(self.full_name): existing_data.get("geometry"),
-                                     "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get(
-                                         "value"),
-                                     "{}_gibb".format(self.full_name): self.existing_data(
-                                         _hash=freq_hash, calc_name=freq_name).get(
-                                         "gibbs_correction", {}).get("value"),
-                                     "iop_str": self.iop_str})
+                    return FWAction(update_spec=self.common_update_spec(
+                        gaussrun_dir=self.calc_dir,
+                        **{
+                            "{}_hash".format(self.full_name): opt_hash,
+                            "{}_hash".format(freq_name): freq_hash,
+                            "{}_geom".format(self.full_name): existing_data.get("geometry"),
+                            "{}_eng".format(self.full_name): existing_data.get("scf_total_energy", {}).get("value"),
+                            "{}_gibb".format(self.full_name): self.existing_data(
+                                _hash=freq_hash, calc_name=freq_name
+                            ).get("gibbs_correction", {}).get("value"),
+                        }
+                    ))
 
             # run gaussian optimization
             if not os.path.isfile(self.file_log) or not os.path.isfile(self.file_chk) or runs != 1:
@@ -359,15 +367,16 @@ class RunGaussianOpt(GaussianBase):
                           delete_files=[self.freq_log, self.freq_chk, self.freq_fchk, self.freq_com], name_tag="freq_")
         self.post_job()
 
-        return FWAction(
-            update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier, "gs_charge": self.gs_charge,
-                         "gs_spin": self.gs_spin,
-                         "{}_hash".format(self.full_name): opt_hash,
-                         "{}_hash".format(freq_name): freq_hash,
-                         "{}_geom".format(self.full_name): final_structure,
-                         "{}_eng".format(self.full_name): final_energy,
-                         "{}_gibb".format(self.full_name): gibbs_correction,
-                         "iop_str": self.get('iop_str')})
+        return FWAction(update_spec=self.common_update_spec(
+            gaussrun_dir=self.calc_dir,
+            **{
+                "{}_hash".format(self.full_name): opt_hash,
+                "{}_hash".format(freq_name): freq_hash,
+                "{}_geom".format(self.full_name): final_structure,
+                "{}_eng".format(self.full_name): final_energy,
+                "{}_gibb".format(self.full_name): gibbs_correction,
+            }
+        ))
 
 
 @explicit_serialize
@@ -382,10 +391,12 @@ class RunWtuning(FiretaskBase):
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
         smiles = fw_spec.get("smiles", ) or self.get("smiles")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
-            identifier, smiles, data_store=data_store)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
-            identifier, smiles, prop='spin', data_store=data_store)
+        gs_charge = spec_or_task(self, fw_spec, "gs_charge")
+        if gs_charge is None:
+            gs_charge = get_groundState(identifier, smiles, data_store=data_store)
+        gs_spin = spec_or_task(self, fw_spec, "gs_spin")
+        if gs_spin is None:
+            gs_spin = get_groundState(identifier, smiles, prop='spin', data_store=data_store)
         gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
@@ -468,8 +479,9 @@ class RunWtuning(FiretaskBase):
                                    "output_file": os.path.join(working_dir, "output.log")})
             print("Record saved to", save_local_result(store_dir, record))
         data_hash = get_hash_id(identifier, 'wtuning.com', self['name'], output_file='output.log')
-        with open(runfile_log, 'a') as fn:
-            fn.write("{}, {}\n".format(data_hash, working_dir))
+        if runfile_log:
+            with open(runfile_log, 'a') as fn:
+                fn.write("{}, {}\n".format(data_hash, working_dir))
         os.system("rm -rf *.chk *.fchk tuning_wtuning_ocycle*")
         return FWAction(
             update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier, "gs_charge": gs_charge,
@@ -491,9 +503,9 @@ class RunGaussianTDDFT(GaussianBase):
         if self.check_if_already_run:
             existing_data = self.existing_data()
             if existing_data:
-                return FWAction(
-                    update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier, "iop_str": self.iop_str,
-                                 "gs_charge": self.gs_charge, "gs_spin": self.gs_spin})
+                return FWAction(update_spec=self.common_update_spec(
+                    gaussrun_dir=self.calc_dir
+                ))
 
         # run gaussian16
         print('SUBMITTING GAUSSIAN TDDFT JOB {} for {}'.format(self.full_name, self.identifier))
@@ -520,6 +532,6 @@ class RunGaussianTDDFT(GaussianBase):
                     raise RuntimeError("NTO analysis formatted checkpoint file could not be created")
 
             self.post_job()
-        return FWAction(
-            update_spec={"gaussrun_dir": self.calc_dir, "identifier": self.identifier, "iop_str": self.iop_str,
-                         "gs_charge": self.gs_charge, "gs_spin": self.gs_spin})
+        return FWAction(update_spec=self.common_update_spec(
+            gaussrun_dir=self.calc_dir
+        ))

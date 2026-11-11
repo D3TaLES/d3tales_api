@@ -89,7 +89,12 @@ def get_store_dir(identifier, local_output_dir=None, calc_dir=None):
 
 def local_identifier(smiles):
     """Database-free molecule identifier (InChIKey; filesystem safe)."""
-    return MolToInchiKey(MolFromSmiles(smiles))
+    if not smiles:
+        raise ValueError("A SMILES string is required to create a local identifier.")
+    mol = MolFromSmiles(smiles)
+    if mol is None:
+        raise ValueError("Invalid SMILES string: {!r}".format(smiles))
+    return MolToInchiKey(mol)
 
 
 def omega_to_iop(tuned_w):
@@ -110,7 +115,7 @@ def write_json(filename, data):
 
 
 def save_local_result(store_dir, record, key=None):
-    """Write a record to <store_dir>/<calculation_type>__<key or _id>.json (one file per calculation)."""
+    """Write a record to <store_dir>/<calculation_type>_<key or _id>.json (one file per calculation)."""
     filename = os.path.join(store_dir, "{}_{}.json".format(record["calculation_type"], key or record["_id"]))
     write_json(filename, record)
     return filename
@@ -370,9 +375,13 @@ def get_groundState(identifier, smiles=None, prop='charge', data_store=DEFAULT_D
             return value
     if smiles:
         rdkmol = MolFromSmiles(smiles)
-        rdkmol_hs = AddHs(rdkmol)
-        AllChem.EmbedMolecule(rdkmol_hs)
-        return GetFormalCharge(rdkmol) if prop == 'charge' else NumRadicalElectrons(rdkmol) + 1  # calculate spin multiplicity with Hand's rule
+        if rdkmol is None:
+            raise ValueError("Invalid SMILES string for {}: {!r}".format(identifier, smiles))
+        if prop == 'charge':
+            return GetFormalCharge(rdkmol)
+        if prop == 'spin':
+            return NumRadicalElectrons(rdkmol) + 1
+        raise ValueError("prop must be 'charge' or 'spin', not {!r}".format(prop))
     raise ValueError(f"No ground state found for {identifier} (data_store={data_store}). A SMILES must be specified")
 
 
