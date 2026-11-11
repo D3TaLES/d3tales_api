@@ -667,7 +667,6 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         if self.runfile_log:
             with open(self.runfile_log, 'a') as fn:
                 fn.write("{}, {}\n".format(_hash, self.working_dir))
-        # TODO write script that checks process status, approves, and deletes run dir
         # Remove excess files
         os.chdir(self.working_dir)
         if delete_files:

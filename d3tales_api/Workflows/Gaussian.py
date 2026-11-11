@@ -186,7 +186,7 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
     def post_job(self, upload_files=None, delete_files=None, calc_type=None, name_tag=''):
         # Store data (D3TaLES: upload through website; local: write JSON record)
         upload_files = upload_files or [self.file_log, self.file_fchk]
-        delete_files = []  # delete_files or [self.file_chk, self.file_com, self.file_fchk, self.file_log]
+        delete_files = delete_files or [self.file_chk, self.file_com]
         calc_type = calc_type or self.calc_name
         _hash = get_hash_id(self.identifier, self.file_log, self.calc_name) if os.path.isfile(self.file_log) else None
         if self.data_store == "d3tales":
@@ -206,7 +206,6 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         if self.runfile_log:
             with open(self.runfile_log, 'a') as fn:
                 fn.write("{}, {}\n".format(_hash, self.working_dir))
-        # TODO write script that checks process status, approves, and deletes run dir
         # Remove excess files
         os.chdir(self.working_dir)
         if delete_files:

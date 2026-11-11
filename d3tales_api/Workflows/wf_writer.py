@@ -60,38 +60,6 @@ def d3tales_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acet
     return wf
 
 
-def billion_mols_wf(paramset, identifier=None, smiles=None, mol_opt_geom=None, wtune=True, wf_tag="", **kwargs):
-    # TODO figure out how to insert xtb geometries, not smiles
-    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, mol_opt_geom=mol_opt_geom, **kwargs)
-    f30 = WTuning(paramset=paramset.wtuning, parents=f10, **kwargs)
-
-    opt_parents = f30 if wtune else f10
-    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=opt_parents, **kwargs)
-    f35 = Optimization(paramset=paramset.opt_anion1, species="anion1", parents=opt_parents, **kwargs)
-    f37 = Optimization(paramset=paramset.opt_cation1, species="cation1", parents=opt_parents, **kwargs)
-
-    f45 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_anion1", parents=[f35],
-                 **kwargs)
-    f46 = Energy(paramset=paramset.energy_anion1, species="anion1", geometry="opt_groundState", parents=[f31], **kwargs)
-    f47 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_cation1", parents=[f37],
-                 **kwargs)
-    f48 = Energy(paramset=paramset.energy_cation1, species="cation1", geometry="opt_groundState", parents=[f31],
-                 **kwargs)
-
-    f61 = TDDFT(paramset=paramset.tddft_groundState, parents=[f31], **kwargs)
-    f65 = TDDFT(paramset=paramset.tddft_anion1, species='anion1', parents=[f35], **kwargs)
-    f67 = TDDFT(paramset=paramset.tddft_cation1, species='cation1', parents=[f37], **kwargs)
-
-    # Establish fireworks in workflow
-    fws = [f10, f31, f35, f37, f45, f46, f47, f48, f61, f65, f67, ]
-    if wtune:
-        fws.extend([f30])
-
-    wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
-
-    return wf
-
-
 def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='acetonitrile',
                hf_mol_opt=False, email=None, username=None, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
