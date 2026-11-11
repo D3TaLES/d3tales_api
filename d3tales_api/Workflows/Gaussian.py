@@ -373,6 +373,7 @@ class RunWtuning(FiretaskBase):
         data_store = get_data_store(self, fw_spec)
         path = env_chk(self.get('path'), fw_spec)
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
+        gaussian_cmd = env_chk(self.get('g16_cmd'), fw_spec)
         paramset = self["paramset"]
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
         smiles = fw_spec.get("smiles", ) or self.get("smiles")
@@ -425,9 +426,20 @@ class RunWtuning(FiretaskBase):
 
         # generate the input for wtuning in gaussian and run tuning
         functional = paramset.functional if restricted else "R{}".format(paramset.functional)
-        wt_mol = WtuningJob(func=functional, basis=paramset.basis_set, name="wtuning", nproc=nprocs, mem=48,
-                            n_charge=paramset.charge, n_spin=paramset.multiplicity, wdir='./', scheme='Jh', wbmin=0.05,
-                            wbmax=0.5)
+        wt_mol = WtuningJob(
+            func=functional,
+            basis=paramset.basis_set,
+            name="wtuning",
+            nproc=nprocs,
+            mem=48,
+            n_charge=paramset.charge,
+            n_spin=paramset.multiplicity,
+            wdir='./',
+            scheme='Jh',
+            wbmin=0.05,
+            wbmax=0.5,
+            gauss_cmd=gaussian_cmd,
+        )
         wt_mol.mol = mol
         wt_mol.wtuning_cycle(max_cycles=0)
 
