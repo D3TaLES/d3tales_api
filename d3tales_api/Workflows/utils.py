@@ -120,7 +120,7 @@ def read_local_result(store_dir, key):
     """Return the `data` dict of the record whose _id is `key` (newest if several); {} if none."""
     if not store_dir or not key:
         return {}
-    matches = sorted(glob.glob(os.path.join(store_dir, "*__{}.json".format(key))), key=os.path.getmtime)
+    matches = sorted(glob.glob(os.path.join(store_dir, "*_{}.json".format(key))), key=os.path.getmtime)
     if not matches:
         return {}
     with open(matches[-1], 'r') as fn:
