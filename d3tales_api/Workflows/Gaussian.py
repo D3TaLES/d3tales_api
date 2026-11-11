@@ -115,7 +115,7 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         os.makedirs(self.working_dir, exist_ok=True)
         os.chdir(self.working_dir)
 
-    def setup_calc(self, fw_spec, calc_type='opt'):
+    def setup_calc(self, fw_spec, calc_type='opt', geom_from_smiles=False):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
@@ -147,8 +147,13 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
                                             orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=self.solvent))
-                self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir) \
-                    or start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
+                hash_geom = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir)
+                if hash_geom:
+                    self.mol = hash_geom
+                elif geom_from_smiles:
+                    self.mol = start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
+                else:
+                    raise Exception(f"No geometry found for {self.identifier} and geom_from_smiles is set to False.")
 
             # End job if the total number of atoms is greater than 200
             num_atoms = len(self.mol.sites)

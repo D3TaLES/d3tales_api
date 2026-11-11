@@ -111,7 +111,7 @@ def write_json(filename, data):
 
 def save_local_result(store_dir, record, key=None):
     """Write a record to <store_dir>/<calculation_type>__<key or _id>.json (one file per calculation)."""
-    filename = os.path.join(store_dir, "{}__{}.json".format(record["calculation_type"], key or record["_id"]))
+    filename = os.path.join(store_dir, "{}_{}.json".format(record["calculation_type"], key or record["_id"]))
     write_json(filename, record)
     return filename
 
@@ -526,17 +526,17 @@ class ElectronicStructureTaskMixin:
             handle.write("{}, {}\n".format(data_hash, self.working_dir))
 
     def common_update_spec(self, run_dir=None, **extra):
-        run_dir = run_dir or self.calc_dir
-        engine = getattr(self, "engine_name", "electronic_structure").lower()
         update = {
             "identifier": self.identifier,
             "gs_charge": self.gs_charge,
             "gs_spin": self.gs_spin,
             "iop_str": getattr(self, "iop_str", None),
-            "electronic_structure_run_dir": run_dir,
-            "gaussrun_dir": run_dir,
-            "{}run_dir".format(engine): run_dir,
+            "data_store": self.data_store,
         }
+
+        if getattr(self, "smiles", None):
+            update["smiles"] = self.smiles
+
         update.update(extra)
         return update
 
