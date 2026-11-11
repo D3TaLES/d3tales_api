@@ -111,7 +111,7 @@ def write_json(filename, data):
 
 def save_local_result(store_dir, record, key=None):
     """Write a record to <store_dir>/<calculation_type>__<key or _id>.json (one file per calculation)."""
-    filename = os.path.join(store_dir, "{}__{}.json".format(record["calculation_type"], key or record["_id"]))
+    filename = os.path.join(store_dir, "{}_{}.json".format(record["calculation_type"], key or record["_id"]))
     write_json(filename, record)
     return filename
 
@@ -120,7 +120,7 @@ def read_local_result(store_dir, key):
     """Return the `data` dict of the record whose _id is `key` (newest if several); {} if none."""
     if not store_dir or not key:
         return {}
-    matches = sorted(glob.glob(os.path.join(store_dir, "*__{}.json".format(key))), key=os.path.getmtime)
+    matches = sorted(glob.glob(os.path.join(store_dir, "*_{}.json".format(key))), key=os.path.getmtime)
     if not matches:
         return {}
     with open(matches[-1], 'r') as fn:
