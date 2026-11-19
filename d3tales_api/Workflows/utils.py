@@ -151,7 +151,7 @@ def get_existing_data(_hash, data_store=DEFAULT_DATA_STORE, store_dir=None):
 def runtime_from_log(logfile):
     import re
 
-    time_patt = re.compile(r"\d+\.d+|\d+")
+    time_patt = re.compile(r"\d+(?:\.\d+)?")
     time_data = []
 
     with open(logfile, "r") as f:

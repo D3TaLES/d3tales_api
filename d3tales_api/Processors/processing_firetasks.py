@@ -5,6 +5,7 @@ import json
 import shutil
 import pymongo
 import zipfile
+import tempfile
 import paramiko
 import traceback
 from pathlib import Path
@@ -113,18 +114,18 @@ class ProcessFile(FiretaskBase):
             print("TESTING")
             os.chdir('/home/ubuntu/fireworks/zip_files/')
 
-        with zipfile.ZipFile(filepath, "r") as target_zip:
+        with tempfile.TemporaryDirectory() as extract_dir, zipfile.ZipFile(filepath, "r") as target_zip:
             names = target_zip.namelist()
             submission_data["all_files_in_zip"] = names
             if data_type == 'gaussian':
                 calculation_type = metadata.get('calculation_type', )
                 if calculation_type == 'wtuning':
-                    output_file = target_zip.extract(member="output.log")
-                    mol_file = target_zip.extract(member="wtuning.com")
+                    output_file = target_zip.extract(member="output.log", path=extract_dir)
+                    mol_file = target_zip.extract(member="wtuning.com", path=extract_dir)
                     metadata["wtuning_output"] = output_file
                 else:
                     logfile = [f for f in names if ".log" in f][0]
-                    mol_file = target_zip.extract(member=logfile)
+                    mol_file = target_zip.extract(member=logfile, path=extract_dir)
                 metadata["mol_file"] = mol_file
                 data = ProcessGausLog(_id=mol_id, submission_info=submission_data, metadata=metadata).data_dict
                 if automatic_approval:
@@ -132,7 +133,7 @@ class ProcessFile(FiretaskBase):
                     pass
             if data_type == 'cv':
                 file = [f for f in names if ".txt" in f or "csv" in f][0]
-                datafile = target_zip.extract(member=file)
+                datafile = target_zip.extract(member=file, path=extract_dir)
                 data = ProcessChiCV(datafile, _id=mol_id, submission_info=submission_data,
                                  metadata=metadata).data_dict
         target_zip.close()

@@ -1,0 +1,29 @@
+Feb. 1, 2024   13:14:48
+A.C. Impedance
+File: c:\users\lab\d3talesrobotics\roboticsui\robotics_api\workflows\actions\examples\ircomp.bin
+Data Source:  Experiment
+Instrument Model:  CHI650E
+Header:  iRComp
+Note: 
+
+Init E (V) = 0
+High Frequency (Hz) = 1e+5
+Low Frequency (Hz) = 1e+4
+Imp SF
+Amplitude (V) = 0.01
+Quiet Time (sec) = 2
+
+Freq/Hz, Z'/ohm, Z"/ohm, Z/ohm, Phase/deg
+
+8.252e+4, -4.483e+4, -7.229e+4, 8.506e+4, -121.8
+6.812e+4, -6.012e+4, -1.025e+5, 1.188e+5, -120.4
+5.625e+4, -7.903e+4, -1.374e+5, 1.585e+5, -119.9
+4.644e+4, -9.834e+4, -1.916e+5, 2.153e+5, -117.2
+3.833e+4, -1.130e+5, -2.596e+5, 2.831e+5, -113.5
+3.164e+4, -1.237e+5, -3.455e+5, 3.669e+5, -109.7
+2.612e+4, -1.322e+5, -4.317e+5, 4.515e+5, -107.0
+2.153e+4, -1.179e+5, -5.377e+5, 5.505e+5, -102.4
+1.777e+4, -1.016e+5, -6.933e+5, 7.008e+5, -98.3
+1.470e+4, -8.623e+4, -8.594e+5, 8.637e+5, -95.7
+1.211e+4, -8.402e+4, -1.017e+6, 1.021e+6, -94.7
+1.001e+4, -1.196e+5, -1.177e+6, 1.183e+6, -95.8

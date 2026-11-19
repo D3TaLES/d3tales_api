@@ -247,7 +247,8 @@ class DFTSpecPlotter(D3Plotter):
         sigma = conns["sigma"]
         step = conns["step"]
 
-        negative_absorptions = [transitions.pop(index) for index, val in enumerate(transitions) if val[0] < 0]
+        transitions = list(transitions)
+        negative_absorptions = [transitions.pop(index) for index, val in reversed(list(enumerate(transitions))) if val[0] < 0]
         if negative_absorptions:
             print("WARNING: Calculation contains a negative excitation energy")
 
@@ -296,7 +297,7 @@ class DFTSpecPlotter(D3Plotter):
 
         :return: shows matplotlib plot
         """
-        spectra_data = self.calculate(data)
+        spectra_data = self.plot_data(data)
         plt.plot(spectra_data["lambda"], spectra_data["xas"], color="red")
         plt.gca().update(dict(**plt_kwargs))
         plt.tight_layout()
@@ -305,4 +306,3 @@ class DFTSpecPlotter(D3Plotter):
             plt.savefig(fig_path, dpi=300)
         else:
             plt.show()
-

@@ -200,6 +200,9 @@ class CVDescriptorCalculator(D3Calculator):
         # Check if there are the same number of forward and reverse peaks
         if len(forward_peaks) != len(reverse_peaks):
             num_peaks = min([len(forward_peaks), len(reverse_peaks)])
+            if num_peaks == 0:
+                raise ValueError("Error. There are {} forward peaks and {} reverse peaks. Neither peak branch is empty."
+                                 .format(len(forward_peaks), len(reverse_peaks)))
             if get_max:
                 f_idx = np.argsort([item[1] for item in peaks.get('forward', [])])[-num_peaks:]
                 r_idx = np.argsort([item[1] for item in peaks.get('reverse', [])])[-num_peaks:]
@@ -591,7 +594,10 @@ class AvgEHalfCalculator(D3Calculator):
         for idx, obj in enumerate(self.data):
             conns = self.make_connections(obj)
             descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
-            e_raw = conns.get("e", descriptor_cal.e_half(obj)[0])
+            e_raw = conns["e"] if conns.get("e") is not None else descriptor_cal.e_half(obj)[0]
+            if isinstance(e_raw, list) and e_raw:
+                first_e = e_raw[0]
+                e_raw = first_e.get("value") if isinstance(first_e, dict) else first_e
             E = unit_conversion(e_raw, default_unit='V')
             e_halfs.append(E)
         avg_e_half = np.average(e_halfs)
@@ -621,8 +627,12 @@ class DirtyElectrodeDetector(D3Calculator):
 
         descriptor_cal = CVDescriptorCalculator(connector=self.key_pairs)
         peaks_dict = descriptor_cal.peaks(data)
-        forward_peak = max([p[1] for p in peaks_dict.get("forward", [])])
-        reverse_peak = min([p[1] for p in peaks_dict.get("reverse", [])])
+        forward_currents = [p[1] for p in peaks_dict.get("forward", [])]
+        reverse_currents = [p[1] for p in peaks_dict.get("reverse", [])]
+        if not forward_currents or not reverse_currents:
+            return False
+        forward_peak = max(forward_currents)
+        reverse_peak = min(reverse_currents)
         current_range = forward_peak - reverse_peak
         print("Dirty Electrode Detection CURRENT RANGE: ", current_range)
 

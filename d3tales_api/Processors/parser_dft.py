@@ -351,7 +351,7 @@ class ProcessGausLog(ProcessCCLIBMixin, ProcessDFTBase):
     @property
     def runtime(self):
         """Runtime in core hours from a logfile"""
-        time_patt = re.compile(r"\d+\.d+|\d+")
+        time_patt = re.compile(r"\d+(?:\.\d+)?")
         time_data = []
         with open(self.log_path, "r") as f:
             line = f.readline()

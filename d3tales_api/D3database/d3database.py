@@ -40,7 +40,7 @@ class DBconnector:
         :return: a database object
         """
         try:
-            if "@" in self.host:
+            if self.host and "@" in self.host:
                 conn = MongoClient(self.host)
             else:
                 conn = MongoClient(host=self.host, port=self.port,

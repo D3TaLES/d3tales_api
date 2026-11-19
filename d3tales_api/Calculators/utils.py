@@ -104,17 +104,38 @@ def unit_conversion(measurement, default_unit: str, density=None, return_dict=Fa
         c.add_transformation('[mass]', '[volume]', lambda ureg_c, x: x / ureg_c(density))
         c.add_transformation('[volume]', '[mass]', lambda ureg_c, x: x * ureg_c(density))
     ureg.add_context(c)
-    # Get measurement value and unit
-    if not isinstance(measurement, (str, float, int, dict)):
-        value, unit = getattr(measurement, "magnitude"), getattr(measurement, "units")
+    # Get measurement value and unit.  Parsing Quantity objects and scientific-
+    # notation strings explicitly avoids dimensionality errors in Pint.
+    if isinstance(measurement, dict):
+        value = measurement.get("value")
+        unit = measurement.get("unit", default_unit)
+    elif isinstance(measurement, (str, float, int)):
+        value = measurement
+        unit = default_unit
+        if isinstance(measurement, str):
+            try:
+                quantity = ureg.Quantity(measurement)
+                if quantity.dimensionless:
+                    quantity = ureg.Quantity(quantity.magnitude, default_unit)
+                pint_unit = quantity
+            except (ValueError, pint.errors.UndefinedUnitError, pint.errors.DimensionalityError):
+                quantity = ureg.Quantity(measurement)
+                pint_unit = quantity
+            else:
+                if return_dict:
+                    converted = pint_unit.to(default_unit, 'mol_density')
+                    return {"value": converted.magnitude, "unit": default_unit}
+                return pint_unit.to(default_unit, 'mol_density').magnitude
     else:
-        value = measurement.get("value") if isinstance(measurement, dict) else measurement
-        unit = ""
-        if isinstance(value, float) or str(value).replace('.', '', 1).replace('-', '', 1).isdigit():
-            unit = measurement.get("unit", default_unit) if isinstance(measurement, dict) else default_unit
-    # Convert measurement to default unit
-    unit = default_unit if unit == "dimensionless" else unit
-    pint_unit = ureg("{}{}".format(value, unit))
+        value = getattr(measurement, "magnitude")
+        unit = getattr(measurement, "units")
+
+    unit = default_unit if unit in ("dimensionless", None, "") else unit
+    try:
+        numeric_value = float(value) if isinstance(value, str) else value
+    except (TypeError, ValueError):
+        numeric_value = value
+    pint_unit = ureg.Quantity(numeric_value, unit)
     if return_dict:
         return {"value": pint_unit.to(default_unit, 'mol_density').magnitude, "unit": default_unit}
     return pint_unit.to(default_unit, 'mol_density').magnitude

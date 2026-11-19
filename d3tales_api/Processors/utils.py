@@ -8,7 +8,10 @@ MIN_SCAN_LEN = 5
 def break_list(lst, return_brks=False):
     if len(lst) < 2:
         return lst
-    direction = lst[1] - lst[0] / abs(lst[1] - lst[0])
+    initial_diff = lst[1] - lst[0]
+    if not initial_diff:
+        return lst if not return_brks else []
+    direction = initial_diff / abs(initial_diff)
     brks = []
     for i in range(1, len(lst)):
         previous_diff = lst[i] - lst[i - 1]

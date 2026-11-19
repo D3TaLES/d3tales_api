@@ -232,10 +232,11 @@ class ParseChiMixin:
         :param return_dict: bool, return data dict if True
         :return: value or data dict
         """
+        raw_value = "".join(line.split(value_break)[1:]).strip()
         if value_type == 'float':
-            value = float("".join(line.split(value_break)[1:]).strip())
+            value = float(raw_value.split()[0])
         elif value_type == 'int':
-            value = int("".join(line.split(value_break)[1:]).strip())
+            value = int(raw_value.split()[0])
         else:
             value = ("".join(line.split(value_break)[1:]).strip())
         unit = line[line.find("(") + 1:line.find(")")]
@@ -310,7 +311,11 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
 
         # Smooth the current data to compute derivatives
         smooth_current = savgol_filter(full_cv_data['current'], window_length, poly_order)
-        current_derivative = np.gradient(smooth_current, full_cv_data['potential'])
+        potential_values = full_cv_data['potential'].to_numpy()
+        with np.errstate(divide='ignore', invalid='ignore'):
+            derivative_denominator = np.gradient(potential_values)
+            current_derivative = np.gradient(smooth_current) / derivative_denominator
+        current_derivative = np.nan_to_num(current_derivative)
 
         # Identify all steady-state regions (di/dE ≤ i_derr_ss)
         steady_state_indices = np.abs(current_derivative) <= i_derr_ss
@@ -380,6 +385,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
         """
         :param filepath: str, filepath to experiment data file
         """
+        metadata = metadata or {}
         super().__init__(filepath, _id=_id, submission_info=submission_info, metadata=metadata, **kwargs)
         self.data_source = "ca"
         self.cell_constant = metadata.get("cell_constant", 1)
@@ -392,7 +398,7 @@ class ProcessChiCA(ParseChiMixin, ProcessPotBase):
             self.t = self.all_data[:, 0]
 
         if self.y_unit != "A":
-            self.t = convert_list_units(self.all_data[:, 1], existing_units=self.y_unit, target_units="A")
+            self.i = convert_list_units(self.all_data[:, 1], existing_units=self.y_unit, target_units="A")
             self.y_unit = "A"
         else:
             self.i = self.all_data[:, 1]
