@@ -19,7 +19,16 @@ from d3tales_api.Workflows.pyscf import (
     RunPySCFTDDFT,
     RunPySCFWtuning,
 )
-from d3tales_api.Workflows.utils import G16_CMD, PATH, PROC_VM_KEY, RUNFILE_LOG
+from d3tales_api.Workflows.utils import (
+    GAUSSIAN_CPU_LIST,
+    GAUSSIAN_GPU_CPU,
+    GAUSSIAN_MEMORY,
+    GAUSSIAN_NPROCSHARED,
+    G16_CMD,
+    PATH,
+    PROC_VM_KEY,
+    RUNFILE_LOG,
+)
 from d3tales_api.Workflows.d3tales_utils import EmailStart, EmailEnd  # noqa: F401
 
 # Copyright 2021-2022, University of Kentucky
@@ -73,6 +82,10 @@ def _task_kwargs(software, **kwargs):
     kwargs["software"] = software
     if software == "gaussian":
         kwargs.update(g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY)
+        kwargs.setdefault("gpu_cpu", GAUSSIAN_GPU_CPU)
+        kwargs.setdefault("cpu_list", GAUSSIAN_CPU_LIST)
+        kwargs.setdefault("memory", GAUSSIAN_MEMORY)
+        kwargs.setdefault("nprocshared", GAUSSIAN_NPROCSHARED)
     return kwargs
 
 

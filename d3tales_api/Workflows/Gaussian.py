@@ -2,6 +2,7 @@ import abc
 import os
 import subprocess
 import multiprocessing
+import re
 import uuid
 from six import add_metaclass
 from atomate.utils.utils import get_logger, env_chk
@@ -46,6 +47,91 @@ nprocs = str(cpus[0])
 class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
     engine_name = "Gaussian"
     _fw_name = "GaussianBase"
+
+    @staticmethod
+    def _link0_value(parameters, name):
+        normalized = name.lower().lstrip("%")
+        for key, value in parameters.items():
+            if str(key).lower().lstrip("%") == normalized:
+                return value
+        return None
+
+    @staticmethod
+    def _expand_resource_indices(value, name):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("{} must be a non-empty comma-separated list of indices or ranges".format(name))
+        indices = []
+        for part in value.split(","):
+            match = re.fullmatch(r"\s*(\d+)(?:-(\d+))?\s*", part)
+            if not match:
+                raise ValueError("{} contains an invalid index or range: {!r}".format(name, part.strip()))
+            start = int(match.group(1))
+            end = int(match.group(2) or start)
+            if end < start:
+                raise ValueError("{} ranges must be ascending".format(name))
+            indices.extend(range(start, end + 1))
+        if len(indices) != len(set(indices)):
+            raise ValueError("{} cannot contain duplicate indices".format(name))
+        return indices
+
+    @staticmethod
+    def _resolve_worker_setting(value, fw_spec):
+        if isinstance(value, str) and value.startswith(">>") and value.endswith("<<"):
+            return (fw_spec.get("_fw_env") or {}).get(value[2:-2])
+        return value
+
+    def configure_link0_resources(self, fw_spec):
+        """Set Gaussian CPU/GPU resource directives from FireWorker configuration."""
+        if not hasattr(self, "_base_link0_parameters"):
+            self._base_link0_parameters = dict(self.paramset.link0_parameters)
+        parameters = dict(self._base_link0_parameters)
+        memory = self._resolve_worker_setting(spec_or_task(self, fw_spec, "memory"), fw_spec)
+        nprocshared = self._resolve_worker_setting(spec_or_task(self, fw_spec, "nprocshared"), fw_spec)
+        cpu_list = self._resolve_worker_setting(spec_or_task(self, fw_spec, "cpu_list"), fw_spec)
+        gpu_cpu = self._resolve_worker_setting(spec_or_task(self, fw_spec, "gpu_cpu"), fw_spec)
+
+        if memory is None:
+            memory = self._link0_value(parameters, "mem") or "48GB"
+        if nprocshared is None:
+            nprocshared = self._link0_value(parameters, "nprocshared") or nprocs
+        if not isinstance(memory, str) or not memory.strip() or "\n" in memory:
+            raise ValueError("memory must be a non-empty single-line Gaussian memory value")
+
+        if gpu_cpu is not None:
+            if cpu_list is None:
+                raise ValueError("cpu_list must be set when gpu_cpu is configured")
+            allocated_cpus = self._expand_resource_indices(cpu_list, "cpu_list")
+            if not isinstance(gpu_cpu, str) or gpu_cpu.count("=") != 1:
+                raise ValueError("gpu_cpu must use Gaussian's gpu-list=control-cpus format")
+            gpu_ids, control_cpus = gpu_cpu.split("=")
+            gpu_ids = self._expand_resource_indices(gpu_ids, "gpu_cpu GPU list")
+            control_cpus = self._expand_resource_indices(control_cpus, "gpu_cpu control CPU list")
+            if len(gpu_ids) != len(control_cpus):
+                raise ValueError("gpu_cpu must specify exactly one control CPU per GPU")
+            if not set(control_cpus).issubset(allocated_cpus):
+                raise ValueError("cpu_list must include every GPU control CPU")
+
+        resource_names = {"mem", "nprocshared", "cpu", "gpucpu"}
+        parameters = {
+            key: value for key, value in parameters.items()
+            if str(key).lower().lstrip("%") not in resource_names
+        }
+        parameters["%mem"] = memory.strip()
+        if gpu_cpu is not None:
+            parameters["%CPU"] = cpu_list.strip()
+            parameters["%GPUCPU"] = gpu_cpu.strip()
+        elif cpu_list is not None:
+            self._expand_resource_indices(cpu_list, "cpu_list")
+            parameters["%CPU"] = cpu_list.strip()
+        else:
+            try:
+                nprocshared = int(nprocshared)
+            except (TypeError, ValueError):
+                raise ValueError("nprocshared must be a positive integer")
+            if nprocshared < 1:
+                raise ValueError("nprocshared must be a positive integer")
+            parameters["%nprocshared"] = str(nprocshared)
+        self.paramset.link0_parameters = parameters
 
     def setup_files(self, fw_spec, calc_type='opt'):
         # get parameters
@@ -174,7 +260,8 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         # Update functional for unrestricted calculation
         self.functional = self.paramset.functional if self.restricted else "R{}".format(self.paramset.functional)
         print("Charge: ", self.paramset.charge, "\t Multiplicity: ", self.paramset.multiplicity)
-        self.paramset.link0_parameters.update({"%chk": self.file_chk, "%mem": "48GB", "%nprocshared": nprocs})
+        self.configure_link0_resources(fw_spec)
+        self.paramset.link0_parameters["%chk"] = self.file_chk
         if self.iop_str and use_iop:
             self.paramset.route_parameters.update({"iop(3/107={}, 3/108={})".format(self.iop_str, self.iop_str): ""})
         if self.solvent:

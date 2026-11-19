@@ -36,6 +36,10 @@ def test_default_software_is_gaussian(factories, kind):
     assert t["software"] == "gaussian"
     assert t["g16_cmd"] == ">>g16_cmd<<"
     assert t["proc_vm_key"] == ">>processing_vm_key<<"
+    assert t["gpu_cpu"] == ">>gaussian_gpu_cpu<<"
+    assert t["cpu_list"] == ">>gaussian_cpu_list<<"
+    assert t["memory"] == ">>gaussian_memory<<"
+    assert t["nprocshared"] == ">>gaussian_nprocshared<<"
     assert t["path"] == ">>path<<"
     assert t["runfile_log"] == ">>runfile_log<<"
 
