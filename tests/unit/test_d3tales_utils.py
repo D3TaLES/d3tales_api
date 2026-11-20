@@ -140,30 +140,3 @@ def test_register_molecule_generates_id_and_stores_nested_info(monkeypatch):
         ({"_id": "07ABCD"}, {"$set": {"mol_info.names": ["ethane"]}}, True),
         ({"_id": "07ABCD"}, {"$set": {"mol_info.groundState_charge": 0}}, True),
     ]
-
-
-@pytest.mark.unit
-def test_mail_sends_to_each_recipient(monkeypatch):
-    sent = []
-
-    class SMTP:
-        def __init__(self, server, port, context):
-            assert server == "mail.example"
-            assert port == 465
-
-        def login(self, sender, password):
-            assert (sender, password) == ("sender@example.com", "secret")
-
-        def sendmail(self, sender, recipient, message):
-            sent.append((recipient, message))
-
-        def quit(self):
-            sent.append(("quit", ""))
-
-    monkeypatch.setattr(helpers.smtplib, "SMTP_SSL", SMTP)
-    helpers.Mail(sender="sender@example.com", password="secret", smtp_server="mail.example").send(
-        ["one@example.com", "two@example.com"], "subject", "body"
-    )
-    assert [recipient for recipient, _ in sent] == ["one@example.com", "two@example.com", "quit"]
-    with pytest.raises(EnvironmentError, match="credentials"):
-        helpers.Mail(sender="", password="")

@@ -85,9 +85,17 @@ a JSON file with the following data would establish DFT parameters for `opt_grou
 }
 ```
 
-**Note on charge and spin state**: The charge and multiplicity set in the parameters file assumes a non-radical, 
-neutrally-charged ground state. If a molecule has a charged or radical ground state that is represented in the 
-associated SMILES string, the Workflow code will automatically adjust the calculation charge and multiplicity. 
+**Charge and spin state**: A task's `charge` is a relative charge, added to the molecule's ground-state charge.
+The configured `multiplicity` is authoritative; it is not replaced by an automatic singlet/doublet estimate.
+The workflow reports when its parity-derived estimate differs from the configured value and rejects a
+multiplicity that is incompatible with the electron-count parity. This permits valid higher-spin states such as
+triplets. Set `charge` and `multiplicity` in the task parameters, or override them with task kwargs or the
+FireWorks spec. `restricted=False` selects an unrestricted reference; it does not change the configured spin.
+
+**Geometry handoff**: A task configured with `geometry="X"` consumes `X_geom` (or `X_hash`) from an upstream
+Firework. If that requested geometry is absent, the task fails rather than silently calculating from the SMILES
+geometry. The initial `opt_mol` optimization may use its supplied initial geometry and can generate a starting
+geometry from SMILES when none was supplied.
 
 
 ## Adding a workflow

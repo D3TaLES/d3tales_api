@@ -52,6 +52,14 @@ d3tales\_api.D3database.schema2model module
    :undoc-members:
    :show-inheritance:
 
+d3tales\_api.D3database.workflow\_adapter module
+------------------------------------------------
+
+.. automodule:: d3tales_api.D3database.workflow_adapter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

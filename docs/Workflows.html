@@ -177,9 +177,16 @@ a JSON file with the following data would establish DFT parameters for <code cla
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><strong>Note on charge and spin state</strong>: The charge and multiplicity set in the parameters file assumes a non-radical,
-neutrally-charged ground state. If a molecule has a charged or radical ground state that is represented in the
-associated SMILES string, the Workflow code will automatically adjust the calculation charge and multiplicity.</p>
+<p><strong>Charge and spin state</strong>: A task’s <code class="docutils literal notranslate"><span class="pre">charge</span></code> is a relative charge, added to the molecule’s ground-state charge.
+The configured <code class="docutils literal notranslate"><span class="pre">multiplicity</span></code> is authoritative; it is not replaced by an automatic singlet/doublet estimate.
+The workflow reports when its parity-derived estimate differs from the configured value and rejects a
+multiplicity that is incompatible with the electron-count parity. This permits valid higher-spin states such as
+triplets. Set <code class="docutils literal notranslate"><span class="pre">charge</span></code> and <code class="docutils literal notranslate"><span class="pre">multiplicity</span></code> in the task parameters, or override them with task kwargs or the
+FireWorks spec. <code class="docutils literal notranslate"><span class="pre">restricted=False</span></code> selects an unrestricted reference; it does not change the configured spin.</p>
+<p><strong>Geometry handoff</strong>: A task configured with <code class="docutils literal notranslate"><span class="pre">geometry=&quot;X&quot;</span></code> consumes <code class="docutils literal notranslate"><span class="pre">X_geom</span></code> (or <code class="docutils literal notranslate"><span class="pre">X_hash</span></code>) from an upstream
+Firework. If that requested geometry is absent, the task fails rather than silently calculating from the SMILES
+geometry. The initial <code class="docutils literal notranslate"><span class="pre">opt_mol</span></code> optimization may use its supplied initial geometry and can generate a starting
+geometry from SMILES when none was supplied.</p>
 </section>
 </section>
 <section id="adding-a-workflow">

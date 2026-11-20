@@ -26,6 +26,39 @@ def test_original_conditions_hash_and_task_precedence():
 
 
 @pytest.mark.unit
+def test_configured_spin_is_authoritative_and_checked_for_parity():
+    from types import SimpleNamespace
+
+    triplet = SimpleNamespace(charge=0, multiplicity=3)
+    with pytest.warns(RuntimeWarning, match="preserving the configured value"):
+        charge, multiplicity = utils.resolve_charge_multiplicity({}, triplet, {}, 0, 1)
+    assert (charge, multiplicity) == (0, 3)
+    assert triplet.charge == 0
+
+    unusual_ground_state = SimpleNamespace(charge=0, multiplicity=3)
+    with pytest.warns(RuntimeWarning, match="parity-derived value 1"):
+        assert utils.resolve_charge_multiplicity({}, unusual_ground_state, {}, 0, 3) == (0, 3)
+
+    override = SimpleNamespace(charge=0, multiplicity=1)
+    assert utils.resolve_charge_multiplicity(
+        {}, override, {"charge": 1, "multiplicity": 2}, 0, 1
+    ) == (1, 2)
+    with pytest.raises(ValueError, match="incompatible with the electron-count parity"):
+        utils.resolve_charge_multiplicity({}, override, {"multiplicity": 2}, 0, 1)
+
+
+@pytest.mark.unit
+def test_geometry_key_candidates_prefer_tagged_producer_output():
+    assert utils.geometry_key_candidates({"name_tag": "batch_"}, {}, "opt_groundState") == [
+        "batch_opt_groundState",
+        "opt_groundState",
+    ]
+    assert utils.geometry_key_candidates({"name_tag": "batch_"}, {}, "batch_opt_groundState") == [
+        "batch_opt_groundState"
+    ]
+
+
+@pytest.mark.unit
 def test_start_from_smiles_and_ground_state_local_fallback(monkeypatch):
     monkeypatch.setattr(utils, "d3t_get_init_structure", lambda identifier: (_ for _ in ()).throw(LookupError()))
     monkeypatch.setattr(utils, "d3t_get_smiles", lambda identifier: "O")

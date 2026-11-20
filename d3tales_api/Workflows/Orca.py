@@ -14,6 +14,7 @@ JSON records replace Gaussian formatted-checkpoint files.
 """
 
 import abc
+import hashlib
 import json
 import multiprocessing
 import os
@@ -37,20 +38,20 @@ from d3tales_api.Workflows.utils import (
     get_data_store,
     get_db_geom,
     get_groundState,
-    get_hash_id,
     get_local_output_dir,
-    get_omega,
     get_store_dir,
+    geometry_key_candidates,
     local_record,
     omega_to_iop,
     orig_conditions,
-    orig_hash_id,
+    resolve_charge_multiplicity,
+    read_local_result,
     save_local_result,
     spec_or_task,
     start_from_smiles,
     zip_files
 )
-from d3tales_api.Workflows.d3tales_utils import d3t_submit_calculation
+from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
 
 logger = get_logger(__name__)
 NPROCS = min(multiprocessing.cpu_count(), 16)
@@ -61,6 +62,28 @@ def _value(obj, name, default=None):
     if isinstance(obj, dict):
         return obj.get(name, default)
     return getattr(obj, name, default)
+
+
+def orca_conditions(functional, basis_set, tuning_parameter=None, solvent=None, version="unknown"):
+    conditions = orig_conditions(functional, basis_set, tuning_parameter=tuning_parameter, solvent=solvent)
+    conditions.update({"code_name": "ORCA", "code_version": str(version)})
+    return conditions
+
+
+def orca_hash_id(_id, calculation_type, functional, basis_set, tuning_parameter=None, solvent=None, version="unknown"):
+    conditions = orca_conditions(
+        functional, basis_set, tuning_parameter=tuning_parameter, solvent=solvent, version=version
+    )
+    payload = {"_id": _id, "calculation_type": calculation_type, "conditions": conditions}
+    return hashlib.md5(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def get_orca_omega(store_dir):
+    """Return only an ORCA-produced local tuning value, never a Gaussian database value."""
+    record = read_local_result(store_dir, WTUNING_KEY)
+    if record.get("engine") == "ORCA":
+        return record.get("omega")
+    return None
 
 
 def _json_dump(path, data):
@@ -184,6 +207,8 @@ def _parse_tddft(text):
 class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
     engine_name = "Orca"
     _fw_name = "OrcaBase"
+    conditions_function = staticmethod(orca_conditions)
+    hash_function = staticmethod(orca_hash_id)
 
     def setup_files(self, fw_spec, calc_type="opt"):
         self.data_store = get_data_store(self, fw_spec)
@@ -194,12 +219,12 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.identifier = fw_spec.get("identifier") or self.get("identifier", str(uuid.uuid4()))
         self.smiles = fw_spec.get("smiles") or self.get("smiles")
         self.runfile_log = env_chk(self.get("runfile_log"), fw_spec)
-        self.skip_freq = fw_spec.get("skip_freq") or self.get("skip_freq") or False
+        self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
         self.submit = spec_or_task(self, fw_spec, "submit", True)
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
-        self.run_nto = fw_spec.get("run_nto") or self.get("run_nto") or False
+        self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.orca_cmd = env_chk(self.get("orca_cmd", "orca"), fw_spec)
         self.orca_file_name = fw_spec.get("orca_file_name") or self.get("orca_file_name") or "orca"
 
@@ -246,35 +271,46 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
 
     def setup_calc(self, fw_spec, calc_type="opt"):
         self.setup_files(fw_spec, calc_type)
-        self.solvent = fw_spec.get("solvent") or self.get("solvent")
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(self.identifier, self.smiles, data_store=self.data_store) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(self.identifier, self.smiles, prop="spin", data_store=self.data_store) or 1
-        use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
-        self.iop_str = fw_spec.get("iop_str") or self.get("iop_str")
+        self.solvent = spec_or_task(self, fw_spec, "solvent")
+        self.gs_charge = spec_or_task(self, fw_spec, "gs_charge")
+        if self.gs_charge is None:
+            self.gs_charge = get_groundState(self.identifier, self.smiles, data_store=self.data_store)
+        self.gs_spin = spec_or_task(self, fw_spec, "gs_spin")
+        if self.gs_spin is None:
+            self.gs_spin = get_groundState(self.identifier, self.smiles, prop="spin", data_store=self.data_store)
+        use_iop = spec_or_task(self, fw_spec, "use_iop", True)
+        self.iop_str = spec_or_task(self, fw_spec, "iop_str")
         if not self.iop_str and use_iop:
-            tuned_w = get_omega(self.identifier, data_store=self.data_store, store_dir=self.store_dir)
+            tuned_w = get_orca_omega(self.store_dir)
             if tuned_w:
                 self.iop_str = omega_to_iop(tuned_w)
         self.omega = _omega_from_iop(self.iop_str) if use_iop else None
 
-        geometry = fw_spec.get("geometry") or self.get("geometry")
-        geometry_sites = fw_spec.get("{}_geom".format(geometry))
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        geometry_sites = fw_spec.get("{}_geom".format(geometry_key))
         if geometry_sites:
             self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
         else:
-            geometry_hash = fw_spec.get("{}_hash".format(geometry), orig_hash_id(
-                self.identifier, self.calc_name, _value(self.paramset, "functional"),
+            geometry_hash = fw_spec.get("{}_hash".format(geometry_key), orca_hash_id(
+                self.identifier, geometry, _value(self.paramset, "functional"),
                 _value(self.paramset, "basis_set"), tuning_parameter=self.iop_str, solvent=self.solvent
             ))
-            self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir) or start_from_smiles(
-                self.identifier, self.smiles, data_store=self.data_store
-            )
+            self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir)
+            if self.mol is None and self.get("geom_from_smiles", False):
+                self.mol = start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
+            if self.mol is None:
+                raise LookupError("No geometry found for requested geometry {!r}".format(geometry))
         if len(self.mol.sites) > 200:
             return FWAction(defuse_children=True, update_spec={"defuser_reason": "The molecule has {} atoms".format(len(self.mol.sites))})
 
-        self.charge = int(_value(self.paramset, "charge", 0)) + int(self.gs_charge)
-        radical_electrons = (int(self.gs_spin) - 1 - int(_value(self.paramset, "charge", 0))) % 2
-        self.multiplicity = int(radical_electrons + 1)
+        self.charge, self.multiplicity = resolve_charge_multiplicity(
+            self, self.paramset, fw_spec, self.gs_charge, self.gs_spin
+        )
         self.functional = _orca_method(_value(self.paramset, "functional", "B3LYP"))
         self.basis = _orca_basis(_value(self.paramset, "basis_set", "def2-SVP"))
         print("Charge:", self.charge, "\t Multiplicity:", self.multiplicity)
@@ -289,8 +325,8 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
             keywords.append(job)
         if self.solvent:
             keywords.append("CPCM({})".format(self.solvent))
-        if not self.restricted and (charge if charge is not None else self.charge) == 0:
-            keywords.append("UHF")
+        if not self.restricted:
+            keywords.append("UHF" if self.functional.upper() == "HF" else "UKS")
         lines = ["! " + " ".join(keywords), "%pal nprocs {} end".format(int(self.get("nprocs", NPROCS)))]
         lines.append("%maxcore {}".format(int(self.get("maxcore_mb", 3000))))
         if self.omega is not None:
@@ -325,7 +361,7 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         result_path = self.file_result if calc_type == self.calc_name else self.freq_result
         _json_dump(result_path, record)
         files = [f for f in (upload_files or [self.file_input, self.file_log, self.file_gbw, result_path]) if os.path.isfile(f)]
-        data_hash = get_hash_id(self.identifier, self.file_input, calc_type, output_file=self.file_log)
+        data_hash = self.local_key(calc_type)
         if self.data_store == "d3tales":
             archive = zip_files(files, zip_name="{}_{}.zip".format(self.identifier, name_tag + self.full_name))
             if self.submit:
@@ -446,10 +482,29 @@ class RunWtuning(FiretaskBase):
         action = task.setup_calc(fw_spec, "wtuning")
         if isinstance(action, FWAction):
             return action
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        forward_spec = {
+            "data_store": task.data_store,
+            "identifier": task.identifier,
+            "gs_charge": task.gs_charge,
+            "gs_spin": task.gs_spin,
+        }
+        if task.smiles:
+            forward_spec["smiles"] = task.smiles
+        if geometry_key and fw_spec.get("{}_geom".format(geometry_key)) is not None:
+            forward_spec["{}_geom".format(geometry_key)] = fw_spec["{}_geom".format(geometry_key)]
+        if geometry_key and fw_spec.get("{}_hash".format(geometry_key)) is not None:
+            forward_spec["{}_hash".format(geometry_key)] = fw_spec["{}_hash".format(geometry_key)]
         if task.check_if_already_run:
-            tuned = get_omega(task.identifier, data_store=task.data_store, store_dir=task.store_dir)
+            tuned = get_orca_omega(task.store_dir)
             if tuned:
-                return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir, "gaussrun_dir": task.calc_dir, "identifier": task.identifier, "gs_charge": task.gs_charge, "gs_spin": task.gs_spin})
+                return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir,
+                                             "gaussrun_dir": task.calc_dir, **forward_spec})
         from scipy.optimize import minimize_scalar
 
         def run_state(charge, multiplicity, omega, label):
@@ -475,14 +530,19 @@ class RunWtuning(FiretaskBase):
         if not result.success:
             raise RuntimeError("ORCA omega tuning failed: {}".format(result.message))
         tuned = float(result.x)
-        record = local_record(WTUNING_KEY, task.identifier, self["name"], {"engine": "ORCA", "omega": tuned, "objective": float(result.fun), "conditions": orig_conditions(task.functional, task.basis)})
+        record = local_record(
+            WTUNING_KEY, task.identifier, self["name"],
+            {"engine": "ORCA", "omega": tuned, "objective": float(result.fun),
+             "conditions": orca_conditions(task.functional, task.basis)}
+        )
         _json_dump(os.path.join(task.working_dir, "wtuning.result.json"), record)
         if task.data_store == "local":
             save_local_result(task.store_dir, record)
         elif task.submit:
             archive = zip_files([f for f in os.listdir(task.working_dir) if f.endswith((".inp", ".out", ".json"))], zip_name="{}_wtuning.zip".format(task.identifier))
             d3t_submit_calculation(archive, task.identifier, self["name"])
-        return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir, "gaussrun_dir": task.calc_dir, "identifier": task.identifier, "gs_charge": task.gs_charge, "gs_spin": task.gs_spin})
+        return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir,
+                                     "gaussrun_dir": task.calc_dir, **forward_spec})
 
 
 # Compatibility aliases let existing workflow definitions switch modules with

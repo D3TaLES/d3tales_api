@@ -4,6 +4,7 @@ import json
 import hashlib
 import glob
 import zipfile
+import warnings
 from monty.json import MontyEncoder
 
 from pymatgen.core.sites import Site
@@ -13,8 +14,8 @@ from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 from rdkit.Chem import MolFromSmiles, AllChem, MolToInchiKey
 from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
 from rdkit.Chem.Descriptors import NumRadicalElectrons
-from d3tales_api.Workflows.d3tales_utils import (d3t_get_smiles, d3t_get_init_structure, d3t_get_ground_state,
-                                                 d3t_get_omega, d3t_get_raw_computation)
+from d3tales_api.D3database.workflow_adapter import (d3t_get_smiles, d3t_get_init_structure, d3t_get_ground_state,
+                                                     d3t_get_omega, d3t_get_raw_computation)
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
@@ -496,6 +497,65 @@ def spec_or_task(task, fw_spec, key, default=None):
     if val is None:
         val = task.get(key)
     return default if val is None else val
+
+
+def resolve_charge_multiplicity(task, paramset, fw_spec, gs_charge, gs_spin):
+    """Resolve an absolute charge and configured multiplicity without mutating parameters.
+
+    ``charge`` is a relative charge from the neutral ground-state charge. Explicit
+    ``fw_spec`` and task values override the parameter set. The parity-derived
+    multiplicity is diagnostic only when a multiplicity has been configured.
+    """
+    relative_charge = spec_or_task(
+        task, fw_spec, "charge", _parameter_value(paramset, "charge", 0)
+    )
+    configured_multiplicity = spec_or_task(
+        task, fw_spec, "multiplicity", _parameter_value(paramset, "multiplicity")
+    )
+    try:
+        relative_charge = int(relative_charge)
+        gs_charge = int(gs_charge)
+        gs_spin = int(gs_spin)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Ground-state charge, spin, and relative charge must be integers") from exc
+
+    if gs_spin < 1:
+        raise ValueError("Ground-state spin multiplicity must be a positive integer")
+    automatic_multiplicity = (gs_spin - 1 - relative_charge) % 2 + 1
+    if configured_multiplicity is None:
+        multiplicity = automatic_multiplicity
+    else:
+        try:
+            multiplicity = int(configured_multiplicity)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Configured spin multiplicity must be a positive integer") from exc
+        if multiplicity < 1:
+            raise ValueError("Configured spin multiplicity must be a positive integer")
+    if (multiplicity - 1) % 2 != (gs_spin - 1 - relative_charge) % 2:
+        raise ValueError(
+            "Multiplicity {} is incompatible with the electron-count parity for "
+            "relative charge {}".format(multiplicity, relative_charge)
+        )
+    if configured_multiplicity is not None and multiplicity != automatic_multiplicity:
+        warnings.warn(
+            "Configured multiplicity {} differs from the parity-derived value {} "
+            "for relative charge {}; preserving the configured value.".format(
+                multiplicity, automatic_multiplicity, relative_charge
+            ),
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return gs_charge + relative_charge, multiplicity
+
+
+def geometry_key_candidates(task, fw_spec, geometry):
+    """Return name-tagged and exact geometry keys, preferring tagged producer output."""
+    if not geometry:
+        return []
+    name_tag = fw_spec.get("name_tag") or task.get("name_tag") or ""
+    if name_tag and not geometry.startswith(name_tag):
+        return [name_tag + geometry, geometry]
+    return [geometry]
 
 
 class ElectronicStructureTaskMixin:

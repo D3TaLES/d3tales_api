@@ -2,11 +2,18 @@ from fireworks import Workflow
 from d3tales_api.Workflows.Fireworks import *
 
 
+def _tagged_kwargs(kwargs, suffix=""):
+    tagged = dict(kwargs)
+    name_tag = tagged.pop("name_tag", "")
+    tagged["name_tag"] = name_tag + suffix
+    return tagged
+
+
 # Copyright 2021, University of Kentucky
 
 
 def d3tales_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acetonitrile',
-               hf_mol_opt=False, email=None, username=None, wf_tag="", **kwargs):
+               hf_mol_opt=False, wf_tag="", **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
 
     mol_opt_params = paramset.hf_opt_groundState if hf_mol_opt else paramset.opt_groundState
@@ -50,18 +57,13 @@ def d3tales_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acet
     if wtune:
         fws.extend([f26, f30])
 
-    if email:
-        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
-        fws.append(
-            EmailEnd(identifier=identifier, email=email, username=username, parents=[f51, f55, f57, f61, f65, f67]))
-
     wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
 
     return wf
 
 
 def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='acetonitrile',
-               hf_mol_opt=False, email=None, username=None, **kwargs):
+               hf_mol_opt=False, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
 
     mol_opt_params = paramset.hf_opt_groundState if hf_mol_opt else paramset.opt_groundState
@@ -70,13 +72,13 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
 
     opt_parents = f30 if wtune else f10
 
+    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=opt_parents, **kwargs)
     f35 = Optimization(paramset=paramset.opt_anion1, species="anion1", parents=opt_parents, **kwargs)
     f36 = Optimization(paramset=paramset.opt_anion2, species="anion2", parents=opt_parents, **kwargs)
 
     f45 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_anion1", parents=[f35],
                  **kwargs)
-    f46 = Energy(paramset=paramset.energy_anion1, species="anion1", geometry="opt_groundState", parents=[opt_parents],
-                 **kwargs)
+    f46 = Energy(paramset=paramset.energy_anion1, species="anion1", geometry="opt_groundState", parents=[f31], **kwargs)
 
     f55 = Energy(paramset=paramset.energy_anion1, parents=[f35], species='anion1', geometry="opt_anion1",
                  solvent=solvent, **kwargs)
@@ -87,14 +89,10 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
     f66 = TDDFT(paramset=paramset.tddft_anion2, species='anion2', parents=[f36], **kwargs)
 
     # Establish fireworks in workflow
-    fws = [f10, f35, f36, f45, f46, f55, f56, f65, f66]
+    fws = [f10, f31, f35, f36, f45, f46, f55, f56, f65, f66]
 
     if wtune:
         fws.extend([f26, f30])
-
-    if email:
-        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
-        fws.append(EmailEnd(identifier=identifier, email=email, username=username, parents=[f55, f65, f66]))
 
     wf = Workflow(fws, name="anion_{}".format(identifier or smiles))
 
@@ -102,7 +100,7 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
 
 
 def solv_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acetonitrile',
-            hf_mol_opt=False, email=None, username=None, **kwargs):
+            hf_mol_opt=False, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles,
                              **kwargs)
 
@@ -133,41 +131,47 @@ def solv_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acetoni
     if wtune:
         fws.extend([f26, f30])
 
-    if email:
-        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
-        fws.append(EmailEnd(identifier=identifier, email=email, username=username, parents=[f61, f67]))
-
     wf = Workflow(fws, name="solv_{}".format(identifier or smiles))
 
     return wf
 
 
-def hf_wf(paramset, identifier=None, smiles=None, hf_mol_opt=False, email=None, username=None, solvent=None, **kwargs):
-    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
+def hf_wf(paramset, identifier=None, smiles=None, hf_mol_opt=False, solvent=None, **kwargs):
+    name_tag = kwargs.get("name_tag", "")
+    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **_tagged_kwargs(kwargs))
     mol_opt_params = paramset.hf_opt_groundState if hf_mol_opt else paramset.opt_groundState
-    f26 = MolOpt(paramset=mol_opt_params, parents=f10, **kwargs)
-    f30 = WTuning(paramset=paramset.wtuning, parents=f26, **kwargs)
+    f26 = MolOpt(paramset=mol_opt_params, parents=f10, **_tagged_kwargs(kwargs))
+    f30 = WTuning(paramset=paramset.wtuning, parents=f26, **_tagged_kwargs(kwargs))
 
-    f36 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=f30, **kwargs)
-    f37 = Optimization(paramset=paramset.hf_opt_groundState, species="groundState", parents=f30, name_tag='hf_',
-                       **kwargs)
-    f46 = Optimization(paramset=paramset.opt_cation1, species="cation1", parents=f30, **kwargs)
-    f47 = Optimization(paramset=paramset.hf_opt_cation1, species="cation1", parents=f30, name_tag='hf_', **kwargs)
-    f56 = Optimization(paramset=paramset.opt_cation2, species="cation2", parents=f30, **kwargs)
-    f57 = Optimization(paramset=paramset.hf_opt_cation2, species="cation2", parents=f30, name_tag='hf_', **kwargs)
+    f36 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=f30,
+                       **_tagged_kwargs(kwargs))
+    f37 = Optimization(paramset=paramset.hf_opt_groundState, species="groundState", parents=f30,
+                       **_tagged_kwargs(kwargs, "hf_"))
+    f46 = Optimization(paramset=paramset.opt_cation1, species="cation1", parents=f30, **_tagged_kwargs(kwargs))
+    f47 = Optimization(paramset=paramset.hf_opt_cation1, species="cation1", parents=f30,
+                       **_tagged_kwargs(kwargs, "hf_"))
+    f56 = Optimization(paramset=paramset.opt_cation2, species="cation2", parents=f30, **_tagged_kwargs(kwargs))
+    f57 = Optimization(paramset=paramset.hf_opt_cation2, species="cation2", parents=f30,
+                       **_tagged_kwargs(kwargs, "hf_"))
 
-    f38 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="hf_opt_groundState",
-                 parents=[f37], name_tag='hfgeom_', **kwargs)
-    f39 = Energy(paramset=paramset.hfgeom_energy_groundState, species="groundState", geometry="opt_groundState",
-                 parents=[f36], name_tag='hf_dftgeom_', **kwargs)
-    f48 = Energy(paramset=paramset.energy_cation1, species="cation1", geometry="hf_opt_cation1", parents=[f47],
-                 name_tag='hfgeom_', **kwargs)
-    f49 = Energy(paramset=paramset.hfgeom_energy_cation1, species="cation1", geometry="opt_cation1", parents=[f46],
-                 name_tag='hf_dftgeom_', **kwargs)
-    f58 = Energy(paramset=paramset.energy_cation2, species="cation2", geometry="hf_opt_cation2", parents=[f57],
-                 name_tag='hfgeom_', **kwargs)
-    f59 = Energy(paramset=paramset.hfgeom_energy_cation2, species="cation2", geometry="opt_cation2", parents=[f56],
-                 name_tag='hf_dftgeom_', **kwargs)
+    f38 = Energy(paramset=paramset.energy_groundState, species="groundState",
+                 geometry="{}hf_opt_groundState".format(name_tag), parents=[f37],
+                 **_tagged_kwargs(kwargs, "hfgeom_"))
+    f39 = Energy(paramset=paramset.hfgeom_energy_groundState, species="groundState",
+                 geometry="{}opt_groundState".format(name_tag), parents=[f36],
+                 **_tagged_kwargs(kwargs, "hf_dftgeom_"))
+    f48 = Energy(paramset=paramset.energy_cation1, species="cation1",
+                 geometry="{}hf_opt_cation1".format(name_tag), parents=[f47],
+                 **_tagged_kwargs(kwargs, "hfgeom_"))
+    f49 = Energy(paramset=paramset.hfgeom_energy_cation1, species="cation1",
+                 geometry="{}opt_cation1".format(name_tag), parents=[f46],
+                 **_tagged_kwargs(kwargs, "hf_dftgeom_"))
+    f58 = Energy(paramset=paramset.energy_cation2, species="cation2",
+                 geometry="{}hf_opt_cation2".format(name_tag), parents=[f57],
+                 **_tagged_kwargs(kwargs, "hfgeom_"))
+    f59 = Energy(paramset=paramset.hfgeom_energy_cation2, species="cation2",
+                 geometry="{}opt_cation2".format(name_tag), parents=[f56],
+                 **_tagged_kwargs(kwargs, "hf_dftgeom_"))
 
     # Establish fireworks in workflow
     fws = [f10, f26, f30, f36, f37, f38, f39, f46, f47, f48, f49, f56, f57, f58, f59]
@@ -177,7 +181,7 @@ def hf_wf(paramset, identifier=None, smiles=None, hf_mol_opt=False, email=None, 
 
 
 def huckaba_wf(paramset, identifier=None, smiles=None, solvent='DiMethylSulfoxide', wtune=True, hf_mol_opt=False,
-               email=None, username=None, **kwargs):
+               **kwargs):
     kwargs.update(dict(iop_str="0170700000"))
     # name = kwargs.get('mol_name')
     # species = "groundState" if "_p0" in name else "cation1" if "_p1" in name else "cation2"
@@ -192,7 +196,7 @@ def huckaba_wf(paramset, identifier=None, smiles=None, solvent='DiMethylSulfoxid
 
     f37 = Optimization(paramset=eval("paramset.opt_" + species), species=species, parents=opt_parents, solvent=solvent,
                        **kwargs)
-    f63 = TDDFT(paramset=eval("paramset.tddft_" + species), parents=[f37], **kwargs)
+    f63 = TDDFT(paramset=eval("paramset.tddft_" + species), parents=[f37], solvent=solvent, solv_geom=True, **kwargs)
 
     fws = [f10, f37, f63]
     if wtune:
@@ -202,21 +206,24 @@ def huckaba_wf(paramset, identifier=None, smiles=None, solvent='DiMethylSulfoxid
     return wf
 
 
-def just_nmr(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, email=None,
-             username=None, **kwargs):
-    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
-    f76 = Energy(paramset=paramset.nmr_groundState, parents=[f10], species='groundState', geometry="opt_groundState",
-                 name_tag='nmr_', solvent=solvent, **kwargs)
+def just_nmr(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, **kwargs):
+    name_tag = kwargs.get("name_tag", "")
+    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **_tagged_kwargs(kwargs))
+    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=[f10], solvent=solvent,
+                       **_tagged_kwargs(kwargs))
+    geometry = "{}{}".format(name_tag, "solv_opt_groundState" if solvent else "opt_groundState")
+    f76 = Energy(paramset=paramset.nmr_groundState, parents=[f31], species='groundState', geometry=geometry,
+                 solvent=solvent, **_tagged_kwargs(kwargs, "nmr_"))
 
     # Establish fireworks in workflow
-    fws = [f10, f76, ]
+    fws = [f10, f31, f76]
     wf = Workflow(fws, name="gaus_nmr_{}".format(identifier or smiles))
 
     return wf
 
 
 def just_tddft(paramset, identifier=None, smiles=None, wtune=False, solvent=None,
-               hf_mol_opt=False, email=None, username=None, check_if_already_run=True, **kwargs):
+               hf_mol_opt=False, check_if_already_run=True, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
 
     mol_opt_params = paramset.hf_opt_groundState if hf_mol_opt else paramset.opt_groundState
@@ -243,17 +250,12 @@ def just_tddft(paramset, identifier=None, smiles=None, wtune=False, solvent=None
     if wtune:
         fws.extend([f26, f30])
 
-    if email:
-        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
-        fws.append(EmailEnd(identifier=identifier, email=email, username=username, parents=[f61, f67]))
-
     wf = Workflow(fws, name="tddft_{}".format(identifier or smiles))
 
     return wf
 
 
-def just_initialize(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, email=None,
-                    username=None, **kwargs):
+def just_initialize(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
     fws = [f10, ]
     wf = Workflow(fws, name="init_{}".format(identifier or smiles))
@@ -261,8 +263,7 @@ def just_initialize(paramset, identifier=None, smiles=None, solvent='acetonitril
 
 
 # # RETIRED WORKFLOW. This class needs the OCELOT API to be installed.
-# def dihed_rot(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, email=None,
-#               username=None, **kwargs):
+# def dihed_rot(paramset, identifier=None, smiles=None, solvent='acetonitrile', hf_mol_opt=False, **kwargs):
 #     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
 #     f12 = LowestEConformer(smiles=smiles, paramset=paramset.semi_empirical, parents=f10, **kwargs)
 #     f26 = Optimization(paramset=paramset.opt_groundState, geometry="conformer", species='groundState', parents=f12,
@@ -282,7 +283,7 @@ def just_initialize(paramset, identifier=None, smiles=None, solvent='acetonitril
 
 
 def specialized_job(paramset, identifier=None, smiles=None, solvent='acetonitrile', wtune=True, hf_mol_opt=False,
-                    email=None, username=None, check_if_already_run=False, **kwargs):
+                    check_if_already_run=False, **kwargs):
     kwargs.update(dict(iop_str="0170700000"))
     # name = kwargs.get('mol_name')
     # species = "groundState" if "_p0" in name else "cation1" if "_p1" in name else "cation2"
@@ -308,7 +309,7 @@ def specialized_job(paramset, identifier=None, smiles=None, solvent='acetonitril
 
 
 def molDisc_wf(paramset, identifier=None, smiles=None, wtune=True,
-               email=None, username=None, wf_tag="", **kwargs):
+               wf_tag="", **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
 
     f26 = MolOpt(paramset=paramset.opt_groundState, parents=f10, **kwargs)
@@ -332,13 +333,6 @@ def molDisc_wf(paramset, identifier=None, smiles=None, wtune=True,
     if wtune:
         fws.extend([f26, f30])
 
-    if email:
-        fws.append(EmailStart(identifier=identifier, email=email, username=username, parents=[f10]))
-        fws.append(
-            EmailEnd(identifier=identifier, email=email, username=username, parents=[f45, f46, f47, f48]))
-
     wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
 
     return wf
-
-

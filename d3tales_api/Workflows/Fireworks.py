@@ -29,7 +29,6 @@ from d3tales_api.Workflows.utils import (
     PROC_VM_KEY,
     RUNFILE_LOG,
 )
-from d3tales_api.Workflows.d3tales_utils import EmailStart, EmailEnd  # noqa: F401
 
 # Copyright 2021-2022, University of Kentucky
 
@@ -107,6 +106,8 @@ class MolOpt(Firework):
                  name_tag="", software=DEFAULT_SOFTWARE, **kwargs):
         software = _normalize_software(software)
         kwargs.pop("use_iop", None)
+        kwargs.setdefault("geometry", "opt_mol")
+        kwargs.setdefault("geom_from_smiles", True)
         task_cls = _FIRETASKS[software]["opt"]
         task_kwargs = _task_kwargs(
             software,
@@ -160,6 +161,7 @@ class Optimization(Firework):
             path=PATH,
             runfile_log=RUNFILE_LOG,
             geometry=geometry,
+            geom_from_smiles=kwargs.pop("geom_from_smiles", geometry == "opt_mol"),
             type=_type,
             subtype=species,
             solvent=solvent,

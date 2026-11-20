@@ -4,6 +4,7 @@ import subprocess
 import multiprocessing
 import re
 import uuid
+from copy import deepcopy
 from six import add_metaclass
 from atomate.utils.utils import get_logger, env_chk
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -22,18 +23,20 @@ from d3tales_api.Workflows.utils import (
     get_local_output_dir,
     get_omega,
     get_store_dir,
+    geometry_key_candidates,
     local_record,
     omega_to_iop,
     orig_conditions,
     orig_hash_id,
     save_local_result,
+    resolve_charge_multiplicity,
     spec_or_task,
     start_from_smiles,
     write_nto,
     zip_files
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.Workflows.d3tales_utils import d3t_submit_calculation
+from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
 
 logger = get_logger(__name__)
 cpus = [multiprocessing.cpu_count() if multiprocessing.cpu_count() < 16 else 16]
@@ -140,16 +143,16 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.full_name = name_tag + self['name']
         self.calc_name = self['name']
-        self.paramset = self["paramset"]
+        self.paramset = deepcopy(self["paramset"])
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
         self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
+        self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
         self.submit = spec_or_task(self, fw_spec, "submit", True)
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
-        self.run_nto = fw_spec.get("run_nto") or self.get("run_nto") or False
+        self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
 
         self.gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
 
@@ -215,8 +218,8 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
             self.gs_spin = get_groundState(
                 self.identifier, self.smiles, prop='spin', data_store=self.data_store
             )
-        use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
-        run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or False
+        use_iop = spec_or_task(self, fw_spec, "use_iop", True)
+        run_from_com = spec_or_task(self, fw_spec, "run_from_com", False)
 
         # get iop string (omega value) for the calculation
         self.iop_str = fw_spec.get("iop_str", ) or self.get("iop_str", )
@@ -227,16 +230,21 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.result_iop_str = self.iop_str  # fixed copy used for local record hashes
 
         # get starting geometry for calculation
-        geometry = fw_spec.get("geometry", ) or self.get("geometry", )
-        geometry_sites = fw_spec.get("{}_geom".format(geometry), )
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        geometry_sites = fw_spec.get("{}_geom".format(geometry_key))
         if run_from_com:
             self.mol = GaussianInput.from_file(self.file_com).molecule
         else:
             if geometry_sites:
                 self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
             else:
-                geometry_hash = fw_spec.get("{}_hash".format(geometry),
-                                            orig_hash_id(self.identifier, self.calc_name, self.paramset.functional,
+                geometry_hash = fw_spec.get("{}_hash".format(geometry_key),
+                                            orig_hash_id(self.identifier, geometry, self.paramset.functional,
                                                          self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                          solvent=self.solvent))
                 hash_geom = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir)
@@ -254,11 +262,11 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
                                 update_spec={"defuser_reason": "The molecule has {} atoms".format(num_atoms)})
 
         # Update route parameters with omega value and pcm solvent
-        radical_electrons = (self.gs_spin - 1 - self.paramset.charge) % 2
-        self.paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
-        self.paramset.charge += self.gs_charge
-        # Update functional for unrestricted calculation
-        self.functional = self.paramset.functional if self.restricted else "R{}".format(self.paramset.functional)
+        self.paramset.charge, self.paramset.multiplicity = resolve_charge_multiplicity(
+            self, self.paramset, fw_spec, self.gs_charge, self.gs_spin
+        )
+        self.functional = self.paramset.functional if self.restricted else "U{}".format(self.paramset.functional)
+        self.paramset.functional = self.functional
         print("Charge: ", self.paramset.charge, "\t Multiplicity: ", self.paramset.multiplicity)
         self.configure_link0_resources(fw_spec)
         self.paramset.link0_parameters["%chk"] = self.file_chk
@@ -474,7 +482,7 @@ class RunWtuning(FiretaskBase):
         path = env_chk(self.get('path'), fw_spec)
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
         gaussian_cmd = env_chk(self.get('g16_cmd'), fw_spec)
-        paramset = self["paramset"]
+        paramset = deepcopy(self["paramset"])
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
         smiles = fw_spec.get("smiles", ) or self.get("smiles")
         gs_charge = spec_or_task(self, fw_spec, "gs_charge")
@@ -490,17 +498,25 @@ class RunWtuning(FiretaskBase):
         submit = spec_or_task(self, fw_spec, "submit", True)
         restricted = spec_or_task(self, fw_spec, "restricted", True)
 
-        radical_electrons = (gs_spin - 1 - paramset.charge) % 2
-        paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
-        paramset.charge += gs_charge
-        geometry = fw_spec.get("geometry", ) or self.get("geometry", )
-        geometry_sites = fw_spec.get("{}_geom".format(geometry), )
+        paramset.charge, paramset.multiplicity = resolve_charge_multiplicity(
+            self, paramset, fw_spec, gs_charge, gs_spin
+        )
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        geometry_sites = fw_spec.get("{}_geom".format(geometry_key))
         if geometry_sites:
             mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
         else:
-            geometry_hash = fw_spec.get("{}_hash".format(geometry), )
+            geometry_hash = fw_spec.get("{}_hash".format(geometry_key), )
             mol = get_db_geom(geometry_hash, data_store=data_store, store_dir=store_dir) \
-                or start_from_smiles(identifier, smiles, data_store=data_store)
+                or (start_from_smiles(identifier, smiles, data_store=data_store)
+                    if self.get("geom_from_smiles", False) else None)
+            if mol is None:
+                raise LookupError("No geometry found for requested geometry {!r}".format(geometry))
 
         # FireWorks only propagates update_spec to direct children. Forward the molecule inputs so the
         # optimizations downstream of w-tuning see the same geometry/SMILES as they would with wtune=False.
@@ -508,7 +524,9 @@ class RunWtuning(FiretaskBase):
         if smiles:
             forward_spec["smiles"] = smiles
         if geometry and geometry_sites:
-            forward_spec["{}_geom".format(geometry)] = geometry_sites
+            forward_spec["{}_geom".format(geometry_key)] = geometry_sites
+        if geometry_key and fw_spec.get("{}_hash".format(geometry_key)) is not None:
+            forward_spec["{}_hash".format(geometry_key)] = fw_spec["{}_hash".format(geometry_key)]
 
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
@@ -527,7 +545,7 @@ class RunWtuning(FiretaskBase):
                                  "gs_charge": gs_charge, "gs_spin": gs_spin, **forward_spec})
 
         # generate the input for wtuning in gaussian and run tuning
-        functional = paramset.functional if restricted else "R{}".format(paramset.functional)
+        functional = paramset.functional if restricted else "U{}".format(paramset.functional)
         wt_mol = WtuningJob(
             func=functional,
             basis=paramset.basis_set,

@@ -3,10 +3,7 @@ from rdkit.Chem import MolFromSmiles, MolToSmiles
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import (get_data_store, get_groundState, local_identifier, get_store_dir,
                                          get_local_output_dir, write_json)
-from d3tales_api.Workflows.d3tales_utils import d3t_get_smiles, d3t_register_molecule
-# Backward compatibility: these classes used to live in this module, and FireWorks already stored in a
-# LaunchPad reference them as d3tales_api.Workflows.Initialize.<Class>. Keep this import so they still load.
-from d3tales_api.Workflows.d3tales_utils import Mail, EmailStarting, EmailFinished  # noqa: F401
+from d3tales_api.D3database.workflow_adapter import d3t_get_smiles, d3t_register_molecule
 
 INIT_GEOMETRY = "opt_mol"
 

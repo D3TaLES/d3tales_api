@@ -80,6 +80,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">monty.json</span><span class="w"> </span><span class="kn">import</span> <span class="n">MontyEncoder</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.sites</span><span class="w"> </span><span class="kn">import</span> <span class="n">Site</span>
@@ -89,8 +90,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">AllChem</span><span class="p">,</span> <span class="n">MolToInchiKey</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem.rdmolops</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetFormalCharge</span><span class="p">,</span> <span class="n">AddHs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem.Descriptors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumRadicalElectrons</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.d3tales_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">d3t_get_smiles</span><span class="p">,</span> <span class="n">d3t_get_init_structure</span><span class="p">,</span> <span class="n">d3t_get_ground_state</span><span class="p">,</span>
-                                                 <span class="n">d3t_get_omega</span><span class="p">,</span> <span class="n">d3t_get_raw_computation</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.workflow_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">d3t_get_smiles</span><span class="p">,</span> <span class="n">d3t_get_init_structure</span><span class="p">,</span> <span class="n">d3t_get_ground_state</span><span class="p">,</span>
+                                                     <span class="n">d3t_get_omega</span><span class="p">,</span> <span class="n">d3t_get_raw_computation</span><span class="p">)</span>
 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 <span class="c1"># Copyright 2021, University of Kentucky</span>
@@ -649,6 +650,71 @@
     <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">val</span></div>
+
+
+
+<div class="viewcode-block" id="resolve_charge_multiplicity">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.resolve_charge_multiplicity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_charge_multiplicity</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">paramset</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">gs_charge</span><span class="p">,</span> <span class="n">gs_spin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolve an absolute charge and configured multiplicity without mutating parameters.</span>
+
+<span class="sd">    ``charge`` is a relative charge from the neutral ground-state charge. Explicit</span>
+<span class="sd">    ``fw_spec`` and task values override the parameter set. The parity-derived</span>
+<span class="sd">    multiplicity is diagnostic only when a multiplicity has been configured.</span>
+<span class="sd">    """</span>
+    <span class="n">relative_charge</span> <span class="o">=</span> <span class="n">spec_or_task</span><span class="p">(</span>
+        <span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"charge"</span><span class="p">,</span> <span class="n">_parameter_value</span><span class="p">(</span><span class="n">paramset</span><span class="p">,</span> <span class="s2">"charge"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">configured_multiplicity</span> <span class="o">=</span> <span class="n">spec_or_task</span><span class="p">(</span>
+        <span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"multiplicity"</span><span class="p">,</span> <span class="n">_parameter_value</span><span class="p">(</span><span class="n">paramset</span><span class="p">,</span> <span class="s2">"multiplicity"</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">relative_charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">relative_charge</span><span class="p">)</span>
+        <span class="n">gs_charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gs_charge</span><span class="p">)</span>
+        <span class="n">gs_spin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gs_spin</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Ground-state charge, spin, and relative charge must be integers"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="k">if</span> <span class="n">gs_spin</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Ground-state spin multiplicity must be a positive integer"</span><span class="p">)</span>
+    <span class="n">automatic_multiplicity</span> <span class="o">=</span> <span class="p">(</span><span class="n">gs_spin</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">relative_charge</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">configured_multiplicity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">multiplicity</span> <span class="o">=</span> <span class="n">automatic_multiplicity</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">multiplicity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">configured_multiplicity</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Configured spin multiplicity must be a positive integer"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">if</span> <span class="n">multiplicity</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Configured spin multiplicity must be a positive integer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">multiplicity</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="p">(</span><span class="n">gs_spin</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">relative_charge</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Multiplicity </span><span class="si">{}</span><span class="s2"> is incompatible with the electron-count parity for "</span>
+            <span class="s2">"relative charge </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">multiplicity</span><span class="p">,</span> <span class="n">relative_charge</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">configured_multiplicity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">multiplicity</span> <span class="o">!=</span> <span class="n">automatic_multiplicity</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"Configured multiplicity </span><span class="si">{}</span><span class="s2"> differs from the parity-derived value </span><span class="si">{}</span><span class="s2"> "</span>
+            <span class="s2">"for relative charge </span><span class="si">{}</span><span class="s2">; preserving the configured value."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">multiplicity</span><span class="p">,</span> <span class="n">automatic_multiplicity</span><span class="p">,</span> <span class="n">relative_charge</span>
+            <span class="p">),</span>
+            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">gs_charge</span> <span class="o">+</span> <span class="n">relative_charge</span><span class="p">,</span> <span class="n">multiplicity</span></div>
+
+
+
+<div class="viewcode-block" id="geometry_key_candidates">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.geometry_key_candidates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">geometry_key_candidates</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return name-tagged and exact geometry keys, preferring tagged producer output."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">geometry</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">name_tag</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name_tag"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name_tag"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="n">name_tag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">geometry</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">name_tag</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name_tag</span> <span class="o">+</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">geometry</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">geometry</span><span class="p">]</span></div>
 
 
 

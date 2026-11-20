@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>d3tales_api.Workflows.d3tales_utils &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+  <title>d3tales_api.D3database.workflow_adapter &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
@@ -64,7 +64,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">d3tales_api.Workflows.d3tales_utils</li>
+      <li class="breadcrumb-item active">d3tales_api.D3database.workflow_adapter</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -73,27 +73,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for d3tales_api.Workflows.d3tales_utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""</span>
-<span class="sd">D3TaLES-specific helpers for the Workflows module.</span>
+  <h1>Source code for d3tales_api.D3database.workflow_adapter</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Database and website adapters used by Workflows.</span>
 
-<span class="sd">Everything that talks to the D3TaLES databases or to the D3TaLES website (d3tales.as.uky.edu) lives here,</span>
-<span class="sd">so the rest of Workflows can run without it when ``data_store="local"``.</span>
-
-<span class="sd">The pieces of the D3database module that Workflows needs have been moved here,</span>
-<span class="sd">so Workflows no longer imports anything from D3database. These pieces include</span>
-<span class="sd">the REST API client, database connector, and molecule registration path; the</span>
-<span class="sd">registration path avoids the Schema2Class, jsonschema, and pandas dependencies</span>
-<span class="sd">used by FrontDB.</span>
-
-<span class="sd">Heavy or credentialed dependencies (requests, pymongo, nanoid, d3tales_api.database_info, Processors) are imported</span>
-<span class="sd">lazily inside functions, so importing Workflows never needs DB_INFO_FILE or network access.</span>
+<span class="sd">Database-facing operations are kept under ``D3database`` and loaded lazily by</span>
+<span class="sd">workflow helpers. Local workflows do not require credentials, network access,</span>
+<span class="sd">or a database connection.</span>
 <span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">smtplib</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ssl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fireworks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Firework</span><span class="p">,</span> <span class="n">FiretaskBase</span><span class="p">,</span> <span class="n">explicit_serialize</span><span class="p">,</span> <span class="n">FWAction</span>
 
 <span class="c1"># Copyright 2021-2026, University of Kentucky</span>
 
@@ -105,10 +93,10 @@
 <span class="c1"># REST API client (moved from D3database/restapi.py)</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="RESTAPI">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RESTAPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="RESTAPI.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">login_endpoint</span><span class="o">=</span><span class="s1">'login'</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
                  <span class="n">upload_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expected_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -166,7 +154,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s1">'csrftoken'</span><span class="p">]</span> <span class="k">if</span> <span class="s1">'csrftoken'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="s1">'csrf'</span><span class="p">],</span> <span class="p">)</span>
 
 <div class="viewcode-block" id="RESTAPI.get_client">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.get_client">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_client">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
         <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -181,7 +169,7 @@
 
 
 <div class="viewcode-block" id="RESTAPI.post_process">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.post_process">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.post_process">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Submit data form</span>
         <span class="n">file_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span> <span class="k">else</span> <span class="kc">None</span>
@@ -191,7 +179,7 @@
 
 
 <div class="viewcode-block" id="RESTAPI.get_process">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.get_process">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_process">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="n">req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Referer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">),</span>
@@ -207,7 +195,7 @@
 <span class="c1"># MongoDB connector (moved from D3database/d3database.py)</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DBconnector">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DBconnector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class to retrieve a collection from a database and insert new entry.</span>
@@ -216,7 +204,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="DBconnector.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_information</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_information</span> <span class="o">=</span> <span class="n">db_information</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"host"</span><span class="p">,</span> <span class="p">)</span>
@@ -228,7 +216,7 @@
 
 
 <div class="viewcode-block" id="DBconnector.get_database">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.get_database">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_database">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">pymongo</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoClient</span>
         <span class="k">try</span><span class="p">:</span>
@@ -245,7 +233,7 @@
 
 
 <div class="viewcode-block" id="DBconnector.get_collection">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.get_collection">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_collection">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coll_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">coll_name</span><span class="p">:</span>
@@ -272,7 +260,7 @@
 
 
 <div class="viewcode-block" id="d3t_get_smiles">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_smiles">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_smiles">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_smiles</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return the SMILES stored in the D3TaLES frontend DB for `identifier` ('' if none)."""</span>
     <span class="k">return</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">'smiles'</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">''</span></div>
@@ -280,7 +268,7 @@
 
 
 <div class="viewcode-block" id="d3t_get_init_structure">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_init_structure">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_init_structure">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_init_structure</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return the initial structure (pymatgen Molecule) stored in the frontend DB. Raises LookupError if missing."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
@@ -292,7 +280,7 @@
 
 
 <div class="viewcode-block" id="d3t_get_ground_state">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_ground_state">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_ground_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_ground_state</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">'charge'</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return ground state charge/spin (int) from the frontend DB, or None if not found."""</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">'groundState_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prop</span><span class="p">))</span>
@@ -301,7 +289,7 @@
 
 
 <div class="viewcode-block" id="d3t_get_omega">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_omega">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_omega">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_omega</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return the tuned omega value from the frontend DB, or None if not found."""</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">_rest_get</span><span class="p">(</span><span class="s2">"restapi/molecules/_id=</span><span class="si">{}</span><span class="s2">/mol_characterization.omega=1"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">))</span>
@@ -313,7 +301,7 @@
 
 
 <div class="viewcode-block" id="d3t_get_raw_computation">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_raw_computation">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_raw_computation</span><span class="p">(</span><span class="n">_hash</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return the `data` dict of a backend computation entry, or None if the entry does not exist."""</span>
     <span class="n">endpoint</span> <span class="o">=</span> <span class="s2">"restapi/rawdata/computation/_id=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_hash</span><span class="p">)</span>
@@ -330,7 +318,7 @@
 <span class="c1"># REST API / DB helpers (write)</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="d3t_submit_calculation">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_submit_calculation">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_submit_calculation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_submit_calculation</span><span class="p">(</span><span class="n">zip_path</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Upload a zipped calculation to the D3TaLES website for processing."""</span>
     <span class="n">submission</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'post'</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">'tools/upload/computation-gaussian'</span><span class="p">,</span>
@@ -370,7 +358,7 @@
 
 
 <div class="viewcode-block" id="d3t_register_molecule">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_register_molecule">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_register_molecule">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_register_molecule</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="s1">'Risko'</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate molecule info and insert it into the D3TaLES frontend DB.</span>
@@ -390,106 +378,6 @@
     <span class="n">_nested_set</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">"mol_info"</span><span class="p">,</span> <span class="n">jsanitize</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">allow_bson</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">_id</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'groundState_charge'</span><span class="p">),</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'groundState_spin'</span><span class="p">)</span></div>
 
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># Email notifications (D3TaLES website submissions)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<div class="viewcode-block" id="Mail">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Mail</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""SMTP mailer. Credentials come ONLY from arguments or environment variables."""</span>
-
-<div class="viewcode-block" id="Mail.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smtp_server</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"EMAIL_PORT"</span><span class="p">,</span> <span class="mi">465</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">smtp_server_domain_name</span> <span class="o">=</span> <span class="n">smtp_server</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"EMAIL_SMTP_SERVER"</span><span class="p">,</span> <span class="s2">"smtp.gmail.com"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sender_mail</span> <span class="o">=</span> <span class="n">sender</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"EMAIL_USER"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"EMAIL_PASS"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_mail</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s2">"Email credentials not found. Set the EMAIL_USER and EMAIL_PASS "</span>
-                                   <span class="s2">"environment variables."</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Mail.send">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail.send">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emails</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
-        <span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
-        <span class="n">service</span> <span class="o">=</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP_SSL</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smtp_server_domain_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">ssl_context</span><span class="p">)</span>
-        <span class="n">service</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_mail</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
-            <span class="n">service</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_mail</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Subject: </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">service</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="EmailStarting">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStarting">[docs]</a>
-<span class="nd">@explicit_serialize</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EmailStarting</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
-    <span class="c1"># Copyright 2021, University of Kentucky</span>
-<div class="viewcode-block" id="EmailStarting.run_task">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStarting.run_task">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
-        <span class="n">identifier</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"identifier"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-        <span class="n">email_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'email'</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-        <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"D3TaLES User"</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s2">""",</span>
-<span class="s2">        Your submitted molecule, """</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">+</span> <span class="s2">""", has been approved. Calculations for this molecule have begun. You will receive another email when calculations have finished.</span>
-<span class="s2">        Thank you,</span>
-<span class="s2">        D3TaLES Computational Team"""</span>
-        <span class="n">Mail</span><span class="p">()</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">email_address</span><span class="p">],</span> <span class="s2">"D3TaLES Molecule Calculations"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">"identifier"</span><span class="p">:</span> <span class="n">identifier</span><span class="p">})</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="EmailFinished">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailFinished">[docs]</a>
-<span class="nd">@explicit_serialize</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EmailFinished</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
-    <span class="c1"># Copyright 2021, University of Kentucky</span>
-<div class="viewcode-block" id="EmailFinished.run_task">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailFinished.run_task">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
-        <span class="n">identifier</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"identifier"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-        <span class="n">email_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'email'</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-        <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">,</span> <span class="p">)</span> <span class="ow">or</span> <span class="s2">"D3TaLES User"</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s2">""",</span>
-<span class="s2">        Calculations for your submitted molecule, """</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">+</span> <span class="s2">""", have finished. You may now view the computed properties for this molecule at """</span> <span class="o">+</span> <span class="n">D3TALES_URL</span> <span class="o">+</span> <span class="s2">"""/database/"""</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"""</span>
-<span class="s2">        Thank you,</span>
-<span class="s2">        D3TaLES Computational Team"""</span>
-        <span class="n">Mail</span><span class="p">()</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">email_address</span><span class="p">],</span> <span class="s2">"D3TaLES Molecule Calculations"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="p">{</span><span class="s2">"identifier"</span><span class="p">:</span> <span class="n">identifier</span><span class="p">})</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="EmailStart">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStart">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">EmailStart</span><span class="p">(</span><span class="n">Firework</span><span class="p">):</span>
-<div class="viewcode-block" id="EmailStart.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStart.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_tag</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'_category'</span><span class="p">:</span> <span class="s1">'processing'</span><span class="p">,</span> <span class="s1">'_priority'</span><span class="p">:</span> <span class="n">priority</span><span class="p">}</span> <span class="k">if</span> <span class="n">priority</span> <span class="k">else</span> <span class="p">{</span><span class="s1">'_category'</span><span class="p">:</span> <span class="s1">'processing'</span><span class="p">}</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmailStarting</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)]</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EmailStart</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">email_starting"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_tag</span><span class="p">))</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="EmailEnd">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailEnd">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">EmailEnd</span><span class="p">(</span><span class="n">Firework</span><span class="p">):</span>
-<div class="viewcode-block" id="EmailEnd.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailEnd.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_tag</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'_category'</span><span class="p">:</span> <span class="s1">'processing'</span><span class="p">,</span> <span class="s1">'_priority'</span><span class="p">:</span> <span class="n">priority</span><span class="p">}</span> <span class="k">if</span> <span class="n">priority</span> <span class="k">else</span> <span class="p">{</span><span class="s1">'_category'</span><span class="p">:</span> <span class="s1">'processing'</span><span class="p">}</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmailFinished</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)]</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EmailEnd</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">email_finished"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_tag</span><span class="p">))</span></div>
-</div>
 
 </pre></div>
 

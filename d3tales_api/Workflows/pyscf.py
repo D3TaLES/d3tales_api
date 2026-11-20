@@ -36,6 +36,7 @@ import multiprocessing
 import time
 import uuid
 import warnings
+from copy import deepcopy
 
 import numpy as np
 from six import add_metaclass
@@ -54,11 +55,13 @@ from d3tales_api.Workflows.utils import (
     get_local_output_dir,
     get_omega,
     get_store_dir,
+    geometry_key_candidates,
     local_record,
     omega_to_iop,
     orig_conditions,
     parse_tddft,
     read_local_result,
+    resolve_charge_multiplicity,
     save_local_result,
     spec_or_task,
     start_from_smiles
@@ -526,16 +529,16 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.full_name = name_tag + self['name']
         self.calc_name = self['name']
-        self.paramset = self["paramset"]
+        self.paramset = deepcopy(self["paramset"])
         self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
         self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
         self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        self.skip_freq = fw_spec.get("skip_freq", ) or self.get("skip_freq") or False
+        self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
         self.submit = spec_or_task(self, fw_spec, "submit", True)  # kept for API parity; PySCF results are never uploaded
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
-        self.run_nto = fw_spec.get("run_nto") or self.get("run_nto") or False
+        self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.density_fit = spec_or_task(self, fw_spec, "density_fit", False)
 
         self.pyscf_file_name = fw_spec.get("pyscf_file_name") or self.get("pyscf_file_name") or "pyscf"
@@ -594,13 +597,16 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.setup_files(fw_spec, calc_type=calc_type)
         name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
         self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
-        self.gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
-            self.identifier, self.smiles, data_store=self.data_store) or 0
-        self.gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
-            self.identifier, self.smiles, prop='spin', data_store=self.data_store) or 1
-        self.use_iop = fw_spec.get("use_iop", True) if self.get("use_iop", True) else self.get("use_iop")
-        run_from_com = fw_spec.get("run_from_com") or self.get("run_from_com") or \
-                       fw_spec.get("run_from_xyz") or self.get("run_from_xyz") or False
+        self.gs_charge = spec_or_task(self, fw_spec, "gs_charge")
+        if self.gs_charge is None:
+            self.gs_charge = get_groundState(self.identifier, self.smiles, data_store=self.data_store)
+        self.gs_spin = spec_or_task(self, fw_spec, "gs_spin")
+        if self.gs_spin is None:
+            self.gs_spin = get_groundState(self.identifier, self.smiles, prop='spin', data_store=self.data_store)
+        self.use_iop = spec_or_task(self, fw_spec, "use_iop", True)
+        run_from_com = spec_or_task(self, fw_spec, "run_from_com", False)
+        if not run_from_com:
+            run_from_com = spec_or_task(self, fw_spec, "run_from_xyz", False)
 
         # get iop string (omega value) for the calculation: PySCF-tuned omega first, then the data store's
         self.iop_str = fw_spec.get("iop_str", ) or self.get("iop_str", )
@@ -611,22 +617,30 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.result_iop_str = self.iop_str  # fixed copy used for local record hashes
 
         # get starting geometry for calculation
-        geometry = fw_spec.get("geometry", ) or self.get("geometry", )
-        geometry_sites = fw_spec.get("{}_geom".format(geometry), )
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        geometry_sites = fw_spec.get("{}_geom".format(geometry_key), )
         if run_from_com:
             self.mol = Molecule.from_file(self.file_xyz)
         else:
             if geometry_sites:
                 self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
             else:
-                geometry_hash = fw_spec.get("{}_hash".format(geometry),
-                                            pyscf_hash_id(self.identifier, self.calc_name, self.paramset.functional,
+                geometry_hash = fw_spec.get("{}_hash".format(geometry_key),
+                                            pyscf_hash_id(self.identifier, geometry, self.paramset.functional,
                                                           self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                           solvent=self.solvent))
                 self.mol = get_db_geom(geometry_hash, data_store="local", store_dir=self.store_dir)
                 if self.mol is None and self.data_store == "d3tales":
                     self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir)
-                self.mol = self.mol or start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
+                if self.mol is None and self.get("geom_from_smiles", False):
+                    self.mol = start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
+                if self.mol is None:
+                    raise LookupError("No geometry found for requested geometry {!r}".format(geometry))
 
             # End job if the total number of atoms is greater than 200
             num_atoms = len(self.mol.sites)
@@ -635,11 +649,11 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
                                 update_spec={"defuser_reason": "The molecule has {} atoms".format(num_atoms)})
 
         # charge / multiplicity bookkeeping (identical to Gaussian.py)
-        radical_electrons = (self.gs_spin - 1 - self.paramset.charge) % 2
-        self.paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
-        self.paramset.charge += self.gs_charge
+        self.paramset.charge, self.paramset.multiplicity = resolve_charge_multiplicity(
+            self, self.paramset, fw_spec, self.gs_charge, self.gs_spin
+        )
         # Update functional for unrestricted calculation
-        self.functional = self.paramset.functional if self.restricted else "R{}".format(self.paramset.functional)
+        self.functional = self.paramset.functional if self.restricted else "U{}".format(self.paramset.functional)
         print("Charge: ", self.paramset.charge, "\t Multiplicity: ", self.paramset.multiplicity)
 
         # translate Gaussian route options (omega IOp, PCM solvent, SCF/Opt/TD keywords) into PySCF settings
@@ -915,13 +929,15 @@ class RunPySCFWtuning(FiretaskBase):
         data_store = get_data_store(self, fw_spec)
         path = env_chk(self.get('path'), fw_spec)
         runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        paramset = self["paramset"]
+        paramset = deepcopy(self["paramset"])
         identifier = fw_spec.get("identifier", ) or self.get("identifier")
         smiles = fw_spec.get("smiles", ) or self.get("smiles")
-        gs_charge = fw_spec.get("gs_charge") or self.get("gs_charge") or get_groundState(
-            identifier, smiles, data_store=data_store)
-        gs_spin = fw_spec.get("gs_spin") or self.get("gs_spin") or get_groundState(
-            identifier, smiles, prop='spin', data_store=data_store)
+        gs_charge = spec_or_task(self, fw_spec, "gs_charge")
+        if gs_charge is None:
+            gs_charge = get_groundState(identifier, smiles, data_store=data_store)
+        gs_spin = spec_or_task(self, fw_spec, "gs_spin")
+        if gs_spin is None:
+            gs_spin = get_groundState(identifier, smiles, prop='spin', data_store=data_store)
         pyscf_file_name = fw_spec.get("pyscf_file_name") or self.get("pyscf_file_name") or "pyscf"
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, pyscf_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
@@ -930,19 +946,34 @@ class RunPySCFWtuning(FiretaskBase):
         restricted = spec_or_task(self, fw_spec, "restricted", True)
         solvent = fw_spec.get("solvent", ) or self.get("solvent", )
 
-        radical_electrons = (gs_spin - 1 - paramset.charge) % 2
-        paramset.multiplicity = radical_electrons + 1  # calculate spin multiplicity with Hand's rule
-        paramset.charge += gs_charge
-        geometry = fw_spec.get("geometry", ) or self.get("geometry", )
-        geometry_sites = fw_spec.get("{}_geom".format(geometry), )
+        paramset.charge, paramset.multiplicity = resolve_charge_multiplicity(
+            self, paramset, fw_spec, gs_charge, gs_spin
+        )
+        geometry = spec_or_task(self, fw_spec, "geometry")
+        geometry_key = next(
+            (key for key in geometry_key_candidates(self, fw_spec, geometry)
+             if fw_spec.get("{}_geom".format(key)) is not None),
+            geometry,
+        )
+        geometry_sites = fw_spec.get("{}_geom".format(geometry_key), )
         if geometry_sites:
             mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
         else:
-            geometry_hash = fw_spec.get("{}_hash".format(geometry), )
+            geometry_hash = fw_spec.get("{}_hash".format(geometry_key), )
             mol = get_db_geom(geometry_hash, data_store="local", store_dir=store_dir)
             if mol is None and data_store == "d3tales":
                 mol = get_db_geom(geometry_hash, data_store=data_store, store_dir=store_dir)
-            mol = mol or start_from_smiles(identifier, smiles, data_store=data_store)
+            if mol is None and self.get("geom_from_smiles", False):
+                mol = start_from_smiles(identifier, smiles, data_store=data_store)
+            if mol is None:
+                raise LookupError("No geometry found for requested geometry {!r}".format(geometry))
+
+        forward_spec = {"data_store": data_store, "identifier": identifier,
+                        "gs_charge": gs_charge, "gs_spin": gs_spin}
+        if smiles:
+            forward_spec["smiles"] = smiles
+        if geometry_key and geometry_sites:
+            forward_spec["{}_geom".format(geometry_key)] = geometry_sites
 
         # create folder
         working_dir = "{}/{}".format(calc_dir, "wtuning")
@@ -956,11 +987,10 @@ class RunPySCFWtuning(FiretaskBase):
             if tuned_w:
                 iop_str = omega_to_iop(tuned_w)
                 return FWAction(
-                    update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier,
-                                 "gs_charge": gs_charge, "gs_spin": gs_spin})
+                    update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, **forward_spec})
 
         # run the tuning in pyscf
-        functional = paramset.functional if restricted else "R{}".format(paramset.functional)
+        functional = paramset.functional if restricted else "U{}".format(paramset.functional)
         wt_mol = PySCFWtuningJob(func=functional, basis=paramset.basis_set, name="wtuning", nproc=nprocs, mem=48,
                                  n_charge=paramset.charge, n_spin=paramset.multiplicity, wdir='./', scheme='Jh',
                                  wbmin=0.05, wbmax=0.5, solvent=solvent, solvent_eps=self.get("solvent_eps"),
@@ -987,8 +1017,7 @@ class RunPySCFWtuning(FiretaskBase):
                 fn.write("{}, {}\n".format(data_hash, working_dir))
         os.system("rm -rf *.chk *.molden tuning_wtuning_ocycle*")
         return FWAction(
-            update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, "identifier": identifier, "gs_charge": gs_charge,
-                         "gs_spin": gs_spin})
+            update_spec={"iop_str": iop_str, "gaussrun_dir": calc_dir, **forward_spec})
 
 
 @explicit_serialize
