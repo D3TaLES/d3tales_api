@@ -30,6 +30,30 @@ including `FW_config.yaml`, `my_fireworker.yaml`, and `my_launchpad.yaml`. The d
 `ex_config` provides an example for the config directory. Remember, the config 
 directory must be in the same parent directory as `d3tales_fw`.
 
+### Gaussian GPU jobs
+
+Gaussian resource settings are optional FireWorker environment variables in
+`my_fireworker.yaml`, so each HPC worker can provide values that match its
+scheduler allocation. For example:
+
+```yaml
+env:
+  g16_cmd: /path/to/g16
+  gaussian_gpu_cpu: "0-1=0,2"
+  gaussian_cpu_list: "0-3"
+  gaussian_memory: "48GB"
+  gaussian_nprocshared: "4"
+```
+
+`gaussian_gpu_cpu` supplies Gaussian's `%GPUCPU` value: the GPU indices,
+followed by `=`, then one distinct control CPU per GPU. `gaussian_cpu_list`
+supplies the complete allocated CPU list and must include those control CPUs.
+Both lists must match the resources assigned by that worker's scheduler; the
+indices above are examples only. When GPU variables are omitted, tasks use
+CPU-only `%NProcShared` settings. `gaussian_memory` and `gaussian_nprocshared`
+are optional; absent values retain the task's configured memory and default
+CPU count. The separate w-tuning task does not use these GPU settings.
+
 ### Parameter file
 The `GausParamSet` class generates object-based parameters for the Workflows module to use throughout the design and launch
 of calculation workflows. The object parameters, `GausParamSet` reads a JSON file containing job parameters. The first-level

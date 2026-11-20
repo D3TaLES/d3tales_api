@@ -290,19 +290,15 @@ class ProcessChiCV(ParseChiMixin, ProcessPotBase):
     @staticmethod
     def get_i_ss(potential, current, current_range_percentage=10, window_length=11, poly_order=2):
         """
-        Determines the steady-state current for a UME CV scan by analyzing the derivative of current
-        with respect to potential.
+        Estimate steady-state current from the current derivative versus potential.
 
-        Parameters:
-            potential (list): List of potential values
-            current (list): List of current values
-            current_range_percentage (float): Percentage of the total current range to set as the threshold for di/dE
-                steady-state region.
-            window_length (int): Window length for Savitzky-Golay filter (must be odd).
-            poly_order (int): Polynomial order for Savitzky-Golay filter.
-
-        Returns:
-            steady_state_current (float): Estimated steady-state current value.
+        :param potential: Potential values.
+        :param current: Current values.
+        :param current_range_percentage: Percentage of the current range used as the
+            steady-state threshold for di/dE.
+        :param window_length: Odd window length for the Savitzky-Golay filter.
+        :param poly_order: Polynomial order for the Savitzky-Golay filter.
+        :return: Estimated steady-state current.
         """
         # Calculate total current range and determine i_derr_ss
         full_cv_data = pd.DataFrame({"potential": potential, "current": current})

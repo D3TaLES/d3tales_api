@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Processors.parser_echem &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Processors.parser_echem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Processors.parser_echem</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">savgol_filter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_filter1d</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unit_conversion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.plotters</span><span class="w"> </span><span class="kn">import</span> <span class="n">CVPlotter</span><span class="p">,</span> <span class="n">CAPlotter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">CVDescriptorCalculator</span><span class="p">,</span> <span class="n">CAResistanceCalculator</span>
+
+<span class="n">MIN_SCAN_LEN</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="ProcessPotBase">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessPotBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Base class for processing potentiostat files</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ProcessPotBase.__init__">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param filepath: str, filepath to</span>
+<span class="sd">        :param _id: str, molecule ID</span>
+<span class="sd">        :param submission_info: dict, submission info</span>
+<span class="sd">        :param metadata: dict, metadata</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span> <span class="ow">or</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mol_file"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span> <span class="o">=</span> <span class="n">submission_info</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"instrument"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_run_id</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"experiment_run_id"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrode_working"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrode_counter"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_electrode</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrode_reference"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ref</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"e_ref"</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">"V"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"temperature"</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">"K"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_concentration</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"redox_mol_concentration"</span><span class="p">),</span>
+                                                       <span class="n">default_unit</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">electrolyte_concentration</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte_concentration"</span><span class="p">),</span>
+                                                         <span class="n">default_unit</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_fraction</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"redox_mol_fraction"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">electrolyte_mol_fraction</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte_mol_fraction"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_radius</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"working_electrode_radius"</span><span class="p">),</span>
+                                                        <span class="n">default_unit</span><span class="o">=</span><span class="s2">"cm"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"working_electrode_surface_area"</span><span class="p">),</span>
+                                                              <span class="n">default_unit</span><span class="o">=</span><span class="s2">"cm^2"</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_radius</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_radius</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
+                                                       <span class="n">unit</span><span class="o">=</span><span class="s2">"cm^2"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvents</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"solvent"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"solvent"</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"solvent"</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"solvent"</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">electrolytes</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte"</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte"</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"electrolyte"</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ionic_liquids</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ionic_liquid"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ionic_liquid"</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ionic_liquid"</span><span class="p">)]</span> <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ionic_liquid"</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Dictionary of processed data (in accordance with D3TalES backend schema)</span>
+<span class="sd">        """</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_id</span><span class="p">,</span>
+            <span class="s2">"mol_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">"submission_info"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">submission_info</span><span class="p">,</span>
+            <span class="s2">"data"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Dictionary of parsed data</span>
+<span class="sd">        """</span>
+        <span class="n">p_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"file_name"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'file_name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"header"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'header'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"note"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'note'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"date_recorded"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'date_recorded'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"conditions"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span>
+            <span class="s2">"segment"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'segment'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"sample_interval"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'sample_interval'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"quiet_time"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'quiet_time'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"sensitivity"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'sensitivity'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"scan_data"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'scan_data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Dictionary of conditions (in accordance with D3TaLES backend schema)</span>
+<span class="sd">        """</span>
+        <span class="n">conditions_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"data_source"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="p">,</span>
+            <span class="s2">"working_electrode"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode</span><span class="p">,</span>
+            <span class="s2">"counter_electrode"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter_electrode</span><span class="p">,</span>
+            <span class="s2">"reference_electrode"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_electrode</span><span class="p">,</span>
+            <span class="s2">"solvent"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solvents</span><span class="p">),</span>
+            <span class="s2">"electrolyte"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">electrolytes</span><span class="p">),</span>
+            <span class="s2">"ionic_liquid"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reagent_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ionic_liquids</span><span class="p">),</span>
+            <span class="s2">"instrument"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">"working_electrode_radius"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_radius</span><span class="p">,</span>
+            <span class="s2">"working_electrode_surface_area"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_electrode_surface_area</span><span class="p">,</span>
+            <span class="s2">"redox_mol_concentration"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_concentration</span><span class="p">,</span>
+            <span class="s2">"electrolyte_concentration"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrolyte_concentration</span><span class="p">,</span>
+            <span class="s2">"redox_mol_fraction"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">redox_mol_fraction</span><span class="p">,</span>
+            <span class="s2">"electrolyte_mol_fraction"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrolyte_mol_fraction</span><span class="p">,</span>
+            <span class="s2">"temperature"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="s2">"experiment_run_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_run_id</span><span class="p">,</span>
+
+            <span class="s2">"scan_rate"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'scan_rate'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"num_scans"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'num_scans'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"initial_potential"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'init_e'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"high_e"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'high_e'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"low_e"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'low_e'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"comp_r"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'comp_R'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"step"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'step'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"pulse_width"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'pulse_width'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"high_f"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'high_f'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"low_f"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'low_f'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"amp"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'amp'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">conditions_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+<div class="viewcode-block" id="ProcessPotBase.reagent_format">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.reagent_format">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reagent_format</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">purity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Convert reagent data to D3TaLES schema format</span>
+
+<span class="sd">        :param reagents: reagent data or list of reagent data</span>
+<span class="sd">        :param purity: default purity value</span>
+<span class="sd">        :return: formatted reagent data</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">format_i</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">r_dict</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)}</span>
+                <span class="k">if</span> <span class="n">purity</span><span class="p">:</span>
+                    <span class="n">r_dict</span><span class="p">[</span><span class="s2">"purity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">purity</span>
+            <span class="k">return</span> <span class="n">r_dict</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">format_i</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">format_i</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ParseChiMixin">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParseChiMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extract data from raw Chi experiment files</span>
+<span class="sd">    """</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="ParseChiMixin.parse">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin.parse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_header</span><span class="o">=</span><span class="s2">"Potential"</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param data_header: str,</span>
+<span class="sd">        :param delimiter: str, </span>
+<span class="sd">        """</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="n">line_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line_count</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">date_recorded</span> <span class="o">=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"File"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">":"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Instrument Mode"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">":"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Header"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">":"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Note"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">":"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Init E"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"High E"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">high_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Low E"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">low_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Init P/N"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_p_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Scan Rate"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scan_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Segment ="</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">segment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'int'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Sample Interval"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sample_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Quiet Time"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">quiet_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Sensitivity"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Comp R"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comp_R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"High Frequency"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">high_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Low Frequency"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">low_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Amplitude"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Step"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Pulse Width"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">data_header</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">line_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ParseChiMixin.extract_value_unit">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin.extract_value_unit">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_value_unit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value_break</span><span class="o">=</span><span class="s2">"="</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s1">'str'</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Extract data value and unit from a Chi CV data line</span>
+
+<span class="sd">        :param line: str, data line</span>
+<span class="sd">        :param value_break: str, type of character which breaks the line</span>
+<span class="sd">        :param value_type: str, value datatype</span>
+<span class="sd">        :param return_dict: bool, return data dict if True</span>
+<span class="sd">        :return: value or data dict</span>
+<span class="sd">        """</span>
+        <span class="n">raw_value</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">value_break</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="s1">'float'</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">raw_value</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">value_type</span> <span class="o">==</span> <span class="s1">'int'</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_value</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">value_break</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">")"</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">return_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="n">unit</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProcessChiCV">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessChiCV</span><span class="p">(</span><span class="n">ParseChiMixin</span><span class="p">,</span> <span class="n">ProcessPotBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extract data from raw Chi CV experiment files</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ProcessChiCV.__init__">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">min_scan_len</span><span class="o">=</span><span class="n">MIN_SCAN_LEN</span><span class="p">,</span> <span class="n">micro_electrodes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param filepath: str, filepath to experiment data file</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span> <span class="o">=</span> <span class="s2">"cv"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">micro_electrodes</span> <span class="o">=</span> <span class="n">micro_electrodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data_header</span><span class="o">=</span><span class="s2">"Potential"</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"sample_interval"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample_interval</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">))),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"high_e"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">high_e</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"low_e"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">low_e</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"low_e"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_e</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">break_scan_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_scan_len</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_scans</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span> <span class="o">=</span> <span class="n">CVPlotter</span><span class="p">()</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"abs_plot"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">micro_electrodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i_ss</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_i_ss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span><span class="p">}</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"I_SS "</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_ss</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">e_half</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_micro_e_half</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reversibility</span> <span class="o">=</span> <span class="n">CVDescriptorCalculator</span><span class="p">()</span><span class="o">.</span><span class="n">reversibility</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">middle_sweep</span> <span class="o">=</span> <span class="n">CVDescriptorCalculator</span><span class="p">()</span><span class="o">.</span><span class="n">middle_sweep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">e_half</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">CVDescriptorCalculator</span><span class="p">()</span><span class="o">.</span><span class="n">e_half</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peak_splittings</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">}</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">CVDescriptorCalculator</span><span class="p">()</span><span class="o">.</span><span class="n">peak_splittings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="ProcessChiCV.get_i_ss">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.get_i_ss">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_i_ss</span><span class="p">(</span><span class="n">potential</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">current_range_percentage</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">window_length</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Estimate steady-state current from the current derivative versus potential.</span>
+
+<span class="sd">        :param potential: Potential values.</span>
+<span class="sd">        :param current: Current values.</span>
+<span class="sd">        :param current_range_percentage: Percentage of the current range used as the</span>
+<span class="sd">            steady-state threshold for di/dE.</span>
+<span class="sd">        :param window_length: Odd window length for the Savitzky-Golay filter.</span>
+<span class="sd">        :param poly_order: Polynomial order for the Savitzky-Golay filter.</span>
+<span class="sd">        :return: Estimated steady-state current.</span>
+<span class="sd">        """</span>
+        <span class="c1"># Calculate total current range and determine i_derr_ss</span>
+        <span class="n">full_cv_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"potential"</span><span class="p">:</span> <span class="n">potential</span><span class="p">,</span> <span class="s2">"current"</span><span class="p">:</span> <span class="n">current</span><span class="p">})</span>
+        <span class="n">current_range</span> <span class="o">=</span> <span class="n">full_cv_data</span><span class="p">[</span><span class="s1">'current'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">full_cv_data</span><span class="p">[</span><span class="s1">'current'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">i_derr_ss</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_range_percentage</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="n">current_range</span>
+
+        <span class="c1"># Smooth the current data to compute derivatives</span>
+        <span class="n">smooth_current</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">full_cv_data</span><span class="p">[</span><span class="s1">'current'</span><span class="p">],</span> <span class="n">window_length</span><span class="p">,</span> <span class="n">poly_order</span><span class="p">)</span>
+        <span class="n">potential_values</span> <span class="o">=</span> <span class="n">full_cv_data</span><span class="p">[</span><span class="s1">'potential'</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">):</span>
+            <span class="n">derivative_denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">potential_values</span><span class="p">)</span>
+            <span class="n">current_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">smooth_current</span><span class="p">)</span> <span class="o">/</span> <span class="n">derivative_denominator</span>
+        <span class="n">current_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">current_derivative</span><span class="p">)</span>
+
+        <span class="c1"># Identify all steady-state regions (di/dE ≤ i_derr_ss)</span>
+        <span class="n">steady_state_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">current_derivative</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">i_derr_ss</span>
+        <span class="n">steady_state_regions_all</span> <span class="o">=</span> <span class="n">full_cv_data</span><span class="p">[</span><span class="n">steady_state_indices</span><span class="p">]</span>
+
+        <span class="c1"># Get only top steady state regions</span>
+        <span class="n">max_derivative_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmax</span><span class="p">(</span><span class="n">current_derivative</span><span class="p">)</span>
+        <span class="n">max_derivative_potential</span> <span class="o">=</span> <span class="n">full_cv_data</span><span class="p">[</span><span class="s1">'potential'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_derivative_idx</span><span class="p">]</span>
+        <span class="n">steady_state_regions</span> <span class="o">=</span> <span class="n">steady_state_regions_all</span><span class="p">[</span><span class="n">steady_state_regions_all</span><span class="o">.</span><span class="n">potential</span> <span class="o">&gt;</span> <span class="n">max_derivative_potential</span><span class="p">]</span>
+
+        <span class="c1"># Calculate the mean current value across all steady-state regions</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">steady_state_regions</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">steady_state_current</span> <span class="o">=</span> <span class="n">steady_state_regions</span><span class="p">[</span><span class="s1">'current'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">steady_state_current</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No steady-state regions identified with the threshold </span><span class="si">{</span><span class="n">current_range_percentage</span><span class="si">}</span><span class="s2">%."</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">p_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">p_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">"peak_current"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span><span class="p">},</span>
+            <span class="s2">"e_half"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'e_half'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">"plot_data"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'plot_data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">})</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">micro_electrodes</span><span class="p">:</span>
+            <span class="n">p_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">"i_ss"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'i_ss'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="s2">"e_ref"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'e_ref'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">"reversibility"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'reversibility'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="s2">"peak_splittings"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'peak_splittings'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="s2">"middle_sweep"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'middle_sweep'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">})</span>
+        <span class="k">return</span> <span class="n">p_data</span>
+
+<div class="viewcode-block" id="ProcessChiCV.inflection_points">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.inflection_points">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inflection_points</span><span class="p">(</span><span class="n">y_values</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="c1"># smooth current data</span>
+        <span class="n">smooth_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gaussian_filter1d</span><span class="p">(</span><span class="n">y_values</span><span class="p">,</span> <span class="n">sigma</span><span class="p">))</span>
+        <span class="c1"># compute second derivative</span>
+        <span class="n">current_d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">smooth_current</span><span class="p">))</span>
+        <span class="c1"># Find the inflection point</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">current_d2</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ProcessChiCV.get_micro_e_half">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.get_micro_e_half">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_micro_e_half</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sweep</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">potential</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sweep</span><span class="p">]</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sweep</span><span class="p">]</span>
+        <span class="n">test_sigmas</span> <span class="o">=</span> <span class="p">[</span><span class="n">sigma</span><span class="p">]</span> <span class="k">if</span> <span class="n">sigma</span> <span class="k">else</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">sigma</span> <span class="ow">in</span> <span class="n">test_sigmas</span><span class="p">:</span>
+            <span class="n">inflection_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inflection_points</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inflection_points</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Inflection point </span><span class="si">{</span><span class="n">potential</span><span class="p">[</span><span class="n">inflection_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="si">}</span><span class="s2"> found with sigma </span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s2"> "</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">potential</span><span class="p">[</span><span class="n">inflection_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="p">[</span><span class="n">potential</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">inflection_points</span><span class="p">]</span><span class="si">}</span><span class="s2"> inflection points found with </span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s2"> sigma."</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error calculating E1/2 with microelectrode data. Sigma </span><span class="si">{</span><span class="n">test_sigmas</span><span class="si">}</span><span class="s2"> tested. "</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProcessChiCA">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessChiCA</span><span class="p">(</span><span class="n">ParseChiMixin</span><span class="p">,</span> <span class="n">ProcessPotBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extract data from raw Chi CV experiment files</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ProcessChiCA.__init__">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param filepath: str, filepath to experiment data file</span>
+<span class="sd">        """</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span> <span class="o">=</span> <span class="s2">"ca"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_constant</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cell_constant"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data_header</span><span class="o">=</span><span class="s2">"Time"</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span> <span class="o">!=</span> <span class="s2">"s"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">convert_list_units</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">existing_units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">,</span> <span class="n">target_units</span><span class="o">=</span><span class="s2">"s"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span> <span class="o">=</span> <span class="s2">"s"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span> <span class="o">!=</span> <span class="s2">"A"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="n">convert_list_units</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">existing_units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span><span class="p">,</span> <span class="n">target_units</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_unit</span> <span class="o">=</span> <span class="s2">"A"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_slp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Slp"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Forward:"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Int"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Forward:"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_cor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Cor"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Forward:"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_slp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Slp"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Reverse:"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Int"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Reverse:"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_cor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_calcs</span><span class="p">(</span><span class="n">calc_name</span><span class="o">=</span><span class="s2">"Cor"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Reverse:"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span> <span class="o">=</span> <span class="n">CAPlotter</span><span class="p">()</span><span class="o">.</span><span class="n">plot_data</span><span class="p">({</span><span class="s2">"t_s"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                                                <span class="s2">"i_s"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"abs_plot"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_resistance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resistance</span><span class="p">()</span>  <span class="c1"># Assumed to be in Ohm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_conductance</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_resistance</span>  <span class="c1"># Assumed to be in sS</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">p_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">p_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">"f_slp"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_slp</span><span class="p">,</span>
+            <span class="s2">"f_int"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_int</span><span class="p">,</span>
+            <span class="s2">"f_cor"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cor</span><span class="p">,</span>
+            <span class="s2">"r_slp"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_slp</span><span class="p">,</span>
+            <span class="s2">"r_int"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_int</span><span class="p">,</span>
+            <span class="s2">"r_cor"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_cor</span><span class="p">,</span>
+            <span class="s2">"measured_resistance"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_resistance</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"Ohm"</span><span class="p">},</span>
+            <span class="s2">"measured_conductance"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_conductance</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"S"</span><span class="p">},</span>
+            <span class="s2">"conductivity"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conductivity</span><span class="p">,</span>
+            <span class="s2">"time"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">"current"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">"plot_data"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'plot_data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">p_data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conductivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get conductivity based on cell constant</span>
+<span class="sd">        """</span>
+        <span class="n">c_measured</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">({</span><span class="s2">"value"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_conductance</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"S"</span><span class="p">},</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">"mS"</span><span class="p">)</span>
+        <span class="n">cell_constant</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_constant</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">"cm^-1"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cell_constant</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">c_measured</span> <span class="o">*</span> <span class="n">cell_constant</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"mS/cm"</span><span class="p">}</span>
+
+<div class="viewcode-block" id="ProcessChiCA.get_resistance">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.get_resistance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">connector</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"i_s"</span><span class="p">:</span> <span class="s2">"i"</span><span class="p">,</span>
+            <span class="s2">"t_s"</span><span class="p">:</span> <span class="s2">"t"</span><span class="p">,</span>
+            <span class="s2">"pulse_width"</span><span class="p">:</span> <span class="s2">"pulse_width"</span><span class="p">,</span>
+            <span class="s2">"steps"</span><span class="p">:</span> <span class="s2">"step"</span><span class="p">,</span>
+            <span class="s2">"low_e"</span><span class="p">:</span> <span class="s2">"low_e"</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">r_calculator</span> <span class="o">=</span> <span class="n">CAResistanceCalculator</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r_calculator</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProcessChiCA.get_data_calcs">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.get_data_calcs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_calcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_name</span><span class="o">=</span><span class="s2">"Slp"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">"Forward"</span><span class="p">):</span>
+        <span class="n">h_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">header</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">h_lines</span><span class="p">:</span>
+            <span class="n">calcs_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">h_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">h_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="n">calc_line</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">calcs_lines</span> <span class="k">if</span> <span class="n">calc_name</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">calc_line</span><span class="p">:</span>
+                <span class="n">calc</span> <span class="o">=</span> <span class="n">calc_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">calc</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProcessChiESI">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiESI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessChiESI</span><span class="p">(</span><span class="n">ParseChiMixin</span><span class="p">,</span> <span class="n">ProcessPotBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extract data from raw Chi ESI experiment files</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ProcessChiESI.__init__">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiESI.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param filepath: str, filepath to experiment data file</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span> <span class="o">=</span> <span class="s2">"esi"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data_header</span><span class="o">=</span><span class="s2">"Freq"</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_real</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_real</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># self.resistance = max(zip(self.z_real, -self.z_img), key=lambda x: x[1])[0]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"high_f"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">high_f</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s1">'Hz'</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"low_f"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">low_f</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">),</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s1">'Hz'</span><span class="p">}</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">p_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parsed_data</span>
+        <span class="n">p_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"resistance"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">p_data</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

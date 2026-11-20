@@ -20,9 +20,10 @@ class CVPlotter(D3Plotter):
         """
         CV plot data for plotly
 
-        Connection Points:
-            :scan_data: scanned data from CV file
-            :we_surface_area: working electrode surface area
+        Connection points:
+
+        * ``scan_data``: CV scan data.
+        * ``we_surface_area``: Working-electrode surface area.
 
         :param data: data for calculation
         :type data: dict
@@ -31,7 +32,7 @@ class CVPlotter(D3Plotter):
         :param a_to_ma: convert current values (assumed to be in A) to mA if True
         :type a_to_ma: bool
         :param current_density: convert current values to current density if True (requires we_surface_area connection)
-)
+
         :type current_density: bool
 
         :return: plot data for plotly

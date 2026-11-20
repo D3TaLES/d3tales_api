@@ -5,7 +5,7 @@ database. D<sup>3</sup>TaLES uses a [MongoDB](https://www.mongodb.com/) No-SQL s
 for data insertion, schema validation, basic data generation, database queries, and 
 Python-based interaction with the [D<sup>3</sup>TaLES REST API](https://d3tales.as.uky.edu/docs/restapi.html). 
 
-Full documentation can be found [here](d3tales_api.D3database.html).
+Full documentation can be found <a href="d3tales_api.D3database.html">here</a>.
 
 
 ## Data Insertion

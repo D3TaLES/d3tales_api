@@ -4,22 +4,6 @@ d3tales\_api.Processors package
 Submodules
 ----------
 
-d3tales\_api.Processors.back2front module
------------------------------------------
-
-.. automodule:: d3tales_api.Processors.back2front
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-d3tales\_api.Processors.d3tales\_parser module
-----------------------------------------------
-
-.. automodule:: d3tales_api.Processors.d3tales_parser
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 d3tales\_api.Processors.expflow\_parser module
 ----------------------------------------------
 
@@ -28,10 +12,10 @@ d3tales\_api.Processors.expflow\_parser module
    :undoc-members:
    :show-inheritance:
 
-d3tales\_api.Processors.parser\_cv module
------------------------------------------
+d3tales\_api.Processors.info\_from\_smiles module
+-------------------------------------------------
 
-.. automodule:: d3tales_api.Processors.parser_cv
+.. automodule:: d3tales_api.Processors.info_from_smiles
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,6 +24,14 @@ d3tales\_api.Processors.parser\_dft module
 ------------------------------------------
 
 .. automodule:: d3tales_api.Processors.parser_dft
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.parser\_echem module
+--------------------------------------------
+
+.. automodule:: d3tales_api.Processors.parser_echem
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,6 +56,14 @@ d3tales\_api.Processors.processing\_firetasks module
 ----------------------------------------------------
 
 .. automodule:: d3tales_api.Processors.processing_firetasks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Processors.utils module
+------------------------------------
+
+.. automodule:: d3tales_api.Processors.utils
    :members:
    :undoc-members:
    :show-inheritance:

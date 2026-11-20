@@ -64,9 +64,12 @@ def get_data_store(task=None, fw_spec=None):
 def get_local_output_dir(task=None, fw_spec=None):
     """
     Folder for local JSON records. Precedence:
-        1. `local_output_dir` in the fw_spec or task kwargs (a path, or an env key such as ">>local_output_dir<<")
-        2. `local_output_dir` in the FireWorker env (my_fworker.yaml), same mechanism as g16_cmd
-        3. None -> records go to <calc_dir>/results
+
+    * ``local_output_dir`` in ``fw_spec`` or task kwargs (a path or environment
+      placeholder such as ``>>local_output_dir<<``).
+    * ``local_output_dir`` in the FireWorker environment (``my_fworker.yaml``).
+    * If unset, records go to ``<calc_dir>/results``.
+
     Unlike env_chk(strict=True), a missing FireWorker key returns None instead of raising.
     """
     fw_spec = fw_spec or {}
@@ -79,8 +82,11 @@ def get_local_output_dir(task=None, fw_spec=None):
 def get_store_dir(identifier, local_output_dir=None, calc_dir=None):
     """
     Directory holding the local JSON records for one molecule.
-        local_output_dir set: <local_output_dir>/<identifier>
-        otherwise:            <calc_dir>/results
+
+    If ``local_output_dir`` is set, records are stored in
+    ``<local_output_dir>/<identifier>``. Otherwise, they are stored in
+    ``<calc_dir>/results``.
+
     Always absolute, because tasks chdir into their working directories.
     """
     if local_output_dir:

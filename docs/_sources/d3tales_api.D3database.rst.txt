@@ -4,6 +4,14 @@ d3tales\_api.D3database package
 Submodules
 ----------
 
+d3tales\_api.D3database.back2front module
+-----------------------------------------
+
+.. automodule:: d3tales_api.D3database.back2front
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 d3tales\_api.D3database.d3database module
 -----------------------------------------
 
@@ -16,14 +24,6 @@ d3tales\_api.D3database.dft\_calculation\_list module
 -----------------------------------------------------
 
 .. automodule:: d3tales_api.D3database.dft_calculation_list
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-d3tales\_api.D3database.info\_from\_smiles module
--------------------------------------------------
-
-.. automodule:: d3tales_api.D3database.info_from_smiles
    :members:
    :undoc-members:
    :show-inheritance:

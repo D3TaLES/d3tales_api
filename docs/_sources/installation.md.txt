@@ -35,3 +35,5 @@ REST API (`d3tales_api.restapi.RESTAPI`) will use `UPLOAD_USER` and `UPLOAD_PASS
 variables if `username` and `password` arguments are not provided. These environment variables 
 can be set in the same was as the `DB_INFO_FILE` variable. 
 
+NLP processing will need the environment variable `ELS_APIKEY` as your Elsevier API key. 
+

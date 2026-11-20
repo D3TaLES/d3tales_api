@@ -142,10 +142,12 @@ class ACParser:
 
     def __init__(self, ac:np.ndarray, charge, atomnumberlist, sani=True, apriori_radicals=None):
         """
-        :var self.valences_list: a list of possible valence assignment, valences_list[i] is one possbile way to assign jth atom
-        valence based on  valences_list[i][j].
-        :var self.atomic_valence_electrons: atomic_valence_electrons[i] is the #_of_ve of ith atom
-        :var self.apriori_radicals: a dict to mark the atoms that can will have a lower valence in generating BO
+        Initialize the atom-connectivity parser.
+
+        :ivar valences_list: Possible valence assignments for the atoms.
+        :ivar atomic_valence_electrons: Valence-electron count for each element.
+        :ivar apriori_radicals: Optional mapping of atoms allowed a lower valence
+            when generating the bond-order matrix.
         """
         self.apriori_radicals = apriori_radicals
         self.AC = ac.astype(int)

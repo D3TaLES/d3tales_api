@@ -1,21 +1,20 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>d3tales_api.Processors.parser_uvvis &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script docs_src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -26,14 +25,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES API
           </a>
-              <div class="version">
-                0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -62,7 +62,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">d3tales_api.Processors.parser_uvvis</li>
       <li class="wy-breadcrumbs-aside">
@@ -74,50 +74,127 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Processors.parser_uvvis</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="ParseExcel"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel">[docs]</a><span class="k">class</span> <span class="nc">ParseExcel</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ParseExcelMixin">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParseExcelMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class to process raw UV-Vis data in an Excel format</span>
 <span class="sd">    Copyright 2021, University of Kentucky</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="ParseExcel.__init__"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param filepath: str, filepath to Excel data file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">filepath</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parse_file</span><span class="p">()</span></div>
+<span class="sd">    """</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">data_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="n">string_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
 
-<div class="viewcode-block" id="ParseExcel.parse_file"><a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ParseExcelMixin.parse">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.parse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Use Pandas to parse the raw data file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">])</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'col1'</span><span class="p">,</span> <span class="s1">'col2'</span><span class="p">])</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">])</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'col1'</span><span class="p">,</span> <span class="s1">'col2'</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">4</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;wavelength&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;absorbance&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">4</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'col1'</span><span class="p">:</span> <span class="s1">'wavelength'</span><span class="p">,</span>
+                                                                                     <span class="s1">'col2'</span><span class="p">:</span> <span class="s1">'absorbance'</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">string_data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:]</span></div>
 
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">integration_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Integration time&quot;&quot;&quot;</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;Integration Time&#39;</span><span class="p">)][</span><span class="s1">&#39;col2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integration_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Integration time"""</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="s2">"col1"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">'Integration Time'</span><span class="p">)][</span><span class="s1">'col2'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="k">return</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">date_recorded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Data Recorded&quot;&quot;&quot;</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)][</span><span class="s1">&#39;col2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">return</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">date_recorded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Data Recorded"""</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">string_data</span><span class="p">[</span><span class="s2">"col1"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">'Timestamp'</span><span class="p">)][</span><span class="s1">'col2'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">return</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="s1">''</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">absorbance_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Absorbance data (dict)&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">absorbance_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Absorbance data (dict)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">'list'</span><span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="ProcessUvVis">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessUvVis</span><span class="p">(</span><span class="n">ParseExcelMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Class to process UV-Vis data files.</span>
+<span class="sd">    Copyright 2021, University of Kentucky</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ProcessUvVis.__init__">
+<a class="viewcode-back" href="../../../d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">mol_id</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param filepath: str, filepath to data file</span>
+<span class="sd">        :param mol_id: str, molecule ID</span>
+<span class="sd">        :param metadata: dict, dictionary containing any metadata for this molecule, e.g., {"solvent": "acetonitrile"}</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span> <span class="o">=</span> <span class="n">mol_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"instrument"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"solvent"</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">no_sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the No-SQL schema</span>
+<span class="sd">        """</span>
+        <span class="n">all_data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"date_recorded"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_recorded</span><span class="p">,</span>
+            <span class="s2">"solvent"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">,</span>
+            <span class="s2">"instrument"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">"integration_time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">integration_time</span><span class="p">,</span>
+            <span class="s2">"absorbance_data"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">absorbance_data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sql_absorbance_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL AbsorbanceData Table schema</span>
+<span class="sd">        """</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">absorbance_data</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">"uvvis_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                 <span class="s2">"mol_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span><span class="p">,</span>
+                 <span class="s2">"wavelength"</span><span class="p">:</span> <span class="n">wavelength</span><span class="p">,</span>
+                 <span class="s2">"absorbance"</span><span class="p">:</span> <span class="n">absorbance</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">absorbance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"wavelength"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">"absorbance"</span><span class="p">])]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sql_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        UV-Vis information in a dictionary that matches the SQL UVVisData Table schema</span>
+<span class="sd">        """</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"uvvis_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+            <span class="s2">"mol_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_id</span><span class="p">,</span>
+            <span class="s2">"date_recorded"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_recorded</span><span class="p">,</span>
+            <span class="s2">"solvent"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="p">,</span>
+            <span class="s2">"instrument"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">,</span>
+            <span class="s2">"integration_time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">integration_time</span><span class="p">,</span>
+            <span class="s2">"absorbance_data"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">absorbance_data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
 
 </pre></div>
 

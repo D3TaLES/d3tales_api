@@ -20,11 +20,11 @@ from scipy.stats import linregress
 
 class D3Calculator(abc.ABC):
     """
-    D3Calculators base class
+    Base class for D3TaLES property calculators.
 
-    :param connector: dictionary describing connections between calculator variables (keys) and location in `data`
-    variable. EX: {"smiles": "mol_info.smiles", "volume": "experimental_data.volume"}. If no connector is provided,
-    the connections default to the connections found in `default_connector.json`.
+    :param connector: Mapping of calculator variables to paths in the input data,
+        such as ``{"smiles": "mol_info.smiles"}``. If omitted, calculator
+        defaults are used.
     """
 
     def __init__(self, connector=None):
@@ -220,19 +220,20 @@ class CVDescriptorCalculator(D3Calculator):
         """
         Categorization of CV reversibility
 
-        Connection Points:
-            :scan_data: scanned data from CV file (potentials in V)
-            :sample_interval: sample interval value (V)
-            :low_e: lowest energy value (V)
+        Connection points:
+
+        * ``scan_data``: CV scan data (potentials in V).
+        * ``sample_interval``: Sample interval (V).
+        * ``low_e``: Lowest potential (V).
 
         :param data: data for calculation
-        :param rev_upperbound : upperbound for reversibility (mV)
-        :param quasi_rev_upperbound : upperbound for quasi reversibility (mV)
+        :param rev_upperbound: Upper bound for reversibility (mV).
+        :param quasi_rev_upperbound: Upper bound for quasi-reversibility (mV).
         :type data: dict
         :type rev_upperbound: float
         :type quasi_rev_upperbound: float
 
-        :return: list of reversibility categorizations for peaks
+        :return: Reversibility category for each peak.
         """
 
         forward_peaks, reverse_peaks = self.peaks_for_analysis(data, **kwargs)

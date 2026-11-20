@@ -1,22 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Processors &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script docs_src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,14 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES API
           </a>
-              <div class="version">
-                0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="D3database.html">D3database</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Processors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#current-parsers">Current Parsers:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-data-generation">Basic Data Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-molecular-dft">Processing Molecular DFT</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-cyclic-voltmeter">Processing Cyclic Voltmeter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-literature-articles">Processing Literature Articles</a></li>
@@ -71,7 +72,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Processors</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Processors.md.txt" rel="nofollow"> View page source</a>
@@ -83,15 +84,15 @@
            <div itemprop="articleBody">
              
   <section id="processors">
-<h1>Processors<a class="headerlink" href="#processors" title="Permalink to this heading"></a></h1>
+<h1>Processors<a class="headerlink" href="#processors" title="Link to this heading"></a></h1>
 <p>This module contains data parsers to process both computational and experimental
 raw data files. The D<sup>3</sup>TaLES parser then converts the processed data to the
 D<sup>3</sup>TaLES schema. It also contains a submodule for converting data from the backend
 D<sup>3</sup>TaLES database to frontend data and pushing the new data to the frontend
 database.</p>
-<p>Full documentation can be found <a class="reference external" href="d3tales_api.Processors.html">here</a>.</p>
+<p>Full documentation can be found <a href="d3tales_api.Processors.html">here</a>.</p>
 <section id="current-parsers">
-<h2>Current Parsers:<a class="headerlink" href="#current-parsers" title="Permalink to this heading"></a></h2>
+<h2>Current Parsers:<a class="headerlink" href="#current-parsers" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Molecular DFT</p>
 <ul>
@@ -116,121 +117,139 @@ database.</p>
 </li>
 </ul>
 </section>
+<section id="basic-data-generation">
+<h2>Basic Data Generation<a class="headerlink" href="#basic-data-generation" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">GenerateMolInfo</span></code> module can be used to generate several 2D molecular descriptors
+from a SMILES string input. The descriptors can be accessed as attributes of the resulting
+class or accessed as a dictionary with the <code class="docutils literal notranslate"><span class="pre">mol_info_dict</span></code> attribute. These descriptors include
+<code class="docutils literal notranslate"><span class="pre">smiles</span></code>, <code class="docutils literal notranslate"><span class="pre">selfies</span></code>, <code class="docutils literal notranslate"><span class="pre">inchi</span></code>, <code class="docutils literal notranslate"><span class="pre">inchi_key</span></code>, <code class="docutils literal notranslate"><span class="pre">iupac_name</span></code>, <code class="docutils literal notranslate"><span class="pre">synonyms</span></code>, <code class="docutils literal notranslate"><span class="pre">init_structure</span></code> (coordinates
+for estimated 3D geometry), <code class="docutils literal notranslate"><span class="pre">molecular_formula</span></code>, <code class="docutils literal notranslate"><span class="pre">groundState_charge</span></code>, <code class="docutils literal notranslate"><span class="pre">number_of_atoms</span></code>,
+<code class="docutils literal notranslate"><span class="pre">molecular_weight</span></code>, <code class="docutils literal notranslate"><span class="pre">d2_image</span></code> (bit string for molecule image), <code class="docutils literal notranslate"><span class="pre">source_group</span></code>, and <code class="docutils literal notranslate"><span class="pre">groundState_spin</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.info_from_smiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateMolInfo</span>
+
+<span class="c1"># Generate basic molecule information using the GenerateMolInfo module</span>
+<span class="n">smiles</span> <span class="o">=</span> <span class="s2">"CC"</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">GenerateMolInfo</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">mol_info_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="processing-molecular-dft">
-<h2>Processing Molecular DFT<a class="headerlink" href="#processing-molecular-dft" title="Permalink to this heading"></a></h2>
+<h2>Processing Molecular DFT<a class="headerlink" href="#processing-molecular-dft" title="Link to this heading"></a></h2>
 <p>For this example, we must get an example log file. Here, we pull a <a class="reference external" href="https://gaussian.com/">Gaussian</a>
 log file from GitHub <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API repo</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span>
 
 <span class="c1"># Pull example file form GitHub</span>
-<span class="n">dft_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/05XICU/logs/05XICU_opt_groundState_3H0.log&quot;</span>
-<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">dft_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+<span class="n">dft_url</span> <span class="o">=</span> <span class="s2">"https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/05XICU/logs/05XICU_opt_groundState_3H0.log"</span>
+<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">dft_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"gaussian_ex.log"</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
     
 </pre></div>
 </div>
-<p>To parse the DFT file, simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessDFT</span></code>
+<p>To parse the DFT file, simply import the <code class="docutils literal notranslate"><span class="pre">parser_dft</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessGausLog</span></code>
 module to parse the data file (in this case, <code class="docutils literal notranslate"><span class="pre">gaussian_ex.log</span></code>).  Here we chose the <code class="docutils literal notranslate"><span class="pre">ProcessGausLog</span></code>
 parsing class because our data file is Gaussian format.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_dft</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessGausLog</span>
 
-<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">)</span>
+<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessGausLog</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"gaussian_ex.log"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dft_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A user can also include <code class="docutils literal notranslate"><span class="pre">submission_info</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> in the processing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_dft</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessGausLog</span>
 
 <span class="n">submission_info</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;source&quot;</span> <span class="p">:</span> <span class="s2">&quot;Risko&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;author&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;author_email&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;upload_time&quot;</span> <span class="p">:</span> <span class="s2">&quot;2021-10-01T21:07:29.546377+00:00&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;file_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;data_category&quot;</span> <span class="p">:</span> <span class="s2">&quot;computation&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;all_files_in_zip&quot;</span> <span class="p">:</span> <span class="p">[</span> 
-        <span class="s2">&quot;opt_groundState.log&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;opt_groundState.fchk&quot;</span>
+    <span class="s2">"source"</span> <span class="p">:</span> <span class="s2">"Risko"</span><span class="p">,</span>
+    <span class="s2">"author"</span> <span class="p">:</span> <span class="s2">"d3tales@gmail.com"</span><span class="p">,</span>
+    <span class="s2">"author_email"</span> <span class="p">:</span> <span class="s2">"d3tales@gmail.com"</span><span class="p">,</span>
+    <span class="s2">"upload_time"</span> <span class="p">:</span> <span class="s2">"2021-10-01T21:07:29.546377+00:00"</span><span class="p">,</span>
+    <span class="s2">"file_type"</span> <span class="p">:</span> <span class="s2">"zip"</span><span class="p">,</span>
+    <span class="s2">"data_category"</span> <span class="p">:</span> <span class="s2">"computation"</span><span class="p">,</span>
+    <span class="s2">"data_type"</span> <span class="p">:</span> <span class="s2">"gaussian"</span><span class="p">,</span>
+    <span class="s2">"all_files_in_zip"</span> <span class="p">:</span> <span class="p">[</span> 
+        <span class="s2">"opt_groundState.log"</span><span class="p">,</span> 
+        <span class="s2">"opt_groundState.fchk"</span>
     <span class="p">],</span>
-    <span class="s2">&quot;approved&quot;</span> <span class="p">:</span> <span class="kc">True</span>
+    <span class="s2">"approved"</span> <span class="p">:</span> <span class="kc">True</span>
 <span class="p">}</span>
 
 <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;opt_groundState&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;calculation_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;tddft_cation1&quot;</span>
+    <span class="s2">"id"</span> <span class="p">:</span> <span class="s2">"opt_groundState"</span><span class="p">,</span>
+    <span class="s2">"calculation_type"</span> <span class="p">:</span> <span class="s2">"tddft_cation1"</span>
 <span class="p">}</span>
 
-<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessDFT</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;gaussian_ex.log&quot;</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ProcessGausLog</span><span class="p">)</span>
+<span class="n">dft_data</span> <span class="o">=</span> <span class="n">ProcessGausLog</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"gaussian_ex.log"</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dft_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="processing-cyclic-voltmeter">
-<h2>Processing Cyclic Voltmeter<a class="headerlink" href="#processing-cyclic-voltmeter" title="Permalink to this heading"></a></h2>
+<h2>Processing Cyclic Voltmeter<a class="headerlink" href="#processing-cyclic-voltmeter" title="Link to this heading"></a></h2>
 <p>For this example, we must get an example CV file. Here, we pull a CV text file from GitHub
 <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API repo</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span>
 
 <span class="c1"># Pull example file form GitHub</span>
-<span class="n">cv_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/cv_test.csv&quot;</span>
-<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">cv_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+<span class="n">cv_url</span> <span class="o">=</span> <span class="s2">"https://raw.githubusercontent.com/D3TaLES/d3tales_api/main/tests/raw_data/cv_test.csv"</span>
+<span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">cv_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"cv_test.txt"</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
     
 </pre></div>
 </div>
-<p>To parse the CV file, simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessCV</span></code>
-module to parse the data file (in this case, <code class="docutils literal notranslate"><span class="pre">cv_test.txt</span></code>).  Here we chose the <code class="docutils literal notranslate"><span class="pre">ParseChiCV</span></code>
-parsing class because of the format of our data file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<p>To parse the CV file, simply import the <code class="docutils literal notranslate"><span class="pre">parser_echem</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessCV</span></code>
+module to parse the data file (in this case, <code class="docutils literal notranslate"><span class="pre">cv_test.txt</span></code>).  Here we chose the <code class="docutils literal notranslate"><span class="pre">ProcessChiCV</span></code>
+parsing class because our data file comes from a CHI instrument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_echem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessChiCV</span>
 
-<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span>
+<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessChiCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"cv_test.txt"</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">'test'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cv_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A user can also include <code class="docutils literal notranslate"><span class="pre">submission_info</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> in the processing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_echem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessChiCV</span>
 
 <span class="n">submission_info</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;source&quot;</span> <span class="p">:</span> <span class="s2">&quot;Risko&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;author&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;author_email&quot;</span> <span class="p">:</span> <span class="s2">&quot;d3tales@gmail.com&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;upload_time&quot;</span> <span class="p">:</span> <span class="s2">&quot;2022-04-14T22:11:23.490652+00:00&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;file_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;data_category&quot;</span> <span class="p">:</span> <span class="s2">&quot;experimentation&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;cv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;approved&quot;</span> <span class="p">:</span> <span class="kc">False</span>
+    <span class="s2">"source"</span> <span class="p">:</span> <span class="s2">"Risko"</span><span class="p">,</span>
+    <span class="s2">"author"</span> <span class="p">:</span> <span class="s2">"d3tales@gmail.com"</span><span class="p">,</span>
+    <span class="s2">"author_email"</span> <span class="p">:</span> <span class="s2">"d3tales@gmail.com"</span><span class="p">,</span>
+    <span class="s2">"upload_time"</span> <span class="p">:</span> <span class="s2">"2022-04-14T22:11:23.490652+00:00"</span><span class="p">,</span>
+    <span class="s2">"file_type"</span> <span class="p">:</span> <span class="s2">"csv"</span><span class="p">,</span>
+    <span class="s2">"data_category"</span> <span class="p">:</span> <span class="s2">"experimentation"</span><span class="p">,</span>
+    <span class="s2">"data_type"</span> <span class="p">:</span> <span class="s2">"cv"</span><span class="p">,</span>
+    <span class="s2">"approved"</span> <span class="p">:</span> <span class="kc">False</span>
 <span class="p">}</span>
 
 <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;electrode_counter&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;electrode_working&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;electrode_reference&quot;</span> <span class="p">:</span> <span class="s2">&quot;standard_hydrogen_electrode&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;solvent&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;acetonitrile&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;electrolyte&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tetrabutylammonium hexafluorophosphate&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;ionic_liquid&quot;</span> <span class="p">:</span> <span class="p">[],</span>
-    <span class="s2">&quot;instrument&quot;</span> <span class="p">:</span> <span class="s2">&quot;chi_660d,_chi_1100b,_pine_wavenow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;working_electrode_surface_area&quot;</span> <span class="p">:</span> <span class="s2">&quot;0.05 cm^2&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;temperature&quot;</span> <span class="p">:</span> <span class="s2">&quot;273 K&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;redox_mol_concentration&quot;</span> <span class="p">:</span> <span class="s2">&quot;0.1 M&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;data_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;cv&quot;</span>
+    <span class="s2">"electrode_counter"</span> <span class="p">:</span> <span class="s2">"standard_hydrogen_electrode"</span><span class="p">,</span>
+    <span class="s2">"electrode_working"</span> <span class="p">:</span> <span class="s2">"standard_hydrogen_electrode"</span><span class="p">,</span>
+    <span class="s2">"electrode_reference"</span> <span class="p">:</span> <span class="s2">"standard_hydrogen_electrode"</span><span class="p">,</span>
+    <span class="s2">"solvent"</span> <span class="p">:</span> <span class="p">[</span><span class="s2">"acetonitrile"</span><span class="p">],</span>
+    <span class="s2">"electrolyte"</span> <span class="p">:</span> <span class="p">[</span><span class="s2">"tetrabutylammonium hexafluorophosphate"</span><span class="p">],</span>
+    <span class="s2">"ionic_liquid"</span> <span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">"instrument"</span> <span class="p">:</span> <span class="s2">"chi_660d,_chi_1100b,_pine_wavenow"</span><span class="p">,</span>
+    <span class="s2">"working_electrode_surface_area"</span> <span class="p">:</span> <span class="s2">"0.05 cm^2"</span><span class="p">,</span>
+    <span class="s2">"temperature"</span> <span class="p">:</span> <span class="s2">"273 K"</span><span class="p">,</span>
+    <span class="s2">"redox_mol_concentration"</span> <span class="p">:</span> <span class="s2">"0.1 M"</span><span class="p">,</span>
+    <span class="s2">"data_type"</span> <span class="p">:</span> <span class="s2">"cv"</span>
 <span class="p">}</span>
 
-<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;cv_test.txt&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">parsing_class</span><span class="o">=</span><span class="n">ParseChiCV</span><span class="p">)</span>
+<span class="n">cv_data</span> <span class="o">=</span> <span class="n">ProcessChiCV</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"cv_test.txt"</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s1">'test'</span><span class="p">,</span> <span class="n">submission_info</span><span class="o">=</span><span class="n">submission_info</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cv_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="processing-literature-articles">
-<h2>Processing Literature Articles<a class="headerlink" href="#processing-literature-articles" title="Permalink to this heading"></a></h2>
+<h2>Processing Literature Articles<a class="headerlink" href="#processing-literature-articles" title="Link to this heading"></a></h2>
 <p>Here we generate metadata for an article based on its DOI. To do this, we
-simply import the <code class="docutils literal notranslate"><span class="pre">d3tales_parser</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessNlp</span></code>
+simply import the <code class="docutils literal notranslate"><span class="pre">parser_nlp</span></code> module and use the <code class="docutils literal notranslate"><span class="pre">ProcessNlp</span></code>
 module to generate the article metadata.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<p>Note that you will need to set the environment variable <code class="docutils literal notranslate"><span class="pre">ELS_APIKEY</span></code> as your Elsevier API key.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_nlp</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessNlp</span>
 
-<span class="n">doi</span> <span class="o">=</span> <span class="s2">&quot;10.1039/c7cs00569e&quot;</span>
+<span class="n">doi</span> <span class="o">=</span> <span class="s2">"10.1039/c7cs00569e"</span>
 <span class="n">nlp_data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nlp_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
@@ -238,10 +257,10 @@ module to generate the article metadata.</p>
 <p>We can also instruct the parser to download the article PDF with the <code class="docutils literal notranslate"><span class="pre">article_download</span></code> kwarg and
 store it in a directory specified with the <code class="docutils literal notranslate"><span class="pre">download_dir</span></code> kwarg. The parser will record the PDF
 location in the output data.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">d3tales_api.Processors.d3tales_parser</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.parser_nlp</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessNlp</span>
 
-<span class="n">doi</span> <span class="o">=</span> <span class="s2">&quot;10.1039/c7cs00569e&quot;</span>
-<span class="n">nlp_data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s2">&quot;temp/&quot;</span><span class="p">)</span>
+<span class="n">doi</span> <span class="o">=</span> <span class="s2">"10.1039/c7cs00569e"</span>
+<span class="n">nlp_data</span> <span class="o">=</span> <span class="n">ProcessNlp</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">article_download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s2">"temp/"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nlp_data</span><span class="o">.</span><span class="n">data_dict</span><span class="p">)</span>
 </pre></div>
 </div>

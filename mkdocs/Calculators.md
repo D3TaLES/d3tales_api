@@ -4,9 +4,9 @@ D<sup>3</sup>TaLES API Calculators allow users to calculate useful experimental 
 computational properties from nested data. Additionally, all calculators contain unit conversion
 features. 
 
-Full documentation can be found [here](d3tales_api.Calculators.html).
+Full documentation can be found <a href="d3tales_api.Calculators.html">here</a>.
 
-### Calculator Submodules
+## Calculator Submodules
 
 The Calculators module contains two primary submodules (`calculators` and `plotters`) and a minor submodules
 (`utils`). Most users will only the primary submodules, specifically the `calculators` primary submodule. 

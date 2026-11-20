@@ -4,10 +4,10 @@ d3tales\_api.Workflows package
 Submodules
 ----------
 
-d3tales\_api.Workflows.D3TaLES\_FW module
------------------------------------------
+d3tales\_api.Workflows.Fireworks module
+---------------------------------------
 
-.. automodule:: d3tales_api.Workflows.D3TaLES_FW
+.. automodule:: d3tales_api.Workflows.Fireworks
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,10 +36,34 @@ d3tales\_api.Workflows.Initialize module
    :undoc-members:
    :show-inheritance:
 
+d3tales\_api.Workflows.Orca module
+----------------------------------
+
+.. automodule:: d3tales_api.Workflows.Orca
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 d3tales\_api.Workflows.ParamSet module
 --------------------------------------
 
 .. automodule:: d3tales_api.Workflows.ParamSet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Workflows.d3tales\_utils module
+--------------------------------------------
+
+.. automodule:: d3tales_api.Workflows.d3tales_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+d3tales\_api.Workflows.pyscf module
+-----------------------------------
+
+.. automodule:: d3tales_api.Workflows.pyscf
    :members:
    :undoc-members:
    :show-inheritance:

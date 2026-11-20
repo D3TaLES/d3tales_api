@@ -6,9 +6,9 @@ D<sup>3</sup>TaLES schema. It also contains a submodule for converting data from
 D<sup>3</sup>TaLES database to frontend data and pushing the new data to the frontend 
 database. 
 
-Full documentation can be found [here](d3tales_api.Processors.html).
+Full documentation can be found <a href="d3tales_api.Processors.html">here</a>.
 
-### Current Parsers: 
+## Current Parsers:
 * Molecular DFT
   * Gaussian logfiles
   * Psi4 logfiles (in development)

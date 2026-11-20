@@ -1,22 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>d3tales_api package &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script docs_src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,14 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> D<sup>3</sup>TaLES API
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES API
           </a>
-              <div class="version">
-                0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,8 +59,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api.database_info">d3tales_api.database_info module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.source_groups_generator"><code class="docutils literal notranslate"><span class="pre">source_groups_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.db_info"><code class="docutils literal notranslate"><span class="pre">db_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d3tales_api.database_info.source_groups"><code class="docutils literal notranslate"><span class="pre">source_groups()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-d3tales_api">Module contents</a></li>
@@ -81,7 +81,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">d3tales_api package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/d3tales_api.rst.txt" rel="nofollow"> View page source</a>
@@ -93,9 +93,9 @@
            <div itemprop="articleBody">
              
   <section id="d3tales-api-package">
-<h1>d3tales_api package<a class="headerlink" href="#d3tales-api-package" title="Permalink to this heading"></a></h1>
+<h1>d3tales_api package<a class="headerlink" href="#d3tales-api-package" title="Link to this heading"></a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a><ul>
@@ -113,9 +113,14 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVChargeTransferCalculator.calculate"><code class="docutils literal notranslate"><span class="pre">CVChargeTransferCalculator.calculate()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVChargeTransferCalculatorMicro"><code class="docutils literal notranslate"><span class="pre">CVChargeTransferCalculatorMicro</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVChargeTransferCalculatorMicro.calculate"><code class="docutils literal notranslate"><span class="pre">CVChargeTransferCalculatorMicro.calculate()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.e_half"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.e_half()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.middle_sweep"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.middle_sweep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peak_currents"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.peak_currents()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peak_splittings"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.peak_splittings()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.peaks()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDescriptorCalculator.peaks_for_analysis"><code class="docutils literal notranslate"><span class="pre">CVDescriptorCalculator.peaks_for_analysis()</span></code></a></li>
@@ -125,6 +130,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculator"><code class="docutils literal notranslate"><span class="pre">CVDiffusionCalculator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculator.calculate"><code class="docutils literal notranslate"><span class="pre">CVDiffusionCalculator.calculate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculatorMicro"><code class="docutils literal notranslate"><span class="pre">CVDiffusionCalculatorMicro</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.CVDiffusionCalculatorMicro.calculate"><code class="docutils literal notranslate"><span class="pre">CVDiffusionCalculatorMicro.calculate()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.ConcentrationCalculator"><code class="docutils literal notranslate"><span class="pre">ConcentrationCalculator</span></code></a><ul>
@@ -207,6 +216,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.plotters">d3tales_api.Calculators.plotters module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CAPlotter"><code class="docutils literal notranslate"><span class="pre">CAPlotter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CAPlotter.live_plot"><code class="docutils literal notranslate"><span class="pre">CAPlotter.live_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CAPlotter.plot_data"><code class="docutils literal notranslate"><span class="pre">CAPlotter.plot_data()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter"><code class="docutils literal notranslate"><span class="pre">CVPlotter</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot"><code class="docutils literal notranslate"><span class="pre">CVPlotter.live_plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.CVPlotter.live_plot_multi"><code class="docutils literal notranslate"><span class="pre">CVPlotter.live_plot_multi()</span></code></a></li>
@@ -226,6 +240,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Calculators.html#module-d3tales_api.Calculators.utils">d3tales_api.Calculators.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.dict2obj"><code class="docutils literal notranslate"><span class="pre">dict2obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.float_from_str"><code class="docutils literal notranslate"><span class="pre">float_from_str()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_electrode_potential"><code class="docutils literal notranslate"><span class="pre">get_electrode_potential()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.get_periodic_table"><code class="docutils literal notranslate"><span class="pre">get_periodic_table()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html#d3tales_api.Calculators.utils.json2obj"><code class="docutils literal notranslate"><span class="pre">json2obj()</span></code></a></li>
@@ -239,6 +254,67 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.D3database.html">d3tales_api.D3database package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.back2front">d3tales_api.D3database.back2front module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front"><code class="docutils literal notranslate"><span class="pre">CV2Front</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.__init__"><code class="docutils literal notranslate"><span class="pre">CV2Front.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.cv_meta_calcs"><code class="docutils literal notranslate"><span class="pre">CV2Front.cv_meta_calcs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.e_halfs"><code class="docutils literal notranslate"><span class="pre">CV2Front.e_halfs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.from_json"><code class="docutils literal notranslate"><span class="pre">CV2Front.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.generate_hash"><code class="docutils literal notranslate"><span class="pre">CV2Front.generate_hash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.get_conditions"><code class="docutils literal notranslate"><span class="pre">CV2Front.get_conditions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.micro_meta_calcs"><code class="docutils literal notranslate"><span class="pre">CV2Front.micro_meta_calcs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.process"><code class="docutils literal notranslate"><span class="pre">CV2Front.process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.prop_dict"><code class="docutils literal notranslate"><span class="pre">CV2Front.prop_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front"><code class="docutils literal notranslate"><span class="pre">DOI2Front</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.__init__"><code class="docutils literal notranslate"><span class="pre">DOI2Front.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.check_extr_props"><code class="docutils literal notranslate"><span class="pre">DOI2Front.check_extr_props()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.cir_convert"><code class="docutils literal notranslate"><span class="pre">DOI2Front.cir_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.from_json"><code class="docutils literal notranslate"><span class="pre">DOI2Front.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.get_literature_data"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_literature_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.get_mol_id"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_mol_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.__init__"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_electron_affinity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_electron_affinity_2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_ionization_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_ionization_energy_2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.electron_reorganization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.electron_reorganization_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.find_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.find_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.from_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.from_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.get_all_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.get_all_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.get_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.hash_id"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.hash_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.hole_reorganization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.hole_reorganization_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.insert"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.insert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.insert_all_mol"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.insert_all_mol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.insert_all_species"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.insert_all_species()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.mol_descriptor_dict"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.mol_descriptor_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.omega"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.omega()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.oxidation_potential"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.oxidation_potential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.prop_entry"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.prop_entry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.reduction_potential"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.reduction_potential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.relaxation_anion1_groundState"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_anion1_groundState()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.relaxation_cation1_groundState"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_cation1_groundState()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.relaxation_groundState_anion1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_groundState_anion1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.relaxation_groundState_cation1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_groundState_cation1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.rmsd_anion1_anion2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_anion1_anion2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.rmsd_cation1_cation2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_cation1_cation2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.rmsd_groundState_anion1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_groundState_anion1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.rmsd_groundState_cation1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_groundState_cation1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.solvation_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.solvation_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.species_descriptors"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.species_descriptors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.vertical_electron_affinity"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_electron_affinity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.vertical_electron_affinity_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_electron_affinity_2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.vertical_ionization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_ionization_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.Gaus2FrontCharacterization.vertical_ionization_energy_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_ionization_energy_2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.d3database">d3tales_api.D3database.d3database module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB"><code class="docutils literal notranslate"><span class="pre">BackDB</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.__init__"><code class="docutils literal notranslate"><span class="pre">BackDB.__init__()</span></code></a></li>
@@ -281,14 +357,6 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.QueryDB.make_query"><code class="docutils literal notranslate"><span class="pre">QueryDB.make_query()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.__init__"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.check_wflow_name"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.check_wflow_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.exists"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.exists</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.get_prop"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.get_prop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.RobotStatusDB.update_status"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.update_status()</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.dft_calculation_list">d3tales_api.D3database.dft_calculation_list module</a><ul>
@@ -296,22 +364,12 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.dft_calculation_list.calculation_list"><code class="docutils literal notranslate"><span class="pre">calculation_list()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.info_from_smiles">d3tales_api.D3database.info_from_smiles module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.__init__"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.GenerateMolInfo.get_mol_info"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.get_mol_info()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.base64_to_image"><code class="docutils literal notranslate"><span class="pre">base64_to_image()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.find_lowest_e_conf"><code class="docutils literal notranslate"><span class="pre">find_lowest_e_conf()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.info_from_smiles.image_to_base64"><code class="docutils literal notranslate"><span class="pre">image_to_base64()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.D3database.html#module-d3tales_api.D3database.restapi">d3tales_api.D3database.restapi module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData"><code class="docutils literal notranslate"><span class="pre">D3talesData</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.__init__"><code class="docutils literal notranslate"><span class="pre">D3talesData.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_master_df"><code class="docutils literal notranslate"><span class="pre">D3talesData.get_master_df()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data"><code class="docutils literal notranslate"><span class="pre">D3talesData.get_prop_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data_raw"><code class="docutils literal notranslate"><span class="pre">D3talesData.get_prop_data_raw()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.hist_1d"><code class="docutils literal notranslate"><span class="pre">D3talesData.hist_1d()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.hist_2d"><code class="docutils literal notranslate"><span class="pre">D3talesData.hist_2d()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.rgetkeys"><code class="docutils literal notranslate"><span class="pre">D3talesData.rgetkeys()</span></code></a></li>
@@ -347,124 +405,17 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.Processors.html">d3tales_api.Processors package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.back2front">d3tales_api.Processors.back2front module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front"><code class="docutils literal notranslate"><span class="pre">CV2Front</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.__init__"><code class="docutils literal notranslate"><span class="pre">CV2Front.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.cv_meta_calcs"><code class="docutils literal notranslate"><span class="pre">CV2Front.cv_meta_calcs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.e_halfs"><code class="docutils literal notranslate"><span class="pre">CV2Front.e_halfs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.from_json"><code class="docutils literal notranslate"><span class="pre">CV2Front.from_json()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.generate_hash"><code class="docutils literal notranslate"><span class="pre">CV2Front.generate_hash()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.get_conditions"><code class="docutils literal notranslate"><span class="pre">CV2Front.get_conditions()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.process"><code class="docutils literal notranslate"><span class="pre">CV2Front.process()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.CV2Front.prop_dict"><code class="docutils literal notranslate"><span class="pre">CV2Front.prop_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front"><code class="docutils literal notranslate"><span class="pre">DOI2Front</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.__init__"><code class="docutils literal notranslate"><span class="pre">DOI2Front.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.check_extr_props"><code class="docutils literal notranslate"><span class="pre">DOI2Front.check_extr_props()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.cir_convert"><code class="docutils literal notranslate"><span class="pre">DOI2Front.cir_convert()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.from_json"><code class="docutils literal notranslate"><span class="pre">DOI2Front.from_json()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_literature_data"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_literature_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.DOI2Front.get_mol_id"><code class="docutils literal notranslate"><span class="pre">DOI2Front.get_mol_id()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.__init__"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_electron_affinity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_electron_affinity_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_electron_affinity_2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_ionization_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.adiabatic_ionization_energy_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.adiabatic_ionization_energy_2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.electron_reorganization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.electron_reorganization_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.find_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.find_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.from_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.from_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_all_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.get_all_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.get_data"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.get_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.hash_id"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.hash_id()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.hole_reorganization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.hole_reorganization_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.oxidation_potential"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.oxidation_potential()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.reduction_potential"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.reduction_potential()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_anion1_groundState"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_anion1_groundState()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_cation1_groundState"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_cation1_groundState()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_groundState_anion1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_groundState_anion1()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.relaxation_groundState_cation1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.relaxation_groundState_cation1()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.return_descriptor_dict"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.return_descriptor_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_anion1_anion2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_anion1_anion2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_cation1_cation2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_cation1_cation2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_groundState_anion1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_groundState_anion1()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.rmsd_groundState_cation1"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.rmsd_groundState_cation1()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.solvation_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.solvation_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.species_descriptors"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.species_descriptors</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_electron_affinity"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_electron_affinity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_electron_affinity_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_electron_affinity_2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_ionization_energy"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_ionization_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.back2front.Gaus2FrontCharacterization.vertical_ionization_energy_2"><code class="docutils literal notranslate"><span class="pre">Gaus2FrontCharacterization.vertical_ionization_energy_2()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.d3tales_parser">d3tales_api.Processors.d3tales_parser module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCA"><code class="docutils literal notranslate"><span class="pre">ProcessCA</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCA.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessCA.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCA.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessCA.data_dict</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV"><code class="docutils literal notranslate"><span class="pre">ProcessCV</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessCV.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessCV.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessCV.data_dict</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT"><code class="docutils literal notranslate"><span class="pre">ProcessDFT</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.conditions"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.data_dict</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.hash_id"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.hash_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.is_groundState"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.is_groundState</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessDFT.mol_info"><code class="docutils literal notranslate"><span class="pre">ProcessDFT.mol_info</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp"><code class="docutils literal notranslate"><span class="pre">ProcessNlp</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.data_dict</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.download_article"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.download_article()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_dataframe"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.from_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_html"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.from_html()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_parsed_json"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.from_parsed_json()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.from_prop_list"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.from_prop_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_affiliations"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_affiliations()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_basic_info"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_basic_info()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.get_main_text"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.get_main_text()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessNlp.make_author_entry"><code class="docutils literal notranslate"><span class="pre">ProcessNlp.make_author_entry()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.data_dict</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.data_format"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.data_format()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.mol_info"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.mol_info</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.pot_conditions"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.pot_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessPotBase.reagent_format"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.reagent_format()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.no_sql_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.no_sql_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_absorbance_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.sql_absorbance_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.ProcessUvVis.sql_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.sql_data</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.d3tales_parser.float_from_str"><code class="docutils literal notranslate"><span class="pre">float_from_str()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.expflow_parser">d3tales_api.Processors.expflow_parser module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.apparatus_by_id"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.apparatus_by_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.electrolyte"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.electrolyte</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_apparatus"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.get_apparatus()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_concentration"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.get_concentration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_molecule_id"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.get_molecule_id()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_param_quantity"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.get_param_quantity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_reagents"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.get_reagents()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.instrument_name"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.instrument_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.molecule_id"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.molecule_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.property_by_action"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.property_by_action()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.reagents_by_id"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.reagents_by_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.redox_mol"><code class="docutils literal notranslate"><span class="pre">ProcessExpFlowObj.redox_mol</span></code></a></li>
@@ -473,6 +424,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun"><code class="docutils literal notranslate"><span class="pre">ProcessExperimentRun</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.ca_metadata"><code class="docutils literal notranslate"><span class="pre">ProcessExperimentRun.ca_metadata</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.cv_metadata"><code class="docutils literal notranslate"><span class="pre">ProcessExperimentRun.cv_metadata</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.get_electrode"><code class="docutils literal notranslate"><span class="pre">ProcessExperimentRun.get_electrode()</span></code></a></li>
 </ul>
@@ -480,39 +432,35 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_cv">d3tales_api.Processors.parser_cv module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiBase"><code class="docutils literal notranslate"><span class="pre">ParseChiBase</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiBase.__init__"><code class="docutils literal notranslate"><span class="pre">ParseChiBase.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiBase.extract_value_unit"><code class="docutils literal notranslate"><span class="pre">ParseChiBase.extract_value_unit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.info_from_smiles">d3tales_api.Processors.info_from_smiles module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.GenerateMolInfo"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.GenerateMolInfo.__init__"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.GenerateMolInfo.get_mol_info"><code class="docutils literal notranslate"><span class="pre">GenerateMolInfo.get_mol_info()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCA"><code class="docutils literal notranslate"><span class="pre">ParseChiCA</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCA.__init__"><code class="docutils literal notranslate"><span class="pre">ParseChiCA.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCA.get_data_calcs"><code class="docutils literal notranslate"><span class="pre">ParseChiCA.get_data_calcs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCA.resistance"><code class="docutils literal notranslate"><span class="pre">ParseChiCA.resistance</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV"><code class="docutils literal notranslate"><span class="pre">ParseChiCV</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.__init__"><code class="docutils literal notranslate"><span class="pre">ParseChiCV.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_plotting"><code class="docutils literal notranslate"><span class="pre">ParseChiCV.calculate_plotting()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiCV.calculate_prop"><code class="docutils literal notranslate"><span class="pre">ParseChiCV.calculate_prop()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiESI"><code class="docutils literal notranslate"><span class="pre">ParseChiESI</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.ParseChiESI.__init__"><code class="docutils literal notranslate"><span class="pre">ParseChiESI.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.break_list"><code class="docutils literal notranslate"><span class="pre">break_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_cv.break_scan_data"><code class="docutils literal notranslate"><span class="pre">break_scan_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.base64_to_image"><code class="docutils literal notranslate"><span class="pre">base64_to_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.find_lowest_e_conf"><code class="docutils literal notranslate"><span class="pre">find_lowest_e_conf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.image_to_base64"><code class="docutils literal notranslate"><span class="pre">image_to_base64()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_dft">d3tales_api.Processors.parser_dft module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.cclib_parse"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB.cclib_parse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_freq_dicts"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB.get_freq_dicts()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_radical_stability_score"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB.get_radical_stability_score()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIB.get_sites_dict"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIB.get_sites_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.cclib_parse"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin.cclib_parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.get_freq_dicts"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin.get_freq_dicts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.get_radical_stability_score"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin.get_radical_stability_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.get_sites_dict"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin.get_sites_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.log_path"><code class="docutils literal notranslate"><span class="pre">ProcessCCLIBMixin.log_path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.conditions"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.data_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.get_radical_stability_score"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.get_radical_stability_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.hash_id"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.hash_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.is_groundState"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.is_groundState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.mol_info"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.mol_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessDFTBase.runtime"><code class="docutils literal notranslate"><span class="pre">ProcessDFTBase.runtime</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog"><code class="docutils literal notranslate"><span class="pre">ProcessGausLog</span></code></a><ul>
@@ -535,14 +483,61 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_echem">d3tales_api.Processors.parser_echem module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin"><code class="docutils literal notranslate"><span class="pre">ParseChiMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin.extract_value_unit"><code class="docutils literal notranslate"><span class="pre">ParseChiMixin.extract_value_unit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin.filepath"><code class="docutils literal notranslate"><span class="pre">ParseChiMixin.filepath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ParseChiMixin.parse"><code class="docutils literal notranslate"><span class="pre">ParseChiMixin.parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.conductivity"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA.conductivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.get_data_calcs"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA.get_data_calcs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.get_resistance"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA.get_resistance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCA.parsed_data"><code class="docutils literal notranslate"><span class="pre">ProcessChiCA.parsed_data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.get_i_ss"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV.get_i_ss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.get_micro_e_half"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV.get_micro_e_half()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.inflection_points"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV.inflection_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiCV.parsed_data"><code class="docutils literal notranslate"><span class="pre">ProcessChiCV.parsed_data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiESI"><code class="docutils literal notranslate"><span class="pre">ProcessChiESI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiESI.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessChiESI.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessChiESI.parsed_data"><code class="docutils literal notranslate"><span class="pre">ProcessChiESI.parsed_data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.conditions"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.data_dict"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.data_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.parsed_data"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.parsed_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.reagent_format"><code class="docutils literal notranslate"><span class="pre">ProcessPotBase.reagent_format()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_ir">d3tales_api.Processors.parser_ir module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_uvvis">d3tales_api.Processors.parser_uvvis module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel"><code class="docutils literal notranslate"><span class="pre">ParseExcel</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.__init__"><code class="docutils literal notranslate"><span class="pre">ParseExcel.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.absorbance_data"><code class="docutils literal notranslate"><span class="pre">ParseExcel.absorbance_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.date_recorded"><code class="docutils literal notranslate"><span class="pre">ParseExcel.date_recorded</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.integration_time"><code class="docutils literal notranslate"><span class="pre">ParseExcel.integration_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcel.parse_file"><code class="docutils literal notranslate"><span class="pre">ParseExcel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.absorbance_data"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.absorbance_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.data_df"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.data_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.date_recorded"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.date_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.filepath"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.filepath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.integration_time"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.integration_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.parse"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.string_data"><code class="docutils literal notranslate"><span class="pre">ParseExcelMixin.string_data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis.no_sql_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.no_sql_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis.sql_absorbance_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.sql_absorbance_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ProcessUvVis.sql_data"><code class="docutils literal notranslate"><span class="pre">ProcessUvVis.sql_data</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -580,8 +575,14 @@
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.UpdateUserDB.run_task"><code class="docutils literal notranslate"><span class="pre">UpdateUserDB.run_task()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.mkdir_p"><code class="docutils literal notranslate"><span class="pre">mkdir_p()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.processing_firetasks.test_path"><code class="docutils literal notranslate"><span class="pre">test_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors.utils">d3tales_api.Processors.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.utils.break_list"><code class="docutils literal notranslate"><span class="pre">break_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.utils.break_scan_data"><code class="docutils literal notranslate"><span class="pre">break_scan_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.utils.convert_list_units"><code class="docutils literal notranslate"><span class="pre">convert_list_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.utils.mkdir_p"><code class="docutils literal notranslate"><span class="pre">mkdir_p()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Processors.html#d3tales_api.Processors.utils.test_path"><code class="docutils literal notranslate"><span class="pre">test_path()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Processors.html#module-d3tales_api.Processors">Module contents</a></li>
@@ -589,55 +590,40 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.Workflows.html">d3tales_api.Workflows package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.D3TaLES_FW">d3tales_api.Workflows.D3TaLES_FW module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.DihedRot"><code class="docutils literal notranslate"><span class="pre">DihedRot</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.DihedRot.__init__"><code class="docutils literal notranslate"><span class="pre">DihedRot.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Fireworks">d3tales_api.Workflows.Fireworks module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.Energy"><code class="docutils literal notranslate"><span class="pre">Energy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.Energy.__init__"><code class="docutils literal notranslate"><span class="pre">Energy.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailEnd"><code class="docutils literal notranslate"><span class="pre">EmailEnd</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailEnd.__init__"><code class="docutils literal notranslate"><span class="pre">EmailEnd.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.InitializeMolecule"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.InitializeMolecule.__init__"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailStart"><code class="docutils literal notranslate"><span class="pre">EmailStart</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.EmailStart.__init__"><code class="docutils literal notranslate"><span class="pre">EmailStart.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.MolOpt"><code class="docutils literal notranslate"><span class="pre">MolOpt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.MolOpt.__init__"><code class="docutils literal notranslate"><span class="pre">MolOpt.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Energy"><code class="docutils literal notranslate"><span class="pre">Energy</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Energy.__init__"><code class="docutils literal notranslate"><span class="pre">Energy.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.Optimization"><code class="docutils literal notranslate"><span class="pre">Optimization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.Optimization.__init__"><code class="docutils literal notranslate"><span class="pre">Optimization.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.InitializeMolecule.__init__"><code class="docutils literal notranslate"><span class="pre">InitializeMolecule.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.TDDFT"><code class="docutils literal notranslate"><span class="pre">TDDFT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.TDDFT.__init__"><code class="docutils literal notranslate"><span class="pre">TDDFT.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.MolOpt"><code class="docutils literal notranslate"><span class="pre">MolOpt</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.MolOpt.__init__"><code class="docutils literal notranslate"><span class="pre">MolOpt.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Optimization"><code class="docutils literal notranslate"><span class="pre">Optimization</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.Optimization.__init__"><code class="docutils literal notranslate"><span class="pre">Optimization.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.TDDFT"><code class="docutils literal notranslate"><span class="pre">TDDFT</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.TDDFT.__init__"><code class="docutils literal notranslate"><span class="pre">TDDFT.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.WTuning"><code class="docutils literal notranslate"><span class="pre">WTuning</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.D3TaLES_FW.WTuning.__init__"><code class="docutils literal notranslate"><span class="pre">WTuning.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.WTuning"><code class="docutils literal notranslate"><span class="pre">WTuning</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Fireworks.WTuning.__init__"><code class="docutils literal notranslate"><span class="pre">WTuning.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Gaussian">d3tales_api.Workflows.Gaussian module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase"><code class="docutils literal notranslate"><span class="pre">GaussianBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.configure_link0_resources"><code class="docutils literal notranslate"><span class="pre">GaussianBase.configure_link0_resources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.engine_name"><code class="docutils literal notranslate"><span class="pre">GaussianBase.engine_name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.post_job"><code class="docutils literal notranslate"><span class="pre">GaussianBase.post_job()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.run_check"><code class="docutils literal notranslate"><span class="pre">GaussianBase.run_check()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.setup_calc"><code class="docutils literal notranslate"><span class="pre">GaussianBase.setup_calc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.setup_files"><code class="docutils literal notranslate"><span class="pre">GaussianBase.setup_files()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot"><code class="docutils literal notranslate"><span class="pre">RunGaussianDihedRot</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianDihedRot.run_task"><code class="docutils literal notranslate"><span class="pre">RunGaussianDihedRot.run_task()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianEnergy"><code class="docutils literal notranslate"><span class="pre">RunGaussianEnergy</span></code></a><ul>
@@ -660,21 +646,40 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Gromacs">d3tales_api.Workflows.Gromacs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Initialize">d3tales_api.Workflows.Initialize module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailFinished"><code class="docutils literal notranslate"><span class="pre">EmailFinished</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailFinished.run_task"><code class="docutils literal notranslate"><span class="pre">EmailFinished.run_task()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailStarting"><code class="docutils literal notranslate"><span class="pre">EmailStarting</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.EmailStarting.run_task"><code class="docutils literal notranslate"><span class="pre">EmailStarting.run_task()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail"><code class="docutils literal notranslate"><span class="pre">Mail</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail.__init__"><code class="docutils literal notranslate"><span class="pre">Mail.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.Mail.send"><code class="docutils literal notranslate"><span class="pre">Mail.send()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.MoleculeInit"><code class="docutils literal notranslate"><span class="pre">MoleculeInit</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Initialize.MoleculeInit.run_task"><code class="docutils literal notranslate"><span class="pre">MoleculeInit.run_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.Orca">d3tales_api.Workflows.Orca module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.GaussianBase"><code class="docutils literal notranslate"><span class="pre">GaussianBase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase"><code class="docutils literal notranslate"><span class="pre">OrcaBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.engine_name"><code class="docutils literal notranslate"><span class="pre">OrcaBase.engine_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.input_text"><code class="docutils literal notranslate"><span class="pre">OrcaBase.input_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.post_job"><code class="docutils literal notranslate"><span class="pre">OrcaBase.post_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.run_orca"><code class="docutils literal notranslate"><span class="pre">OrcaBase.run_orca()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.setup_calc"><code class="docutils literal notranslate"><span class="pre">OrcaBase.setup_calc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.OrcaBase.setup_files"><code class="docutils literal notranslate"><span class="pre">OrcaBase.setup_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunGaussianEnergy"><code class="docutils literal notranslate"><span class="pre">RunGaussianEnergy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunGaussianOpt"><code class="docutils literal notranslate"><span class="pre">RunGaussianOpt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunGaussianTDDFT"><code class="docutils literal notranslate"><span class="pre">RunGaussianTDDFT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaEnergy"><code class="docutils literal notranslate"><span class="pre">RunOrcaEnergy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaEnergy.run_task"><code class="docutils literal notranslate"><span class="pre">RunOrcaEnergy.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaOpt"><code class="docutils literal notranslate"><span class="pre">RunOrcaOpt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaOpt.run_task"><code class="docutils literal notranslate"><span class="pre">RunOrcaOpt.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaTDDFT"><code class="docutils literal notranslate"><span class="pre">RunOrcaTDDFT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunOrcaTDDFT.run_task"><code class="docutils literal notranslate"><span class="pre">RunOrcaTDDFT.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunWtuning"><code class="docutils literal notranslate"><span class="pre">RunWtuning</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.Orca.RunWtuning.run_task"><code class="docutils literal notranslate"><span class="pre">RunWtuning.run_task()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -682,6 +687,7 @@
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.ParamSet">d3tales_api.Workflows.ParamSet module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet"><code class="docutils literal notranslate"><span class="pre">GausParamSet</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.__init__"><code class="docutils literal notranslate"><span class="pre">GausParamSet.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.as_dict"><code class="docutils literal notranslate"><span class="pre">GausParamSet.as_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.from_json"><code class="docutils literal notranslate"><span class="pre">GausParamSet.from_json()</span></code></a></li>
 </ul>
 </li>
@@ -701,19 +707,157 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.sett"><code class="docutils literal notranslate"><span class="pre">sett()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.d3tales_utils">d3tales_api.Workflows.d3tales_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.get_collection"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.DBconnector.get_database"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_database()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailEnd"><code class="docutils literal notranslate"><span class="pre">EmailEnd</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailEnd.__init__"><code class="docutils literal notranslate"><span class="pre">EmailEnd.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailFinished"><code class="docutils literal notranslate"><span class="pre">EmailFinished</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailFinished.run_task"><code class="docutils literal notranslate"><span class="pre">EmailFinished.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStart"><code class="docutils literal notranslate"><span class="pre">EmailStart</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStart.__init__"><code class="docutils literal notranslate"><span class="pre">EmailStart.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStarting"><code class="docutils literal notranslate"><span class="pre">EmailStarting</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.EmailStarting.run_task"><code class="docutils literal notranslate"><span class="pre">EmailStarting.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail"><code class="docutils literal notranslate"><span class="pre">Mail</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail.__init__"><code class="docutils literal notranslate"><span class="pre">Mail.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.Mail.send"><code class="docutils literal notranslate"><span class="pre">Mail.send()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI"><code class="docutils literal notranslate"><span class="pre">RESTAPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.__init__"><code class="docutils literal notranslate"><span class="pre">RESTAPI.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.cookies"><code class="docutils literal notranslate"><span class="pre">RESTAPI.cookies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.csrftoken"><code class="docutils literal notranslate"><span class="pre">RESTAPI.csrftoken</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.get_client"><code class="docutils literal notranslate"><span class="pre">RESTAPI.get_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.get_process"><code class="docutils literal notranslate"><span class="pre">RESTAPI.get_process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.RESTAPI.post_process"><code class="docutils literal notranslate"><span class="pre">RESTAPI.post_process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_ground_state"><code class="docutils literal notranslate"><span class="pre">d3t_get_ground_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_init_structure"><code class="docutils literal notranslate"><span class="pre">d3t_get_init_structure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_omega"><code class="docutils literal notranslate"><span class="pre">d3t_get_omega()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_raw_computation"><code class="docutils literal notranslate"><span class="pre">d3t_get_raw_computation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_smiles"><code class="docutils literal notranslate"><span class="pre">d3t_get_smiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_register_molecule"><code class="docutils literal notranslate"><span class="pre">d3t_register_molecule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_submit_calculation"><code class="docutils literal notranslate"><span class="pre">d3t_submit_calculation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.pyscf">d3tales_api.Workflows.pyscf module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase"><code class="docutils literal notranslate"><span class="pre">PySCFBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.conditions_function"><code class="docutils literal notranslate"><span class="pre">PySCFBase.conditions_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.energy_data"><code class="docutils literal notranslate"><span class="pre">PySCFBase.energy_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.engine_name"><code class="docutils literal notranslate"><span class="pre">PySCFBase.engine_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.hash_function"><code class="docutils literal notranslate"><span class="pre">PySCFBase.hash_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.load_stage"><code class="docutils literal notranslate"><span class="pre">PySCFBase.load_stage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.post_job"><code class="docutils literal notranslate"><span class="pre">PySCFBase.post_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.result_data_store"><code class="docutils literal notranslate"><span class="pre">PySCFBase.result_data_store</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.save_stage"><code class="docutils literal notranslate"><span class="pre">PySCFBase.save_stage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.setup_calc"><code class="docutils literal notranslate"><span class="pre">PySCFBase.setup_calc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.setup_files"><code class="docutils literal notranslate"><span class="pre">PySCFBase.setup_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFResult"><code class="docutils literal notranslate"><span class="pre">PySCFResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings"><code class="docutils literal notranslate"><span class="pre">PySCFSettings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.__init__"><code class="docutils literal notranslate"><span class="pre">PySCFSettings.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.build_mf"><code class="docutils literal notranslate"><span class="pre">PySCFSettings.build_mf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.build_mol"><code class="docutils literal notranslate"><span class="pre">PySCFSettings.build_mol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.label"><code class="docutils literal notranslate"><span class="pre">PySCFSettings.label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.run_scf"><code class="docutils literal notranslate"><span class="pre">PySCFSettings.run_scf()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.__init__"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.geo_opt"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob.geo_opt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.omega_gauss_do"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob.omega_gauss_do()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.pyscf_extract"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob.pyscf_extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.pyscf_settings"><code class="docutils literal notranslate"><span class="pre">PySCFWtuningJob.pyscf_settings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFEnergy"><code class="docutils literal notranslate"><span class="pre">RunPySCFEnergy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFEnergy.run_task"><code class="docutils literal notranslate"><span class="pre">RunPySCFEnergy.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFOpt"><code class="docutils literal notranslate"><span class="pre">RunPySCFOpt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFOpt.run_task"><code class="docutils literal notranslate"><span class="pre">RunPySCFOpt.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFTDDFT"><code class="docutils literal notranslate"><span class="pre">RunPySCFTDDFT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFTDDFT.run_task"><code class="docutils literal notranslate"><span class="pre">RunPySCFTDDFT.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFWtuning"><code class="docutils literal notranslate"><span class="pre">RunPySCFWtuning</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.RunPySCFWtuning.run_task"><code class="docutils literal notranslate"><span class="pre">RunPySCFWtuning.run_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.append_gaussian_style_summary"><code class="docutils literal notranslate"><span class="pre">append_gaussian_style_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.frontier_orbitals"><code class="docutils literal notranslate"><span class="pre">frontier_orbitals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.get_pyscf_omega"><code class="docutils literal notranslate"><span class="pre">get_pyscf_omega()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.iop_to_omega"><code class="docutils literal notranslate"><span class="pre">iop_to_omega()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.parse_opt_options"><code class="docutils literal notranslate"><span class="pre">parse_opt_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.parse_scf_options"><code class="docutils literal notranslate"><span class="pre">parse_scf_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.parse_td_options"><code class="docutils literal notranslate"><span class="pre">parse_td_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.pyscf_conditions"><code class="docutils literal notranslate"><span class="pre">pyscf_conditions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.pyscf_hash_id"><code class="docutils literal notranslate"><span class="pre">pyscf_hash_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.run_energy"><code class="docutils literal notranslate"><span class="pre">run_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.run_frequencies"><code class="docutils literal notranslate"><span class="pre">run_frequencies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.run_optimization"><code class="docutils literal notranslate"><span class="pre">run_optimization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.run_tddft"><code class="docutils literal notranslate"><span class="pre">run_tddft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.sites_of"><code class="docutils literal notranslate"><span class="pre">sites_of()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.split_functional"><code class="docutils literal notranslate"><span class="pre">split_functional()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.structure_from_mol"><code class="docutils literal notranslate"><span class="pre">structure_from_mol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.to_pyscf_basis"><code class="docutils literal notranslate"><span class="pre">to_pyscf_basis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.write_molden"><code class="docutils literal notranslate"><span class="pre">write_molden()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.write_nto"><code class="docutils literal notranslate"><span class="pre">write_nto()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.write_xyz"><code class="docutils literal notranslate"><span class="pre">write_xyz()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.utils">d3tales_api.Workflows.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.append_runfile_log"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.append_runfile_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.common_update_spec"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.common_update_spec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.conditions_function"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.conditions_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.existing_data"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.existing_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.hash_function"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.hash_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.local_conditions"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.local_conditions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.local_key"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.local_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.result_data_store"><code class="docutils literal notranslate"><span class="pre">ElectronicStructureTaskMixin.result_data_store</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.generate_gaussian_input"><code class="docutils literal notranslate"><span class="pre">generate_gaussian_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_central_dihed"><code class="docutils literal notranslate"><span class="pre">get_central_dihed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_data_store"><code class="docutils literal notranslate"><span class="pre">get_data_store()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_db_geom"><code class="docutils literal notranslate"><span class="pre">get_db_geom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_existing_data"><code class="docutils literal notranslate"><span class="pre">get_existing_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_groundState"><code class="docutils literal notranslate"><span class="pre">get_groundState()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_hash_id"><code class="docutils literal notranslate"><span class="pre">get_hash_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_local_output_dir"><code class="docutils literal notranslate"><span class="pre">get_local_output_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_omega"><code class="docutils literal notranslate"><span class="pre">get_omega()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_scfs"><code class="docutils literal notranslate"><span class="pre">get_scfs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_store_dir"><code class="docutils literal notranslate"><span class="pre">get_store_dir()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_tddft_excitations"><code class="docutils literal notranslate"><span class="pre">get_tddft_excitations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.local_identifier"><code class="docutils literal notranslate"><span class="pre">local_identifier()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.local_record"><code class="docutils literal notranslate"><span class="pre">local_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.omega_to_iop"><code class="docutils literal notranslate"><span class="pre">omega_to_iop()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_conditions"><code class="docutils literal notranslate"><span class="pre">orig_conditions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.orig_hash_id"><code class="docutils literal notranslate"><span class="pre">orig_hash_id()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.parse_tddft"><code class="docutils literal notranslate"><span class="pre">parse_tddft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.read_local_result"><code class="docutils literal notranslate"><span class="pre">read_local_result()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.runtime_from_log"><code class="docutils literal notranslate"><span class="pre">runtime_from_log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.save_local_result"><code class="docutils literal notranslate"><span class="pre">save_local_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.spec_or_task"><code class="docutils literal notranslate"><span class="pre">spec_or_task()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.start_from_smiles"><code class="docutils literal notranslate"><span class="pre">start_from_smiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.write_json"><code class="docutils literal notranslate"><span class="pre">write_json()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.write_nto"><code class="docutils literal notranslate"><span class="pre">write_nto()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.zip_files"><code class="docutils literal notranslate"><span class="pre">zip_files()</span></code></a></li>
 </ul>
@@ -726,6 +870,7 @@
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_initialize"><code class="docutils literal notranslate"><span class="pre">just_initialize()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_nmr"><code class="docutils literal notranslate"><span class="pre">just_nmr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.just_tddft"><code class="docutils literal notranslate"><span class="pre">just_tddft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.molDisc_wf"><code class="docutils literal notranslate"><span class="pre">molDisc_wf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.solv_wf"><code class="docutils literal notranslate"><span class="pre">solv_wf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.specialized_job"><code class="docutils literal notranslate"><span class="pre">specialized_job()</span></code></a></li>
 </ul>
@@ -767,39 +912,45 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
 <section id="module-d3tales_api.database_info">
-<span id="d3tales-api-database-info-module"></span><h2>d3tales_api.database_info module<a class="headerlink" href="#module-d3tales_api.database_info" title="Permalink to this heading"></a></h2>
+<span id="d3tales-api-database-info-module"></span><h2>d3tales_api.database_info module<a class="headerlink" href="#module-d3tales_api.database_info" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="d3tales_api.database_info.db_info_generator">
-<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.db_info_generator" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="d3tales_api.database_info.db_info">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">db_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_file_warning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#db_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.db_info" title="Link to this definition"></a></dt>
 <dd><p>Get information about database connections. This function requires either a db_file argument
 or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
 to a JSON file containing connection information for the databases. The keys should be the database
 names such as <cite>frontend</cite>, <cite>backend</cite>, <cite>expflow</cite>, and <cite>fireworks</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>db_file</strong> – str, path to database info JSON file</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_file</strong> – str, path to database info JSON file</p></li>
+<li><p><strong>db_file_warning</strong> – bool, give no db file warning if True</p></li>
+</ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON object containing information about database connections</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="d3tales_api.database_info.source_groups_generator">
-<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">source_groups_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#source_groups_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.source_groups_generator" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="d3tales_api.database_info.source_groups">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.database_info.</span></span><span class="sig-name descname"><span class="pre">source_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/database_info.html#source_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.database_info.source_groups" title="Link to this definition"></a></dt>
 <dd><p>Get information about database connections. This function requires either a group_file argument
 or a GROUP_FILE environment variable. This argument or  environment variable should be a path
 to a JSON file containing source group information. The keys should be source group names
 and the values should be strings with two digit numbers, e.g., {“Risko”: “06”}.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>group_file</strong> – str, path to database info JSON file</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group_file</strong> – str, path to database info JSON file</p></li>
+<li><p><strong>verbose</strong> – int,</p></li>
+</ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON object containing information about source group codes</p>
 </dd>
 </dl>
@@ -807,7 +958,7 @@ and the values should be strings with two digit numbers, e.g., {“Risko”: “
 
 </section>
 <section id="module-d3tales_api">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-d3tales_api" title="Link to this heading"></a></h2>
 <p>d3tales_api.</p>
 <p>API designed for the D3TaLES project. Includes data processing, database access functions, and property calculators.
 Pip install may require –use-deprecated=legacy-resolver</p>

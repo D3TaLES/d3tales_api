@@ -4,12 +4,11 @@ D3TaLES-specific helpers for the Workflows module.
 Everything that talks to the D3TaLES databases or to the D3TaLES website (d3tales.as.uky.edu) lives here,
 so the rest of Workflows can run without it when ``data_store="local"``.
 
-The pieces of the D3database module that Workflows needs have been moved here, so Workflows no longer
-imports anything from D3database:
-    * RESTAPI           (from D3database/restapi.py, unchanged)
-    * DBconnector       (from D3database/d3database.py, unchanged)
-    * d3t_register_molecule  (the FrontDB(schema_layer='mol_info', ...) insertion path, without the
-                              Schema2Class/jsonschema/pandas dependencies FrontDB pulls in)
+The pieces of the D3database module that Workflows needs have been moved here,
+so Workflows no longer imports anything from D3database. These pieces include
+the REST API client, database connector, and molecule registration path; the
+registration path avoids the Schema2Class, jsonschema, and pandas dependencies
+used by FrontDB.
 
 Heavy or credentialed dependencies (requests, pymongo, nanoid, d3tales_api.database_info, Processors) are imported
 lazily inside functions, so importing Workflows never needs DB_INFO_FILE or network access.

@@ -192,8 +192,8 @@ class D3talesData:
         """
         Get all major properties from D3TaLES database.
 
-        :param master_fn: str, filepath to CSV file in which to save data
-        uses the D3database FrontDB module by default, which required the DB_INFO_FILE to be defined to work.
+        :param master_fn: Filepath to the CSV output. The default uses the
+            D3database FrontDB module and requires ``DB_INFO_FILE`` to be defined.
 
         :return: pandas DataFrame with all data
         """
