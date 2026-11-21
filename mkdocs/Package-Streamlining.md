@@ -66,13 +66,14 @@ workflow = sams_wf(
 ```
 
 `optimized_sites` is a serializable list of molecular site dictionaries, such
-as the geometry format used in the workflow `*_geom` entries. If `wtune=True`,
-`sams_wf` requires `mol_opt_geom` by default: w-tuning consumes `opt_mol`, and
-this builder intentionally does not insert a geometry optimization to create
-that input. You may explicitly pass `geom_from_smiles=True` to permit an
-unoptimized SMILES-derived starting structure instead. With `wtune=False`, the
-per-species optimizations can start from the provided geometry or generate a
-starting structure from SMILES.
+as the geometry format used in the workflow `*_geom` entries. In builders
+that include a pre-w-tuning `opt_mol` step, that job always searches an RDKit
+conformer ensemble from SMILES, minimizes it with MMFF (or UFF if MMFF
+parameters are unavailable), and starts from the lowest-energy conformer.
+This is independent of `geom_from_smiles` and any `mol_opt_geom` supplied to
+initialization. Builders without an `opt_mol` step, such as `sams_wf`, still
+require an initial geometry or an explicit `geom_from_smiles=True` fallback
+when w-tuning is enabled.
 
 ## Important workflow arguments
 
@@ -80,7 +81,7 @@ starting structure from SMILES.
 | --- | --- |
 | `paramset` | Calculation parameters loaded with `GausParamSet.from_json(...)`. |
 | `smiles` / `identifier` | Identify the molecule. `smiles` is required to generate initial local structures and local ground-state data; use `identifier` when resolving a molecule already in the configured data store. |
-| `mol_opt_geom` | Optional starting geometry in the serialized site-dictionary format. It seeds the `opt_mol` geometry; `sams_wf` requires it when `wtune=True` unless `geom_from_smiles=True` is explicitly selected. |
+| `mol_opt_geom` | Optional starting geometry in the serialized site-dictionary format. It seeds initial per-species optimizations and w-tuning in builders without a pre-w-tuning `opt_mol` step; when `opt_mol` is present, that step instead always starts from the RDKit force-field conformer search. |
 | `wtune` | Add the molecular optimization and omega-tuning precursor (`d3tales_wf`), or the omega-tuning precursor (`sams_wf`). Set false to omit w-tuning. |
 | `hf_mol_opt` | Use the configured HF molecular-optimization parameter set where the builder supports this option. |
 | `solvent` | Solvent model/name for solvent optimizations or single points. `d3tales_wf` defaults to acetonitrile; `None` requests gas-phase behavior where supported. |
@@ -91,7 +92,6 @@ starting structure from SMILES.
 | `check_if_already_run` | Reuse existing calculations/results when the engine task supports the cache check. |
 | `restricted` | Select restricted (`True`) or unrestricted (`False`) reference behavior where supported. It does not set the spin multiplicity. |
 | `priority` | Set FireWorks priority for the generated calculation jobs. |
-| `submit` | Controls website uploads in `d3tales_web`; it does not affect direct MongoDB insertion or local result saving. It is separate from adding the workflow to a LaunchPad. |
 | `geom_from_smiles` | Explicitly allow a calculation to fall back to a SMILES-derived starting structure when its requested geometry is absent. Use only when that fallback is scientifically intended. |
 
 Other task options, including `run_nto`, `origin_group`, and `public`, can be
@@ -171,11 +171,11 @@ for new code.
 
 | Store | Network location | Molecule reads | Calculation result handling |
 | --- | --- | --- | --- |
-| `d3tales_web` | Workers can reach the D3TaLES website but are outside the DB firewall. | Website REST API. Molecules must be pre-registered; this API does not expose a workflow registration endpoint. | Gaussian files are zipped and uploaded for website-side processing. `submit=False` skips the upload. ORCA is rejected because the website upload endpoint expects Gaussian output. PySCF remains local because website processing expects Gaussian logs. |
+| `d3tales_web` | Workers can reach the D3TaLES website but are outside the DB firewall. | Website REST API. Molecules must be pre-registered; this API does not expose a workflow registration endpoint. | Gaussian files are zipped and uploaded for website-side processing. ORCA is rejected because the website upload endpoint expects Gaussian output. PySCF remains local because website processing expects Gaussian logs. |
 | `d3tales_direct` | Workers are inside the DB firewall and have direct MongoDB write access. | `base` and `computation` collections in the configured `d3tales` database; no REST calls. New molecule registration is supported. | Results are processed on the worker and inserted into `computation`. Engine output/checkpoint files are zipped and retained locally; no website upload is performed. |
 | `local` | No database or website access required. | Local molecule data/results, with explicit SMILES-based starting geometry fallback. | Processed results are stored as per-calculation JSON files. |
 
-`submit` only controls the website upload in `d3tales_web`; selecting
+Website uploads in `d3tales_web` are always enabled; selecting
 `d3tales_direct` means the workflow writes results to MongoDB. A local
 `db_info.json` is intentionally not required by tests: live credentials and
 database writes are never used by the direct-store unit tests.

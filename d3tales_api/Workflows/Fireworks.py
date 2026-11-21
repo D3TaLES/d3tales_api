@@ -75,6 +75,7 @@ def _calc_spec(software, priority=None):
 
 def _task_kwargs(software, **kwargs):
     """Keep worker runtime references separate from scientific task parameters."""
+    kwargs.pop("submit", None)
     kwargs["software"] = software
     for key, value in worker_task_kwargs(software).items():
         kwargs.setdefault(key, value)
@@ -87,6 +88,7 @@ class InitializeMolecule(Firework):
         # software is accepted for a uniform Firework API, although MoleculeInit
         # itself is independent of the electronic-structure engine.
         software = _normalize_software(software)
+        kwargs.pop("submit", None)
         spec = {"_category": "processing"}
         if priority is not None:
             spec["_priority"] = priority
@@ -100,7 +102,7 @@ class MolOpt(Firework):
         software = _normalize_software(software)
         kwargs.pop("use_iop", None)
         kwargs.setdefault("geometry", "opt_mol")
-        kwargs.setdefault("geom_from_smiles", True)
+        kwargs["forcefield_conformer"] = True
         task_cls = _FIRETASKS[software]["opt"]
         task_kwargs = _task_kwargs(
             software,

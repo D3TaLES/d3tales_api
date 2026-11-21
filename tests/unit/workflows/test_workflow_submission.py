@@ -47,7 +47,7 @@ def test_default_kwargs_passed_to_workflow_function(recording_launchpad, spy_wor
     submit_workflows(recording_launchpad, MOLECULE_FILE, PARAM_FILE, workflow_function=spy_workflow)
     kw = dict(spy_workflow.calls[0])
     assert isinstance(kw.pop("paramset"), GausParamSet)
-    assert kw == dict(public=False, submit=True, data_store="local", check_if_already_run=False, priority=4,
+    assert kw == dict(public=False, data_store="local", check_if_already_run=False, priority=4,
                       gaussian_file_name="gaussian", restricted=True, wtune=True, run_nto=False,
                       origin_group="Risko", wf_tag="", smiles="O", mol_opt_geom=water_geom)
 

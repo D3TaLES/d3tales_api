@@ -62,7 +62,8 @@ from d3tales_api.Workflows.utils import (
     resolve_charge_multiplicity,
     save_local_result,
     spec_or_task,
-    start_from_smiles
+    start_from_smiles,
+    forcefield_conformer_for_task,
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
 from d3tales_api.Workflows.runtime import WorkerRuntime, resolve_data_store
@@ -537,7 +538,6 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        self.submit = spec_or_task(self, fw_spec, "submit", True)  # kept for API parity; website uploads are unsupported
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.density_fit = spec_or_task(self, fw_spec, "density_fit", False)
@@ -625,7 +625,10 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
             geometry,
         )
         geometry_sites = fw_spec.get("{}_geom".format(geometry_key), )
-        if run_from_com:
+        forcefield_mol = forcefield_conformer_for_task(self, fw_spec)
+        if forcefield_mol is not None:
+            self.mol = forcefield_mol
+        elif run_from_com:
             self.mol = Molecule.from_file(self.file_xyz)
         else:
             if geometry_sites:
@@ -952,7 +955,6 @@ class RunPySCFWtuning(FiretaskBase):
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, pyscf_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
         check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        submit = spec_or_task(self, fw_spec, "submit", True)  # API parity; PySCF results are never uploaded
         restricted = spec_or_task(self, fw_spec, "restricted", True)
         solvent = spec_or_task(self, fw_spec, "solvent")
 

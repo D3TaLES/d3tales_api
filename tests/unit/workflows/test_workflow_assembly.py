@@ -86,8 +86,13 @@ def test_runtime_kwargs_reach_every_step(build, runtime_kwargs):
         for key in ("data_store", "origin_group", "public"):
             assert t[key] == runtime_kwargs[key], (name, key)
         if name != INIT_NAME:
-            for key in ("check_if_already_run", "restricted", "gaussian_file_name", "submit", "run_nto"):
+            for key in ("check_if_already_run", "restricted", "gaussian_file_name", "run_nto"):
                 assert t[key] == runtime_kwargs[key], (name, key)
+
+
+def test_legacy_submit_kwarg_is_ignored(build):
+    for fw in build(submit=False).fws:
+        assert "submit" not in only_task(fw)
 
 
 def test_initialization_receives_molecule(build, water_geom):

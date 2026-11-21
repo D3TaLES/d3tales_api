@@ -14,7 +14,7 @@ from d3tales_api.Workflows.wf_writer import (
     solv_wf,
     specialized_job,
 )
-from d3tales_api.Workflows.utils import geometry_key_candidates
+from d3tales_api.Workflows.utils import forcefield_conformer_for_task, geometry_key_candidates
 from tests.helpers.workflow_helpers import only_task
 
 pytestmark = [pytest.mark.unit, pytest.mark.gaussian]
@@ -207,6 +207,34 @@ def test_sams_workflow_without_tuning_can_start_from_smiles(paramset):
     assert only_task(opt)["geometry"] == "opt_mol"
     assert only_task(opt)["geom_from_smiles"] is True
     assert _parents_by_name(workflow)[opt.name] == {"initial_molecule_data"}
+
+
+def test_forcefield_conformer_for_molopt_ignores_fallback_flag(monkeypatch, water_geom):
+    expected = object()
+    calls = []
+
+    def generate(smiles):
+        calls.append(smiles)
+        return expected
+
+    monkeypatch.setattr(
+        "d3tales_api.Workflows.utils.generate_forcefield_conformer",
+        generate,
+    )
+    task = {"forcefield_conformer": True, "geom_from_smiles": False, "smiles": "O"}
+
+    assert forcefield_conformer_for_task(task, {"opt_mol_geom": water_geom}) is expected
+    assert calls == ["O"]
+
+
+def test_rdkit_forcefield_conformer_generation_produces_3d_geometry():
+    from d3tales_api.Workflows.utils import generate_forcefield_conformer
+
+    molecule = generate_forcefield_conformer("O")
+
+    assert [site.specie.symbol for site in molecule] == ["O", "H", "H"]
+    assert all(site.coords.shape == (3,) for site in molecule)
+    assert all(0.7 < molecule.get_distance(0, index) < 1.2 for index in (1, 2))
 
 
 def test_hf_workflow_custom_tags_match_geometry_producers(paramset):

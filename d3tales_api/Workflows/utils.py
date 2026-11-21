@@ -385,9 +385,26 @@ def start_from_smiles(identifier, smiles, data_store=DEFAULT_DATA_STORE):
             smiles = smiles or d3t_direct_get_smiles(identifier)
     if not smiles:
         raise ValueError("Cannot generate a starting geometry for {}: no SMILES provided.".format(identifier))
-    from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf  # lazy: see get_hash_id
-    structure = find_lowest_e_conf(smiles)
-    return Molecule.from_str(structure, 'xyz')
+    return generate_forcefield_conformer(smiles)
+
+
+def generate_forcefield_conformer(smiles):
+    """Generate a 3D starting geometry from SMILES using RDKit force fields."""
+    if not smiles:
+        raise ValueError("A SMILES string is required to generate a force-field conformer.")
+    from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf
+
+    return Molecule.from_str(find_lowest_e_conf(smiles), "xyz")
+
+
+def forcefield_conformer_for_task(task, fw_spec):
+    """Return a required SMILES-derived conformer when requested by a FireTask."""
+    if not task.get("forcefield_conformer", False):
+        return None
+    smiles = spec_or_task(task, fw_spec, "smiles")
+    if not smiles:
+        raise ValueError("A SMILES string is required for the molecular force-field optimization.")
+    return generate_forcefield_conformer(smiles)
 
 
 def get_groundState(identifier, smiles=None, prop='charge', data_store=DEFAULT_DATA_STORE):

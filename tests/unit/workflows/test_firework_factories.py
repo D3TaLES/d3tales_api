@@ -111,6 +111,17 @@ def test_molopt_disables_iop_and_freq(paramset):
     t = only_task(MolOpt(paramset=paramset.opt_groundState, use_iop=True))
     assert t["use_iop"] is False and t["skip_freq"] is True
     assert t["name"] == "opt_mol"
+    assert t["forcefield_conformer"] is True
+
+
+def test_molopt_forcefield_conformer_is_independent_of_smiles_fallback_flag(paramset):
+    task = only_task(MolOpt(
+        paramset=paramset.opt_groundState,
+        geom_from_smiles=False,
+    ))
+
+    assert task["geom_from_smiles"] is False
+    assert task["forcefield_conformer"] is True
 
 
 def test_wtuning_reads_initial_geometry(paramset):
