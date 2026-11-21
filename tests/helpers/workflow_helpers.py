@@ -68,11 +68,11 @@ def load_molecules(filename):
 
 
 def submit_workflows(launchpad, molecule_file, param_file, workflow_function=example_dft_workflow, priority=4,
-                     public=False, origin_group="Risko", submit=True, restricted=True, wtune=True, run_nto=False,
+                     public=False, origin_group="Risko", restricted=True, wtune=True, run_nto=False,
                      wf_tag="", data_store="local"):
     """Build one workflow per molecule and add it to ``launchpad``. Returns the first fw_id of each."""
     paramset = GausParamSet.from_json(str(param_file))
-    kwarg_dict = dict(paramset=paramset, public=public, submit=submit, data_store=data_store,
+    kwarg_dict = dict(paramset=paramset, public=public, data_store=data_store,
                       check_if_already_run=False, priority=priority,
                       gaussian_file_name="gaussian" if restricted else "gaussian_ur", restricted=restricted,
                       wtune=wtune, run_nto=run_nto, origin_group=origin_group, wf_tag=wf_tag)

@@ -231,7 +231,6 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        self.submit = spec_or_task(self, fw_spec, "submit", True)
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.orca_cmd = self.worker_runtime.engine_options.get("orca_cmd", "orca")
@@ -373,8 +372,7 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         data_hash = self.local_key(calc_type)
         if self.data_store == "d3tales_web":
             archive = zip_files(files, zip_name="{}_{}.zip".format(self.identifier, name_tag + self.full_name))
-            if self.submit:
-                d3t_submit_calculation(archive, self.identifier, calc_type)
+            d3t_submit_calculation(archive, self.identifier, calc_type)
         elif self.data_store == "d3tales_direct":
             archive = os.path.join(self.store_dir, "{}_{}.zip".format(self.identifier, data_hash))
             d3t_direct_store_calculation(record, files=files, archive_path=archive)
@@ -553,7 +551,7 @@ class RunWtuning(FiretaskBase):
         _json_dump(os.path.join(task.working_dir, "wtuning.result.json"), record)
         if task.data_store == "local":
             save_local_result(task.store_dir, record)
-        elif task.data_store == "d3tales_web" and task.submit:
+        elif task.data_store == "d3tales_web":
             archive = zip_files([f for f in os.listdir(task.working_dir) if f.endswith((".inp", ".out", ".json"))], zip_name="{}_wtuning.zip".format(task.identifier))
             d3t_submit_calculation(archive, task.identifier, self["name"])
         elif task.data_store == "d3tales_direct":

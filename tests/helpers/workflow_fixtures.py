@@ -27,7 +27,7 @@ def paramset():
 @pytest.fixture
 def runtime_kwargs():
     """Typical kwargs a launcher forwards to every Firework."""
-    return dict(public=False, submit=True, data_store="local", check_if_already_run=False, priority=4,
+    return dict(public=False, data_store="local", check_if_already_run=False, priority=4,
                 gaussian_file_name="gaussian", restricted=True, run_nto=False, origin_group="Risko")
 
 

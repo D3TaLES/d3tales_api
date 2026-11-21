@@ -153,7 +153,6 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        self.submit = spec_or_task(self, fw_spec, "submit", True)
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
 
@@ -292,9 +291,8 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         if self.data_store == "d3tales_web":
             upload_names = [f.split('/')[-1] for f in upload_files]
             zip_path = zip_files(upload_names, zip_name='{}_{}.zip'.format(self.identifier, name_tag + self.full_name))
-            if self.submit:
-                d3t_submit_calculation(zip_path, self.identifier, calc_type)
-                print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
+            d3t_submit_calculation(zip_path, self.identifier, calc_type)
+            print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
         elif self.data_store == "d3tales_direct":
             from d3tales_api.Processors.parser_dft import ProcessGausLog
             logfile = next((f for f in upload_files if f.endswith(".log")), self.file_log)
@@ -511,7 +509,6 @@ class RunWtuning(FiretaskBase):
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
         check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        submit = spec_or_task(self, fw_spec, "submit", True)
         restricted = spec_or_task(self, fw_spec, "restricted", True)
 
         paramset.charge, paramset.multiplicity = resolve_charge_multiplicity(
@@ -592,8 +589,7 @@ class RunWtuning(FiretaskBase):
         if data_store == "d3tales_web":
             file_list = ['wtuning.com', 'output.log']
             zip_name = zip_files(file_list, zip_name='{}/{}_wtuning.zip'.format(working_dir, identifier))
-            if submit:
-                d3t_submit_calculation(zip_name, identifier, self['name'])
+            d3t_submit_calculation(zip_name, identifier, self['name'])
         elif data_store == "d3tales_direct":
             conditions = orig_conditions(paramset.functional, paramset.basis_set)
             record = local_record(

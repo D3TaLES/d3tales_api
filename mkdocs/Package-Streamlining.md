@@ -91,7 +91,6 @@ starting structure from SMILES.
 | `check_if_already_run` | Reuse existing calculations/results when the engine task supports the cache check. |
 | `restricted` | Select restricted (`True`) or unrestricted (`False`) reference behavior where supported. It does not set the spin multiplicity. |
 | `priority` | Set FireWorks priority for the generated calculation jobs. |
-| `submit` | Controls website uploads in `d3tales_web`; it does not affect direct MongoDB insertion or local result saving. It is separate from adding the workflow to a LaunchPad. |
 | `geom_from_smiles` | Explicitly allow a calculation to fall back to a SMILES-derived starting structure when its requested geometry is absent. Use only when that fallback is scientifically intended. |
 
 Other task options, including `run_nto`, `origin_group`, and `public`, can be
@@ -171,11 +170,11 @@ for new code.
 
 | Store | Network location | Molecule reads | Calculation result handling |
 | --- | --- | --- | --- |
-| `d3tales_web` | Workers can reach the D3TaLES website but are outside the DB firewall. | Website REST API. Molecules must be pre-registered; this API does not expose a workflow registration endpoint. | Gaussian files are zipped and uploaded for website-side processing. `submit=False` skips the upload. ORCA is rejected because the website upload endpoint expects Gaussian output. PySCF remains local because website processing expects Gaussian logs. |
+| `d3tales_web` | Workers can reach the D3TaLES website but are outside the DB firewall. | Website REST API. Molecules must be pre-registered; this API does not expose a workflow registration endpoint. | Gaussian files are zipped and uploaded for website-side processing. ORCA is rejected because the website upload endpoint expects Gaussian output. PySCF remains local because website processing expects Gaussian logs. |
 | `d3tales_direct` | Workers are inside the DB firewall and have direct MongoDB write access. | `base` and `computation` collections in the configured `d3tales` database; no REST calls. New molecule registration is supported. | Results are processed on the worker and inserted into `computation`. Engine output/checkpoint files are zipped and retained locally; no website upload is performed. |
 | `local` | No database or website access required. | Local molecule data/results, with explicit SMILES-based starting geometry fallback. | Processed results are stored as per-calculation JSON files. |
 
-`submit` only controls the website upload in `d3tales_web`; selecting
+Website uploads in `d3tales_web` are always enabled; selecting
 `d3tales_direct` means the workflow writes results to MongoDB. A local
 `db_info.json` is intentionally not required by tests: live credentials and
 database writes are never used by the direct-store unit tests.
