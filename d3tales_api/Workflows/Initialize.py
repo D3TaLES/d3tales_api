@@ -48,11 +48,30 @@ class MoleculeInit(FiretaskBase):
                                          **_geom_spec(mol_opt_geom)})
 
             # data_store == "d3tales"
-        if identifier and d3t_get_smiles(identifier):
-            return FWAction(update_spec={"identifier": identifier, **_geom_spec(mol_opt_geom)})
+        if identifier:
+            stored_smiles = d3t_get_smiles(identifier)
+            if stored_smiles:
+                return FWAction(update_spec={
+                    "identifier": identifier,
+                    "smiles": stored_smiles,
+                    "gs_charge": get_groundState(identifier, stored_smiles, prop="charge", data_store=data_store),
+                    "gs_spin": get_groundState(identifier, stored_smiles, prop="spin", data_store=data_store),
+                    "data_store": data_store,
+                    **_geom_spec(mol_opt_geom),
+                })
+        if not smiles:
+            raise ValueError(
+                "MoleculeInit requires a SMILES when the identifier is not found in D3TaLES."
+            )
+        molecule = MolFromSmiles(smiles)
+        if molecule is None:
+            raise ValueError("MoleculeInit received an invalid SMILES string: {!r}".format(smiles))
+
         group = self.get('origin_group', 'Risko')
         public = self.get('public', False)
-        clean_smiles = MolToSmiles(MolFromSmiles(smiles))
+        clean_smiles = MolToSmiles(molecule)
         new_id, gs_charge, gs_spin = d3t_register_molecule(clean_smiles, names=name_list, origin_group=group,
                                                            public=public)
-        return FWAction(update_spec={"identifier": new_id, "gs_charge": gs_charge, "gs_spin": gs_spin, **_geom_spec(mol_opt_geom)})
+        return FWAction(update_spec={"identifier": new_id, "smiles": clean_smiles, "gs_charge": gs_charge,
+                                     "gs_spin": gs_spin, "data_store": data_store,
+                                     **_geom_spec(mol_opt_geom)})
