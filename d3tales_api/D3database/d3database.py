@@ -104,7 +104,9 @@ class D3Database:
             self.instance['_id'] = self.instance.get("_id") or default_id
             self.s2c = Schema2Class(schema_name=collection_name, database=schema_db, schema_directory=schema_directory,
                                     schema_version=schema_version)
-            jsonschema.validate(schema=self.s2c.schema, instance=self.instance)
+            validator_cls = jsonschema.validators.validator_for(self.s2c.schema)
+            validator_cls.check_schema(self.s2c.schema)
+            validator_cls(self.s2c.schema, registry=self.s2c.registry).validate(self.instance)
 
     def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=True):
         """
