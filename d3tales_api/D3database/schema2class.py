@@ -25,7 +25,9 @@ def _fetch_schema(url):
 
 def _retrieve_schema(uri):
     """Provide referenced JSON schemas to python-jsonschema-objects."""
-    schema = _fetch_schema(uri)
+    # Return a fresh tree: the class builder can mutate referenced schemas.
+    # Never expose the cached JSON dict to the builder or its resolver.
+    schema = deepcopy(_fetch_schema(uri))
     return Resource.from_contents(schema, default_specification=DRAFT4)
 
 
@@ -50,7 +52,7 @@ class Schema2Class:
         schema_url = "https://raw.githubusercontent.com/D3TaLES/schema/{}/schema_{}/{}.schema.json".format(
             self.branch, self.database, self.schema_name).replace("robotics_", "")
         # print(schema_url)
-        self.schema = _fetch_schema(schema_url)
+        self.schema = deepcopy(_fetch_schema(schema_url))
         # Resolve external $refs from the same versioned schema repository.
         # python_jsonschema_objects may replace JSON Schema values with TypeProxy
         # instances while generating classes. Never pass that mutated schema to
