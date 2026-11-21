@@ -221,10 +221,15 @@ def test_forcefield_conformer_for_molopt_ignores_fallback_flag(monkeypatch, wate
         "d3tales_api.Workflows.utils.generate_forcefield_conformer",
         generate,
     )
-    task = {"forcefield_conformer": True, "geom_from_smiles": False, "smiles": "O"}
+    task = {"name": "opt_mol", "geom_from_smiles": False, "smiles": "O"}
 
     assert forcefield_conformer_for_task(task, {"opt_mol_geom": water_geom}) is expected
     assert calls == ["O"]
+
+
+def test_forcefield_conformer_requires_smiles_for_opt_mol():
+    with pytest.raises(ValueError, match="SMILES string is required"):
+        forcefield_conformer_for_task({"name": "opt_mol"}, {})
 
 
 def test_rdkit_forcefield_conformer_generation_produces_3d_geometry():

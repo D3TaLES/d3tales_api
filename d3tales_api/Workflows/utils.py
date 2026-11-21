@@ -398,8 +398,8 @@ def generate_forcefield_conformer(smiles):
 
 
 def forcefield_conformer_for_task(task, fw_spec):
-    """Return a required SMILES-derived conformer when requested by a FireTask."""
-    if not task.get("forcefield_conformer", False):
+    """Always generate an RDKit conformer for the initial molecular optimization."""
+    if not task.get("forcefield_conformer", False) and task.get("name") != "opt_mol":
         return None
     smiles = spec_or_task(task, fw_spec, "smiles")
     if not smiles:
