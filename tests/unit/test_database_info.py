@@ -7,8 +7,7 @@ from d3tales_api.database_info import db_info, source_groups
 @pytest.mark.unit
 def test_db_info_generator_reads_json_file(tmp_path):
     expected = {
-        "frontend": {"host": "mongodb://example/frontend", "database": "ui"},
-        "backend": {"host": "mongodb://example/backend", "database": "backend"},
+        "d3tales": {"host": "mongodb://example/d3tales", "database": "d3tales"},
     }
     path = tmp_path / "db_info.json"
     path.write_text(json.dumps(expected), encoding="utf-8")
@@ -17,7 +16,7 @@ def test_db_info_generator_reads_json_file(tmp_path):
 
 @pytest.mark.unit
 def test_db_info_generator_uses_environment_variable(tmp_path, monkeypatch):
-    expected = {"frontend": {"host": "x", "database": "ui"}}
+    expected = {"d3tales": {"host": "x", "database": "d3tales"}}
     path = tmp_path / "db_info.json"
     path.write_text(json.dumps(expected), encoding="utf-8")
     monkeypatch.setenv("DB_INFO_FILE", str(path))
@@ -28,8 +27,9 @@ def test_db_info_generator_uses_environment_variable(tmp_path, monkeypatch):
 def test_db_info_generator_returns_defaults_without_file(monkeypatch):
     monkeypatch.delenv("DB_INFO_FILE", raising=False)
     result = db_info(db_file_warning=False)
-    assert result["frontend"]["database"] == "ui"
-    assert result["backend"]["database"] == "backend"
+    assert result["d3tales"]["database"] == "d3tales"
+    assert "frontend" not in result
+    assert "backend" not in result
 
 
 @pytest.mark.unit

@@ -6,6 +6,7 @@ credentials at import time.
 """
 
 import os
+import zipfile
 
 D3TALES_URL = os.environ.get("D3TALES_URL", "https://d3tales.as.uky.edu")
 FRONT_COLL = "base"
@@ -20,6 +21,13 @@ __all__ = [
     "d3t_get_raw_computation",
     "d3t_submit_calculation",
     "d3t_register_molecule",
+    "d3t_direct_get_smiles",
+    "d3t_direct_get_init_structure",
+    "d3t_direct_get_ground_state",
+    "d3t_direct_get_omega",
+    "d3t_direct_get_raw_computation",
+    "d3t_direct_register_molecule",
+    "d3t_direct_store_calculation",
 ]
 
 
@@ -113,7 +121,7 @@ def d3t_submit_calculation(zip_path, identifier, calc_type):
 
 
 def d3t_register_molecule(smiles, names=None, origin_group="Risko", public=False):
-    """Register a molecule through the canonical D3database FrontDB API."""
+    """Deprecated database-backed molecule registration for legacy callers."""
     from d3tales_api.D3database.d3database import FrontDB
     from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
@@ -127,3 +135,114 @@ def d3t_register_molecule(smiles, names=None, origin_group="Risko", public=False
         collection_name=FRONT_COLL,
     )
     return frontend.id, instance.get("groundState_charge"), instance.get("groundState_spin")
+
+
+def _direct_collection(name):
+    from d3tales_api.D3database.d3database import D3Database
+
+    return D3Database(database="d3tales", collection_name=name, validate_schema=False).coll
+
+
+def d3t_direct_get_molecule(identifier):
+    """Return one molecule document from the unified direct-access database."""
+    return _direct_collection("base").find_one({"_id": identifier})
+
+
+def d3t_direct_get_smiles(identifier):
+    document = d3t_direct_get_molecule(identifier) or {}
+    return document.get("mol_info", {}).get("smiles", "")
+
+
+def d3t_direct_get_init_structure(identifier):
+    """Return a molecule's initial XYZ string or serialized structure."""
+    document = d3t_direct_get_molecule(identifier) or {}
+    structure = document.get("mol_info", {}).get("init_structure")
+    if not structure:
+        raise LookupError("No init_structure found in D3TaLES for {}".format(identifier))
+    from pymatgen.core.structure import Molecule
+
+    if isinstance(structure, str):
+        return Molecule.from_str(structure, "xyz")
+    return Molecule.from_sites(structure.get("sites", structure))
+
+
+def d3t_direct_get_ground_state(identifier, prop="charge"):
+    document = d3t_direct_get_molecule(identifier) or {}
+    value = document.get("mol_info", {}).get("groundState_{}".format(prop))
+    return int(value) if value is not None else None
+
+
+def d3t_direct_get_omega(identifier, engine=None):
+    document = d3t_direct_get_molecule(identifier) or {}
+    omega = document.get("mol_characterization", {}).get("omega", {})
+    if engine is None and isinstance(omega, dict) and omega.get("value") is not None:
+        return omega["value"]
+    query = {"mol_id": identifier, "data.omega": {"$exists": True}}
+    if engine:
+        query["data.engine"] = engine
+    record = _direct_collection("computation").find_one(
+        query,
+        {"data.omega": 1},
+        sort=[("last_updated", -1)],
+    )
+    if record:
+        return record.get("data", {}).get("omega")
+    return omega.get("value") if engine is None and isinstance(omega, dict) else None
+
+
+def d3t_direct_get_raw_computation(_hash, fields=None):
+    projection = {fields: 1} if fields else None
+    document = _direct_collection("computation").find_one({"_id": _hash}, projection)
+    if not document:
+        return None
+    return document.get("data", {})
+
+
+def d3t_direct_register_molecule(smiles, names=None, origin_group="Risko", public=False):
+    """Create or find a molecule document without website or legacy database adapters."""
+    from nanoid import generate
+    from d3tales_api.database_info import source_groups
+    from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
+
+    collection = _direct_collection("base")
+    existing = collection.find_one({"mol_info.smiles": smiles})
+    if existing:
+        info = existing.get("mol_info", {})
+        return existing["_id"], info.get("groundState_charge"), info.get("groundState_spin")
+
+    info = GenerateMolInfo(smiles, names=names or [], origin_group=origin_group).mol_info_dict
+    group_number = source_groups().get(origin_group.title(), "10")
+    identifier = group_number + generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)
+    while collection.count_documents({"_id": identifier}):
+        identifier = group_number + generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=6)
+    collection.insert_one({"_id": identifier, "mol_info": info, "public": bool(public)})
+    return identifier, info.get("groundState_charge"), info.get("groundState_spin")
+
+
+def d3t_direct_store_calculation(record, files=None, archive_path=None):
+    """Insert a processed computation document and optionally archive worker files locally."""
+    if not isinstance(record, dict) or not record.get("_id"):
+        raise ValueError("A direct calculation record must be a mapping with an _id.")
+
+    from d3tales_api.D3database.d3database import D3Database
+    from datetime import datetime
+
+    payload = dict(record)
+    payload.pop("_id")
+    payload.setdefault("last_updated", datetime.now().isoformat())
+    database = D3Database(
+        database="d3tales",
+        collection_name="computation",
+        instance=payload,
+        validate_schema=False,
+    )
+    database.insert(record["_id"])
+
+    existing_files = [path for path in (files or []) if os.path.isfile(path)]
+    if not existing_files or not archive_path:
+        return None
+    os.makedirs(os.path.dirname(os.path.abspath(archive_path)), exist_ok=True)
+    with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for path in existing_files:
+            archive.write(path, arcname=os.path.basename(path))
+    return archive_path

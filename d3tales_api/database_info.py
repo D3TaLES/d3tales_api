@@ -8,7 +8,7 @@ def db_info(db_file=None, db_file_warning=True):
     Get information about database connections. This function requires either a db_file argument
     or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
     to a JSON file containing connection information for the databases. The keys should be the database
-    names such as `frontend`, `backend`, `expflow`, and `fireworks`.
+    names such as `d3tales`, `expflow`, and `fireworks`.
 
     :param db_file: str, path to database info JSON file
     :param db_file_warning: bool, give no db file warning if True
@@ -20,16 +20,10 @@ def db_info(db_file=None, db_file_warning=True):
         if db_file_warning:
             warnings.warn("Environment variable DB_INFO_FILE not defined. Default database information is in ues. ")
         return {
-            "frontend":
-                {
-                    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend",
-                    "database": "ui"
-                },
-            "backend":
-                {
-                    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/backend",
-                    "database": "backend"
-                }
+            "d3tales": {
+                "host": "mongodb://DATABASE_IP:DATABASE_PORT/d3tales",
+                "database": "d3tales",
+            }
         }
     with open(db_file, "r") as f:
         return json.load(f)
@@ -75,4 +69,3 @@ def source_groups(group_file=None, verbose=0):
         }
     with open(group_file, "r") as f:
         return json.load(f)
-

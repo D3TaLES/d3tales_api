@@ -23,12 +23,12 @@ def test_d3tales_store_is_forwarded_to_all_workflow_tasks(paramset):
     workflow = d3tales_wf(
         paramset,
         identifier="TEST123",
-        data_store="d3tales",
+        data_store="d3tales_web",
         wtune=False,
     )
     restored = Workflow.from_dict(workflow.to_dict())
 
-    assert all(only_task(fw)["data_store"] == "d3tales" for fw in restored.fws)
+    assert all(only_task(fw)["data_store"] == "d3tales_web" for fw in restored.fws)
 
 
 def test_initialize_existing_d3tales_molecule_populates_downstream_spec(
@@ -44,7 +44,7 @@ def test_initialize_existing_d3tales_molecule_populates_downstream_spec(
     monkeypatch.setattr(Initialize, "get_groundState", ground_state)
     update = Initialize.MoleculeInit(
         identifier="TEST123",
-        data_store="d3tales",
+        data_store="d3tales_web",
         mol_opt_geom=water_geom,
     ).run_task({}).update_spec
 
@@ -53,13 +53,13 @@ def test_initialize_existing_d3tales_molecule_populates_downstream_spec(
         "smiles": "O",
         "gs_charge": 0,
         "gs_spin": 1,
-        "data_store": "d3tales",
+        "data_store": "d3tales_web",
         "mol_opt_geom": water_geom,
         "opt_mol_geom": water_geom,
     }
     assert looked_up == [
-        ("TEST123", "O", "charge", "d3tales"),
-        ("TEST123", "O", "spin", "d3tales"),
+        ("TEST123", "O", "charge", "d3tales_web"),
+        ("TEST123", "O", "spin", "d3tales_web"),
     ]
 
 
@@ -72,9 +72,9 @@ def test_d3tales_ground_state_uses_remote_value_then_smiles_fallback(monkeypatch
 
     monkeypatch.setattr(utils, "d3t_get_ground_state", remote_ground_state)
 
-    assert utils.get_groundState("TEST123", smiles="O", data_store="d3tales") == -1
+    assert utils.get_groundState("TEST123", smiles="O", data_store="d3tales_web") == -1
     assert utils.get_groundState(
-        "TEST123", smiles="[CH3]", prop="spin", data_store="d3tales"
+        "TEST123", smiles="[CH3]", prop="spin", data_store="d3tales_web"
     ) == 2
     assert calls == [("TEST123", "charge"), ("TEST123", "spin")]
 
@@ -102,8 +102,8 @@ def test_d3tales_starting_and_optimized_geometries_use_remote_data(monkeypatch):
         or {"geometry": optimized_sites},
     )
 
-    assert utils.start_from_smiles("TEST123", None, data_store="d3tales") is initial
-    optimized = utils.get_db_geom("HASH123", data_store="d3tales")
+    assert utils.start_from_smiles("TEST123", None, data_store="d3tales_web") is initial
+    optimized = utils.get_db_geom("HASH123", data_store="d3tales_web")
     assert len(optimized) == 1
     assert optimized[0].specie.symbol == "H"
     assert calls == [
@@ -112,48 +112,19 @@ def test_d3tales_starting_and_optimized_geometries_use_remote_data(monkeypatch):
     ]
 
 
-def test_initialize_d3tales_registration_receives_store_and_molecule_options(monkeypatch):
-    calls = {}
-    monkeypatch.setattr(Initialize, "d3t_get_smiles", lambda identifier: "")
-
-    def register(smiles, names, origin_group, public):
-        calls.update(
-            smiles=smiles,
-            names=names,
-            origin_group=origin_group,
-            public=public,
-        )
-        return "NEW123", 0, 1
-
-    monkeypatch.setattr(Initialize, "d3t_register_molecule", register)
-    update = Initialize.MoleculeInit(
-        smiles="O",
-        mol_name="water",
-        data_store="d3tales",
-        origin_group="Risko",
-        public=True,
-    ).run_task({}).update_spec
-
-    assert calls == {
-        "smiles": "O",
-        "names": ["water"],
-        "origin_group": "Risko",
-        "public": True,
-    }
-    assert update == {
-        "identifier": "NEW123",
-        "smiles": "O",
-        "gs_charge": 0,
-        "gs_spin": 1,
-        "data_store": "d3tales",
-        "mol_opt_geom": None,
-    }
-
-
 def test_initialize_rejects_unknown_d3tales_identifier_without_smiles(monkeypatch):
     monkeypatch.setattr(Initialize, "d3t_get_smiles", lambda identifier: "")
     with pytest.raises(ValueError, match="SMILES"):
         Initialize.MoleculeInit(
             identifier="MISSING",
-            data_store="d3tales",
+            data_store="d3tales_web",
+        ).run_task({})
+
+
+def test_web_store_requires_pre_registered_molecule(monkeypatch):
+    monkeypatch.setattr(Initialize, "d3t_get_smiles", lambda identifier: "")
+    with pytest.raises(ValueError, match="Pre-register"):
+        Initialize.MoleculeInit(
+            smiles="O",
+            data_store="d3tales_web",
         ).run_task({})

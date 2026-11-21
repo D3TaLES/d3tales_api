@@ -64,13 +64,13 @@ def test_start_from_smiles_and_ground_state_local_fallback(monkeypatch):
     monkeypatch.setattr(utils, "d3t_get_smiles", lambda identifier: "O")
     monkeypatch.setattr("d3tales_api.Processors.info_from_smiles.find_lowest_e_conf",
                         lambda smiles: "1\nwater\nO 0 0 0")
-    structure = utils.start_from_smiles("M1", None, data_store="d3tales")
+    structure = utils.start_from_smiles("M1", None, data_store="d3tales_web")
     assert len(structure) == 1
     assert utils.get_groundState("M1", smiles="CC", data_store="local", prop="charge") == 0
     assert utils.get_groundState("M1", smiles="[CH3]", data_store="local", prop="spin") == 2
 
     monkeypatch.setattr(utils, "d3t_get_ground_state", lambda identifier, prop: -1)
-    assert utils.get_groundState("M1", data_store="d3tales") == -1
+    assert utils.get_groundState("M1", data_store="d3tales_web") == -1
     with pytest.raises(ValueError, match="SMILES must be specified"):
         utils.get_groundState("M1", data_store="local")
     with pytest.raises(ValueError, match="prop must"):
@@ -83,7 +83,7 @@ def test_start_from_smiles_and_ground_state_local_fallback(monkeypatch):
 def test_start_from_smiles_uses_database_structure_or_rejects_missing_smiles(monkeypatch):
     structure = utils.Molecule.from_str("1\nwater\nO 0 0 0", "xyz")
     monkeypatch.setattr(utils, "d3t_get_init_structure", lambda identifier: structure)
-    assert utils.start_from_smiles("M1", None, data_store="d3tales") is structure
+    assert utils.start_from_smiles("M1", None, data_store="d3tales_web") is structure
     monkeypatch.setattr(
         utils,
         "d3t_get_init_structure",
@@ -91,7 +91,7 @@ def test_start_from_smiles_uses_database_structure_or_rejects_missing_smiles(mon
     )
     monkeypatch.setattr(utils, "d3t_get_smiles", lambda identifier: "")
     with pytest.raises(ValueError, match="no SMILES provided"):
-        utils.start_from_smiles("M1", None, data_store="d3tales")
+        utils.start_from_smiles("M1", None, data_store="d3tales_web")
 
 
 @pytest.mark.unit

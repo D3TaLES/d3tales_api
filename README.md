@@ -37,12 +37,12 @@ and ORCA executables are installed and configured separately on FireWorks
 workers.
 
 ### Environment Variables
-Note that many operation require a `DB_INFO_FILE` environment variable. This environment variable
-should be a path to a JSON file containing connection information for the databases. The keys should 
-be the database names such as `frontend`, `backend`, `expflow`, and `fireworks`. An example 
-can be found at [db_info_ex.json](db_info_ex.json). 
+Direct database operations require a `DB_INFO_FILE` environment variable
+pointing to a JSON file with a `d3tales` connection entry (database name
+`d3tales`). Other application databases may have their own entries. An example
+can be found at [db_info_ex.json](db_info_ex.json).
 
 To set this variable run:
 ```bash
-export DB_INFO_FILE=$PWD/db_infos_ex.json
+export DB_INFO_FILE=$PWD/db_info_ex.json
 ```

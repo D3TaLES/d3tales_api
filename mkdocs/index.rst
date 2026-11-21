@@ -38,7 +38,7 @@ This API contains four modules:
    Processors
    Calculators
    Workflows
-   d3tales_api
+   Package-Streamlining
 
 
 Indices and tables

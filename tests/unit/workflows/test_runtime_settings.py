@@ -90,4 +90,4 @@ def test_worker_runtime_rejects_unknown_data_store(data_store):
 
 @pytest.mark.unit
 def test_worker_runtime_uses_default_data_store_when_unspecified():
-    assert WorkerRuntime.from_task({"data_store": None}, {}).data_store == "d3tales"
+    assert WorkerRuntime.from_task({"data_store": None}, {}).data_store == "d3tales_web"

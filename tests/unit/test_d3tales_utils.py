@@ -45,7 +45,7 @@ def test_get_initial_structure_converts_xyz_and_raises_when_absent(monkeypatch):
 
 @pytest.mark.unit
 def test_local_result_store_selection_and_omega_lookup(tmp_path):
-    assert workflow_utils.get_data_store() == "d3tales"
+    assert workflow_utils.get_data_store() == "d3tales_web"
     assert workflow_utils.get_local_output_dir(fw_spec={"_fw_env": {"local_output_dir": "/tmp/out"}}) == "/tmp/out"
     assert workflow_utils.get_local_output_dir(
         {"local_output_dir": ">>local_output_dir<<"},

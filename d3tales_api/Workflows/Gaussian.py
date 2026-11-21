@@ -35,7 +35,10 @@ from d3tales_api.Workflows.utils import (
     zip_files
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
+from d3tales_api.D3database.workflow_adapter import (
+    d3t_submit_calculation,
+    d3t_direct_store_calculation,
+)
 from d3tales_api.Workflows.runtime import WorkerRuntime
 
 logger = get_logger(__name__)
@@ -224,7 +227,9 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         # get iop string (omega value) for the calculation
         self.iop_str = spec_or_task(self, fw_spec, "iop_str")
         if not self.iop_str and use_iop:
-            tuned_w = get_omega(self.identifier, data_store=self.data_store, store_dir=self.store_dir)
+            tuned_w = get_omega(
+                self.identifier, data_store=self.data_store, store_dir=self.store_dir, engine="Gaussian"
+            )
             if tuned_w:
                 self.iop_str = omega_to_iop(tuned_w)
         self.result_iop_str = self.iop_str  # fixed copy used for local record hashes
@@ -284,12 +289,20 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         delete_files = delete_files or [self.file_chk, self.file_com]
         calc_type = calc_type or self.calc_name
         _hash = get_hash_id(self.identifier, self.file_log, self.calc_name) if os.path.isfile(self.file_log) else None
-        if self.data_store == "d3tales":
+        if self.data_store == "d3tales_web":
             upload_names = [f.split('/')[-1] for f in upload_files]
             zip_path = zip_files(upload_names, zip_name='{}_{}.zip'.format(self.identifier, name_tag + self.full_name))
             if self.submit:
                 d3t_submit_calculation(zip_path, self.identifier, calc_type)
                 print("File {}_{}.zip successfully posted!".format(self.identifier, name_tag + self.full_name))
+        elif self.data_store == "d3tales_direct":
+            from d3tales_api.Processors.parser_dft import ProcessGausLog
+            logfile = next((f for f in upload_files if f.endswith(".log")), self.file_log)
+            record = ProcessGausLog(_id=self.identifier, metadata={
+                "mol_file": logfile, "calculation_type": calc_type,
+                "mol_info": {"groundState_charge": self.gs_charge}}).data_dict
+            archive = os.path.join(self.store_dir, "{}_{}.zip".format(self.identifier, record["_id"]))
+            d3t_direct_store_calculation(record, files=upload_files, archive_path=archive)
         else:
             from d3tales_api.Processors.parser_dft import ProcessGausLog
             logfile = next((f for f in upload_files if f.endswith(".log")), self.file_log)
@@ -540,7 +553,7 @@ class RunWtuning(FiretaskBase):
 
         # check if job has already run
         if check_if_already_run:
-            tuned_w = get_omega(identifier, data_store=data_store, store_dir=store_dir)
+            tuned_w = get_omega(identifier, data_store=data_store, store_dir=store_dir, engine="Gaussian")
             if tuned_w:
                 iop_str = omega_to_iop(tuned_w)
                 return FWAction(
@@ -575,12 +588,26 @@ class RunWtuning(FiretaskBase):
         tuned_w = float(output.strip().split()[-3])
         iop_str = omega_to_iop(tuned_w)
 
-        # Store data (D3TaLES: upload through website; local: write JSON record)
-        if data_store == "d3tales":
+        # Store data through the website, directly in MongoDB, or in a local JSON record.
+        if data_store == "d3tales_web":
             file_list = ['wtuning.com', 'output.log']
             zip_name = zip_files(file_list, zip_name='{}/{}_wtuning.zip'.format(working_dir, identifier))
             if submit:
                 d3t_submit_calculation(zip_name, identifier, self['name'])
+        elif data_store == "d3tales_direct":
+            conditions = orig_conditions(paramset.functional, paramset.basis_set)
+            record = local_record(
+                orig_hash_id(identifier, self['name'], paramset.functional, paramset.basis_set),
+                identifier,
+                self['name'],
+                {"engine": "Gaussian", "omega": tuned_w, "conditions": conditions,
+                 "output_file": os.path.join(working_dir, "output.log")},
+            )
+            d3t_direct_store_calculation(
+                record,
+                files=[os.path.join(working_dir, name) for name in ("wtuning.com", "output.log")],
+                archive_path=os.path.join(store_dir, "{}_{}.zip".format(identifier, record["_id"])),
+            )
         else:
             conditions = orig_conditions(paramset.functional, paramset.basis_set)  # no tuning_parameter, as in back2front
             record = local_record(WTUNING_KEY, identifier, self['name'],

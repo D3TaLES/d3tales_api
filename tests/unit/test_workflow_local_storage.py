@@ -22,8 +22,8 @@ def test_get_store_dir_is_absolute(tmp_path):
 
 @pytest.mark.unit
 @pytest.mark.parametrize("task_store, fw_store, expected", [
-    ("d3tales", "local", "local"),
-    (None, "d3tales", "d3tales"),
+    ("d3tales_web", "local", "local"),
+    (None, "d3tales_web", "d3tales_web"),
 ])
 def test_get_data_store_precedence(task_store, fw_store, expected):
     task = {"data_store": task_store} if task_store else None

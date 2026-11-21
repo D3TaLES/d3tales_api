@@ -33,9 +33,14 @@ Install the engine-neutral workflow dependencies with:
 pip install "d3tales_api[workflows]"
 ```
 
-For the D3TaLES-backed data store, add the database dependencies with
-`pip install "d3tales_api[workflows,database]"`. The `local` data store does
-not require database credentials or network access.
+For D3TaLES-backed data stores, add the database dependencies with
+`pip install "d3tales_api[workflows,database]"`. Use `d3tales_web` on workers
+outside the MongoDB firewall; it reads through the REST API and uploads
+calculation files to the website. Use `d3tales_direct` only on workers with
+network access and write permissions to the configured MongoDB database; it
+processes results locally, writes computation documents directly, and archives
+calculation files on the worker. The `local` store writes JSON results locally
+and does not require database credentials or network access.
 
 PySCF is optional: install it with `pip install "d3tales_api[workflows,pyscf]"`.
 Gaussian and ORCA executables are provided by the compute environment rather
@@ -70,6 +75,19 @@ env:
 Worker environment values can differ by worker without changing the saved
 workflow or scientific parameters. Explicit workflow-spec values override
 task arguments; missing optional resource values retain engine defaults.
+
+The database connection is configured under the `d3tales` key in
+`db_info.json`; the database name must be `d3tales`. Set `DB_INFO_FILE` on
+workers using `d3tales_direct`. `d3tales_web` needs website API access and
+upload credentials, but does not require a MongoDB connection. New molecules
+must already be registered for `d3tales_web`; new-molecule registration is
+available in `d3tales_direct`.
+
+| `data_store` | Reads | Result handling |
+| --- | --- | --- |
+| `d3tales_web` | D3TaLES website REST API | Uploads Gaussian files for website-side processing; ORCA website uploads are unsupported. |
+| `d3tales_direct` | Configured `d3tales` MongoDB database | Processes results on the worker, inserts calculation records directly, and stores local ZIP archives. |
+| `local` | Local result files (with SMILES-derived fallback state) | Writes JSON records in the configured local results directory. |
 
 
 ## Setup
@@ -168,7 +186,8 @@ param_file = os.path.join(BASE_DIR, 'parameter_file.json')
 paramset = GausParamSet.from_json(param_file)
 
 # Define Fireworks Workflow 
-wf = d3tales_wf(paramset, smiles="CCCC", wtune=True, solvent='acetonitrile')
+wf = d3tales_wf(paramset, smiles="CCCC", wtune=True, solvent='acetonitrile',
+                data_store="local")
 
 # Add the workflow to the Fireworks launchpad
 info = LaunchPad().from_file(lpad_file).add_wf(wf)

@@ -21,9 +21,8 @@ What changes because the engine is PySCF (there is no Gaussian input/output text
                                                  runtime_from_log -- keep working on it)
     * Gaussian route keywords are translated: IOp(3/107,3/108) -> omega, SCRF=(PCM,Solvent=) -> IEF-PCM,
       SCF=(xqc,vshift,conver) -> SCF ladder, Opt -> geomeTRIC, TD(NStates,50-50) -> PySCF TDDFT.
-    * Results are stored as local JSON records (see utils.save_local_result). PySCF output cannot be
-      uploaded to the D3TaLES website (its parser reads Gaussian logs), so nothing is ever uploaded;
-      the D3TaLES database is still used for READING (ground state, SMILES, geometry, omega).
+    * Results are stored locally for ``local``/``d3tales_web`` and written directly to MongoDB for
+      ``d3tales_direct``. PySCF output cannot be uploaded to the website because its parser reads Gaussian logs.
 
 Requires: pyscf, geometric (geomeTRIC; for geometry optimization), scipy (omega tuning).
 """
@@ -66,7 +65,7 @@ from d3tales_api.Workflows.utils import (
     start_from_smiles
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
-from d3tales_api.Workflows.runtime import WorkerRuntime
+from d3tales_api.Workflows.runtime import WorkerRuntime, resolve_data_store
 
 logger = get_logger(__name__)
 cpus = [multiprocessing.cpu_count() if multiprocessing.cpu_count() < 16 else 16]
@@ -520,13 +519,14 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
     engine_name = "PySCF"
     conditions_function = staticmethod(pyscf_conditions)
     hash_function = staticmethod(pyscf_hash_id)
-    result_data_store = "local"
+    result_data_store = None
     _fw_name = "PySCFBase"
 
     def setup_files(self, fw_spec, calc_type='opt'):
         # get parameters
         self.worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="pyscf")
         self.data_store = self.worker_runtime.data_store
+        self.result_data_store = "local" if self.data_store == "d3tales_web" else self.data_store
         name_tag = spec_or_task(self, fw_spec, "name_tag", "")
         self.full_name = name_tag + self['name']
         self.calc_name = self['name']
@@ -537,7 +537,7 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
-        self.submit = spec_or_task(self, fw_spec, "submit", True)  # kept for API parity; PySCF results are never uploaded
+        self.submit = spec_or_task(self, fw_spec, "submit", True)  # kept for API parity; website uploads are unsupported
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.density_fit = spec_or_task(self, fw_spec, "density_fit", False)
@@ -636,7 +636,7 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
                                                           self.paramset.basis_set, tuning_parameter=self.iop_str,
                                                           solvent=self.solvent))
                 self.mol = get_db_geom(geometry_hash, data_store="local", store_dir=self.store_dir)
-                if self.mol is None and self.data_store == "d3tales":
+                if self.mol is None and self.data_store in ("d3tales_web", "d3tales_direct"):
                     self.mol = get_db_geom(geometry_hash, data_store=self.data_store, store_dir=self.store_dir)
                 if self.mol is None and self.get("geom_from_smiles", False):
                     self.mol = start_from_smiles(self.identifier, self.smiles, data_store=self.data_store)
@@ -669,7 +669,6 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
 
 
     def post_job(self, data=None, upload_files=None, delete_files=None, calc_type=None, name_tag=''):
-        # Store data: a local JSON record (PySCF output is not uploadable to the D3TaLES website)
         delete_files = []  # delete_files or [self.file_chk, self.file_xyz, self.file_molden, self.file_log]
         calc_type = calc_type or self.calc_name
         _hash = self.local_key(calc_type) if os.path.isfile(self.file_log) else None
@@ -677,7 +676,13 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         data.setdefault("conditions", self.local_conditions())
         data.setdefault("mol_info", {"groundState_charge": self.gs_charge})
         record = local_record(self.local_key(calc_type), self.identifier, calc_type, data)
-        print("Record saved to", save_local_result(self.store_dir, record, key=self.local_key(calc_type)))
+        if self.data_store == "d3tales_direct":
+            from d3tales_api.D3database.workflow_adapter import d3t_direct_store_calculation
+            archive = os.path.join(self.store_dir, "{}_{}.zip".format(self.identifier, record["_id"]))
+            files = upload_files or [self.file_log, self.file_chk, self.file_molden, self.file_xyz]
+            d3t_direct_store_calculation(record, files=files, archive_path=archive)
+        else:
+            print("Record saved to", save_local_result(self.store_dir, record, key=self.local_key(calc_type)))
         # Write runfile to runfile_log so the runfile can be deleted after calculation
         if self.runfile_log:
             with open(self.runfile_log, 'a') as fn:
@@ -712,10 +717,11 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         return None
 
 
-def get_pyscf_omega(identifier, data_store="d3tales", store_dir=None):
+def get_pyscf_omega(identifier, data_store="d3tales_web", store_dir=None):
     """Tuned omega: a PySCF-tuned local record wins; otherwise whatever the data store has (as utils.get_omega)."""
+    data_store = resolve_data_store({"data_store": data_store})
     return read_local_result(store_dir, PYSCF_WTUNING_KEY).get("omega") or get_omega(
-        identifier, data_store=data_store, store_dir=store_dir)
+        identifier, data_store=data_store, store_dir=store_dir, engine="PySCF")
 
 
 @explicit_serialize
@@ -965,7 +971,7 @@ class RunPySCFWtuning(FiretaskBase):
         else:
             geometry_hash = fw_spec.get("{}_hash".format(geometry_key), )
             mol = get_db_geom(geometry_hash, data_store="local", store_dir=store_dir)
-            if mol is None and data_store == "d3tales":
+            if mol is None and data_store in ("d3tales_web", "d3tales_direct"):
                 mol = get_db_geom(geometry_hash, data_store=data_store, store_dir=store_dir)
             if mol is None and self.get("geom_from_smiles", False):
                 mol = start_from_smiles(identifier, smiles, data_store=data_store)
@@ -1011,10 +1017,22 @@ class RunPySCFWtuning(FiretaskBase):
 
         # Store data (local JSON record; never uploaded)
         conditions = pyscf_conditions(paramset.functional, paramset.basis_set)  # no tuning_parameter, as in back2front
-        record = local_record(PYSCF_WTUNING_KEY, identifier, self['name'],
-                              {"omega": tuned_w, "conditions": conditions,
+        tuning_hash = pyscf_hash_id(identifier, self['name'], paramset.functional, paramset.basis_set)
+        record = local_record(
+            tuning_hash if data_store == "d3tales_direct" else PYSCF_WTUNING_KEY,
+            identifier, self['name'],
+                              {"engine": "PySCF", "omega": tuned_w, "conditions": conditions,
                                "output_file": os.path.join(working_dir, "output.log")})
-        print("Record saved to", save_local_result(store_dir, record))
+        if data_store == "d3tales_direct":
+            from d3tales_api.D3database.workflow_adapter import d3t_direct_store_calculation
+            files = [os.path.join(working_dir, name) for name in os.listdir(working_dir)
+                     if name.endswith((".log", ".chk", ".molden", ".json"))]
+            d3t_direct_store_calculation(
+                record, files=files,
+                archive_path=os.path.join(store_dir, "{}_{}.zip".format(identifier, record["_id"])),
+            )
+        else:
+            print("Record saved to", save_local_result(store_dir, record))
         data_hash = pyscf_hash_id(identifier, self['name'], paramset.functional, paramset.basis_set)
         if runfile_log:
             with open(runfile_log, 'a') as fn:

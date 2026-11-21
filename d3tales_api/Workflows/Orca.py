@@ -50,7 +50,7 @@ from d3tales_api.Workflows.utils import (
     start_from_smiles,
     zip_files
 )
-from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
+from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation, d3t_direct_store_calculation
 from d3tales_api.Workflows.runtime import WorkerRuntime
 
 logger = get_logger(__name__)
@@ -78,11 +78,14 @@ def orca_hash_id(_id, calculation_type, functional, basis_set, tuning_parameter=
     return hashlib.md5(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
-def get_orca_omega(store_dir):
+def get_orca_omega(store_dir, identifier=None, data_store="local"):
     """Return only an ORCA-produced local tuning value, never a Gaussian database value."""
     record = read_local_result(store_dir, WTUNING_KEY)
     if record.get("engine") == "ORCA":
         return record.get("omega")
+    if data_store == "d3tales_direct" and identifier:
+        from d3tales_api.D3database.workflow_adapter import d3t_direct_get_omega
+        return d3t_direct_get_omega(identifier, engine="ORCA")
     return None
 
 
@@ -213,6 +216,11 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
     def setup_files(self, fw_spec, calc_type="opt"):
         self.worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="orca")
         self.data_store = self.worker_runtime.data_store
+        if self.data_store == "d3tales_web":
+            raise ValueError(
+                "d3tales_web uploads Gaussian-format jobs for website processing; "
+                "use d3tales_direct or local for ORCA calculations."
+            )
         name_tag = spec_or_task(self, fw_spec, "name_tag", "")
         self.full_name = name_tag + self["name"]
         self.calc_name = self["name"]
@@ -282,7 +290,7 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         use_iop = spec_or_task(self, fw_spec, "use_iop", True)
         self.iop_str = spec_or_task(self, fw_spec, "iop_str")
         if not self.iop_str and use_iop:
-            tuned_w = get_orca_omega(self.store_dir)
+            tuned_w = get_orca_omega(self.store_dir, self.identifier, self.data_store)
             if tuned_w:
                 self.iop_str = omega_to_iop(tuned_w)
         self.omega = _omega_from_iop(self.iop_str) if use_iop else None
@@ -363,14 +371,18 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         _json_dump(result_path, record)
         files = [f for f in (upload_files or [self.file_input, self.file_log, self.file_gbw, result_path]) if os.path.isfile(f)]
         data_hash = self.local_key(calc_type)
-        if self.data_store == "d3tales":
+        if self.data_store == "d3tales_web":
             archive = zip_files(files, zip_name="{}_{}.zip".format(self.identifier, name_tag + self.full_name))
             if self.submit:
                 d3t_submit_calculation(archive, self.identifier, calc_type)
+        elif self.data_store == "d3tales_direct":
+            archive = os.path.join(self.store_dir, "{}_{}.zip".format(self.identifier, data_hash))
+            d3t_direct_store_calculation(record, files=files, archive_path=archive)
         else:
             print("Record saved to", save_local_result(self.store_dir, record, key=self.local_key(calc_type)))
-        with open(self.runfile_log, "a", encoding="utf-8") as handle:
-            handle.write("{}, {}\n".format(data_hash, self.working_dir))
+        if self.runfile_log:
+            with open(self.runfile_log, "a", encoding="utf-8") as handle:
+                handle.write("{}, {}\n".format(data_hash, self.working_dir))
 
 
 @explicit_serialize
@@ -502,7 +514,7 @@ class RunWtuning(FiretaskBase):
         if geometry_key and fw_spec.get("{}_hash".format(geometry_key)) is not None:
             forward_spec["{}_hash".format(geometry_key)] = fw_spec["{}_hash".format(geometry_key)]
         if task.check_if_already_run:
-            tuned = get_orca_omega(task.store_dir)
+            tuned = get_orca_omega(task.store_dir, task.identifier, task.data_store)
             if tuned:
                 return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir,
                                              "gaussrun_dir": task.calc_dir, **forward_spec})
@@ -531,17 +543,27 @@ class RunWtuning(FiretaskBase):
         if not result.success:
             raise RuntimeError("ORCA omega tuning failed: {}".format(result.message))
         tuned = float(result.x)
+        tuning_hash = orca_hash_id(task.identifier, self["name"], task.functional, task.basis)
         record = local_record(
-            WTUNING_KEY, task.identifier, self["name"],
+            tuning_hash if task.data_store == "d3tales_direct" else WTUNING_KEY,
+            task.identifier, self["name"],
             {"engine": "ORCA", "omega": tuned, "objective": float(result.fun),
              "conditions": orca_conditions(task.functional, task.basis)}
         )
         _json_dump(os.path.join(task.working_dir, "wtuning.result.json"), record)
         if task.data_store == "local":
             save_local_result(task.store_dir, record)
-        elif task.submit:
+        elif task.data_store == "d3tales_web" and task.submit:
             archive = zip_files([f for f in os.listdir(task.working_dir) if f.endswith((".inp", ".out", ".json"))], zip_name="{}_wtuning.zip".format(task.identifier))
             d3t_submit_calculation(archive, task.identifier, self["name"])
+        elif task.data_store == "d3tales_direct":
+            files = [os.path.join(task.working_dir, f) for f in os.listdir(task.working_dir)
+                     if f.endswith((".inp", ".out", ".json"))]
+            d3t_direct_store_calculation(
+                record,
+                files=files,
+                archive_path=os.path.join(task.store_dir, "{}_{}.zip".format(task.identifier, record["_id"])),
+            )
         return FWAction(update_spec={"iop_str": omega_to_iop(tuned), "orcarun_dir": task.calc_dir,
                                      "gaussrun_dir": task.calc_dir, **forward_spec})
 

@@ -3,7 +3,11 @@ from rdkit.Chem import MolFromSmiles, MolToSmiles
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import (get_data_store, get_groundState, local_identifier, get_store_dir,
                                          get_local_output_dir, write_json)
-from d3tales_api.D3database.workflow_adapter import d3t_get_smiles, d3t_register_molecule
+from d3tales_api.D3database.workflow_adapter import (
+    d3t_get_smiles,
+    d3t_direct_get_smiles,
+    d3t_direct_register_molecule,
+)
 
 INIT_GEOMETRY = "opt_mol"
 
@@ -47,9 +51,10 @@ class MoleculeInit(FiretaskBase):
                                          "gs_spin": gs_spin, "data_store": data_store,
                                          **_geom_spec(mol_opt_geom)})
 
-            # data_store == "d3tales"
+            # Database-backed D3TaLES modes.
         if identifier:
-            stored_smiles = d3t_get_smiles(identifier)
+            get_smiles = d3t_get_smiles if data_store == "d3tales_web" else d3t_direct_get_smiles
+            stored_smiles = get_smiles(identifier)
             if stored_smiles:
                 return FWAction(update_spec={
                     "identifier": identifier,
@@ -70,8 +75,14 @@ class MoleculeInit(FiretaskBase):
         group = self.get('origin_group', 'Risko')
         public = self.get('public', False)
         clean_smiles = MolToSmiles(molecule)
-        new_id, gs_charge, gs_spin = d3t_register_molecule(clean_smiles, names=name_list, origin_group=group,
-                                                           public=public)
+        if data_store == "d3tales_web":
+            raise ValueError(
+                "d3tales_web cannot register new molecules through the website API. "
+                "Pre-register the molecule and pass identifier, or use d3tales_direct."
+            )
+        new_id, gs_charge, gs_spin = d3t_direct_register_molecule(
+            clean_smiles, names=name_list, origin_group=group, public=public
+        )
         return FWAction(update_spec={"identifier": new_id, "smiles": clean_smiles, "gs_charge": gs_charge,
                                      "gs_spin": gs_spin, "data_store": data_store,
                                      **_geom_spec(mol_opt_geom)})

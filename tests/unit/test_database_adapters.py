@@ -1,6 +1,7 @@
 import pytest
 
 from d3tales_api.D3database.d3database import D3Database
+from d3tales_api.D3database import d3database as database_module
 
 
 class FakeCollection:
@@ -44,3 +45,26 @@ def test_path_insert_scalar_and_list():
     db.path_insert("M1", "tags", ["a", "b"])
     assert db.coll.updates[0][1] == {"$set": {"plain": 42}}
     assert db.coll.updates[-1][1]["$addToSet"]["tags"]["$each"] == ["a", "b"]
+
+
+@pytest.mark.unit
+def test_legacy_front_and_back_connectors_warn_and_use_unified_database(monkeypatch):
+    seen = []
+
+    class Connector:
+        def __init__(self, info):
+            seen.append(info)
+
+        def get_collection(self, name):
+            return FakeCollection()
+
+    monkeypatch.setattr(database_module, "db_info", lambda: {"d3tales": {"database": "d3tales"}})
+    monkeypatch.setattr(database_module, "DBconnector", Connector)
+
+    with pytest.warns(DeprecationWarning, match="FrontDB is deprecated"):
+        front = database_module.FrontDB(collection_name="base")
+    with pytest.warns(DeprecationWarning, match="BackDB is deprecated"):
+        back = database_module.BackDB(collection_name="computation")
+
+    assert front.database == back.database == "d3tales"
+    assert seen == [{"database": "d3tales"}, {"database": "d3tales"}]

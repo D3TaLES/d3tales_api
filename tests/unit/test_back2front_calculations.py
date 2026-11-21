@@ -128,7 +128,7 @@ def test_gaussian_constructor_loads_all_expected_calculation_slots(monkeypatch):
             return collection
 
     monkeypatch.setattr("d3tales_api.D3database.back2front.DBconnector", Connector)
-    monkeypatch.setattr("d3tales_api.D3database.back2front.db_info", lambda: {"frontend": {}, "backend": {}})
+    monkeypatch.setattr("d3tales_api.D3database.back2front.db_info", lambda: {"d3tales": {}})
     obj = Gaus2FrontCharacterization(
         "M1",
         conditions={"functional": "B3LYP", "basis_set": "6-31G"},
@@ -189,7 +189,7 @@ def test_doi2front_construction_and_molecule_lookup_warning(monkeypatch):
             return collection
 
     monkeypatch.setattr("d3tales_api.D3database.back2front.DBconnector", Connector)
-    monkeypatch.setattr("d3tales_api.D3database.back2front.db_info", lambda: {"frontend": {}, "backend": {}})
+    monkeypatch.setattr("d3tales_api.D3database.back2front.db_info", lambda: {"d3tales": {}})
     original_get_mol_id = DOI2Front.get_mol_id
     monkeypatch.setattr(DOI2Front, "get_mol_id", lambda self, mol_data, nlp_group: "M1")
     backend = {

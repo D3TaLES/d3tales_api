@@ -52,9 +52,9 @@ class Gaus2FrontCharacterization:
         :param insert: bool, insert generated data to the frontend D3TaLES database if True
         """
         # connect to databases
-        self.front_dbc = DBconnector(db_info().get("frontend"))
+        self.front_dbc = DBconnector(db_info().get("d3tales"))
         self.front_coll = self.front_dbc.get_collection(FRONT_COLL)
-        self.back_dbc = DBconnector(db_info().get("backend"))
+        self.back_dbc = DBconnector(db_info().get("d3tales"))
         self.back_coll = self.back_dbc.get_collection("computation")
         self.schema_version = schema_version
         self.all_props = all_props
@@ -574,8 +574,8 @@ class DOI2Front:
         """
 
         # connect to databases
-        self.front_coll = DBconnector(db_info().get("frontend")).get_collection(FRONT_COLL)
-        self.back_coll = DBconnector(db_info().get("backend")).get_collection("nlp")
+        self.front_coll = DBconnector(db_info().get("d3tales")).get_collection(FRONT_COLL)
+        self.back_coll = DBconnector(db_info().get("d3tales")).get_collection("nlp")
 
         # Basic variables
         if not doi and not backend_data:
@@ -663,7 +663,7 @@ class CV2Front:
 
     def __init__(self, id_list=None, backend_data=None, metadata_dict=None, mol_id=None, e_half_scan_rate=0.1, max_scan_rate=None,
                  run_anodic=False, run_processing=True, insert=True, redox_event="oxidation", micro_electrodes=False,
-                 verbose=1, backend_db="backend"):
+                 verbose=1, backend_db="d3tales"):
         """
         :param id_list: list, list of backend ids
         :param backend_data: list, list of JSON containing processed backend data
@@ -687,7 +687,8 @@ class CV2Front:
         if backend_data:
             self.multi_data = backend_data
         else:
-            self.back_coll = DBconnector(db_info().get(backend_db)).get_collection("experimentation")
+            database = "d3tales" if backend_db == "backend" else backend_db
+            self.back_coll = DBconnector(db_info().get(database)).get_collection("experimentation")
             self.multi_data = [self.back_coll.find_one({"_id": i}) for i in id_list]
 
         if not self.multi_data or not self.multi_data[0]:
@@ -884,8 +885,8 @@ class CV2Front:
 
 
 if __name__ == "__main__":
-    front_coll = DBconnector(db_info().get("frontend")).get_collection(FRONT_COLL)
-    back_dbc = DBconnector(db_info().get("backend"))
+    front_coll = DBconnector(db_info().get("d3tales")).get_collection(FRONT_COLL)
+    back_dbc = DBconnector(db_info().get("d3tales"))
     back_coll = back_dbc.get_collection("computation")
     # _id = "28ef46bbcbb793fc0a8a4656e01aba3e"  # 502dc467c4780db94cc0c324a12c2b6b
     # d = back_coll.find_one({"_id": _id})

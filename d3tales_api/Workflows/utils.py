@@ -14,8 +14,18 @@ from pymatgen.io.gaussian import GaussianInput, GaussianOutput
 from rdkit.Chem import MolFromSmiles, AllChem, MolToInchiKey
 from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
 from rdkit.Chem.Descriptors import NumRadicalElectrons
-from d3tales_api.D3database.workflow_adapter import (d3t_get_smiles, d3t_get_init_structure, d3t_get_ground_state,
-                                                     d3t_get_omega, d3t_get_raw_computation)
+from d3tales_api.D3database.workflow_adapter import (
+    d3t_get_smiles,
+    d3t_get_init_structure,
+    d3t_get_ground_state,
+    d3t_get_omega,
+    d3t_get_raw_computation,
+    d3t_direct_get_smiles,
+    d3t_direct_get_init_structure,
+    d3t_direct_get_ground_state,
+    d3t_direct_get_omega,
+    d3t_direct_get_raw_computation,
+)
 from d3tales_api.Workflows.runtime import (
     AFLOW,
     DATA_STORES,
@@ -53,6 +63,10 @@ def get_data_store(task=None, fw_spec=None):
     Get the data store for a FireTask. Precedence: fw_spec, then task parameter, then DEFAULT_DATA_STORE.
     """
     return resolve_data_store(task, fw_spec)
+
+
+def _validate_data_store(data_store):
+    return resolve_data_store({"data_store": data_store})
 
 
 def get_local_output_dir(task=None, fw_spec=None):
@@ -132,17 +146,23 @@ def read_local_result(store_dir, key):
         return json.load(fn).get("data", {})
 
 
-def get_omega(identifier, data_store=DEFAULT_DATA_STORE, store_dir=None):
+def get_omega(identifier, data_store=DEFAULT_DATA_STORE, store_dir=None, engine=None):
     """Return a previously tuned omega value (float) or None."""
-    if data_store == "d3tales":
+    data_store = _validate_data_store(data_store)
+    if data_store == "d3tales_web":
         return d3t_get_omega(identifier)
+    if data_store == "d3tales_direct":
+        return d3t_direct_get_omega(identifier, engine=engine)
     return read_local_result(store_dir, WTUNING_KEY).get("omega")
 
 
 def get_existing_data(_hash, data_store=DEFAULT_DATA_STORE, store_dir=None):
     """Return the stored data dict for a calculation, or {} if it has not been run."""
-    if data_store == "d3tales":
+    data_store = _validate_data_store(data_store)
+    if data_store == "d3tales_web":
         return d3t_get_raw_computation(_hash) or {}
+    if data_store == "d3tales_direct":
+        return d3t_direct_get_raw_computation(_hash) or {}
     return read_local_result(store_dir, _hash)
 
 
@@ -349,14 +369,20 @@ def orig_conditions(functional, basis_set, tuning_parameter=None, solvent=None, 
 
 def start_from_smiles(identifier, smiles, data_store=DEFAULT_DATA_STORE):
     """
-    get input geometry (from the frontend DB if data_store is d3tales, else from SMILES)
+    Get input geometry from the selected D3TaLES store or generate it from SMILES.
     :return: pymatgen mol object
     """
-    if data_store == "d3tales":
+    data_store = _validate_data_store(data_store)
+    if data_store == "d3tales_web":
         try:
             return d3t_get_init_structure(identifier)
-        except Exception:
+        except LookupError:
             smiles = smiles or d3t_get_smiles(identifier)
+    elif data_store == "d3tales_direct":
+        try:
+            return d3t_direct_get_init_structure(identifier)
+        except LookupError:
+            smiles = smiles or d3t_direct_get_smiles(identifier)
     if not smiles:
         raise ValueError("Cannot generate a starting geometry for {}: no SMILES provided.".format(identifier))
     from d3tales_api.Processors.info_from_smiles import find_lowest_e_conf  # lazy: see get_hash_id
@@ -366,11 +392,16 @@ def start_from_smiles(identifier, smiles, data_store=DEFAULT_DATA_STORE):
 
 def get_groundState(identifier, smiles=None, prop='charge', data_store=DEFAULT_DATA_STORE):
     """
-    get ground state charge or spin (from the frontend DB if data_store is d3tales, else from SMILES)
+    Get ground-state charge or spin from the selected D3TaLES store or infer it from SMILES.
     :return: int
     """
-    if data_store == "d3tales":
+    data_store = _validate_data_store(data_store)
+    if data_store == "d3tales_web":
         value = d3t_get_ground_state(identifier, prop)
+        if value is not None:
+            return value
+    elif data_store == "d3tales_direct":
+        value = d3t_direct_get_ground_state(identifier, prop)
         if value is not None:
             return value
     if smiles:
@@ -391,8 +422,11 @@ def get_db_geom(input_geometry_hash, error_raise=False, data_store=DEFAULT_DATA_
     :param store_dir: str, folder holding local JSON records (local data store only)
     :return: pymatgen mol object
     """
-    if data_store == "d3tales":
+    data_store = _validate_data_store(data_store)
+    if data_store == "d3tales_web":
         record = d3t_get_raw_computation(input_geometry_hash, fields="data.geometry")
+    elif data_store == "d3tales_direct":
+        record = d3t_direct_get_raw_computation(input_geometry_hash, fields="data.geometry")
     else:
         record = read_local_result(store_dir, input_geometry_hash) or None
     if record is None:

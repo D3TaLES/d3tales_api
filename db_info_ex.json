@@ -1,12 +1,6 @@
 {
-    "frontend":
-        {
-            "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend",
-            "database": "ui"
-        },
-    "backend":
-        {
-            "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/backend",
-            "database": "backend"
-        }
+  "d3tales": {
+    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/d3tales",
+    "database": "d3tales"
+  }
 }

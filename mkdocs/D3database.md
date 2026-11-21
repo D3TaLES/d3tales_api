@@ -10,84 +10,58 @@ Full documentation can be found <a href="d3tales_api.D3database.html">here</a>.
 
 ## Data Insertion
 
-
-The following example show the insertion of generated molecule information (see above)
-into the frontend database. Note that information will be inserted into the database 
-specified in the `DB_INFO_FILE`.
+Use `D3Database` with the unified `d3tales` database and an explicit collection.
+The database connection is loaded from the `d3tales` entry in `DB_INFO_FILE`.
 
 ```python
-from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.D3database.d3database import D3Database
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
-# Generate basic molecule information using the GenerateMolInfo module
 smiles = "CC"
-instance = GenerateMolInfo(smiles, database="frontend").mol_info_dict
-
-# Insert basic molecule information into the Frontend database
-db_insertion = FrontDB(schema_layer='mol_info', instance=instance, smiles=smiles, group="Non-D3TaLES")
+mol_info = GenerateMolInfo(smiles).mol_info_dict
+database = D3Database(
+    database="d3tales",
+    collection_name="base",
+    instance={"_id": "molecule-id", "mol_info": mol_info},
+    validate_schema=False,
+)
+database.insert("molecule-id")
 ```
 
+`FrontDB` and `BackDB` remain as deprecated compatibility adapters. They use
+the same `d3tales` database, with `base` and `computation` as their respective
+default collections, and emit a `DeprecationWarning`. New code should use
+`D3Database`.
 
 ### Schema Validation
 
-The D3database modules automatically validate instances with the [appropriate schema](https://github.com/D3TaLES/schema). 
+`D3Database` can validate a document against the D3TaLES schema before insertion.
+For example, the following invalid string value for `groundState_charge` fails
+schema validation:
+
 ```python
-from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.D3database.d3database import D3Database
 
-# Create instance with an erroneous field
-instance = {"groundState_charge": "string"}
+instance = {"_id": "molecule-id", "mol_info": {"groundState_charge": "string"}}
+database = D3Database(
+    database="d3tales", collection_name="base", instance=instance, schema_db="frontend"
+)
+```
 
-# Insert basic molecule information into the Frontend database
-db_insertion = FrontDB(_id="05XICU", schema_layer='mol_info', instance=instance)
-```
-Here, the code tries to insert a `string` instead of an `integer` for the attribute `groundState_charge`. 
-However, this violates the frontend database schema. Because the module automatically validates 
-the schema when and `_id` is present, this should result in an error something like this: 
-```
-Failed validating 'type' in schema['properties']['mol_info']['properties']['groundState_charge']:
-    {'description': 'Charge of the ground state molecule', 'type': 'number'}
+### Database Queries
 
-On instance['mol_info']['groundState_charge']:
-    'string'
-```
-Alternatively, this should not produce an error: 
+Query molecule and computation collections from the same database:
+
 ```python
-from d3tales_api.D3database.d3database import FrontDB
+from d3tales_api.D3database.d3database import D3Database
 
-# Create instance with an erroneous field
-instance = {"groundState_charge": 0}
+base = D3Database(database="d3tales", collection_name="base", validate_schema=False)
+molecule = base.coll.find_one({"mol_info.smiles": "CC"})
 
-# Insert basic molecule information into the Frontend database
-db_insertion = FrontDB(_id="05XICU", schema_layer='mol_info', instance=instance)
-
-```
-
-## Database Queries
-
-One useful function for database queries is the `FrondDB` method `check_if_in_db`. This 
-will check if the SMILES string associated with the `FrondDB` already exists in the database. 
-If it exists, the method will return the molecule ID, if not it will return `False`. 
-```python
-from d3tales_api.D3database.d3database import FrontDB
-
-smiles = "CC"
-FrontDB(smiles=smiles).check_if_in_db()
-```
-This should return `06PCFL` if the `DB_INFO_FILE` contains the database information for the 
-D<sup>3</sup>TaLES database. If not, the result will vary depending on the database. 
-
-
-This API can also be used for more general MongoDB queries. The following example show
-how a user might query the backend computational database for calculations with the mol_id
-of `05XICU`. The query can also be filtered to return only calculation types. 
-```python
-from d3tales_api.D3database.d3database import BackDB
-
-# Query all computational entries with the mol_id 05XICU
-BackDB(collection_name="computation").make_query({"mol_id": "05XICU"})
-
-# Query all computational entries with the mol_id 05XICU and return only calculation_types
-BackDB(collection_name="computation").make_query({"mol_id": "05XICU"}, {"calculation_type": 1})
+computation = D3Database(
+    database="d3tales", collection_name="computation", validate_schema=False
+)
+records = computation.make_query({"mol_id": "05XICU"})
 ```
 
 ### D<sup>3</sup>TaLES REST API 

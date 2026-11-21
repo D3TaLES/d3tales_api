@@ -89,12 +89,15 @@ class D3Database:
         """
         self.collection_name = collection_name
         self.instance = {schema_layer: self.dot2dict(instance)} if schema_layer else self.dot2dict(instance)
-        self.database = database
+        self.database = database or "d3tales"
         self.verbose = verbose
         self.public = public
-        self.dbc = DBconnector(db_info().get(self.database))
+        database_info = db_info().get(self.database)
+        if database_info is None:
+            raise KeyError("Database {!r} is not configured in db_info.json".format(self.database))
+        self.dbc = DBconnector(database_info)
         self.coll = self.dbc.get_collection(self.collection_name)
-        schema_db = schema_db or database
+        schema_db = schema_db or self.database
 
         # validate
         if instance and validate_schema:
@@ -243,8 +246,13 @@ class FrontDB(D3Database):
         :param group: str, origin group for instance
         :param generate_mol: bool, generate new molecule instance if True
         """
-        super().__init__("frontend", collection_name=collection_name, instance=instance, schema_layer=schema_layer,
-                         default_id=_id, validate_schema=True if _id else False, **kwargs)
+        warnings.warn(
+            "FrontDB is deprecated; use D3Database(database='d3tales') instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__("d3tales", collection_name=collection_name, instance=instance, schema_layer=schema_layer,
+                         schema_db="frontend", default_id=_id, validate_schema=True if _id else False, **kwargs)
         self.new_molecule = generate_mol
 
         # Identifier properties: must have either id or smiles and group
@@ -317,7 +325,12 @@ class BackDB(D3Database):
         :param create_hash: bool, generate new instance hash id if True
         :param last_updated: bool, insert attribute last_updated to instance with the current date and time if True
         """
-        super().__init__("backend", collection_name, instance)
+        warnings.warn(
+            "BackDB is deprecated; use D3Database(database='d3tales') instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__("d3tales", collection_name, instance, schema_db="backend")
 
         if instance:
             # Identifier properties: must have id and frontend instance
@@ -349,7 +362,7 @@ class ParamsDB(D3Database):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, database='frontend', collection_name=None, instance=None, schema_directory=None, _id=None,
+    def __init__(self, database='d3tales', collection_name=None, instance=None, schema_directory=None, _id=None,
                  update=False):
         """
         :param database: str, name of database (should be a key in the DB_INFO_FILE)
@@ -359,6 +372,7 @@ class ParamsDB(D3Database):
         :param _id: str, parameter ID
         :param update: bool, create new parameter ID if False
         """
+        database = "d3tales" if database == "frontend" else database
         super().__init__(database, collection_name, instance, schema_directory=schema_directory, schema_db='frontend')
         self.update = update
         if instance:

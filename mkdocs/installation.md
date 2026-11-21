@@ -9,7 +9,7 @@ pip install "d3tales_api[calculators,processors,database]"
 ```
 
 The `workflows` extra supports local execution. Add `database` when workflows
-use the D3TaLES REST API or MongoDB.
+use a D3TaLES REST API or direct MongoDB connection.
 
 For the full environment and tests:
 
@@ -28,14 +28,18 @@ because of its dependency constraints.
 
 ## Database configuration
 
-Database operations require `DB_INFO_FILE`, a path to a JSON file containing
-connection information for databases such as `frontend`, `backend`, `expflow`,
-and `fireworks`. An example is available in `db_info_ex.json`.
+Direct database operations require `DB_INFO_FILE`, a path to a JSON file
+containing a `d3tales` connection entry (database name `d3tales`). Other
+application databases may have their own entries. An example is available in
+`db_info_ex.json`.
 
 ```bash
-export DB_INFO_FILE="$PWD/db_infos_ex.json"
+export DB_INFO_FILE="$PWD/db_info_ex.json"
 ```
 
-REST API operations may also use `UPLOAD_USER` and `UPLOAD_PASS`. NLP
+Use `d3tales_direct` only on workers inside the database network firewall with
+write access to the D3TaLES database. `d3tales_web` uses the REST API and
+website upload flow instead; it does not need MongoDB credentials. REST API
+operations may also use `UPLOAD_USER` and `UPLOAD_PASS`. NLP
 processing uses `ELS_APIKEY`; installing ChemDataExtractor2 may require a
 separate step because of its dependency constraints.

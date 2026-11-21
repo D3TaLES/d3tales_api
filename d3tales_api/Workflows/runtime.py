@@ -3,8 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, Mapping, Optional
 
-DATA_STORES = ("d3tales", "local")
-DEFAULT_DATA_STORE = "d3tales"
+DATA_STORES = ("d3tales_web", "d3tales_direct", "local")
+DEFAULT_DATA_STORE = "d3tales_web"
 LOCAL_RESULTS_DIR = "results"
 WTUNING_KEY = "wtuning"
 
