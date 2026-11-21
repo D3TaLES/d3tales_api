@@ -104,7 +104,10 @@ class D3Database:
             self.instance['_id'] = self.instance.get("_id") or default_id
             self.s2c = Schema2Class(schema_name=collection_name, database=schema_db, schema_directory=schema_directory,
                                     schema_version=schema_version)
-            validator_cls = jsonschema.validators.validator_for(self.s2c.schema)
+            # D3TaLES schemas without $schema are treated as Draft 4 by
+            # python_jsonschema_objects. Match that dialect during validation;
+            # jsonschema.validator_for() otherwise defaults to a newer draft.
+            validator_cls = jsonschema.Draft4Validator
             validator_cls.check_schema(self.s2c.schema)
             validator_cls(self.s2c.schema, registry=self.s2c.registry).validate(self.instance)
 
