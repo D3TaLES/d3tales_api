@@ -31,6 +31,7 @@ from d3tales_api.Workflows.utils import (
     resolve_charge_multiplicity,
     spec_or_task,
     start_from_smiles,
+    forcefield_conformer_for_task,
     write_nto,
     zip_files
 )
@@ -241,7 +242,10 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
             geometry,
         )
         geometry_sites = fw_spec.get("{}_geom".format(geometry_key))
-        if run_from_com:
+        forcefield_mol = forcefield_conformer_for_task(self, fw_spec)
+        if forcefield_mol is not None:
+            self.mol = forcefield_mol
+        elif run_from_com:
             self.mol = GaussianInput.from_file(self.file_com).molecule
         else:
             if geometry_sites:

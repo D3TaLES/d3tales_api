@@ -1,8 +1,8 @@
 import base64
+import math
 import sys, os
 import selfies as sf
 from PIL import Image
-from tqdm import tqdm
 from io import BytesIO
 import pubchempy as pcp
 
@@ -19,20 +19,43 @@ import sascorer
 
 def find_lowest_e_conf(smiles, num_conf=50):
     """
-    Find the lowest energy conformer for a molecule with RDKit
+    Find the lowest-energy RDKit conformer after force-field minimization.
+    MMFF is preferred, with UFF used when MMFF parameters are unavailable.
     :param smiles: str, SMILES string
-    :param num_conf: float, number of conformers to serach
+    :param num_conf: number of conformers to search
     :return: str, xyz coordinates
     """
-    rdkmol = Chem.AddHs(Chem.MolFromSmiles(smiles))
-    results = {}
-    AllChem.EmbedMultipleConfs(rdkmol, numConfs=num_conf, params=AllChem.ETKDG())
-    results_MMFF = AllChem.MMFFOptimizeMoleculeConfs(rdkmol, maxIters=5000)
-    for i, result in tqdm(enumerate(results_MMFF)):
-        results[i] = result[1]
-    best_idx = min(results, key=results.get)
-    structure = Chem.rdmolfiles.MolToXYZBlock(rdkmol, confId=best_idx)
-    return structure
+    molecule = Chem.MolFromSmiles(smiles)
+    if molecule is None:
+        raise ValueError("Invalid SMILES string: {!r}".format(smiles))
+    molecule = Chem.AddHs(molecule)
+
+    params = AllChem.ETKDGv3()
+    params.randomSeed = 0xD3
+    params.numThreads = 1
+    conformer_ids = list(AllChem.EmbedMultipleConfs(molecule, numConfs=num_conf, params=params))
+    if not conformer_ids:
+        raise ValueError("RDKit could not generate a conformer for {!r}".format(smiles))
+
+    if AllChem.MMFFHasAllMoleculeParams(molecule):
+        optimized = AllChem.MMFFOptimizeMoleculeConfs(molecule, maxIters=5000, numThreads=1)
+    elif AllChem.UFFHasAllMoleculeParams(molecule):
+        optimized = AllChem.UFFOptimizeMoleculeConfs(molecule, maxIters=5000, numThreads=1)
+    else:
+        raise ValueError("No RDKit MMFF or UFF parameters are available for {!r}".format(smiles))
+
+    converged = [
+        (conf_id, result[1]) for conf_id, result in zip(conformer_ids, optimized)
+        if result[0] == 0 and math.isfinite(result[1])
+    ]
+    candidates = converged or [
+        (conf_id, result[1]) for conf_id, result in zip(conformer_ids, optimized)
+        if math.isfinite(result[1])
+    ]
+    if not candidates:
+        raise ValueError("RDKit force-field optimization produced no finite conformer energies")
+    best_conf_id, _ = min(candidates, key=lambda candidate: candidate[1])
+    return Chem.rdmolfiles.MolToXYZBlock(molecule, confId=best_conf_id)
 
 
 def image_to_base64(img):
@@ -125,4 +148,3 @@ class GenerateMolInfo:
             mol_info["synonyms"] = self.names
 
         return mol_info
-

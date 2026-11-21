@@ -48,6 +48,7 @@ from d3tales_api.Workflows.utils import (
     save_local_result,
     spec_or_task,
     start_from_smiles,
+    forcefield_conformer_for_task,
     zip_files
 )
 from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation, d3t_direct_store_calculation
@@ -301,7 +302,10 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
             geometry,
         )
         geometry_sites = fw_spec.get("{}_geom".format(geometry_key))
-        if geometry_sites:
+        forcefield_mol = forcefield_conformer_for_task(self, fw_spec)
+        if forcefield_mol is not None:
+            self.mol = forcefield_mol
+        elif geometry_sites:
             self.mol = Molecule.from_sites([Site.from_dict(sd) for sd in geometry_sites])
         else:
             geometry_hash = fw_spec.get("{}_hash".format(geometry_key), orca_hash_id(

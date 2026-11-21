@@ -163,8 +163,10 @@ FireWorks spec. `restricted=False` selects an unrestricted reference; it does no
 
 **Geometry handoff**: A task configured with `geometry="X"` consumes `X_geom` (or `X_hash`) from an upstream
 Firework. If that requested geometry is absent, the task fails rather than silently calculating from the SMILES
-geometry. The initial `opt_mol` optimization may use its supplied initial geometry and can generate a starting
-geometry from SMILES when none was supplied.
+geometry. In builders that include a pre-w-tuning `opt_mol` job, that job always searches SMILES-derived RDKit
+conformers, minimizes them with MMFF (or UFF when MMFF parameters are unavailable), and uses the lowest-energy
+conformer as its starting geometry. This is independent of `geom_from_smiles` and any `mol_opt_geom` supplied to
+initialization.
 
 
 ## Adding a workflow

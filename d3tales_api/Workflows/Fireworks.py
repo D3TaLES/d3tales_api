@@ -102,7 +102,7 @@ class MolOpt(Firework):
         software = _normalize_software(software)
         kwargs.pop("use_iop", None)
         kwargs.setdefault("geometry", "opt_mol")
-        kwargs.setdefault("geom_from_smiles", True)
+        kwargs["forcefield_conformer"] = True
         task_cls = _FIRETASKS[software]["opt"]
         task_kwargs = _task_kwargs(
             software,
