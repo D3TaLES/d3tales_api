@@ -86,7 +86,7 @@ available in `d3tales_direct`.
 | `data_store` | Reads | Result handling |
 | --- | --- | --- |
 | `d3tales_web` | D3TaLES website REST API | Uploads Gaussian files for website-side processing; ORCA website uploads are unsupported. |
-| `d3tales_direct` | Configured `d3tales` MongoDB database | Processes results on the worker, inserts calculation records directly, and stores local ZIP archives. |
+| `d3tales_direct` | Configured `d3tales` MongoDB database | Processes results on the worker, inserts calculation records directly, updates frontend characterizations for Gaussian computations (including omega from w-tuning), and stores local ZIP archives. ORCA/PySCF records are stored in `computation`; Gaussian-specific frontend characterization is not applied to their different record formats. |
 | `local` | Local result files (with SMILES-derived fallback state) | Writes JSON records in the configured local results directory. |
 
 
