@@ -1,0 +1,203 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "d3tales_api"
+dynamic = ["version"]
+description = "API for D3TaLES workflows, data processing, database access, and property calculations"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{ name = "Rebekah Duke", email = "d3tales@gmail.com" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/D3TaLES/d3tales_api"
+"Bug Tracker" = "https://github.com/D3TaLES/d3tales_api/issues"
+
+[project.optional-dependencies]
+all = [
+    "articledownloader>=9.1.1",
+    "atomate>=1.0.3",
+    "autologging>=1.3.2",
+    "cclib>=1.7.2",
+    "dbstep>=1.0.0",
+    "Django>=2.2.28",
+    "dotty_dict>=1.3.1",
+    "elsapy>=0.5.1",
+    "FireWorks>=2.0.3",
+    "inflection>=0.5.1",
+    "interruptingcow>=0.8",
+    "jsonschema>=3.2.0",
+    "matplotlib>=3.1.3",
+    "monty>=2022.9.9",
+    "nanoid>=2.0.0",
+    "networkx",
+    "numpy>=1.23.5",
+    "pandas>=1.5.1",
+    "paramiko>=3.0.0",
+    "Pillow>=9.3.0",
+    "Pint>=0.20.1",
+    "PubChemPy>=1.0.4",
+    "pymatgen>=2022.11.7",
+    "pymongo>=3.12.3",
+    "pyscf",
+    "python-dateutil>=2.8.2",
+    "python_jsonschema_objects>=0.4.1",
+    "rdkit>=2022.9.1",
+    "requests>=2.28.1",
+    "ruamel.yaml<0.18",
+    "scipy>=1.8.0",
+    "seaborn>=0.12.1",
+    "selfies>=2.1.1",
+    "tqdm>=4.64.1",
+    "Werkzeug<3",
+]
+calculators = [
+    "cclib>=1.7.2",
+    "dbstep>=1.0.0",
+    "interruptingcow>=0.8",
+    "matplotlib>=3.1.3",
+    "monty>=2022.9.9",
+    "networkx",
+    "numpy>=1.23.5",
+    "pandas>=1.5.1",
+    "Pint>=0.20.1",
+    "pymatgen>=2022.11.7",
+    "rdkit>=2022.9.1",
+    "scipy>=1.8.0",
+]
+processors = [
+    "cclib>=1.7.2",
+    "dbstep>=1.0.0",
+    "Django>=2.2.28",
+    "interruptingcow>=0.8",
+    "matplotlib>=3.1.3",
+    "monty>=2022.9.9",
+    "networkx",
+    "numpy>=1.23.5",
+    "pandas>=1.5.1",
+    "Pillow>=9.3.0",
+    "Pint>=0.20.1",
+    "PubChemPy>=1.0.4",
+    "python-dateutil>=2.8.2",
+    "pymatgen>=2022.11.7",
+    "rdkit>=2022.9.1",
+    "scipy>=1.8.0",
+    "selfies>=2.1.1",
+    "tqdm>=4.64.1",
+]
+database = [
+    "cclib>=1.7.2",
+    "dbstep>=1.0.0",
+    "dotty_dict>=1.3.1",
+    "Django>=2.2.28",
+    "inflection>=0.5.1",
+    "interruptingcow>=0.8",
+    "jsonschema>=3.2.0",
+    "matplotlib>=3.1.3",
+    "monty>=2022.9.9",
+    "nanoid>=2.0.0",
+    "networkx",
+    "numpy>=1.23.5",
+    "pandas>=1.5.1",
+    "Pint>=0.20.1",
+    "PubChemPy>=1.0.4",
+    "pymatgen>=2022.11.7",
+    "pymongo>=3.12.3",
+    "Pillow>=9.3.0",
+    "python_jsonschema_objects>=0.4.1",
+    "rdkit>=2022.9.1",
+    "requests>=2.28.1",
+    "scipy>=1.8.0",
+    "selfies>=2.1.1",
+    "tqdm>=4.64.1",
+]
+workflows = [
+    "atomate>=1.0.3",
+    "FireWorks>=2.0.3",
+    "monty>=2022.9.9",
+    "numpy>=1.23.5",
+    "pymatgen>=2022.11.7",
+    "rdkit>=2022.9.1",
+    "scipy>=1.8.0",
+]
+pyscf = ["pyscf"]
+nlp = [
+    "articledownloader>=9.1.1",
+    "elsapy>=0.5.1",
+    "monty>=2022.9.9",
+    "pandas>=1.5.1",
+    "Pint>=0.20.1",
+    "python_jsonschema_objects>=0.4.1",
+    "requests>=2.28.1",
+]
+test = [
+    "pytest>=7",
+    "pytest-cov>=4",
+    "pytest-mock>=3",
+    "pytest-timeout>=2",
+]
+docs = [
+    "Sphinx>=7",
+    "myst-parser",
+    "sphinx-rtd-theme",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "d3tales_api.__version__" }
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["d3tales_api*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--showlocals",
+    "--ignore=tests/integration/processors/test_nlp_processing.py",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+norecursedirs = ["tests/legacy"]
+markers = [
+    "unit: isolated tests with no filesystem, network, or database dependency",
+    "integration: tests crossing module boundaries",
+    "slow: comparatively expensive tests",
+    "database: requires a MongoDB-compatible database",
+    "network: requires an external service",
+    "gaussian: requires Gaussian-derived fixture data",
+    "electrochemistry: electrochemistry parser/calculator tests",
+    "optional: requires an optional dependency",
+]
+filterwarnings = [
+    "error",
+    "ignore:the imp module is deprecated in favour of importlib.*:DeprecationWarning",
+    "ignore:currentThread\\(\\) is deprecated, use current_thread\\(\\) instead:DeprecationWarning",
+    "ignore:Environment variable DB_INFO_FILE not defined.*:UserWarning:d3tales_api.database_info",
+    "ignore::DeprecationWarning:pymatgen.*",
+    "ignore::DeprecationWarning:monty.*",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["d3tales_api"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 10
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]

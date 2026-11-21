@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>d3tales_api.Workflows.runtime &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES API 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../D3database.html">D3database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">d3tales_api.Workflows.runtime</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for d3tales_api.Workflows.runtime</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Resolve FireWorks task settings separately from worker environment settings."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="n">DATA_STORES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"d3tales"</span><span class="p">,</span> <span class="s2">"local"</span><span class="p">)</span>
+<span class="n">DEFAULT_DATA_STORE</span> <span class="o">=</span> <span class="s2">"d3tales"</span>
+<span class="n">LOCAL_RESULTS_DIR</span> <span class="o">=</span> <span class="s2">"results"</span>
+<span class="n">WTUNING_KEY</span> <span class="o">=</span> <span class="s2">"wtuning"</span>
+
+<span class="n">ZINDOLIB</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOLIB&lt;&lt;"</span>
+<span class="n">ZINDOBIN</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOBIN&lt;&lt;"</span>
+<span class="n">ZINDOCTBIN</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOCTBIN&lt;&lt;"</span>
+<span class="n">DB_FILE</span> <span class="o">=</span> <span class="s2">"&gt;&gt;db_file&lt;&lt;"</span>
+<span class="n">AFLOW</span> <span class="o">=</span> <span class="s2">"&gt;&gt;aflow&lt;&lt;"</span>
+<span class="n">VASP_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;vasp_cmd&lt;&lt;"</span>
+<span class="n">GAMMA_VASP_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gamma_vasp_cmd&lt;&lt;"</span>
+<span class="n">G16_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;g16_cmd&lt;&lt;"</span>
+<span class="n">GAUSSIAN_GPU_CPU</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_gpu_cpu&lt;&lt;"</span>
+<span class="n">GAUSSIAN_CPU_LIST</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_cpu_list&lt;&lt;"</span>
+<span class="n">GAUSSIAN_MEMORY</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_memory&lt;&lt;"</span>
+<span class="n">GAUSSIAN_NPROCSHARED</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_nprocshared&lt;&lt;"</span>
+<span class="n">MA_DEF2</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ma_def2&lt;&lt;"</span>
+<span class="n">PATH</span> <span class="o">=</span> <span class="s2">"&gt;&gt;path&lt;&lt;"</span>
+<span class="n">RUNFILE_LOG</span> <span class="o">=</span> <span class="s2">"&gt;&gt;runfile_log&lt;&lt;"</span>
+<span class="n">PROC_VM_KEY</span> <span class="o">=</span> <span class="s2">"&gt;&gt;processing_vm_key&lt;&lt;"</span>
+<span class="n">LOCAL_OUTPUT_DIR</span> <span class="o">=</span> <span class="s2">"&gt;&gt;local_output_dir&lt;&lt;"</span>
+<span class="n">ORCA_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;orca_cmd&lt;&lt;"</span>
+
+<span class="n">_ENGINE_ENVIRONMENT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"gaussian"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"g16_cmd"</span><span class="p">:</span> <span class="n">G16_CMD</span><span class="p">,</span>
+        <span class="s2">"proc_vm_key"</span><span class="p">:</span> <span class="n">PROC_VM_KEY</span><span class="p">,</span>
+        <span class="s2">"gpu_cpu"</span><span class="p">:</span> <span class="n">GAUSSIAN_GPU_CPU</span><span class="p">,</span>
+        <span class="s2">"cpu_list"</span><span class="p">:</span> <span class="n">GAUSSIAN_CPU_LIST</span><span class="p">,</span>
+        <span class="s2">"memory"</span><span class="p">:</span> <span class="n">GAUSSIAN_MEMORY</span><span class="p">,</span>
+        <span class="s2">"nprocshared"</span><span class="p">:</span> <span class="n">GAUSSIAN_NPROCSHARED</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">"orca"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"orca_cmd"</span><span class="p">:</span> <span class="n">ORCA_CMD</span><span class="p">},</span>
+    <span class="s2">"pyscf"</span><span class="p">:</span> <span class="p">{},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="spec_or_task">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.spec_or_task">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spec_or_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolve explicit FireWorks spec values before FireTask kwargs.</span>
+
+<span class="sd">    ``False`` and ``0`` are valid overrides; only ``None`` means unspecified.</span>
+<span class="sd">    """</span>
+    <span class="n">fw_spec</span> <span class="o">=</span> <span class="n">fw_spec</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="resolve_worker_value">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_worker_value">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_worker_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolve a ``&gt;&gt;worker_env_key&lt;&lt;`` placeholder from FireWorks' ``_fw_env``."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&gt;&gt;"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"&lt;&lt;"</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">worker_env</span> <span class="o">=</span> <span class="p">(</span><span class="n">fw_spec</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_fw_env"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">worker_env</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"FireWorks _fw_env must be a mapping"</span><span class="p">)</span>
+    <span class="n">resolved</span> <span class="o">=</span> <span class="n">worker_env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resolved</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">"FireWorker environment variable </span><span class="si">{!r}</span><span class="s2"> is required"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">return</span> <span class="n">resolved</span></div>
+
+
+
+<div class="viewcode-block" id="resolve_runtime_field">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_runtime_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_runtime_field</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">required_env</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">spec_or_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resolve_worker_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="n">required_env</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resolve_data_store">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_data_store">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_data_store</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fw_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">spec_or_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"data_store"</span><span class="p">,</span> <span class="n">DEFAULT_DATA_STORE</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DATA_STORES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"data_store must be one of </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DATA_STORES</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="WorkerRuntime">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkerRuntime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validated runtime settings resolved at a FireTask boundary.</span>
+
+<span class="sd">    Scientific inputs remain in the task's ``paramset`` and FireWorks spec.</span>
+<span class="sd">    Worker-specific paths, executables, and resources are resolved from the</span>
+<span class="sd">    FireWorker's ``_fw_env`` using FireWorks' ``&gt;&gt;key&lt;&lt;`` convention.</span>
+<span class="sd">    """</span>
+
+    <span class="n">software</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">data_store</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">local_output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">runfile_log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">engine_options</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WorkerRuntime.from_task">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.from_task">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_task</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">software</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_executables</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">data_store</span> <span class="o">=</span> <span class="n">resolve_data_store</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">)</span>
+
+        <span class="n">local_output_dir</span> <span class="o">=</span> <span class="n">resolve_runtime_field</span><span class="p">(</span>
+            <span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"local_output_dir"</span><span class="p">,</span> <span class="n">LOCAL_OUTPUT_DIR</span>
+        <span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">resolve_runtime_field</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"path"</span><span class="p">,</span> <span class="n">required_env</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">runfile_log</span> <span class="o">=</span> <span class="n">resolve_runtime_field</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"runfile_log"</span><span class="p">)</span>
+
+        <span class="n">engine_options</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">placeholder</span> <span class="ow">in</span> <span class="n">_ENGINE_ENVIRONMENT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">software</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="s2">"orca"</span> <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"orca_cmd"</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">engine_options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_worker_value</span><span class="p">(</span>
+                <span class="n">spec_or_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">),</span>
+                <span class="n">fw_spec</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+                <span class="n">required</span><span class="o">=</span><span class="n">require_executables</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"g16_cmd"</span><span class="p">},</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">software</span><span class="o">=</span><span class="n">software</span><span class="p">,</span>
+            <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">,</span>
+            <span class="n">local_output_dir</span><span class="o">=</span><span class="n">local_output_dir</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">runfile_log</span><span class="o">=</span><span class="n">runfile_log</span><span class="p">,</span>
+            <span class="n">engine_options</span><span class="o">=</span><span class="n">engine_options</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="worker_task_kwargs">
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.worker_task_kwargs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">worker_task_kwargs</span><span class="p">(</span><span class="n">software</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return FireTask references for common and selected-engine worker settings."""</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">PATH</span><span class="p">,</span> <span class="s2">"runfile_log"</span><span class="p">:</span> <span class="n">RUNFILE_LOG</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">placeholder</span> <span class="ow">in</span> <span class="n">_ENGINE_ENVIRONMENT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">software</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">placeholder</span>
+    <span class="k">return</span> <span class="n">kwargs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

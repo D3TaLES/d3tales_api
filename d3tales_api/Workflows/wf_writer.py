@@ -1,5 +1,12 @@
 from fireworks import Workflow
-from d3tales_api.Workflows.Fireworks import *
+from d3tales_api.Workflows.Fireworks import (
+    Energy,
+    InitializeMolecule,
+    MolOpt,
+    Optimization,
+    TDDFT,
+    WTuning,
+)
 
 
 def _tagged_kwargs(kwargs, suffix=""):
@@ -62,6 +69,41 @@ def d3tales_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acet
     return wf
 
 
+def sams_wf(paramset, identifier=None, smiles=None, mol_opt_geom=None, wtune=True, wf_tag="", **kwargs):
+    if wtune and mol_opt_geom is None and not kwargs.get("geom_from_smiles", False):
+        raise ValueError(
+            "sams_wf requires mol_opt_geom when wtune=True unless geom_from_smiles=True"
+        )
+    f10 = InitializeMolecule(identifier=identifier, smiles=smiles, mol_opt_geom=mol_opt_geom, **kwargs)
+    f30 = WTuning(paramset=paramset.wtuning, parents=f10, **kwargs)
+
+    opt_parents = f30 if wtune else f10
+    f31 = Optimization(paramset=paramset.opt_groundState, species="groundState", parents=opt_parents, **kwargs)
+    f35 = Optimization(paramset=paramset.opt_anion1, species="anion1", parents=opt_parents, **kwargs)
+    f37 = Optimization(paramset=paramset.opt_cation1, species="cation1", parents=opt_parents, **kwargs)
+
+    f45 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_anion1", parents=[f35],
+                 **kwargs)
+    f46 = Energy(paramset=paramset.energy_anion1, species="anion1", geometry="opt_groundState", parents=[f31], **kwargs)
+    f47 = Energy(paramset=paramset.energy_groundState, species="groundState", geometry="opt_cation1", parents=[f37],
+                 **kwargs)
+    f48 = Energy(paramset=paramset.energy_cation1, species="cation1", geometry="opt_groundState", parents=[f31],
+                 **kwargs)
+
+    f61 = TDDFT(paramset=paramset.tddft_groundState, parents=[f31], **kwargs)
+    f65 = TDDFT(paramset=paramset.tddft_anion1, species='anion1', parents=[f35], **kwargs)
+    f67 = TDDFT(paramset=paramset.tddft_cation1, species='cation1', parents=[f37], **kwargs)
+
+    # Establish fireworks in workflow
+    fws = [f10, f31, f35, f37, f45, f46, f47, f48, f61, f65, f67, ]
+    if wtune:
+        fws.extend([f30])
+
+    wf = Workflow(fws, name="{}gaus_{}".format(wf_tag, identifier or smiles))
+
+    return wf
+
+
 def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='acetonitrile',
                hf_mol_opt=False, **kwargs):
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles, **kwargs)
@@ -101,6 +143,8 @@ def just_anion(paramset, identifier=None, smiles=None, wtune=False, solvent='ace
 
 def solv_wf(paramset, identifier=None, smiles=None, wtune=True, solvent='acetonitrile',
             hf_mol_opt=False, **kwargs):
+    if not solvent:
+        raise ValueError("solv_wf requires a solvent")
     f10 = InitializeMolecule(identifier=identifier, smiles=smiles,
                              **kwargs)
 
@@ -194,9 +238,10 @@ def huckaba_wf(paramset, identifier=None, smiles=None, solvent='DiMethylSulfoxid
 
     opt_parents = f30 if wtune else f10
 
-    f37 = Optimization(paramset=eval("paramset.opt_" + species), species=species, parents=opt_parents, solvent=solvent,
+    f37 = Optimization(paramset=getattr(paramset, "opt_" + species), species=species, parents=opt_parents, solvent=solvent,
                        **kwargs)
-    f63 = TDDFT(paramset=eval("paramset.tddft_" + species), parents=[f37], solvent=solvent, solv_geom=True, **kwargs)
+    f63 = TDDFT(paramset=getattr(paramset, "tddft_" + species), parents=[f37], solvent=solvent,
+                solv_geom=bool(solvent), **kwargs)
 
     fws = [f10, f37, f63]
     if wtune:
@@ -239,10 +284,10 @@ def just_tddft(paramset, identifier=None, smiles=None, wtune=False, solvent=None
     f38 = Optimization(paramset=paramset.opt_cation2, species="cation2", parents=opt_parents, solvent=solvent,
                        check_if_already_run=check_if_already_run, **kwargs)
 
-    f61 = TDDFT(paramset=paramset.tddft_groundState, parents=[f31], solvent=solvent, solv_geom=True, **kwargs)
-    f67 = TDDFT(paramset=paramset.tddft_cation1, species='cation1', parents=[f37], solvent=solvent, solv_geom=True,
+    f61 = TDDFT(paramset=paramset.tddft_groundState, parents=[f31], solvent=solvent, solv_geom=bool(solvent), **kwargs)
+    f67 = TDDFT(paramset=paramset.tddft_cation1, species='cation1', parents=[f37], solvent=solvent, solv_geom=bool(solvent),
                 **kwargs)
-    f68 = TDDFT(paramset=paramset.tddft_cation2, species='cation2', parents=[f38], solvent=solvent, solv_geom=True,
+    f68 = TDDFT(paramset=paramset.tddft_cation2, species='cation2', parents=[f38], solvent=solvent, solv_geom=bool(solvent),
                 **kwargs)
 
     # Establish fireworks in workflow
@@ -295,10 +340,10 @@ def specialized_job(paramset, identifier=None, smiles=None, solvent='acetonitril
 
     opt_parents = f30 if wtune else f10
 
-    f36 = Optimization(paramset=eval("paramset.opt_" + species), species=species, parents=opt_parents, **kwargs)
-    f37 = Optimization(paramset=eval("paramset.opt_" + species), species=species, parents=opt_parents, solvent=solvent,
+    f36 = Optimization(paramset=getattr(paramset, "opt_" + species), species=species, parents=opt_parents, **kwargs)
+    f37 = Optimization(paramset=getattr(paramset, "opt_" + species), species=species, parents=opt_parents, solvent=solvent,
                        **kwargs)
-    f63 = TDDFT(paramset=eval("paramset.tddft_" + species), parents=[f36], **kwargs)
+    f63 = TDDFT(paramset=getattr(paramset, "tddft_" + species), parents=[f36], **kwargs)
 
     fws = [f10, f36, f37, f63]
     if wtune:

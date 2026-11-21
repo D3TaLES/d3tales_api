@@ -16,50 +16,43 @@ from rdkit.Chem.rdmolops import GetFormalCharge, AddHs
 from rdkit.Chem.Descriptors import NumRadicalElectrons
 from d3tales_api.D3database.workflow_adapter import (d3t_get_smiles, d3t_get_init_structure, d3t_get_ground_state,
                                                      d3t_get_omega, d3t_get_raw_computation)
+from d3tales_api.Workflows.runtime import (
+    AFLOW,
+    DATA_STORES,
+    DB_FILE,
+    DEFAULT_DATA_STORE,
+    G16_CMD,
+    GAMMA_VASP_CMD,
+    GAUSSIAN_CPU_LIST,
+    GAUSSIAN_GPU_CPU,
+    GAUSSIAN_MEMORY,
+    GAUSSIAN_NPROCSHARED,
+    LOCAL_OUTPUT_DIR,
+    LOCAL_RESULTS_DIR,
+    MA_DEF2,
+    ORCA_CMD,
+    PATH,
+    PROC_VM_KEY,
+    RUNFILE_LOG,
+    VASP_CMD,
+    WTUNING_KEY,
+    ZINDOBIN,
+    ZINDOCTBIN,
+    ZINDOLIB,
+    resolve_data_store,
+    resolve_runtime_field,
+    spec_or_task,
+)
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 # Copyright 2021, University of Kentucky
-
-# ENVIRONMENT VARIABLES
-
-ZINDOLIB = ">>ZINDOLIB<<"
-ZINDOBIN = ">>ZINDOBIN<<"
-ZINDOCTBIN = ">>ZINDOCTBIN<<"
-DB_FILE = ">>db_file<<"
-AFLOW = ">>aflow<<"
-VASP_CMD = ">>vasp_cmd<<"
-GAMMA_VASP_CMD = ">>gamma_vasp_cmd<<"
-G16_CMD = ">>g16_cmd<<"
-GAUSSIAN_GPU_CPU = ">>gaussian_gpu_cpu<<"
-GAUSSIAN_CPU_LIST = ">>gaussian_cpu_list<<"
-GAUSSIAN_MEMORY = ">>gaussian_memory<<"
-GAUSSIAN_NPROCSHARED = ">>gaussian_nprocshared<<"
-MA_DEF2 = ">>ma_def2<<"
-PATH = ">>path<<"
-RUNFILE_LOG = ">>runfile_log<<"
-PROC_VM_KEY = ">>processing_vm_key<<"
-LOCAL_OUTPUT_DIR = ">>local_output_dir<<"  # optional; set under `env:` in my_fworker.yaml
-
-# DATA STORES
-# "d3tales": read/write through the D3TaLES website + databases (original behavior, default)
-# "local":   no database; each calculation's record is written as a JSON file
-DATA_STORES = ("d3tales", "local")
-DEFAULT_DATA_STORE = "d3tales"
-LOCAL_RESULTS_DIR = "results"  # used under the calculation directory when no local_output_dir is set
-WTUNING_KEY = "wtuning"
-
 
 # DATA STORE FUNCTIONS
 def get_data_store(task=None, fw_spec=None):
     """
     Get the data store for a FireTask. Precedence: fw_spec, then task parameter, then DEFAULT_DATA_STORE.
     """
-    fw_spec = fw_spec or {}
-    store = fw_spec.get("data_store") or (task.get("data_store") if task else None) or DEFAULT_DATA_STORE
-    store = str(store).lower()
-    if store not in DATA_STORES:
-        raise ValueError("data_store must be one of {}, not {}".format(DATA_STORES, store))
-    return store
+    return resolve_data_store(task, fw_spec)
 
 
 def get_local_output_dir(task=None, fw_spec=None):
@@ -73,11 +66,7 @@ def get_local_output_dir(task=None, fw_spec=None):
 
     Unlike env_chk(strict=True), a missing FireWorker key returns None instead of raising.
     """
-    fw_spec = fw_spec or {}
-    val = fw_spec.get("local_output_dir") or (task.get("local_output_dir") if task else None) or LOCAL_OUTPUT_DIR
-    if isinstance(val, str) and val.startswith(">>") and val.endswith("<<"):
-        val = fw_spec.get("_fw_env", {}).get(val[2:-2])
-    return val or None
+    return resolve_runtime_field(task, fw_spec, "local_output_dir", LOCAL_OUTPUT_DIR)
 
 
 def get_store_dir(identifier, local_output_dir=None, calc_dir=None):
@@ -490,14 +479,6 @@ def write_nto(tddft_log, excitation_num, tddft_chk=None):
     ginp.link0_parameters.update({"%chk": nto_chk, "%oldchk": tddft_chk})
     ginp.write_file(nto_com, cart_coords=True)
     return nto_com, nto_chk
-
-def spec_or_task(task, fw_spec, key, default=None):
-    """fw_spec value if set, else task value if set, else default. Explicit False/0 are respected."""
-    val = fw_spec.get(key)
-    if val is None:
-        val = task.get(key)
-    return default if val is None else val
-
 
 def resolve_charge_multiplicity(task, paramset, fw_spec, gs_charge, gs_spin):
     """Resolve an absolute charge and configured multiplicity without mutating parameters.

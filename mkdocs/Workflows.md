@@ -5,20 +5,71 @@ for the high-throughput [computational workflow](https://d3tales.as.uky.edu/docs
 that populated the [D<sup>3</sup>TaLES database](https://d3tales.as.uky.edu/database). 
 
 ## Modules 
-Important Fireworks-based modules include: 
+Important FireWorks-based modules include:
 
 * Calculation-specific modules for **FireTasks**: 
   * `Initialize`: FireTasks for initialize molecules and getting basic molecular information 
-  * `Gaussian`: FireTasks for Density Functional Theory calculations with [Gaussian](https://gaussian.com/)
-  * _In development_ `Gromacs`: FireTasks for Molecular Dynamics simulations with [Gromacs](https://www.gromacs.org/)
-* `D3TaLES_FW`: defines all **Fireworks** 
+  * `Gaussian`: FireTasks for calculations with [Gaussian](https://gaussian.com/)
+  * `Orca`: FireTasks for calculations with [ORCA](https://www.orcasoftware.de/)
+  * `pyscf`: FireTasks for calculations with [PySCF](https://pyscf.org/)
+* `Fireworks`: defines engine-aware **Fireworks** and routes them with FireWorks worker categories
 * `wf_writer`: defines **Workflows**
 
 The other modules are not of much importance for upper-level use because their functionalities are simply imported
 by the Fireworks based modules. But, to summarize, these modules include: 
 * `ParamSet`: translates dictionary-based calculation parameters (e.g., functional, basis set, etc.) for use in workflow
 * `wtuning`: module adapted from the [OCELOT API](https://caer200.github.io/ocelot_api/) for performing IP fitting 
-* `utils`: utility functions and environment variables 
+* `utils`: shared chemistry, geometry, storage, and result helpers
+
+Gromacs is an empty placeholder and is not a supported workflow engine. VASP
+parameter classes are deprecated; neither VASP nor ZINDO is registered in the
+current workflow factory.
+
+## Installing and configuring workers
+
+Install the engine-neutral workflow dependencies with:
+
+```bash
+pip install "d3tales_api[workflows]"
+```
+
+For the D3TaLES-backed data store, add the database dependencies with
+`pip install "d3tales_api[workflows,database]"`. The `local` data store does
+not require database credentials or network access.
+
+PySCF is optional: install it with `pip install "d3tales_api[workflows,pyscf]"`.
+Gaussian and ORCA executables are provided by the compute environment rather
+than pip.
+
+The workflow uses FireWorks' existing separation of concerns:
+
+* Chemistry and calculation inputs are stored in the parameter set and task
+  arguments, then carried between Fireworks in `fw_spec` (for example charge,
+  spin, solvent, and geometry).
+* Engine selection sets each calculation Firework's `_category`; FireWorks
+  schedules it on a worker with that category.
+* Worker-specific paths, executable names, and Gaussian CPU/GPU resources are
+  referenced with `>>environment_key<<` placeholders and resolved from the
+  worker's `_fw_env`. Do not put node-specific resources in the chemistry
+  parameter file.
+
+For example:
+
+```yaml
+env:
+  path: /scratch/calculations
+  runfile_log: /scratch/runfiles.log
+  g16_cmd: /path/to/g16
+  gaussian_gpu_cpu: "0-1=0,2"
+  gaussian_cpu_list: "0-3"
+  gaussian_memory: "48GB"
+  gaussian_nprocshared: "4"
+  orca_cmd: /path/to/orca
+```
+
+Worker environment values can differ by worker without changing the saved
+workflow or scientific parameters. Explicit workflow-spec values override
+task arguments; missing optional resource values retain engine defaults.
 
 
 ## Setup
@@ -114,7 +165,7 @@ lpad_file = os.path.join(BASE_DIR, 'config', 'my_launchpad.yaml')  # See notes a
 param_file = os.path.join(BASE_DIR, 'parameter_file.json')
 
 # Establish calculation parameters from parm_file json file
-paramset = GausParamSet().from_json(param_file)
+paramset = GausParamSet.from_json(param_file)
 
 # Define Fireworks Workflow 
 wf = d3tales_wf(paramset, smiles="CCCC", wtune=True, solvent='acetonitrile')

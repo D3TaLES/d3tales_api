@@ -11,7 +11,7 @@ from d3tales_api.D3database.schema2class import Schema2Class
 
 try:
     from chemdataextractor2 import Document
-    from chemdataextractor2.doc.text import *
+    from chemdataextractor2.doc.text import Paragraph
 except ImportError:
     raise ImportError("WARNING. ChemDataExtractor2 not installed! Install ChemDataExtractor if you plan on "
                       "performing NLP parsing.")
@@ -279,4 +279,3 @@ class ProcessNlp:
 
 if __name__ == "__main__":
     data = ProcessNlp(sys.argv[1], article_download=False).data_dict
-

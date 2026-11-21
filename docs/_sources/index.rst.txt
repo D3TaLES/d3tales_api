@@ -38,6 +38,7 @@ This API contains four modules:
    Processors
    Calculators
    Workflows
+   Package-Streamlining
    d3tales_api
 
 
@@ -47,4 +48,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

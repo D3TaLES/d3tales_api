@@ -1,59 +1,56 @@
+from importlib import import_module
+
 from fireworks import Firework
 
-from d3tales_api.Workflows.Gaussian import (
-    RunGaussianEnergy,
-    RunGaussianOpt,
-    RunGaussianTDDFT,
-    RunWtuning as RunGaussianWtuning,
-)
 from d3tales_api.Workflows.Initialize import MoleculeInit
-from d3tales_api.Workflows.Orca import (
-    RunOrcaEnergy,
-    RunOrcaOpt,
-    RunOrcaTDDFT,
-    RunWtuning as RunOrcaWtuning,
-)
-from d3tales_api.Workflows.pyscf import (
-    RunPySCFEnergy,
-    RunPySCFOpt,
-    RunPySCFTDDFT,
-    RunPySCFWtuning,
-)
-from d3tales_api.Workflows.utils import (
-    GAUSSIAN_CPU_LIST,
-    GAUSSIAN_GPU_CPU,
-    GAUSSIAN_MEMORY,
-    GAUSSIAN_NPROCSHARED,
-    G16_CMD,
-    PATH,
-    PROC_VM_KEY,
-    RUNFILE_LOG,
-)
+from d3tales_api.Workflows.runtime import worker_task_kwargs
 
 # Copyright 2021-2022, University of Kentucky
 
 DEFAULT_SOFTWARE = "gaussian"
 SUPPORTED_SOFTWARE = ("gaussian", "orca", "pyscf")
 
+class _LazyTaskMap:
+    def __init__(self, module_name, task_names):
+        self.module_name = module_name
+        self.task_names = task_names
+
+    def __getitem__(self, kind):
+        try:
+            class_name = self.task_names[kind]
+        except KeyError:
+            raise KeyError(kind)
+        try:
+            module = import_module(self.module_name)
+        except ImportError as exc:
+            if self.module_name.endswith(".pyscf"):
+                raise ImportError(
+                    "PySCF workflows require the optional dependency; install "
+                    "'d3tales_api[workflows,pyscf]'."
+                ) from exc
+            raise
+        return getattr(module, class_name)
+
+
 _FIRETASKS = {
-    "gaussian": {
-        "opt": RunGaussianOpt,
-        "energy": RunGaussianEnergy,
-        "tddft": RunGaussianTDDFT,
-        "wtuning": RunGaussianWtuning,
-    },
-    "orca": {
-        "opt": RunOrcaOpt,
-        "energy": RunOrcaEnergy,
-        "tddft": RunOrcaTDDFT,
-        "wtuning": RunOrcaWtuning,
-    },
-    "pyscf": {
-        "opt": RunPySCFOpt,
-        "energy": RunPySCFEnergy,
-        "tddft": RunPySCFTDDFT,
-        "wtuning": RunPySCFWtuning,
-    },
+    "gaussian": _LazyTaskMap("d3tales_api.Workflows.Gaussian", {
+        "opt": "RunGaussianOpt",
+        "energy": "RunGaussianEnergy",
+        "tddft": "RunGaussianTDDFT",
+        "wtuning": "RunWtuning",
+    }),
+    "orca": _LazyTaskMap("d3tales_api.Workflows.Orca", {
+        "opt": "RunOrcaOpt",
+        "energy": "RunOrcaEnergy",
+        "tddft": "RunOrcaTDDFT",
+        "wtuning": "RunWtuning",
+    }),
+    "pyscf": _LazyTaskMap("d3tales_api.Workflows.pyscf", {
+        "opt": "RunPySCFOpt",
+        "energy": "RunPySCFEnergy",
+        "tddft": "RunPySCFTDDFT",
+        "wtuning": "RunPySCFWtuning",
+    }),
 }
 
 
@@ -77,14 +74,10 @@ def _calc_spec(software, priority=None):
 
 
 def _task_kwargs(software, **kwargs):
-    """Add only executable/runtime kwargs relevant to the selected engine."""
+    """Keep worker runtime references separate from scientific task parameters."""
     kwargs["software"] = software
-    if software == "gaussian":
-        kwargs.update(g16_cmd=G16_CMD, proc_vm_key=PROC_VM_KEY)
-        kwargs.setdefault("gpu_cpu", GAUSSIAN_GPU_CPU)
-        kwargs.setdefault("cpu_list", GAUSSIAN_CPU_LIST)
-        kwargs.setdefault("memory", GAUSSIAN_MEMORY)
-        kwargs.setdefault("nprocshared", GAUSSIAN_NPROCSHARED)
+    for key, value in worker_task_kwargs(software).items():
+        kwargs.setdefault(key, value)
     return kwargs
 
 
@@ -114,8 +107,6 @@ class MolOpt(Firework):
             smiles=smiles,
             name=name,
             name_tag=name_tag,
-            path=PATH,
-            runfile_log=RUNFILE_LOG,
             skip_freq=True,
             use_iop=False,
             **kwargs,
@@ -133,8 +124,6 @@ class WTuning(Firework):
         task_kwargs = _task_kwargs(
             software,
             smiles=smiles,
-            path=PATH,
-            runfile_log=RUNFILE_LOG,
             name=name,
             name_tag=name_tag,
             geometry="opt_mol",
@@ -158,8 +147,6 @@ class Optimization(Firework):
             smiles=smiles,
             name=name,
             name_tag=name_tag,
-            path=PATH,
-            runfile_log=RUNFILE_LOG,
             geometry=geometry,
             geom_from_smiles=kwargs.pop("geom_from_smiles", geometry == "opt_mol"),
             type=_type,
@@ -192,8 +179,6 @@ class Energy(Firework):
             smiles=smiles,
             name=name,
             name_tag=name_tag,
-            path=PATH,
-            runfile_log=RUNFILE_LOG,
             geometry=geometry,
             type=_type,
             subtype=species,
@@ -229,8 +214,6 @@ class TDDFT(Firework):
             smiles=smiles,
             name=name,
             name_tag=name_tag,
-            path=PATH,
-            runfile_log=RUNFILE_LOG,
             type="tddft",
             geometry="{}{}".format(geom_prefix, species),
             prefix=tddft_prefix + species,

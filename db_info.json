@@ -1,0 +1,44 @@
+{
+    "expflow":
+        {
+            "host": "mongodb://10.33.30.17:23771/expflow",
+            "database": "expflow"
+        },
+    "ui":
+        {
+            "host": "mongodb://rdu230:red0xfl0w@10.33.30.17:23771/ui",
+            "database": "ui"
+        },
+    "frontend":
+        {
+            "host": "mongodb://rdu230:redoxfl0w@10.33.30.17:23771/frontend",
+            "database": "frontend"
+        },
+    "backend":
+        {
+            "host": "mongodb://rdu230:red0xfl0w@10.33.30.17:23771/backend",
+            "database": "backend"
+        },
+    "random":
+        {
+            "host": "mongodb://10.33.30.17:23771/random",
+            "database": "random"
+        },
+    "fireworks":
+        {
+            "host": "mongodb://rdu230:red0xfl0w@10.33.30.133:29129/",
+            "database": "fireworks"
+        },
+    "nlp":
+        {
+            "host": "mongodb://readwrite:readWritenlp@10.33.30.17:23771/nlp?retryWrites=true&w=majority",
+            "database": "nlp"
+        },
+    "robotics_backend":
+        {
+            "host": "mongodb://172.19.52.130:27017/",
+            "port": "27017",
+            "database": "backend"
+        }
+}
+

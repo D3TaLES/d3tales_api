@@ -2,12 +2,13 @@ import uuid
 import json
 import math
 import warnings
+import numpy as np
 import pandas as pd
 import dateutil.parser
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 
-from d3tales_api.Processors.utils import *
+from d3tales_api.Processors.utils import break_scan_data, convert_list_units
 from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.Calculators.plotters import CVPlotter, CAPlotter
 from d3tales_api.Calculators.calculators import CVDescriptorCalculator, CAResistanceCalculator

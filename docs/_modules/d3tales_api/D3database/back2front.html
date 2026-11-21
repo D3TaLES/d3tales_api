@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -77,12 +78,32 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pubchempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pcp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chem</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.database_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">db_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem.AllChem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeMolVolume</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.sites</span><span class="w"> </span><span class="kn">import</span> <span class="n">Site</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CVChargeTransferCalculator</span><span class="p">,</span>
+    <span class="n">CVChargeTransferCalculatorMicro</span><span class="p">,</span>
+    <span class="n">CVDiffusionCalculator</span><span class="p">,</span>
+    <span class="n">CVDiffusionCalculatorMicro</span><span class="p">,</span>
+    <span class="n">EnergyDiffCalc</span><span class="p">,</span>
+    <span class="n">RMSDCalc</span><span class="p">,</span>
+    <span class="n">RedoxPotentialCalc</span><span class="p">,</span>
+    <span class="n">RelaxationCalc</span><span class="p">,</span>
+    <span class="n">ReorganizationCalc</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.ocelot_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">pmgmol_to_rdmol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unit_conversion</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.d3database</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBconnector</span><span class="p">,</span> <span class="n">FrontDB</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.info_from_smiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateMolInfo</span>
 

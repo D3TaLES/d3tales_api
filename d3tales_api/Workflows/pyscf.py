@@ -40,7 +40,7 @@ from copy import deepcopy
 
 import numpy as np
 from six import add_metaclass
-from atomate.utils.utils import get_logger, env_chk
+from atomate.utils.utils import get_logger
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from pyscf import gto, scf, dft, lib
 import pyscf
@@ -49,7 +49,6 @@ from d3tales_api.Workflows.utils import (
     ElectronicStructureTaskMixin,
     Molecule,
     Site,
-    get_data_store,
     get_db_geom,
     get_groundState,
     get_local_output_dir,
@@ -67,6 +66,7 @@ from d3tales_api.Workflows.utils import (
     start_from_smiles
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
+from d3tales_api.Workflows.runtime import WorkerRuntime
 
 logger = get_logger(__name__)
 cpus = [multiprocessing.cpu_count() if multiprocessing.cpu_count() < 16 else 16]
@@ -525,14 +525,15 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
 
     def setup_files(self, fw_spec, calc_type='opt'):
         # get parameters
-        self.data_store = get_data_store(self, fw_spec)
-        name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
+        self.worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="pyscf")
+        self.data_store = self.worker_runtime.data_store
+        name_tag = spec_or_task(self, fw_spec, "name_tag", "")
         self.full_name = name_tag + self['name']
         self.calc_name = self['name']
         self.paramset = deepcopy(self["paramset"])
-        self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
-        self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
-        self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
+        self.identifier = spec_or_task(self, fw_spec, "identifier", uuid.uuid4().__str__())
+        self.smiles = spec_or_task(self, fw_spec, "smiles")
+        self.runfile_log = self.worker_runtime.runfile_log
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
@@ -541,7 +542,7 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
         self.density_fit = spec_or_task(self, fw_spec, "density_fit", False)
 
-        self.pyscf_file_name = fw_spec.get("pyscf_file_name") or self.get("pyscf_file_name") or "pyscf"
+        self.pyscf_file_name = spec_or_task(self, fw_spec, "pyscf_file_name", "pyscf")
 
         # set prefix for the file names
         if self.get("prefix"):
@@ -552,8 +553,8 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
             prefix = name_tag + calc_type + "_mol"
 
         # get calc directory
-        if self.get("path", ):
-            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier,
+        if self.worker_runtime.path:
+            self.calc_dir = "{}/{}/{}".format(self.worker_runtime.path, self.identifier,
                                               self.pyscf_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
@@ -595,8 +596,8 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
 
     def setup_calc(self, fw_spec, calc_type='opt'):
         self.setup_files(fw_spec, calc_type=calc_type)
-        name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
-        self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
+        name_tag = spec_or_task(self, fw_spec, "name_tag", "")
+        self.solvent = spec_or_task(self, fw_spec, "solvent")
         self.gs_charge = spec_or_task(self, fw_spec, "gs_charge")
         if self.gs_charge is None:
             self.gs_charge = get_groundState(self.identifier, self.smiles, data_store=self.data_store)
@@ -609,7 +610,7 @@ class PySCFBase(ElectronicStructureTaskMixin, FiretaskBase):
             run_from_com = spec_or_task(self, fw_spec, "run_from_xyz", False)
 
         # get iop string (omega value) for the calculation: PySCF-tuned omega first, then the data store's
-        self.iop_str = fw_spec.get("iop_str", ) or self.get("iop_str", )
+        self.iop_str = spec_or_task(self, fw_spec, "iop_str")
         if not self.iop_str and self.use_iop:
             tuned_w = get_pyscf_omega(self.identifier, data_store=self.data_store, store_dir=self.store_dir)
             if tuned_w:
@@ -926,25 +927,28 @@ class RunPySCFWtuning(FiretaskBase):
 
     def run_task(self, fw_spec):
         # get parameters
-        data_store = get_data_store(self, fw_spec)
-        path = env_chk(self.get('path'), fw_spec)
-        runfile_log = env_chk(self.get('runfile_log'), fw_spec)
+        worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="pyscf")
+        data_store = worker_runtime.data_store
+        path = worker_runtime.path
+        runfile_log = worker_runtime.runfile_log
+        if not path:
+            raise ValueError("A worker path is required for PySCF w-tuning")
         paramset = deepcopy(self["paramset"])
-        identifier = fw_spec.get("identifier", ) or self.get("identifier")
-        smiles = fw_spec.get("smiles", ) or self.get("smiles")
+        identifier = spec_or_task(self, fw_spec, "identifier")
+        smiles = spec_or_task(self, fw_spec, "smiles")
         gs_charge = spec_or_task(self, fw_spec, "gs_charge")
         if gs_charge is None:
             gs_charge = get_groundState(identifier, smiles, data_store=data_store)
         gs_spin = spec_or_task(self, fw_spec, "gs_spin")
         if gs_spin is None:
             gs_spin = get_groundState(identifier, smiles, prop='spin', data_store=data_store)
-        pyscf_file_name = fw_spec.get("pyscf_file_name") or self.get("pyscf_file_name") or "pyscf"
+        pyscf_file_name = spec_or_task(self, fw_spec, "pyscf_file_name", "pyscf")
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, pyscf_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
         check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
         submit = spec_or_task(self, fw_spec, "submit", True)  # API parity; PySCF results are never uploaded
         restricted = spec_or_task(self, fw_spec, "restricted", True)
-        solvent = fw_spec.get("solvent", ) or self.get("solvent", )
+        solvent = spec_or_task(self, fw_spec, "solvent")
 
         paramset.charge, paramset.multiplicity = resolve_charge_multiplicity(
             self, paramset, fw_spec, gs_charge, gs_spin

@@ -47,6 +47,9 @@ class WtuningJob:
     def __init__(self, func='uLC-wHPBE', basis='def2tzvp', name='', nproc=16, mem=50,
                  n_charge=0, n_spin=1, wdir='./', rps=SUGGESTED_route_parameters, scheme='Jh', wbmin=0.05, wbmax=0.5,
                  abmin=0.05, abmax=0.5, gauss_cmd='g16'):
+        valid_schemes = {'Jh', 'Jl', 'J2', 'Jn2', 'O2'}
+        if scheme not in valid_schemes:
+            raise ValueError("scheme must be one of {}".format(", ".join(sorted(valid_schemes))))
 
         self.name = name
         self.start_time = dt.datetime.now()
@@ -339,24 +342,23 @@ class WtuningJob:
         """
         if self.scheme == 'Jh':
             IP = self.n_e - self.c_e
-            Jh = abs(self.n_homo - IP)
+            C = abs(self.n_homo - IP)
         elif self.scheme == 'Jl':
             EA = self.n_e - self.a_e
-            Jl = abs(self.n_lumo + EA)
+            C = abs(self.n_lumo + EA)
         elif self.scheme == 'J2':
             IP = self.n_e - self.c_e
             EA = self.n_e - self.a_e
-            J2 = (self.n_homo - IP) ** 2 + (self.a_homo + EA) ** 2
+            C = (self.n_homo - IP) ** 2 + (self.a_homo + EA) ** 2
         elif self.scheme == 'Jn2':
             IP = self.n_e - self.c_e
             Jh = abs(self.n_homo - IP)
             EA = self.n_e - self.a_e
             Jl = abs(self.n_lumo + EA)
-            Jn2 = Jh ** 2 + Jl ** 2
+            C = Jh ** 2 + Jl ** 2
         elif self.scheme == 'O2':
-            O2 = (self.n_homo - self.c_lumo) ** 2 + (self.n_lumo - self.a_homo) ** 2
-        C = eval(self.scheme)
-        self.log_add({'C':C})
+            C = (self.n_homo - self.c_lumo) ** 2 + (self.n_lumo - self.a_homo) ** 2
+        self.log_add({'C': C})
         return C
 
     def omega_wtune(self, omega_in):

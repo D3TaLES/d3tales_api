@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="d3tales_api package" href="d3tales_api.html" />
+    <link rel="next" title="Package streamlining changes" href="Package-Streamlining.html" />
     <link rel="prev" title="Calculators" href="Calculators.html" /> 
 </head>
 
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-and-configuring-workers">Installing and configuring workers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#config-directory">Config Directory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gaussian-gpu-jobs">Gaussian GPU jobs</a></li>
@@ -60,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#launch-jobs">Launch jobs</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -94,16 +96,17 @@ for the high-throughput <a class="reference external" href="https://d3tales.as.u
 that populated the <a class="reference external" href="https://d3tales.as.uky.edu/database">D<sup>3</sup>TaLES database</a>.</p>
 <section id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h2>
-<p>Important Fireworks-based modules include:</p>
+<p>Important FireWorks-based modules include:</p>
 <ul class="simple">
 <li><p>Calculation-specific modules for <strong>FireTasks</strong>:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">Initialize</span></code>: FireTasks for initialize molecules and getting basic molecular information</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Gaussian</span></code>: FireTasks for Density Functional Theory calculations with <a class="reference external" href="https://gaussian.com/">Gaussian</a></p></li>
-<li><p><em>In development</em> <code class="docutils literal notranslate"><span class="pre">Gromacs</span></code>: FireTasks for Molecular Dynamics simulations with <a class="reference external" href="https://www.gromacs.org/">Gromacs</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Gaussian</span></code>: FireTasks for calculations with <a class="reference external" href="https://gaussian.com/">Gaussian</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Orca</span></code>: FireTasks for calculations with <a class="reference external" href="https://www.orcasoftware.de/">ORCA</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyscf</span></code>: FireTasks for calculations with <a class="reference external" href="https://pyscf.org/">PySCF</a></p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">D3TaLES_FW</span></code>: defines all <strong>Fireworks</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fireworks</span></code>: defines engine-aware <strong>Fireworks</strong> and routes them with FireWorks worker categories</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wf_writer</span></code>: defines <strong>Workflows</strong></p></li>
 </ul>
 <p>The other modules are not of much importance for upper-level use because their functionalities are simply imported
@@ -111,8 +114,51 @@ by the Fireworks based modules. But, to summarize, these modules include:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ParamSet</span></code>: translates dictionary-based calculation parameters (e.g., functional, basis set, etc.) for use in workflow</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wtuning</span></code>: module adapted from the <a class="reference external" href="https://caer200.github.io/ocelot_api/">OCELOT API</a> for performing IP fitting</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: utility functions and environment variables</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: shared chemistry, geometry, storage, and result helpers</p></li>
 </ul>
+<p>Gromacs is an empty placeholder and is not a supported workflow engine. VASP
+parameter classes are deprecated; neither VASP nor ZINDO is registered in the
+current workflow factory.</p>
+</section>
+<section id="installing-and-configuring-workers">
+<h2>Installing and configuring workers<a class="headerlink" href="#installing-and-configuring-workers" title="Link to this heading"></a></h2>
+<p>Install the engine-neutral workflow dependencies with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"d3tales_api[workflows]"</span>
+</pre></div>
+</div>
+<p>For the D3TaLES-backed data store, add the database dependencies with
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;d3tales_api[workflows,database]&quot;</span></code>. The <code class="docutils literal notranslate"><span class="pre">local</span></code> data store does
+not require database credentials or network access.</p>
+<p>PySCF is optional: install it with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;d3tales_api[workflows,pyscf]&quot;</span></code>.
+Gaussian and ORCA executables are provided by the compute environment rather
+than pip.</p>
+<p>The workflow uses FireWorks’ existing separation of concerns:</p>
+<ul class="simple">
+<li><p>Chemistry and calculation inputs are stored in the parameter set and task
+arguments, then carried between Fireworks in <code class="docutils literal notranslate"><span class="pre">fw_spec</span></code> (for example charge,
+spin, solvent, and geometry).</p></li>
+<li><p>Engine selection sets each calculation Firework’s <code class="docutils literal notranslate"><span class="pre">_category</span></code>; FireWorks
+schedules it on a worker with that category.</p></li>
+<li><p>Worker-specific paths, executable names, and Gaussian CPU/GPU resources are
+referenced with <code class="docutils literal notranslate"><span class="pre">&gt;&gt;environment_key&lt;&lt;</span></code> placeholders and resolved from the
+worker’s <code class="docutils literal notranslate"><span class="pre">_fw_env</span></code>. Do not put node-specific resources in the chemistry
+parameter file.</p></li>
+</ul>
+<p>For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">env</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/scratch/calculations</span>
+<span class="w">  </span><span class="nt">runfile_log</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/scratch/runfiles.log</span>
+<span class="w">  </span><span class="nt">g16_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/g16</span>
+<span class="w">  </span><span class="nt">gaussian_gpu_cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"0-1=0,2"</span>
+<span class="w">  </span><span class="nt">gaussian_cpu_list</span><span class="p">:</span><span class="w"> </span><span class="s">"0-3"</span>
+<span class="w">  </span><span class="nt">gaussian_memory</span><span class="p">:</span><span class="w"> </span><span class="s">"48GB"</span>
+<span class="w">  </span><span class="nt">gaussian_nprocshared</span><span class="p">:</span><span class="w"> </span><span class="s">"4"</span>
+<span class="w">  </span><span class="nt">orca_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/orca</span>
+</pre></div>
+</div>
+<p>Worker environment values can differ by worker without changing the saved
+workflow or scientific parameters. Explicit workflow-spec values override
+task arguments; missing optional resource values retain engine defaults.</p>
 </section>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
@@ -203,7 +249,7 @@ geometry from SMILES when none was supplied.</p>
 <span class="n">param_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">'parameter_file.json'</span><span class="p">)</span>
 
 <span class="c1"># Establish calculation parameters from parm_file json file</span>
-<span class="n">paramset</span> <span class="o">=</span> <span class="n">GausParamSet</span><span class="p">()</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">param_file</span><span class="p">)</span>
+<span class="n">paramset</span> <span class="o">=</span> <span class="n">GausParamSet</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">param_file</span><span class="p">)</span>
 
 <span class="c1"># Define Fireworks Workflow </span>
 <span class="n">wf</span> <span class="o">=</span> <span class="n">d3tales_wf</span><span class="p">(</span><span class="n">paramset</span><span class="p">,</span> <span class="n">smiles</span><span class="o">=</span><span class="s2">"CCCC"</span><span class="p">,</span> <span class="n">wtune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="s1">'acetonitrile'</span><span class="p">)</span>
@@ -225,7 +271,7 @@ geometry from SMILES when none was supplied.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Calculators.html" class="btn btn-neutral float-left" title="Calculators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="d3tales_api.html" class="btn btn-neutral float-right" title="d3tales_api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Package-Streamlining.html" class="btn btn-neutral float-right" title="Package streamlining changes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

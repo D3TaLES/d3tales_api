@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -74,14 +75,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Workflows.ParamSet</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">monty.json</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSONable</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">monty.json</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSONable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">monty.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadfn</span>
 
 
 <div class="viewcode-block" id="sett">
 <a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.sett">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sett</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">obj</span> <span class="o">==</span> <span class="p">{}:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -92,6 +95,14 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_calculation_parameters</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">calculation</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calculation</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">calculation</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">calculation</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid or reserved calculation name: </span><span class="si">{!r}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">calculation</span><span class="p">))</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">calculation</span><span class="p">,</span> <span class="n">sett</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">()))</span>
+
+
 <div class="viewcode-block" id="GaussianParameters">
 <a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GaussianParameters">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GaussianParameters</span><span class="p">(</span><span class="n">MSONable</span><span class="p">):</span>
@@ -99,11 +110,11 @@
 <a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GaussianParameters.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multiplicity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">functional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link0_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">route_parameters</span> <span class="o">=</span> <span class="n">route_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_parameters</span> <span class="o">=</span> <span class="n">input_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">link0_parameters</span> <span class="o">=</span> <span class="n">link0_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">charge</span> <span class="ow">or</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">=</span> <span class="n">multiplicity</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">route_parameters</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">route_parameters</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">route_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_parameters</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">input_parameters</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">input_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link0_parameters</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">link0_parameters</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">link0_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">charge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">multiplicity</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">multiplicity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basis_set</span> <span class="o">=</span> <span class="n">basis_set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">functional</span> <span class="o">=</span> <span class="n">functional</span></div>
 </div>
@@ -117,8 +128,7 @@
 <a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.GausParamSet.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">""</span>
-        <span class="k">for</span> <span class="n">calc</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">exec</span><span class="p">(</span><span class="s2">"self.</span><span class="si">{}</span><span class="s2"> = sett(params, GaussianParameters())"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">calc</span><span class="p">))</span></div>
+        <span class="n">_set_calculation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">GaussianParameters</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GausParamSet.as_dict">
@@ -157,9 +167,14 @@
 <div class="viewcode-block" id="VaspParamSet.__init__">
 <a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParamSet.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"VaspParamSet is not supported by the current workflow registry and will be removed "</span>
+            <span class="s2">"in a future release."</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">""</span>
-        <span class="k">for</span> <span class="n">calc</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">exec</span><span class="p">(</span><span class="s2">"self.</span><span class="si">{}</span><span class="s2"> = sett(params, VaspParameters())"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">calc</span><span class="p">))</span></div>
+        <span class="n">_set_calculation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">VaspParameters</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VaspParamSet.from_json">

@@ -7,8 +7,8 @@ data processing, database access functions, and property calculators.
 
 ## [Website with full documentation for the D<sup>3</sup>TaLES API can be found here](https://d3tales.github.io/d3tales_api/).  
 
-## Modules 
-This API contains three modules: 
+## Modules
+The API keeps four high-level modules:
 * `D3database`: Interface for interacting with the D<sup>3</sup>TaLES databases. Includes 
 queries, data insertion with validation, and a REST API interface.
 * `Processors`: Processing code for extracting data from computational and experimental
@@ -16,21 +16,25 @@ data files as well as [ExpFlow](https://d3tales.as.uky.edu/expflow) run objects.
 * `Calculators`: Property calculators and plotters for cyclic voltammetry
 * `Workflows`: Fireworks workflow for the D<sup>3</sup>TaLES databases high throughput workflows 
 
-## Installation 
+## Installation
 
-### PIP Install
-This module can be installed with pip install by running the following code: 
+Install only the dependencies needed by the part of the API you use:
 
 ```bash
-pip install d3tales_api
+pip install "d3tales_api[workflows]"
+pip install "d3tales_api[workflows,database]"
+pip install "d3tales_api[calculators,processors,database]"
 ```
 
->**Installation Notes**: 
-> * If your python version is greater than 3.8, then you will need to install 
->[pymatgen](https://pymatgen.org/) directly into the environment you are working in. It is best to use 
->[conda](https://anaconda.org/conda-forge/pymatgen) for this.
-> * If you plan to use any NLP parsers, you will need to install [ChemDataExtractor2](https://github.com/CambridgeMolecularEngineering/chemdataextractor2) 
-> with `pip install ChemDataExtractor2`. Dependency conflicts make it necessary to install separately.  
+`[workflows]` supports local workflows; add `[database]` when using the D3TaLES
+REST API or MongoDB. For all standard runtime dependencies and tests, use
+`pip install "d3tales_api[all,test]"`. PySCF remains an optional Python
+dependency (`pip install "d3tales_api[workflows,pyscf]"`). NLP support can be
+added with `pip install "d3tales_api[nlp]"`; ChemDataExtractor2 may need a
+separate installation because of its dependency constraints. The existing
+`requirements.txt` remains available for legacy environment setup. Gaussian
+and ORCA executables are installed and configured separately on FireWorks
+workers.
 
 ### Environment Variables
 Note that many operation require a `DB_INFO_FILE` environment variable. This environment variable

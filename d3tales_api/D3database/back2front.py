@@ -1,12 +1,32 @@
 import copy
 import urllib
 import hashlib
+import json
+import math
+import warnings
+
+import numpy as np
 import pubchempy as pcp
+from rdkit import Chem
 
 from d3tales_api.database_info import db_info
 from rdkit.Chem.AllChem import ComputeMolVolume
 from rdkit.Chem import MolFromSmiles, MolToSmiles
-from d3tales_api.Calculators.calculators import *
+from pymatgen.core.sites import Site
+from pymatgen.core.structure import Molecule
+from d3tales_api.Calculators.calculators import (
+    CVChargeTransferCalculator,
+    CVChargeTransferCalculatorMicro,
+    CVDiffusionCalculator,
+    CVDiffusionCalculatorMicro,
+    EnergyDiffCalc,
+    RMSDCalc,
+    RedoxPotentialCalc,
+    RelaxationCalc,
+    ReorganizationCalc,
+)
+from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
+from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.D3database.d3database import DBconnector, FrontDB
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 

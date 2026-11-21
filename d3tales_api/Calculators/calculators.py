@@ -1,5 +1,10 @@
-from d3tales_api.Calculators.utils import *
-from d3tales_api.Calculators.utils import periodictable
+from d3tales_api.Calculators.utils import (
+    get_electrode_potential,
+    periodictable,
+    rgetattr,
+    rgetkeys,
+    unit_conversion,
+)
 import cclib
 import abc
 import json

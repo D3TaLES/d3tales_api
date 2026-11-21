@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -136,10 +137,6 @@
 </li>
         <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.schema2class.Schema2Class.__init__">(d3tales_api.D3database.schema2class.Schema2Class method)</a>
 </li>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.__init__">(d3tales_api.D3database.workflow_adapter.DBconnector method)</a>
-</li>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.__init__">(d3tales_api.D3database.workflow_adapter.RESTAPI method)</a>
-</li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.__init__">(d3tales_api.Processors.expflow_parser.ProcessExpFlowObj method)</a>
 </li>
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.info_from_smiles.GenerateMolInfo.__init__">(d3tales_api.Processors.info_from_smiles.GenerateMolInfo method)</a>
@@ -183,6 +180,8 @@
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFSettings.__init__">(d3tales_api.Workflows.pyscf.PySCFSettings method)</a>
 </li>
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFWtuningJob.__init__">(d3tales_api.Workflows.pyscf.PySCFWtuningJob method)</a>
+</li>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.__init__">(d3tales_api.Workflows.runtime.WorkerRuntime method)</a>
 </li>
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.__init__">(d3tales_api.Workflows.wtuning.WtuningJob method)</a>
 </li>
@@ -317,10 +316,10 @@
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.DOI2Front.check_extr_props">check_extr_props() (d3tales_api.D3database.back2front.DOI2Front method)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.check_id">check_id() (d3tales_api.D3database.d3database.ParamsDB method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.ParamsDB.check_id">check_id() (d3tales_api.D3database.d3database.ParamsDB method)</a>
+</li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB.check_if_in_db">check_if_in_db() (d3tales_api.D3database.d3database.FrontDB method)</a>
 </li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.ocelot_transform.chiral_stereo_check">chiral_stereo_check() (in module d3tales_api.Calculators.ocelot_transform)</a>
@@ -354,17 +353,9 @@
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.utils.convert_list_units">convert_list_units() (in module d3tales_api.Processors.utils)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.cookies">cookies (d3tales_api.D3database.restapi.RESTAPI property)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.cookies">(d3tales_api.D3database.workflow_adapter.RESTAPI property)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.csrftoken">csrftoken (d3tales_api.D3database.restapi.RESTAPI property)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.csrftoken">(d3tales_api.D3database.workflow_adapter.RESTAPI property)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front">CV2Front (class in d3tales_api.D3database.back2front)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.cv_meta_calcs">cv_meta_calcs() (d3tales_api.D3database.back2front.CV2Front method)</a>
@@ -396,19 +387,47 @@
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.plotters.D3Plotter">D3Plotter (class in d3tales_api.Calculators.plotters)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_ground_state">d3t_get_ground_state() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_ground_state">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_init_structure">d3t_get_init_structure() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_init_structure">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_omega">d3t_get_omega() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_omega">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation">d3t_get_raw_computation() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_raw_computation">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_smiles">d3t_get_smiles() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_get_smiles">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_register_molecule">d3t_register_molecule() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_register_molecule">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_submit_calculation">d3t_submit_calculation() (in module d3tales_api.D3database.workflow_adapter)</a>
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.d3tales_utils.d3t_submit_calculation">(in module d3tales_api.Workflows.d3tales_utils)</a>
 </li>
+      </ul></li>
       <li>
     d3tales_api
 
@@ -542,6 +561,8 @@
         <li><a href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_dft">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.Processors.parser_echem
 
@@ -549,8 +570,6 @@
         <li><a href="d3tales_api.Processors.html#module-d3tales_api.Processors.parser_echem">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     d3tales_api.Processors.parser_ir
 
@@ -643,6 +662,13 @@
 </li>
       </ul></li>
       <li>
+    d3tales_api.Workflows.runtime
+
+      <ul>
+        <li><a href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.runtime">module</a>
+</li>
+      </ul></li>
+      <li>
     d3tales_api.Workflows.utils
 
       <ul>
@@ -675,16 +701,14 @@
         <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_echem.ProcessPotBase.data_dict">(d3tales_api.Processors.parser_echem.ProcessPotBase property)</a>
 </li>
       </ul></li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.data_store">data_store (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
+</li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin.date_recorded">date_recorded (d3tales_api.Processors.parser_uvvis.ParseExcelMixin property)</a>
 </li>
       <li><a href="d3tales_api.html#d3tales_api.database_info.db_info">db_info() (in module d3tales_api.database_info)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector">DBconnector (class in d3tales_api.D3database.d3database)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector">(class in d3tales_api.D3database.workflow_adapter)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.DeltaGSolvCalc">DeltaGSolvCalc (class in d3tales_api.Calculators.calculators)</a>
 </li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.calculators.D3Calculator.description">description() (d3tales_api.Calculators.calculators.D3Calculator method)</a>
@@ -735,6 +759,8 @@
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.engine_name">(d3tales_api.Workflows.pyscf.PySCFBase attribute)</a>
 </li>
       </ul></li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.engine_options">engine_options (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
+</li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.existing_data">existing_data() (d3tales_api.Workflows.utils.ElectronicStructureTaskMixin method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.Expflow">Expflow (class in d3tales_api.D3database.d3database)</a>
@@ -781,6 +807,8 @@
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.ParamSet.VaspParamSet.from_json">(d3tales_api.Workflows.ParamSet.VaspParamSet static method)</a>
 </li>
       </ul></li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.from_task">from_task() (d3tales_api.Workflows.runtime.WorkerRuntime class method)</a>
+</li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.FrontDB">FrontDB (class in d3tales_api.D3database.d3database)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.frontier_orbitals">frontier_orbitals() (in module d3tales_api.Workflows.pyscf)</a>
@@ -836,17 +864,9 @@
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_central_dihed">get_central_dihed() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.get_client">get_client() (d3tales_api.D3database.restapi.RESTAPI method)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_client">(d3tales_api.D3database.workflow_adapter.RESTAPI method)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_collection">get_collection() (d3tales_api.D3database.d3database.DBconnector method)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_collection">(d3tales_api.D3database.workflow_adapter.DBconnector method)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExpFlowObj.get_concentration">get_concentration() (d3tales_api.Processors.expflow_parser.ProcessExpFlowObj method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.get_conditions">get_conditions() (d3tales_api.D3database.back2front.CV2Front method)</a>
@@ -858,11 +878,7 @@
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_data_store">get_data_store() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.DBconnector.get_database">get_database() (d3tales_api.D3database.d3database.DBconnector method)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_database">(d3tales_api.D3database.workflow_adapter.DBconnector method)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_db_geom">get_db_geom() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.expflow_parser.ProcessExperimentRun.get_electrode">get_electrode() (d3tales_api.Processors.expflow_parser.ProcessExperimentRun method)</a>
@@ -873,10 +889,10 @@
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin.get_freq_dicts">get_freq_dicts() (d3tales_api.Processors.parser_dft.ProcessCCLIBMixin static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.BackDB.get_geometry">get_geometry() (d3tales_api.D3database.d3database.BackDB method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_groundState">get_groundState() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.get_hash_id">get_hash_id() (in module d3tales_api.Workflows.utils)</a>
@@ -910,11 +926,7 @@
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.get_pmgmol">get_pmgmol() (d3tales_api.Processors.parser_dft.ProcessGausLog static method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.get_process">get_process() (d3tales_api.D3database.restapi.RESTAPI method)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_process">(d3tales_api.D3database.workflow_adapter.RESTAPI method)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data">get_prop_data() (d3tales_api.D3database.restapi.D3talesData method)</a>
 </li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.D3talesData.get_prop_data_raw">get_prop_data_raw() (d3tales_api.D3database.restapi.D3talesData method)</a>
@@ -1069,6 +1081,8 @@
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.ElectronicStructureTaskMixin.local_key">local_key() (d3tales_api.Workflows.utils.ElectronicStructureTaskMixin method)</a>
 </li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.local_output_dir">local_output_dir (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
+</li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.local_record">local_record() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.wtuning.WtuningJob.log_add">log_add() (d3tales_api.Workflows.wtuning.WtuningJob method)</a>
@@ -1166,6 +1180,8 @@
         <li><a href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.ParamSet">d3tales_api.Workflows.ParamSet</a>
 </li>
         <li><a href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.pyscf">d3tales_api.Workflows.pyscf</a>
+</li>
+        <li><a href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.runtime">d3tales_api.Workflows.runtime</a>
 </li>
         <li><a href="d3tales_api.Workflows.html#module-d3tales_api.Workflows.utils">d3tales_api.Workflows.utils</a>
 </li>
@@ -1286,6 +1302,8 @@
       </ul></li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_uvvis.ParseExcelMixin">ParseExcelMixin (class in d3tales_api.Processors.parser_uvvis)</a>
 </li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.path">path (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
+</li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.d3database.D3Database.path_insert">path_insert() (d3tales_api.D3database.d3database.D3Database method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessGausLog.pcm_info">pcm_info (d3tales_api.Processors.parser_dft.ProcessGausLog property)</a>
@@ -1310,6 +1328,8 @@
       </ul></li>
       <li><a href="d3tales_api.Calculators.html#d3tales_api.Calculators.ocelot_transform.pmgmol_to_rdmol">pmgmol_to_rdmol() (in module d3tales_api.Calculators.ocelot_transform)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.GaussianBase.post_job">post_job() (d3tales_api.Workflows.Gaussian.GaussianBase method)</a>
 
       <ul>
@@ -1318,14 +1338,8 @@
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.post_job">(d3tales_api.Workflows.pyscf.PySCFBase method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI.post_process">post_process() (d3tales_api.D3database.restapi.RESTAPI method)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.post_process">(d3tales_api.D3database.workflow_adapter.RESTAPI method)</a>
 </li>
-      </ul></li>
       <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.back2front.CV2Front.process">process() (d3tales_api.D3database.back2front.CV2Front method)</a>
 </li>
       <li><a href="d3tales_api.Processors.html#d3tales_api.Processors.parser_dft.ProcessCCLIBMixin">ProcessCCLIBMixin (class in d3tales_api.Processors.parser_dft)</a>
@@ -1422,12 +1436,14 @@
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.resolve_charge_multiplicity">resolve_charge_multiplicity() (in module d3tales_api.Workflows.utils)</a>
 </li>
-      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI">RESTAPI (class in d3tales_api.D3database.restapi)</a>
-
-      <ul>
-        <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI">(class in d3tales_api.D3database.workflow_adapter)</a>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_data_store">resolve_data_store() (in module d3tales_api.Workflows.runtime)</a>
 </li>
-      </ul></li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_runtime_field">resolve_runtime_field() (in module d3tales_api.Workflows.runtime)</a>
+</li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.resolve_worker_value">resolve_worker_value() (in module d3tales_api.Workflows.runtime)</a>
+</li>
+      <li><a href="d3tales_api.D3database.html#d3tales_api.D3database.restapi.RESTAPI">RESTAPI (class in d3tales_api.D3database.restapi)</a>
+</li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.result_data_store">result_data_store (d3tales_api.Workflows.pyscf.PySCFBase attribute)</a>
 
       <ul>
@@ -1514,6 +1530,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.run_tddft">run_tddft() (in module d3tales_api.Workflows.pyscf)</a>
 </li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.runfile_log">runfile_log (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
+</li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.Gaussian.RunGaussianEnergy">RunGaussianEnergy (class in d3tales_api.Workflows.Gaussian)</a>
 
       <ul>
@@ -1596,9 +1614,11 @@
         <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.PySCFBase.setup_files">(d3tales_api.Workflows.pyscf.PySCFBase method)</a>
 </li>
       </ul></li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.sites_of">sites_of() (in module d3tales_api.Workflows.pyscf)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.sites_of">sites_of() (in module d3tales_api.Workflows.pyscf)</a>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime.software">software (d3tales_api.Workflows.runtime.WorkerRuntime attribute)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.solv_wf">solv_wf() (in module d3tales_api.Workflows.wf_writer)</a>
 </li>
@@ -1608,7 +1628,7 @@
 </li>
       <li><a href="d3tales_api.html#d3tales_api.database_info.source_groups">source_groups() (in module d3tales_api.database_info)</a>
 </li>
-      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.spec_or_task">spec_or_task() (in module d3tales_api.Workflows.utils)</a>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.spec_or_task">spec_or_task() (in module d3tales_api.Workflows.runtime)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.wf_writer.specialized_job">specialized_job() (in module d3tales_api.Workflows.wf_writer)</a>
 </li>
@@ -1694,6 +1714,10 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.worker_task_kwargs">worker_task_kwargs() (in module d3tales_api.Workflows.runtime)</a>
+</li>
+      <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.runtime.WorkerRuntime">WorkerRuntime (class in d3tales_api.Workflows.runtime)</a>
+</li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.utils.write_json">write_json() (in module d3tales_api.Workflows.utils)</a>
 </li>
       <li><a href="d3tales_api.Workflows.html#d3tales_api.Workflows.pyscf.write_molden">write_molden() (in module d3tales_api.Workflows.pyscf)</a>

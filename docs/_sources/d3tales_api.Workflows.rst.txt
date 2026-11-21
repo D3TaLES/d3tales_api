@@ -68,6 +68,14 @@ d3tales\_api.Workflows.pyscf module
    :undoc-members:
    :show-inheritance:
 
+d3tales\_api.Workflows.runtime module
+-------------------------------------
+
+.. automodule:: d3tales_api.Workflows.runtime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 d3tales\_api.Workflows.utils module
 -----------------------------------
 

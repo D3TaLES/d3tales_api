@@ -1,0 +1,72 @@
+# Package streamlining changes
+
+The package keeps its four public areas—`Workflows`, `Processors`,
+`Calculators`, and `D3database`—but separates workflow chemistry, engine
+selection, worker resources, and persistence more explicitly.
+
+## FireWorks configuration
+
+Chemistry remains in parameter sets and FireTask arguments. FireWorks passes
+scientific state, including charge, multiplicity, solvent, and geometry, through
+`fw_spec`. The selected calculation engine is expressed by the Firework
+`_category`; FireWorks then schedules it on a matching worker.
+
+Worker-specific values use FireWorks' `>>key<<` environment placeholders and
+are resolved from `_fw_env` when a task runs. For example, a workflow can be
+saved without embedding machine-specific Gaussian resources:
+
+```yaml
+env:
+  path: /scratch/calculations
+  g16_cmd: /opt/gaussian/g16
+  gaussian_gpu_cpu: "0-1=0,2"
+  gaussian_cpu_list: "0-3"
+```
+
+In Python, select the engine and data store independently of its worker:
+
+```python
+wf = d3tales_wf(
+    paramset,
+    smiles="O",
+    software="gaussian",
+    data_store="local",
+)
+```
+
+`Workflows.runtime.WorkerRuntime` centralizes resolution and validation for
+storage selection, paths, logging, executables, and Gaussian resource settings.
+Charge, spin, geometry, and other molecular parameters are not stored in this
+worker configuration.
+
+## Boundaries and dependencies
+
+Database client classes now have one canonical implementation in
+`D3database`; `workflow_adapter` is a lazy workflow-facing boundary that avoids
+loading MongoDB or HTTP clients for local workflow execution. PySCF task imports
+are lazy and PySCF is an optional dependency.
+
+Install dependencies by use case, for example:
+
+```bash
+pip install "d3tales_api[workflows]"
+pip install "d3tales_api[workflows,database]"
+```
+
+The project metadata, optional dependency groups, and pytest configuration are
+consolidated in `pyproject.toml`. `requirements.txt` remains for existing
+environments.
+
+Broad wildcard imports and dynamic `eval`-based workflow parameter selection
+were replaced with explicit imports and lookups. The unused `VaspParamSet` is
+deprecated rather than removed immediately; Gromacs, VASP, and ZINDO are not
+registered as supported workflow engines.
+
+## Chemistry and graph correctness
+
+The workflow builders continue to use configured charge and multiplicity,
+validate electron-count parity, and warn when the parity-based estimate differs
+from the configured spin state. Requested geometries must be supplied by an
+upstream Firework unless an explicit SMILES-geometry fallback is enabled.
+Solvent TDDFT steps consume solvent-optimized structures; gas-phase TDDFT steps
+consume gas-phase structures. These contracts are exercised by workflow tests.

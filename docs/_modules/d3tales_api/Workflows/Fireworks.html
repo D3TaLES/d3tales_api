@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -74,62 +75,59 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Workflows.Fireworks</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fireworks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Firework</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.Gaussian</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RunGaussianEnergy</span><span class="p">,</span>
-    <span class="n">RunGaussianOpt</span><span class="p">,</span>
-    <span class="n">RunGaussianTDDFT</span><span class="p">,</span>
-    <span class="n">RunWtuning</span> <span class="k">as</span> <span class="n">RunGaussianWtuning</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fireworks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Firework</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.Initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MoleculeInit</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.Orca</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RunOrcaEnergy</span><span class="p">,</span>
-    <span class="n">RunOrcaOpt</span><span class="p">,</span>
-    <span class="n">RunOrcaTDDFT</span><span class="p">,</span>
-    <span class="n">RunWtuning</span> <span class="k">as</span> <span class="n">RunOrcaWtuning</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RunPySCFEnergy</span><span class="p">,</span>
-    <span class="n">RunPySCFOpt</span><span class="p">,</span>
-    <span class="n">RunPySCFTDDFT</span><span class="p">,</span>
-    <span class="n">RunPySCFWtuning</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">GAUSSIAN_CPU_LIST</span><span class="p">,</span>
-    <span class="n">GAUSSIAN_GPU_CPU</span><span class="p">,</span>
-    <span class="n">GAUSSIAN_MEMORY</span><span class="p">,</span>
-    <span class="n">GAUSSIAN_NPROCSHARED</span><span class="p">,</span>
-    <span class="n">G16_CMD</span><span class="p">,</span>
-    <span class="n">PATH</span><span class="p">,</span>
-    <span class="n">PROC_VM_KEY</span><span class="p">,</span>
-    <span class="n">RUNFILE_LOG</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">worker_task_kwargs</span>
 
 <span class="c1"># Copyright 2021-2022, University of Kentucky</span>
 
 <span class="n">DEFAULT_SOFTWARE</span> <span class="o">=</span> <span class="s2">"gaussian"</span>
 <span class="n">SUPPORTED_SOFTWARE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"gaussian"</span><span class="p">,</span> <span class="s2">"orca"</span><span class="p">,</span> <span class="s2">"pyscf"</span><span class="p">)</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">_LazyTaskMap</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">task_names</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_names</span> <span class="o">=</span> <span class="n">task_names</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_names</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".pyscf"</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                    <span class="s2">"PySCF workflows require the optional dependency; install "</span>
+                    <span class="s2">"'d3tales_api[workflows,pyscf]'."</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">raise</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+
+
 <span class="n">_FIRETASKS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"gaussian"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"opt"</span><span class="p">:</span> <span class="n">RunGaussianOpt</span><span class="p">,</span>
-        <span class="s2">"energy"</span><span class="p">:</span> <span class="n">RunGaussianEnergy</span><span class="p">,</span>
-        <span class="s2">"tddft"</span><span class="p">:</span> <span class="n">RunGaussianTDDFT</span><span class="p">,</span>
-        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="n">RunGaussianWtuning</span><span class="p">,</span>
-    <span class="p">},</span>
-    <span class="s2">"orca"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"opt"</span><span class="p">:</span> <span class="n">RunOrcaOpt</span><span class="p">,</span>
-        <span class="s2">"energy"</span><span class="p">:</span> <span class="n">RunOrcaEnergy</span><span class="p">,</span>
-        <span class="s2">"tddft"</span><span class="p">:</span> <span class="n">RunOrcaTDDFT</span><span class="p">,</span>
-        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="n">RunOrcaWtuning</span><span class="p">,</span>
-    <span class="p">},</span>
-    <span class="s2">"pyscf"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"opt"</span><span class="p">:</span> <span class="n">RunPySCFOpt</span><span class="p">,</span>
-        <span class="s2">"energy"</span><span class="p">:</span> <span class="n">RunPySCFEnergy</span><span class="p">,</span>
-        <span class="s2">"tddft"</span><span class="p">:</span> <span class="n">RunPySCFTDDFT</span><span class="p">,</span>
-        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="n">RunPySCFWtuning</span><span class="p">,</span>
-    <span class="p">},</span>
+    <span class="s2">"gaussian"</span><span class="p">:</span> <span class="n">_LazyTaskMap</span><span class="p">(</span><span class="s2">"d3tales_api.Workflows.Gaussian"</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">"opt"</span><span class="p">:</span> <span class="s2">"RunGaussianOpt"</span><span class="p">,</span>
+        <span class="s2">"energy"</span><span class="p">:</span> <span class="s2">"RunGaussianEnergy"</span><span class="p">,</span>
+        <span class="s2">"tddft"</span><span class="p">:</span> <span class="s2">"RunGaussianTDDFT"</span><span class="p">,</span>
+        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="s2">"RunWtuning"</span><span class="p">,</span>
+    <span class="p">}),</span>
+    <span class="s2">"orca"</span><span class="p">:</span> <span class="n">_LazyTaskMap</span><span class="p">(</span><span class="s2">"d3tales_api.Workflows.Orca"</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">"opt"</span><span class="p">:</span> <span class="s2">"RunOrcaOpt"</span><span class="p">,</span>
+        <span class="s2">"energy"</span><span class="p">:</span> <span class="s2">"RunOrcaEnergy"</span><span class="p">,</span>
+        <span class="s2">"tddft"</span><span class="p">:</span> <span class="s2">"RunOrcaTDDFT"</span><span class="p">,</span>
+        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="s2">"RunWtuning"</span><span class="p">,</span>
+    <span class="p">}),</span>
+    <span class="s2">"pyscf"</span><span class="p">:</span> <span class="n">_LazyTaskMap</span><span class="p">(</span><span class="s2">"d3tales_api.Workflows.pyscf"</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">"opt"</span><span class="p">:</span> <span class="s2">"RunPySCFOpt"</span><span class="p">,</span>
+        <span class="s2">"energy"</span><span class="p">:</span> <span class="s2">"RunPySCFEnergy"</span><span class="p">,</span>
+        <span class="s2">"tddft"</span><span class="p">:</span> <span class="s2">"RunPySCFTDDFT"</span><span class="p">,</span>
+        <span class="s2">"wtuning"</span><span class="p">:</span> <span class="s2">"RunPySCFWtuning"</span><span class="p">,</span>
+    <span class="p">}),</span>
 <span class="p">}</span>
 
 
@@ -153,14 +151,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_task_kwargs</span><span class="p">(</span><span class="n">software</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Add only executable/runtime kwargs relevant to the selected engine."""</span>
+<span class="w">    </span><span class="sd">"""Keep worker runtime references separate from scientific task parameters."""</span>
     <span class="n">kwargs</span><span class="p">[</span><span class="s2">"software"</span><span class="p">]</span> <span class="o">=</span> <span class="n">software</span>
-    <span class="k">if</span> <span class="n">software</span> <span class="o">==</span> <span class="s2">"gaussian"</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">g16_cmd</span><span class="o">=</span><span class="n">G16_CMD</span><span class="p">,</span> <span class="n">proc_vm_key</span><span class="o">=</span><span class="n">PROC_VM_KEY</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"gpu_cpu"</span><span class="p">,</span> <span class="n">GAUSSIAN_GPU_CPU</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"cpu_list"</span><span class="p">,</span> <span class="n">GAUSSIAN_CPU_LIST</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"memory"</span><span class="p">,</span> <span class="n">GAUSSIAN_MEMORY</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"nprocshared"</span><span class="p">,</span> <span class="n">GAUSSIAN_NPROCSHARED</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">worker_task_kwargs</span><span class="p">(</span><span class="n">software</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">kwargs</span>
 
 
@@ -200,8 +194,6 @@
             <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">name_tag</span><span class="o">=</span><span class="n">name_tag</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">PATH</span><span class="p">,</span>
-            <span class="n">runfile_log</span><span class="o">=</span><span class="n">RUNFILE_LOG</span><span class="p">,</span>
             <span class="n">skip_freq</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">use_iop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -225,8 +217,6 @@
         <span class="n">task_kwargs</span> <span class="o">=</span> <span class="n">_task_kwargs</span><span class="p">(</span>
             <span class="n">software</span><span class="p">,</span>
             <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">PATH</span><span class="p">,</span>
-            <span class="n">runfile_log</span><span class="o">=</span><span class="n">RUNFILE_LOG</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">name_tag</span><span class="o">=</span><span class="n">name_tag</span><span class="p">,</span>
             <span class="n">geometry</span><span class="o">=</span><span class="s2">"opt_mol"</span><span class="p">,</span>
@@ -256,8 +246,6 @@
             <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">name_tag</span><span class="o">=</span><span class="n">name_tag</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">PATH</span><span class="p">,</span>
-            <span class="n">runfile_log</span><span class="o">=</span><span class="n">RUNFILE_LOG</span><span class="p">,</span>
             <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span>
             <span class="n">geom_from_smiles</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"geom_from_smiles"</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">==</span> <span class="s2">"opt_mol"</span><span class="p">),</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">_type</span><span class="p">,</span>
@@ -296,8 +284,6 @@
             <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">name_tag</span><span class="o">=</span><span class="n">name_tag</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">PATH</span><span class="p">,</span>
-            <span class="n">runfile_log</span><span class="o">=</span><span class="n">RUNFILE_LOG</span><span class="p">,</span>
             <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">_type</span><span class="p">,</span>
             <span class="n">subtype</span><span class="o">=</span><span class="n">species</span><span class="p">,</span>
@@ -339,8 +325,6 @@
             <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">name_tag</span><span class="o">=</span><span class="n">name_tag</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">PATH</span><span class="p">,</span>
-            <span class="n">runfile_log</span><span class="o">=</span><span class="n">RUNFILE_LOG</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="s2">"tddft"</span><span class="p">,</span>
             <span class="n">geometry</span><span class="o">=</span><span class="s2">"</span><span class="si">{}{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">geom_prefix</span><span class="p">,</span> <span class="n">species</span><span class="p">),</span>
             <span class="n">prefix</span><span class="o">=</span><span class="n">tddft_prefix</span> <span class="o">+</span> <span class="n">species</span><span class="p">,</span>

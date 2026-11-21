@@ -1,39 +1,41 @@
-# Installation 
+# Installation
 
-## PIP Install
-This module can be installed with pip install by running the following code: 
+Install the extra that matches the modules you plan to use:
 
 ```bash
-pip install d3tales_api
+pip install "d3tales_api[workflows]"
+pip install "d3tales_api[workflows,database]"
+pip install "d3tales_api[calculators,processors,database]"
 ```
 
-**Note**: If your python version is greater than 3.8, then you will need to install 
-[pymatgen](https://pymatgen.org/) directly into the environment you are working in. It is best to use 
-[conda](https://anaconda.org/conda-forge/pymatgen) for this.
+The `workflows` extra supports local execution. Add `database` when workflows
+use the D3TaLES REST API or MongoDB.
 
-## Environment Variables
-Note that many operation require a `DB_INFO_FILE` environment variable. This environment variable
-should be a path to a JSON file containing connection information for the databases. The keys should 
-be the database names such as `frontend`, `backend`, `expflow`, and `fireworks`. An example 
-is shown below
+For the full environment and tests:
 
-```json
-{
-  "frontend": {
-    "host": "mongodb://USERNAME:PASSWORD@DATABASE_IP:DATABASE_PORT/frontend",
-    "database": "ui"
-  }
-}
-```
-
-To set this variable run:
 ```bash
-export DB_INFO_FILE=$PWD/db_infos_ex.json
+pip install "d3tales_api[all,test]"
 ```
 
-REST API (`d3tales_api.restapi.RESTAPI`) will use `UPLOAD_USER` and `UPLOAD_PASS` environment 
-variables if `username` and `password` arguments are not provided. These environment variables 
-can be set in the same was as the `DB_INFO_FILE` variable. 
+PySCF is optional and can be added to a workflow installation with
+`pip install "d3tales_api[workflows,pyscf]"`. Gaussian and ORCA executables are
+installed separately and made available on the FireWorks workers. The
+`requirements.txt` file is retained for existing environments.
 
-NLP processing will need the environment variable `ELS_APIKEY` as your Elsevier API key. 
+NLP support is optional: install `pip install "d3tales_api[nlp]"`. The
+ChemDataExtractor2 parser dependency may need to be installed separately
+because of its dependency constraints.
 
+## Database configuration
+
+Database operations require `DB_INFO_FILE`, a path to a JSON file containing
+connection information for databases such as `frontend`, `backend`, `expflow`,
+and `fireworks`. An example is available in `db_info_ex.json`.
+
+```bash
+export DB_INFO_FILE="$PWD/db_infos_ex.json"
+```
+
+REST API operations may also use `UPLOAD_USER` and `UPLOAD_PASS`. NLP
+processing uses `ELS_APIKEY`; installing ChemDataExtractor2 may require a
+separate step because of its dependency constraints.

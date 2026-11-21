@@ -76,67 +76,53 @@ def test_local_identifier_validates_smiles_and_is_stable():
 
 
 @pytest.mark.unit
-def test_nested_set_and_molecule_id_generation(monkeypatch):
-    class Collection:
-        def __init__(self):
-            self.updates = []
-
-        def update_one(self, query, update, upsert=False):
-            self.updates.append((query, update, upsert))
-
-        def find_one(self, query, projection=None):
-            return None
-
-        def count_documents(self, query):
-            return 1 if query == {"_id": "07ABCD"} else 0
-
-    collection = Collection()
-    helpers._nested_set(collection, "M1", "mol_info", {"smiles": "CC", "names": ["ethane"]})
-    assert collection.updates == [
-        ({"_id": "M1"}, {"$set": {"mol_info.smiles": "CC"}}, True),
-        ({"_id": "M1"}, {"$set": {"mol_info.names": ["ethane"]}}, True),
-    ]
-
-    monkeypatch.setattr("nanoid.generate", lambda alphabet, size: "ABCD" if size == 4 else "ABCDEF")
-    assert helpers._generate_mol_id(collection, "CC", "Risko", {"Risko": "07"}) == "07ABCDEF"
-    existing = type("Collection", (), {
-        "find_one": lambda self, query, projection=None: {"_id": "existing"},
-    })()
-    assert helpers._generate_mol_id(existing, "CC", "Risko", {}) == "existing"
-
-
-@pytest.mark.unit
-def test_register_molecule_generates_id_and_stores_nested_info(monkeypatch):
-    updates = []
-
-    class Collection:
-        def find_one(self, query, projection=None):
-            return None
-
-        def count_documents(self, query):
-            return 0
-
-        def update_one(self, query, update, upsert=False):
-            updates.append((query, update, upsert))
-
-    collection = Collection()
-    monkeypatch.setattr(helpers, "DBconnector", lambda info: type(
-        "Connector", (), {"get_collection": lambda self, name: collection})())
-    monkeypatch.setattr("d3tales_api.database_info.db_info", lambda: {"frontend": {}})
-    monkeypatch.setattr("d3tales_api.database_info.source_groups", lambda: {"Risko": "07"})
-    monkeypatch.setattr("nanoid.generate", lambda alphabet, size: "ABCD")
+def test_register_molecule_delegates_to_canonical_front_db(monkeypatch):
+    calls = {}
 
     class MoleculeInfo:
         def __init__(self, smiles, names, origin_group):
             self.mol_info_dict = {"smiles": smiles, "names": names, "groundState_charge": 0}
 
+    class FrontDB:
+        def __init__(self, **kwargs):
+            calls.update(kwargs)
+            self.id = "07ABCD"
+
+    monkeypatch.setattr("d3tales_api.D3database.d3database.FrontDB", FrontDB)
     monkeypatch.setattr("d3tales_api.Processors.info_from_smiles.GenerateMolInfo", MoleculeInfo)
     identifier, charge, spin = helpers.d3t_register_molecule("CC", names=["ethane"], public=True)
 
     assert (identifier, charge, spin) == ("07ABCD", 0, None)
-    assert updates[0] == ({"_id": "07ABCD"}, {"$set": {"public": True}}, True)
-    assert updates[1:] == [
-        ({"_id": "07ABCD"}, {"$set": {"mol_info.smiles": "CC"}}, True),
-        ({"_id": "07ABCD"}, {"$set": {"mol_info.names": ["ethane"]}}, True),
-        ({"_id": "07ABCD"}, {"$set": {"mol_info.groundState_charge": 0}}, True),
-    ]
+    assert calls == {
+        "schema_layer": "mol_info",
+        "instance": {"smiles": "CC", "names": ["ethane"], "groundState_charge": 0},
+        "smiles": "CC",
+        "group": "Risko",
+        "public": True,
+        "collection_name": "base",
+    }
+
+
+@pytest.mark.unit
+def test_front_db_generates_unique_molecule_id(monkeypatch):
+    from d3tales_api.D3database.d3database import FrontDB
+
+    class Collection:
+        def find_one(self, query, projection=None):
+            return None
+
+        def count_documents(self, query):
+            return int(query == {"_id": "07ABCD"})
+
+    monkeypatch.setattr("d3tales_api.D3database.d3database.source_groups", lambda: {"Risko": "07"})
+    monkeypatch.setattr(
+        "d3tales_api.D3database.d3database.generate",
+        lambda alphabet, size: "ABCD" if size == 4 else "ABCDEF",
+    )
+    front_db = FrontDB.__new__(FrontDB)
+    front_db.smiles = "CC"
+    front_db.group = "Risko"
+    front_db.coll = Collection()
+    front_db.new_molecule = False
+
+    assert front_db.generate_id() == "07ABCDEF"

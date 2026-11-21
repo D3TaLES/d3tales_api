@@ -1,33 +1,5 @@
-import sys
-import setuptools
-from pathlib import Path
-from d3tales_api import __version__, __author__
+"""Compatibility shim; package metadata is maintained in pyproject.toml."""
 
-BASE_DIR = Path(__file__).resolve().parent
+from setuptools import setup
 
-with open(BASE_DIR / "README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
-
-with open(BASE_DIR / "requirements.txt", "r", encoding="utf-8") as f:
-    requirements = f.read().splitlines()
-if sys.version_info.major <=3 and sys.version_info.minor <=8:
-    pass
-#     requirements.append("pymatgen==2022.11.7")
-
-setuptools.setup(
-    name='d3tales_api',
-    version=__version__,
-    author=__author__,
-    author_email='d3tales@gmail.com',
-    description='API for parsing, database connection, and property calculations for D3taLES project ',
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url='https://github.com/D3TaLES/d3tales_api',
-    project_urls={
-        "Bug Tracker": "https://github.com/D3TaLES/d3tales_api/issues"
-    },
-    license="MIT",
-    packages=['d3tales_api', 'd3tales_api.Calculators', 'd3tales_api.D3database', 'd3tales_api.Processors', 'd3tales_api.Workflows'],
-    install_requires=requirements,
-)
-
+setup()

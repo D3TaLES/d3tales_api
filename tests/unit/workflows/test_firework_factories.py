@@ -1,4 +1,7 @@
 """The Firework factory classes in d3tales_api.Workflows.Fireworks, tested one at a time."""
+import subprocess
+import sys
+
 import pytest
 from fireworks import Firework
 
@@ -74,6 +77,23 @@ def test_priority_and_name_tag(factories, kind):
 def test_extra_kwargs_reach_task(factories, kind):
     t = only_task(factories[kind](data_store="local", restricted=False, custom_flag=42))
     assert (t["data_store"], t["restricted"], t["custom_flag"]) == ("local", False, 42)
+
+
+def test_worker_runtime_values_can_be_overridden(factories):
+    task = only_task(factories["molopt"](path="/worker/scratch", runfile_log=None, g16_cmd="/opt/g16"))
+
+    assert task["path"] == "/worker/scratch"
+    assert task["runfile_log"] is None
+    assert task["g16_cmd"] == "/opt/g16"
+
+
+def test_importing_firework_factories_does_not_import_pyscf():
+    code = (
+        "import sys; "
+        "import d3tales_api.Workflows.Fireworks; "
+        "assert 'd3tales_api.Workflows.pyscf' not in sys.modules"
+    )
+    subprocess.run([sys.executable, "-c", code], check=True)
 
 
 # ----------------------------------------------------------------- InitializeMolecule

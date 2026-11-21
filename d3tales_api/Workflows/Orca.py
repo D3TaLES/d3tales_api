@@ -27,7 +27,7 @@ from copy import deepcopy
 import numpy as np
 from six import add_metaclass
 
-from atomate.utils.utils import env_chk, get_logger
+from atomate.utils.utils import get_logger
 from fireworks import FWAction, FiretaskBase, explicit_serialize
 
 from d3tales_api.Workflows.utils import (
@@ -35,7 +35,6 @@ from d3tales_api.Workflows.utils import (
     Molecule,
     Site,
     WTUNING_KEY,
-    get_data_store,
     get_db_geom,
     get_groundState,
     get_local_output_dir,
@@ -52,6 +51,7 @@ from d3tales_api.Workflows.utils import (
     zip_files
 )
 from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
+from d3tales_api.Workflows.runtime import WorkerRuntime
 
 logger = get_logger(__name__)
 NPROCS = min(multiprocessing.cpu_count(), 16)
@@ -211,22 +211,23 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
     hash_function = staticmethod(orca_hash_id)
 
     def setup_files(self, fw_spec, calc_type="opt"):
-        self.data_store = get_data_store(self, fw_spec)
-        name_tag = fw_spec.get("name_tag") or self.get("name_tag") or ""
+        self.worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="orca")
+        self.data_store = self.worker_runtime.data_store
+        name_tag = spec_or_task(self, fw_spec, "name_tag", "")
         self.full_name = name_tag + self["name"]
         self.calc_name = self["name"]
         self.paramset = deepcopy(self["paramset"])
-        self.identifier = fw_spec.get("identifier") or self.get("identifier", str(uuid.uuid4()))
-        self.smiles = fw_spec.get("smiles") or self.get("smiles")
-        self.runfile_log = env_chk(self.get("runfile_log"), fw_spec)
+        self.identifier = spec_or_task(self, fw_spec, "identifier", str(uuid.uuid4()))
+        self.smiles = spec_or_task(self, fw_spec, "smiles")
+        self.runfile_log = self.worker_runtime.runfile_log
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
         self.submit = spec_or_task(self, fw_spec, "submit", True)
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
-        self.orca_cmd = env_chk(self.get("orca_cmd", "orca"), fw_spec)
-        self.orca_file_name = fw_spec.get("orca_file_name") or self.get("orca_file_name") or "orca"
+        self.orca_cmd = self.worker_runtime.engine_options.get("orca_cmd", "orca")
+        self.orca_file_name = spec_or_task(self, fw_spec, "orca_file_name", "orca")
 
         if self.get("prefix"):
             prefix = name_tag + self["prefix"]
@@ -235,8 +236,8 @@ class OrcaBase(ElectronicStructureTaskMixin, FiretaskBase):
         else:
             prefix = name_tag + calc_type + "_mol"
 
-        if self.get("path"):
-            self.calc_dir = "{}/{}/{}".format(env_chk(self.get("path"), fw_spec), self.identifier, self.orca_file_name)
+        if self.worker_runtime.path:
+            self.calc_dir = "{}/{}/{}".format(self.worker_runtime.path, self.identifier, self.orca_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
         self.store_dir = get_store_dir(self.identifier, get_local_output_dir(self, fw_spec), self.calc_dir)

@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -63,6 +64,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.ParamSet">d3tales_api.Workflows.ParamSet module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.d3tales_utils">d3tales_api.Workflows.d3tales_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.pyscf">d3tales_api.Workflows.pyscf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.runtime">d3tales_api.Workflows.runtime module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.utils">d3tales_api.Workflows.utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.wf_writer">d3tales_api.Workflows.wf_writer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-d3tales_api.Workflows.wtuning">d3tales_api.Workflows.wtuning module</a></li>
@@ -746,9 +748,51 @@ these multiple resources.</p>
 <section id="module-d3tales_api.Workflows.d3tales_utils">
 <span id="d3tales-api-workflows-d3tales-utils-module"></span><h2>d3tales_api.Workflows.d3tales_utils module<a class="headerlink" href="#module-d3tales_api.Workflows.d3tales_utils" title="Link to this heading"></a></h2>
 <p>Database and website adapters used by Workflows.</p>
-<p>Database-facing operations are kept under <code class="docutils literal notranslate"><span class="pre">D3database</span></code> and loaded lazily by
-workflow helpers. Local workflows do not require credentials, network access,
-or a database connection.</p>
+<p>Database-facing operations are delegated to the canonical D3database modules.
+Imports stay lazy so local workflows do not require database clients or
+credentials at import time.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_get_ground_state">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_get_ground_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'charge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_ground_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_get_ground_state" title="Link to this definition"></a></dt>
+<dd><p>Return frontend charge/spin as an integer, or None when absent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_get_init_structure">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_get_init_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_init_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_get_init_structure" title="Link to this definition"></a></dt>
+<dd><p>Return the frontend initial structure as a pymatgen Molecule.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_get_omega">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_get_omega</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_get_omega" title="Link to this definition"></a></dt>
+<dd><p>Return a molecule’s tuned omega value, or None when absent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_get_raw_computation">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_get_raw_computation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_raw_computation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_get_raw_computation" title="Link to this definition"></a></dt>
+<dd><p>Return backend computation data, or None when the record is absent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_get_smiles">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_get_smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_get_smiles" title="Link to this definition"></a></dt>
+<dd><p>Return the frontend SMILES for an identifier, or an empty string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_register_molecule">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_register_molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Risko'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_register_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_register_molecule" title="Link to this definition"></a></dt>
+<dd><p>Register a molecule through the canonical D3database FrontDB API.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.d3tales_utils.d3t_submit_calculation">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.d3tales_utils.</span></span><span class="sig-name descname"><span class="pre">d3t_submit_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_submit_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.d3tales_utils.d3t_submit_calculation" title="Link to this definition"></a></dt>
+<dd><p>Upload a zipped calculation to the D3TaLES website.</p>
+</dd></dl>
+
 </section>
 <section id="module-d3tales_api.Workflows.pyscf">
 <span id="d3tales-api-workflows-pyscf-module"></span><h2>d3tales_api.Workflows.pyscf module<a class="headerlink" href="#module-d3tales_api.Workflows.pyscf" title="Link to this heading"></a></h2>
@@ -1169,6 +1213,89 @@ X+Y; SVD gives hole/particle NTOs. Written as Molden file(s) (occupation = NTO w
 <dd></dd></dl>
 
 </section>
+<section id="module-d3tales_api.Workflows.runtime">
+<span id="d3tales-api-workflows-runtime-module"></span><h2>d3tales_api.Workflows.runtime module<a class="headerlink" href="#module-d3tales_api.Workflows.runtime" title="Link to this heading"></a></h2>
+<p>Resolve FireWorks task settings separately from worker environment settings.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">WorkerRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">software:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_store:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_output_dir:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runfile_log:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_options:</span> <span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#WorkerRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validated runtime settings resolved at a FireTask boundary.</p>
+<p>Scientific inputs remain in the task’s <code class="docutils literal notranslate"><span class="pre">paramset</span></code> and FireWorks spec.
+Worker-specific paths, executables, and resources are resolved from the
+FireWorker’s <code class="docutils literal notranslate"><span class="pre">_fw_env</span></code> using FireWorks’ <code class="docutils literal notranslate"><span class="pre">&gt;&gt;key&lt;&lt;</span></code> convention.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">software:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_store:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_output_dir:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runfile_log:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_options:</span> <span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.data_store">
+<span class="sig-name descname"><span class="pre">data_store</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.data_store" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.engine_options">
+<span class="sig-name descname"><span class="pre">engine_options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.engine_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.from_task">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">software</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_executables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#WorkerRuntime.from_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.from_task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.local_output_dir">
+<span class="sig-name descname"><span class="pre">local_output_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.local_output_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.runfile_log">
+<span class="sig-name descname"><span class="pre">runfile_log</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.runfile_log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.WorkerRuntime.software">
+<span class="sig-name descname"><span class="pre">software</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#d3tales_api.Workflows.runtime.WorkerRuntime.software" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.resolve_data_store">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">resolve_data_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#resolve_data_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.resolve_data_store" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.resolve_runtime_field">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">resolve_runtime_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#resolve_runtime_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.resolve_runtime_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.resolve_worker_value">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">resolve_worker_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#resolve_worker_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.resolve_worker_value" title="Link to this definition"></a></dt>
+<dd><p>Resolve a <code class="docutils literal notranslate"><span class="pre">&gt;&gt;worker_env_key&lt;&lt;</span></code> placeholder from FireWorks’ <code class="docutils literal notranslate"><span class="pre">_fw_env</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.spec_or_task">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">spec_or_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#spec_or_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.spec_or_task" title="Link to this definition"></a></dt>
+<dd><p>Resolve explicit FireWorks spec values before FireTask kwargs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">0</span></code> are valid overrides; only <code class="docutils literal notranslate"><span class="pre">None</span></code> means unspecified.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="d3tales_api.Workflows.runtime.worker_task_kwargs">
+<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.runtime.</span></span><span class="sig-name descname"><span class="pre">worker_task_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">software</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/runtime.html#worker_task_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.runtime.worker_task_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Return FireTask references for common and selected-engine worker settings.</p>
+</dd></dl>
+
+</section>
 <section id="module-d3tales_api.Workflows.utils">
 <span id="d3tales-api-workflows-utils-module"></span><h2>d3tales_api.Workflows.utils module<a class="headerlink" href="#module-d3tales_api.Workflows.utils" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -1377,12 +1504,6 @@ multiplicity is diagnostic only when a multiplicity has been configured.</p>
 <dt class="sig sig-object py" id="d3tales_api.Workflows.utils.save_local_result">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">save_local_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">store_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#save_local_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.save_local_result" title="Link to this definition"></a></dt>
 <dd><p>Write a record to &lt;store_dir&gt;/&lt;calculation_type&gt;_&lt;key or _id&gt;.json (one file per calculation).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="d3tales_api.Workflows.utils.spec_or_task">
-<span class="sig-prename descclassname"><span class="pre">d3tales_api.Workflows.utils.</span></span><span class="sig-name descname"><span class="pre">spec_or_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/Workflows/utils.html#spec_or_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.Workflows.utils.spec_or_task" title="Link to this definition"></a></dt>
-<dd><p>fw_spec value if set, else task value if set, else default. Explicit False/0 are respected.</p>
 </dd></dl>
 
 <dl class="py function">

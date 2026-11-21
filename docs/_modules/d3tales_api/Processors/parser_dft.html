@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -76,8 +77,13 @@
   <h1>Source code for d3tales_api.Processors.parser_dft</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.plotters</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cclib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.plotters</span><span class="w"> </span><span class="kn">import</span> <span class="n">DFTSpecPlotter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">RadBuriedVolCalc</span><span class="p">,</span> <span class="n">RadicalSpinCalc</span><span class="p">,</span> <span class="n">RSSCalc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">periodictable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.gaussian</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianOutput</span><span class="p">,</span> <span class="n">GaussianInput</span>
 
 

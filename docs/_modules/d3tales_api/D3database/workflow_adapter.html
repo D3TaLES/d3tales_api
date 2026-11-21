@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -76,180 +77,49 @@
   <h1>Source code for d3tales_api.D3database.workflow_adapter</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Database and website adapters used by Workflows.</span>
 
-<span class="sd">Database-facing operations are kept under ``D3database`` and loaded lazily by</span>
-<span class="sd">workflow helpers. Local workflows do not require credentials, network access,</span>
-<span class="sd">or a database connection.</span>
+<span class="sd">Database-facing operations are delegated to the canonical D3database modules.</span>
+<span class="sd">Imports stay lazy so local workflows do not require database clients or</span>
+<span class="sd">credentials at import time.</span>
 <span class="sd">"""</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="c1"># Copyright 2021-2026, University of Kentucky</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">D3TALES_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"D3TALES_URL"</span><span class="p">,</span> <span class="s2">"https://d3tales.as.uky.edu"</span><span class="p">)</span>
 <span class="n">FRONT_COLL</span> <span class="o">=</span> <span class="s2">"base"</span>
 
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># REST API client (moved from D3database/restapi.py)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<div class="viewcode-block" id="RESTAPI">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">RESTAPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="RESTAPI.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">login_endpoint</span><span class="o">=</span><span class="s1">'login'</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
-                 <span class="n">upload_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expected_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Upload a file to through d3tales.as.uky.edu file upload feature.</span>
-<span class="sd">        :param method: str, html method (such as post or get)</span>
-<span class="sd">        :param url: str, base url</span>
-<span class="sd">        :param endpoint: str, post or get endpoint url (not containing base url)</span>
-<span class="sd">        :param login_endpoint: str, login url (not containing base url)</span>
-<span class="sd">        :param username: str, user username</span>
-<span class="sd">        :param password: str, user password</span>
-<span class="sd">        :param upload_file: str, path to file to be uploaded</span>
-<span class="sd">        :param params: dict, form parameters for post</span>
-<span class="sd">        :param return_json: bool, get or post method returns json if true</span>
-
-<span class="sd">        Copyright 2021, University of Kentucky</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"//"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">':/'</span><span class="p">,</span> <span class="s1">'://'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Endpoint: "</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">login_endpoint</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">login_endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"//"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">':/'</span><span class="p">,</span> <span class="s1">'://'</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">expected_endpoint</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">expected_endpoint</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">expected_endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"//"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">':/'</span><span class="p">,</span> <span class="s1">'://'</span><span class="p">)</span>
-        <span class="n">default_username</span> <span class="o">=</span> <span class="n">username</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'UPLOAD_USER'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'UPLOAD_USER'</span><span class="p">)</span>
-        <span class="n">default_password</span> <span class="o">=</span> <span class="n">password</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'UPLOAD_PASS'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'UPLOAD_PASS'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">default_username</span><span class="p">,</span>
-                              <span class="n">password</span><span class="o">=</span><span class="n">default_password</span><span class="p">)</span> <span class="k">if</span> <span class="n">default_username</span> <span class="ow">and</span> <span class="n">default_password</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">csrfmiddlewaretoken</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csrftoken</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="s1">'/'</span><span class="p">))</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span> <span class="o">=</span> <span class="n">upload_file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">return_json</span> <span class="o">=</span> <span class="n">return_json</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"get"</span><span class="p">,</span> <span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"Get"</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"post"</span><span class="p">,</span> <span class="s2">"Post"</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_process</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">expected_endpoint</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_endpoint</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The </span><span class="si">{}</span><span class="s2"> response url for </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> did not match the expected response url"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">))</span></div>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"DBconnector"</span><span class="p">,</span>
+    <span class="s2">"RESTAPI"</span><span class="p">,</span>
+    <span class="s2">"d3t_get_smiles"</span><span class="p">,</span>
+    <span class="s2">"d3t_get_init_structure"</span><span class="p">,</span>
+    <span class="s2">"d3t_get_ground_state"</span><span class="p">,</span>
+    <span class="s2">"d3t_get_omega"</span><span class="p">,</span>
+    <span class="s2">"d3t_get_raw_computation"</span><span class="p">,</span>
+    <span class="s2">"d3t_submit_calculation"</span><span class="p">,</span>
+    <span class="s2">"d3t_register_molecule"</span><span class="p">,</span>
+<span class="p">]</span>
 
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">cookies</span>  <span class="c1"># sets cookie</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">csrftoken</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Retrieve the CSRF token for data post</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s1">'csrftoken'</span><span class="p">]</span> <span class="k">if</span> <span class="s1">'csrftoken'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="s1">'csrf'</span><span class="p">],</span> <span class="p">)</span>
-
-<div class="viewcode-block" id="RESTAPI.get_client">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_client">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
-        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">login_endpoint</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_data</span><span class="p">:</span>
-                <span class="c1"># Login</span>
-                <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_endpoint</span><span class="p">)</span>  <span class="c1"># sets cookie</span>
-                <span class="n">csrftoken</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">client</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'csrf'</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">user_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">csrfmiddlewaretoken</span><span class="o">=</span><span class="n">csrftoken</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="s1">'/'</span><span class="p">))</span>
-                <span class="c1"># Submit login form</span>
-                <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Referer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">login_endpoint</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">client</span></div>
+<span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Keep the former adapter class imports available without eager DB imports."""</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"RESTAPI"</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.restapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">RESTAPI</span>
+        <span class="k">return</span> <span class="n">RESTAPI</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"DBconnector"</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.d3database</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBconnector</span>
+        <span class="k">return</span> <span class="n">DBconnector</span>
+    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"module </span><span class="si">{!r}</span><span class="s2"> has no attribute </span><span class="si">{!r}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="RESTAPI.post_process">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.post_process">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Submit data form</span>
-        <span class="n">file_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">file_data</span><span class="p">,</span>
-                               <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Referer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">),</span> <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_json</span> <span class="k">else</span> <span class="n">req</span></div>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rest_api</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">rest_api_class</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"RESTAPI"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rest_api_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.restapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">RESTAPI</span> <span class="k">as</span> <span class="n">rest_api_class</span>
+    <span class="k">return</span> <span class="n">rest_api_class</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="RESTAPI.get_process">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.RESTAPI.get_process">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Referer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">),</span>
-                                  <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Referer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_json</span> <span class="k">else</span> <span class="n">req</span></div>
-</div>
-
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># MongoDB connector (moved from D3database/d3database.py)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<div class="viewcode-block" id="DBconnector">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">DBconnector</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Class to retrieve a collection from a database and insert new entry.</span>
-<span class="sd">    Requires a db_infos.json file with credentials</span>
-<span class="sd">    Copyright 2021, University of Kentucky</span>
-<span class="sd">    """</span>
-
-<div class="viewcode-block" id="DBconnector.__init__">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_information</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_information</span> <span class="o">=</span> <span class="n">db_information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"host"</span><span class="p">,</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"admin_password"</span><span class="p">,</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"admin_user"</span><span class="p">,</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"port"</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"database"</span><span class="p">,</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">db_information</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"collection"</span><span class="p">,</span> <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="DBconnector.get_database">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_database">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">pymongo</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoClient</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">:</span>
-                <span class="n">conn</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">conn</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
-                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">db</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">"Error connecting to the MongoDB database with the following credentials: "</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">db_information</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">db</span></div>
-
-
-<div class="viewcode-block" id="DBconnector.get_collection">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.DBconnector.get_collection">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coll_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">coll_name</span><span class="p">:</span>
-            <span class="n">coll_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">coll_name</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">"No collection specified"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">db</span><span class="p">[</span><span class="n">coll_name</span><span class="p">]</span></div>
-</div>
-
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># REST API helpers (read)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_rest_get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'get'</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span>
+    <span class="k">return</span> <span class="n">_rest_api</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"get"</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span> <span class="n">return_json</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">response</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
@@ -260,50 +130,51 @@
 
 
 <div class="viewcode-block" id="d3t_get_smiles">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_smiles">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_get_smiles">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_smiles</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Return the SMILES stored in the D3TaLES frontend DB for `identifier` ('' if none)."""</span>
-    <span class="k">return</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">'smiles'</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">''</span></div>
+<span class="w">    </span><span class="sd">"""Return the frontend SMILES for an identifier, or an empty string."""</span>
+    <span class="k">return</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s2">"smiles"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span></div>
 
 
 
 <div class="viewcode-block" id="d3t_get_init_structure">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_init_structure">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_get_init_structure">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_init_structure</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Return the initial structure (pymatgen Molecule) stored in the frontend DB. Raises LookupError if missing."""</span>
+<span class="w">    </span><span class="sd">"""Return the frontend initial structure as a pymatgen Molecule."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
-    <span class="n">xyz</span> <span class="o">=</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">'init_structure'</span><span class="p">)</span>
+
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s2">"init_structure"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">xyz</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s2">"No init_structure found in D3TaLES for </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="s1">'xyz'</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="s2">"xyz"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="d3t_get_ground_state">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_ground_state">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_ground_state</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">'charge'</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Return ground state charge/spin (int) from the frontend DB, or None if not found."""</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">'groundState_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prop</span><span class="p">))</span>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_get_ground_state">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_ground_state</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s2">"charge"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return frontend charge/spin as an integer, or None when absent."""</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_mol_info_field</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s2">"groundState_</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prop</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
 
 <div class="viewcode-block" id="d3t_get_omega">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_omega">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_get_omega">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_omega</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Return the tuned omega value from the frontend DB, or None if not found."""</span>
+<span class="w">    </span><span class="sd">"""Return a molecule's tuned omega value, or None when absent."""</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">_rest_get</span><span class="p">(</span><span class="s2">"restapi/molecules/_id=</span><span class="si">{}</span><span class="s2">/mol_characterization.omega=1"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">))</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"mol_characterization"</span><span class="p">][</span><span class="s1">'omega'</span><span class="p">][</span><span class="s1">'value'</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"mol_characterization"</span><span class="p">][</span><span class="s2">"omega"</span><span class="p">][</span><span class="s2">"value"</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
 
 <div class="viewcode-block" id="d3t_get_raw_computation">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_get_raw_computation</span><span class="p">(</span><span class="n">_hash</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Return the `data` dict of a backend computation entry, or None if the entry does not exist."""</span>
+<span class="w">    </span><span class="sd">"""Return backend computation data, or None when the record is absent."""</span>
     <span class="n">endpoint</span> <span class="o">=</span> <span class="s2">"restapi/rawdata/computation/_id=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_hash</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
         <span class="n">endpoint</span> <span class="o">+=</span> <span class="s2">"/</span><span class="si">{}</span><span class="s2">=1"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
@@ -314,70 +185,45 @@
 
 
 
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># REST API / DB helpers (write)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="d3t_submit_calculation">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_submit_calculation">[docs]</a>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_submit_calculation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">d3t_submit_calculation</span><span class="p">(</span><span class="n">zip_path</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">calc_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Upload a zipped calculation to the D3TaLES website for processing."""</span>
-    <span class="n">submission</span> <span class="o">=</span> <span class="n">RESTAPI</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'post'</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">'tools/upload/computation-gaussian'</span><span class="p">,</span>
-                         <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span> <span class="n">expected_endpoint</span><span class="o">=</span><span class="s2">"tools/user_uploads"</span><span class="p">,</span>
-                         <span class="n">upload_file</span><span class="o">=</span><span class="n">zip_path</span><span class="p">,</span>
-                         <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">molecule_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span> <span class="n">calculation_type</span><span class="o">=</span><span class="n">calc_type</span><span class="p">))</span>
+<span class="w">    </span><span class="sd">"""Upload a zipped calculation to the D3TaLES website."""</span>
+    <span class="n">submission</span> <span class="o">=</span> <span class="n">_rest_api</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"post"</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="s2">"tools/upload/computation-gaussian"</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">D3TALES_URL</span><span class="p">,</span>
+        <span class="n">expected_endpoint</span><span class="o">=</span><span class="s2">"tools/user_uploads"</span><span class="p">,</span>
+        <span class="n">upload_file</span><span class="o">=</span><span class="n">zip_path</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">molecule_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span> <span class="n">calculation_type</span><span class="o">=</span><span class="n">calc_type</span><span class="p">),</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">submission</span><span class="o">.</span><span class="n">successful</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Calculation files not successfully submitted with endpoint </span><span class="si">{}</span><span class="s2">. Response endpoint "</span>
-                        <span class="s2">"was </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">Submission Params: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> Zip path: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">submission</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">expected_endpoint</span><span class="p">,</span>
-                            <span class="n">submission</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">zip_path</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">"Calculation files not successfully submitted to </span><span class="si">{}</span><span class="s2"> (response: </span><span class="si">{}</span><span class="s2">)."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">submission</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">submission</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_nested_set</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Same behavior as D3Database.insert(_id, nested=True) with override_lists=True."""</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">_nested_set</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">value</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_generate_mol_id</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">source_groups</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Same behavior as FrontDB.generate_id."""</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">nanoid</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate</span>
-    <span class="n">id_chars</span> <span class="o">=</span> <span class="s1">'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>
-    <span class="n">existing</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"mol_info.smiles"</span><span class="p">:</span> <span class="n">smiles</span><span class="p">},</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-    <span class="k">if</span> <span class="n">existing</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">existing</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
-    <span class="n">group_num</span> <span class="o">=</span> <span class="n">source_groups</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="s1">'10'</span><span class="p">)</span>
-    <span class="n">_id</span> <span class="o">=</span> <span class="n">group_num</span> <span class="o">+</span> <span class="n">generate</span><span class="p">(</span><span class="n">id_chars</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="k">while</span> <span class="n">coll</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">_id</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">_id</span> <span class="o">=</span> <span class="n">group_num</span> <span class="o">+</span> <span class="n">generate</span><span class="p">(</span><span class="n">id_chars</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_id</span>
-
-
 <div class="viewcode-block" id="d3t_register_molecule">
-<a class="viewcode-back" href="../../../d3tales_api.D3database.html#d3tales_api.D3database.workflow_adapter.d3t_register_molecule">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">d3t_register_molecule</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="s1">'Risko'</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Generate molecule info and insert it into the D3TaLES frontend DB.</span>
-<span class="sd">    Equivalent to FrontDB(schema_layer='mol_info', instance=instance, smiles=smiles, group=group, public=public),</span>
-<span class="sd">    which does not run schema validation when no _id is given.</span>
-<span class="sd">    :return: (identifier, groundState_charge, groundState_spin)</span>
-<span class="sd">    """</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">monty.json</span><span class="w"> </span><span class="kn">import</span> <span class="n">jsanitize</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.database_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">source_groups</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.info_from_smiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateMolInfo</span>  <span class="c1"># Processors: next module to decouple</span>
+<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.D3database.workflow_adapter.d3t_register_molecule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">d3t_register_molecule</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">origin_group</span><span class="o">=</span><span class="s2">"Risko"</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Register a molecule through the canonical D3database FrontDB API."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.d3database</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrontDB</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Processors.info_from_smiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateMolInfo</span>
+
     <span class="n">instance</span> <span class="o">=</span> <span class="n">GenerateMolInfo</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span> <span class="ow">or</span> <span class="p">[],</span> <span class="n">origin_group</span><span class="o">=</span><span class="n">origin_group</span><span class="p">)</span><span class="o">.</span><span class="n">mol_info_dict</span>
-
-    <span class="n">coll</span> <span class="o">=</span> <span class="n">DBconnector</span><span class="p">(</span><span class="n">db_info</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"frontend"</span><span class="p">))</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">FRONT_COLL</span><span class="p">)</span>
-    <span class="n">_id</span> <span class="o">=</span> <span class="n">_generate_mol_id</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">origin_group</span><span class="p">,</span> <span class="n">source_groups</span><span class="p">())</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">public</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"public"</span><span class="p">:</span> <span class="n">public</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_nested_set</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">"mol_info"</span><span class="p">,</span> <span class="n">jsanitize</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">allow_bson</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">_id</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'groundState_charge'</span><span class="p">),</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'groundState_spin'</span><span class="p">)</span></div>
-
+    <span class="n">frontend</span> <span class="o">=</span> <span class="n">FrontDB</span><span class="p">(</span>
+        <span class="n">schema_layer</span><span class="o">=</span><span class="s2">"mol_info"</span><span class="p">,</span>
+        <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+        <span class="n">smiles</span><span class="o">=</span><span class="n">smiles</span><span class="p">,</span>
+        <span class="n">group</span><span class="o">=</span><span class="n">origin_group</span><span class="p">,</span>
+        <span class="n">public</span><span class="o">=</span><span class="n">public</span><span class="p">,</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">FRONT_COLL</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">frontend</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"groundState_charge"</span><span class="p">),</span> <span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"groundState_spin"</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="d3tales_api.html">d3tales_api package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="d3tales_api.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="d3tales_api.Calculators.html">d3tales_api.Calculators package</a></li>
@@ -1200,123 +1201,49 @@ Copyright 2021, University of Kentucky</p>
 <section id="module-d3tales_api.D3database.workflow_adapter">
 <span id="d3tales-api-d3database-workflow-adapter-module"></span><h2>d3tales_api.D3database.workflow_adapter module<a class="headerlink" href="#module-d3tales_api.D3database.workflow_adapter" title="Link to this heading"></a></h2>
 <p>Database and website adapters used by Workflows.</p>
-<p>Database-facing operations are kept under <code class="docutils literal notranslate"><span class="pre">D3database</span></code> and loaded lazily by
-workflow helpers. Local workflows do not require credentials, network access,
-or a database connection.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.DBconnector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">DBconnector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#DBconnector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.DBconnector" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to retrieve a collection from a database and insert new entry.
-Requires a db_infos.json file with credentials
-Copyright 2021, University of Kentucky</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.DBconnector.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#DBconnector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.DBconnector.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.DBconnector.get_collection">
-<span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coll_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#DBconnector.get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.DBconnector.get_collection" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.DBconnector.get_database">
-<span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#DBconnector.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.DBconnector.get_database" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">RESTAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://d3tales.as.uky.edu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'login'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#RESTAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://d3tales.as.uky.edu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'login'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#RESTAPI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.__init__" title="Link to this definition"></a></dt>
-<dd><p>Upload a file to through d3tales.as.uky.edu file upload feature.
-:param method: str, html method (such as post or get)
-:param url: str, base url
-:param endpoint: str, post or get endpoint url (not containing base url)
-:param login_endpoint: str, login url (not containing base url)
-:param username: str, user username
-:param password: str, user password
-:param upload_file: str, path to file to be uploaded
-:param params: dict, form parameters for post
-:param return_json: bool, get or post method returns json if true</p>
-<p>Copyright 2021, University of Kentucky</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.cookies">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cookies</span></span><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.cookies" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.csrftoken">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">csrftoken</span></span><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.csrftoken" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.get_client">
-<span class="sig-name descname"><span class="pre">get_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#RESTAPI.get_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.get_client" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.get_process">
-<span class="sig-name descname"><span class="pre">get_process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#RESTAPI.get_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.get_process" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.RESTAPI.post_process">
-<span class="sig-name descname"><span class="pre">post_process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#RESTAPI.post_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.RESTAPI.post_process" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<p>Database-facing operations are delegated to the canonical D3database modules.
+Imports stay lazy so local workflows do not require database clients or
+credentials at import time.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_get_ground_state">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_get_ground_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'charge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_ground_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_get_ground_state" title="Link to this definition"></a></dt>
-<dd><p>Return ground state charge/spin (int) from the frontend DB, or None if not found.</p>
+<dd><p>Return frontend charge/spin as an integer, or None when absent.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_get_init_structure">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_get_init_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_init_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_get_init_structure" title="Link to this definition"></a></dt>
-<dd><p>Return the initial structure (pymatgen Molecule) stored in the frontend DB. Raises LookupError if missing.</p>
+<dd><p>Return the frontend initial structure as a pymatgen Molecule.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_get_omega">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_get_omega</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_get_omega" title="Link to this definition"></a></dt>
-<dd><p>Return the tuned omega value from the frontend DB, or None if not found.</p>
+<dd><p>Return a molecule’s tuned omega value, or None when absent.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_get_raw_computation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_raw_computation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_get_raw_computation" title="Link to this definition"></a></dt>
-<dd><p>Return the <cite>data</cite> dict of a backend computation entry, or None if the entry does not exist.</p>
+<dd><p>Return backend computation data, or None when the record is absent.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_get_smiles">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_get_smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_get_smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_get_smiles" title="Link to this definition"></a></dt>
-<dd><p>Return the SMILES stored in the D3TaLES frontend DB for <cite>identifier</cite> (’’ if none).</p>
+<dd><p>Return the frontend SMILES for an identifier, or an empty string.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_register_molecule">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_register_molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Risko'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_register_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_register_molecule" title="Link to this definition"></a></dt>
-<dd><p>Generate molecule info and insert it into the D3TaLES frontend DB.
-Equivalent to FrontDB(schema_layer=’mol_info’, instance=instance, smiles=smiles, group=group, public=public),
-which does not run schema validation when no _id is given.
-:return: (identifier, groundState_charge, groundState_spin)</p>
+<dd><p>Register a molecule through the canonical D3database FrontDB API.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="d3tales_api.D3database.workflow_adapter.d3t_submit_calculation">
 <span class="sig-prename descclassname"><span class="pre">d3tales_api.D3database.workflow_adapter.</span></span><span class="sig-name descname"><span class="pre">d3t_submit_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/d3tales_api/D3database/workflow_adapter.html#d3t_submit_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#d3tales_api.D3database.workflow_adapter.d3t_submit_calculation" title="Link to this definition"></a></dt>
-<dd><p>Upload a zipped calculation to the D3TaLES website for processing.</p>
+<dd><p>Upload a zipped calculation to the D3TaLES website.</p>
 </dd></dl>
 
 </section>

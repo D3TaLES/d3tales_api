@@ -6,7 +6,7 @@ import re
 import uuid
 from copy import deepcopy
 from six import add_metaclass
-from atomate.utils.utils import get_logger, env_chk
+from atomate.utils.utils import get_logger
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from d3tales_api.Workflows.utils import (
     ElectronicStructureTaskMixin,
@@ -16,7 +16,6 @@ from d3tales_api.Workflows.utils import (
     Site,
     WTUNING_KEY,
     generate_gaussian_input,
-    get_data_store,
     get_db_geom,
     get_groundState,
     get_hash_id,
@@ -37,6 +36,7 @@ from d3tales_api.Workflows.utils import (
 )
 from d3tales_api.Workflows.wtuning import WtuningJob
 from d3tales_api.D3database.workflow_adapter import d3t_submit_calculation
+from d3tales_api.Workflows.runtime import WorkerRuntime
 
 logger = get_logger(__name__)
 cpus = [multiprocessing.cpu_count() if multiprocessing.cpu_count() < 16 else 16]
@@ -77,21 +77,18 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
             raise ValueError("{} cannot contain duplicate indices".format(name))
         return indices
 
-    @staticmethod
-    def _resolve_worker_setting(value, fw_spec):
-        if isinstance(value, str) and value.startswith(">>") and value.endswith("<<"):
-            return (fw_spec.get("_fw_env") or {}).get(value[2:-2])
-        return value
-
     def configure_link0_resources(self, fw_spec):
         """Set Gaussian CPU/GPU resource directives from FireWorker configuration."""
         if not hasattr(self, "_base_link0_parameters"):
             self._base_link0_parameters = dict(self.paramset.link0_parameters)
         parameters = dict(self._base_link0_parameters)
-        memory = self._resolve_worker_setting(spec_or_task(self, fw_spec, "memory"), fw_spec)
-        nprocshared = self._resolve_worker_setting(spec_or_task(self, fw_spec, "nprocshared"), fw_spec)
-        cpu_list = self._resolve_worker_setting(spec_or_task(self, fw_spec, "cpu_list"), fw_spec)
-        gpu_cpu = self._resolve_worker_setting(spec_or_task(self, fw_spec, "gpu_cpu"), fw_spec)
+        runtime = getattr(self, "worker_runtime", None)
+        if runtime is None:
+            runtime = WorkerRuntime.from_task(self, fw_spec, software="gaussian")
+        memory = runtime.engine_options.get("memory")
+        nprocshared = runtime.engine_options.get("nprocshared")
+        cpu_list = runtime.engine_options.get("cpu_list")
+        gpu_cpu = runtime.engine_options.get("gpu_cpu")
 
         if memory is None:
             memory = self._link0_value(parameters, "mem") or "48GB"
@@ -138,15 +135,18 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
 
     def setup_files(self, fw_spec, calc_type='opt'):
         # get parameters
-        self.data_store = get_data_store(self, fw_spec)
-        self.gaussian_cmd = env_chk(self.get("g16_cmd"), fw_spec)
-        name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
+        self.worker_runtime = WorkerRuntime.from_task(
+            self, fw_spec, software="gaussian", require_executables=True
+        )
+        self.data_store = self.worker_runtime.data_store
+        self.gaussian_cmd = self.worker_runtime.engine_options.get("g16_cmd")
+        name_tag = spec_or_task(self, fw_spec, "name_tag", "")
         self.full_name = name_tag + self['name']
         self.calc_name = self['name']
         self.paramset = deepcopy(self["paramset"])
-        self.identifier = fw_spec.get("identifier", ) or self.get("identifier", uuid.uuid4().__str__())
-        self.smiles = fw_spec.get("smiles", ) or self.get("smiles")
-        self.runfile_log = env_chk(self.get('runfile_log'), fw_spec)
+        self.identifier = spec_or_task(self, fw_spec, "identifier", uuid.uuid4().__str__())
+        self.smiles = spec_or_task(self, fw_spec, "smiles")
+        self.runfile_log = self.worker_runtime.runfile_log
         self.skip_freq = spec_or_task(self, fw_spec, "skip_freq", False)
         self.skip_freq = True if self.calc_name == "opt_mol" else self.skip_freq
         self.check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
@@ -154,7 +154,7 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         self.restricted = spec_or_task(self, fw_spec, "restricted", True)
         self.run_nto = spec_or_task(self, fw_spec, "run_nto", False)
 
-        self.gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
+        self.gaussian_file_name = spec_or_task(self, fw_spec, "gaussian_file_name", "gaussian")
 
         # set prefix for the file names
         if self.get("prefix"):
@@ -165,8 +165,8 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
             prefix = name_tag + calc_type + "_mol"
 
         # get calc directory
-        if self.get("path", ):
-            self.calc_dir = "{}/{}/{}".format(env_chk(self.get('path'), fw_spec), self.identifier,
+        if self.worker_runtime.path:
+            self.calc_dir = "{}/{}/{}".format(self.worker_runtime.path, self.identifier,
                                               self.gaussian_file_name)
         else:
             self.calc_dir = self.get("calc_dir", os.getcwd())
@@ -206,8 +206,8 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
 
     def setup_calc(self, fw_spec, calc_type='opt', geom_from_smiles=False):
         self.setup_files(fw_spec, calc_type=calc_type)
-        name_tag = fw_spec.get("name_tag", ) or self.get("name_tag") or ""
-        self.solvent = fw_spec.get("solvent", ) or self.get("solvent", )
+        name_tag = spec_or_task(self, fw_spec, "name_tag", "")
+        self.solvent = spec_or_task(self, fw_spec, "solvent")
         self.gs_charge = spec_or_task(self, fw_spec, "gs_charge")
         if self.gs_charge is None:
             self.gs_charge = get_groundState(
@@ -222,7 +222,7 @@ class GaussianBase(ElectronicStructureTaskMixin, FiretaskBase):
         run_from_com = spec_or_task(self, fw_spec, "run_from_com", False)
 
         # get iop string (omega value) for the calculation
-        self.iop_str = fw_spec.get("iop_str", ) or self.get("iop_str", )
+        self.iop_str = spec_or_task(self, fw_spec, "iop_str")
         if not self.iop_str and use_iop:
             tuned_w = get_omega(self.identifier, data_store=self.data_store, store_dir=self.store_dir)
             if tuned_w:
@@ -478,20 +478,23 @@ class RunWtuning(FiretaskBase):
 
     def run_task(self, fw_spec):
         # get parameters
-        data_store = get_data_store(self, fw_spec)
-        path = env_chk(self.get('path'), fw_spec)
-        runfile_log = env_chk(self.get('runfile_log'), fw_spec)
-        gaussian_cmd = env_chk(self.get('g16_cmd'), fw_spec)
+        worker_runtime = WorkerRuntime.from_task(self, fw_spec, software="gaussian")
+        data_store = worker_runtime.data_store
+        path = worker_runtime.path
+        runfile_log = worker_runtime.runfile_log
+        gaussian_cmd = worker_runtime.engine_options.get("g16_cmd")
+        if not path:
+            raise ValueError("A worker path is required for Gaussian w-tuning")
         paramset = deepcopy(self["paramset"])
-        identifier = fw_spec.get("identifier", ) or self.get("identifier")
-        smiles = fw_spec.get("smiles", ) or self.get("smiles")
+        identifier = spec_or_task(self, fw_spec, "identifier")
+        smiles = spec_or_task(self, fw_spec, "smiles")
         gs_charge = spec_or_task(self, fw_spec, "gs_charge")
         if gs_charge is None:
             gs_charge = get_groundState(identifier, smiles, data_store=data_store)
         gs_spin = spec_or_task(self, fw_spec, "gs_spin")
         if gs_spin is None:
             gs_spin = get_groundState(identifier, smiles, prop='spin', data_store=data_store)
-        gaussian_file_name = fw_spec.get("gaussian_file_name") or self.get("gaussian_file_name") or "gaussian"
+        gaussian_file_name = spec_or_task(self, fw_spec, "gaussian_file_name", "gaussian")
         calc_dir = "{}/{}/{}".format(path, identifier or smiles, gaussian_file_name)
         store_dir = get_store_dir(identifier or smiles, get_local_output_dir(self, fw_spec), calc_dir)
         check_if_already_run = spec_or_task(self, fw_spec, "check_if_already_run", True)
@@ -545,6 +548,8 @@ class RunWtuning(FiretaskBase):
                                  "gs_charge": gs_charge, "gs_spin": gs_spin, **forward_spec})
 
         # generate the input for wtuning in gaussian and run tuning
+        if not gaussian_cmd:
+            raise KeyError("FireWorker environment variable 'g16_cmd' is required to run Gaussian w-tuning")
         functional = paramset.functional if restricted else "U{}".format(paramset.functional)
         wt_mol = WtuningJob(
             func=functional,

@@ -1,8 +1,10 @@
 from scipy.stats import norm
 import scipy.constants as cst
 import matplotlib.pyplot as plt
+import numpy as np
 from collections import OrderedDict
-from d3tales_api.Calculators.calculators import *
+from d3tales_api.Calculators.calculators import CVDescriptorCalculator, D3Calculator
+from d3tales_api.Calculators.utils import unit_conversion
 
 
 class D3Plotter(D3Calculator):

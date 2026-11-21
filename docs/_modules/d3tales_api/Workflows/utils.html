@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -92,38 +93,36 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem.Descriptors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumRadicalElectrons</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.D3database.workflow_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">d3t_get_smiles</span><span class="p">,</span> <span class="n">d3t_get_init_structure</span><span class="p">,</span> <span class="n">d3t_get_ground_state</span><span class="p">,</span>
                                                      <span class="n">d3t_get_omega</span><span class="p">,</span> <span class="n">d3t_get_raw_computation</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Workflows.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AFLOW</span><span class="p">,</span>
+    <span class="n">DATA_STORES</span><span class="p">,</span>
+    <span class="n">DB_FILE</span><span class="p">,</span>
+    <span class="n">DEFAULT_DATA_STORE</span><span class="p">,</span>
+    <span class="n">G16_CMD</span><span class="p">,</span>
+    <span class="n">GAMMA_VASP_CMD</span><span class="p">,</span>
+    <span class="n">GAUSSIAN_CPU_LIST</span><span class="p">,</span>
+    <span class="n">GAUSSIAN_GPU_CPU</span><span class="p">,</span>
+    <span class="n">GAUSSIAN_MEMORY</span><span class="p">,</span>
+    <span class="n">GAUSSIAN_NPROCSHARED</span><span class="p">,</span>
+    <span class="n">LOCAL_OUTPUT_DIR</span><span class="p">,</span>
+    <span class="n">LOCAL_RESULTS_DIR</span><span class="p">,</span>
+    <span class="n">MA_DEF2</span><span class="p">,</span>
+    <span class="n">ORCA_CMD</span><span class="p">,</span>
+    <span class="n">PATH</span><span class="p">,</span>
+    <span class="n">PROC_VM_KEY</span><span class="p">,</span>
+    <span class="n">RUNFILE_LOG</span><span class="p">,</span>
+    <span class="n">VASP_CMD</span><span class="p">,</span>
+    <span class="n">WTUNING_KEY</span><span class="p">,</span>
+    <span class="n">ZINDOBIN</span><span class="p">,</span>
+    <span class="n">ZINDOCTBIN</span><span class="p">,</span>
+    <span class="n">ZINDOLIB</span><span class="p">,</span>
+    <span class="n">resolve_data_store</span><span class="p">,</span>
+    <span class="n">resolve_runtime_field</span><span class="p">,</span>
+    <span class="n">spec_or_task</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 <span class="c1"># Copyright 2021, University of Kentucky</span>
-
-<span class="c1"># ENVIRONMENT VARIABLES</span>
-
-<span class="n">ZINDOLIB</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOLIB&lt;&lt;"</span>
-<span class="n">ZINDOBIN</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOBIN&lt;&lt;"</span>
-<span class="n">ZINDOCTBIN</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ZINDOCTBIN&lt;&lt;"</span>
-<span class="n">DB_FILE</span> <span class="o">=</span> <span class="s2">"&gt;&gt;db_file&lt;&lt;"</span>
-<span class="n">AFLOW</span> <span class="o">=</span> <span class="s2">"&gt;&gt;aflow&lt;&lt;"</span>
-<span class="n">VASP_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;vasp_cmd&lt;&lt;"</span>
-<span class="n">GAMMA_VASP_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gamma_vasp_cmd&lt;&lt;"</span>
-<span class="n">G16_CMD</span> <span class="o">=</span> <span class="s2">"&gt;&gt;g16_cmd&lt;&lt;"</span>
-<span class="n">GAUSSIAN_GPU_CPU</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_gpu_cpu&lt;&lt;"</span>
-<span class="n">GAUSSIAN_CPU_LIST</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_cpu_list&lt;&lt;"</span>
-<span class="n">GAUSSIAN_MEMORY</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_memory&lt;&lt;"</span>
-<span class="n">GAUSSIAN_NPROCSHARED</span> <span class="o">=</span> <span class="s2">"&gt;&gt;gaussian_nprocshared&lt;&lt;"</span>
-<span class="n">MA_DEF2</span> <span class="o">=</span> <span class="s2">"&gt;&gt;ma_def2&lt;&lt;"</span>
-<span class="n">PATH</span> <span class="o">=</span> <span class="s2">"&gt;&gt;path&lt;&lt;"</span>
-<span class="n">RUNFILE_LOG</span> <span class="o">=</span> <span class="s2">"&gt;&gt;runfile_log&lt;&lt;"</span>
-<span class="n">PROC_VM_KEY</span> <span class="o">=</span> <span class="s2">"&gt;&gt;processing_vm_key&lt;&lt;"</span>
-<span class="n">LOCAL_OUTPUT_DIR</span> <span class="o">=</span> <span class="s2">"&gt;&gt;local_output_dir&lt;&lt;"</span>  <span class="c1"># optional; set under `env:` in my_fworker.yaml</span>
-
-<span class="c1"># DATA STORES</span>
-<span class="c1"># "d3tales": read/write through the D3TaLES website + databases (original behavior, default)</span>
-<span class="c1"># "local":   no database; each calculation's record is written as a JSON file</span>
-<span class="n">DATA_STORES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"d3tales"</span><span class="p">,</span> <span class="s2">"local"</span><span class="p">)</span>
-<span class="n">DEFAULT_DATA_STORE</span> <span class="o">=</span> <span class="s2">"d3tales"</span>
-<span class="n">LOCAL_RESULTS_DIR</span> <span class="o">=</span> <span class="s2">"results"</span>  <span class="c1"># used under the calculation directory when no local_output_dir is set</span>
-<span class="n">WTUNING_KEY</span> <span class="o">=</span> <span class="s2">"wtuning"</span>
-
 
 <span class="c1"># DATA STORE FUNCTIONS</span>
 <div class="viewcode-block" id="get_data_store">
@@ -132,12 +131,7 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the data store for a FireTask. Precedence: fw_spec, then task parameter, then DEFAULT_DATA_STORE.</span>
 <span class="sd">    """</span>
-    <span class="n">fw_spec</span> <span class="o">=</span> <span class="n">fw_spec</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="n">store</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"data_store"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"data_store"</span><span class="p">)</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">DEFAULT_DATA_STORE</span>
-    <span class="n">store</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">store</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DATA_STORES</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"data_store must be one of </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DATA_STORES</span><span class="p">,</span> <span class="n">store</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">store</span></div>
+    <span class="k">return</span> <span class="n">resolve_data_store</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">)</span></div>
 
 
 
@@ -154,11 +148,7 @@
 
 <span class="sd">    Unlike env_chk(strict=True), a missing FireWorker key returns None instead of raising.</span>
 <span class="sd">    """</span>
-    <span class="n">fw_spec</span> <span class="o">=</span> <span class="n">fw_spec</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"local_output_dir"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"local_output_dir"</span><span class="p">)</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">LOCAL_OUTPUT_DIR</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&gt;&gt;"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"&lt;&lt;"</span><span class="p">):</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_fw_env"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">val</span> <span class="ow">or</span> <span class="kc">None</span></div>
+    <span class="k">return</span> <span class="n">resolve_runtime_field</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="s2">"local_output_dir"</span><span class="p">,</span> <span class="n">LOCAL_OUTPUT_DIR</span><span class="p">)</span></div>
 
 
 
@@ -640,17 +630,6 @@
     <span class="n">ginp</span><span class="o">.</span><span class="n">link0_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"</span><span class="si">%c</span><span class="s2">hk"</span><span class="p">:</span> <span class="n">nto_chk</span><span class="p">,</span> <span class="s2">"</span><span class="si">%o</span><span class="s2">ldchk"</span><span class="p">:</span> <span class="n">tddft_chk</span><span class="p">})</span>
     <span class="n">ginp</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">nto_com</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nto_com</span><span class="p">,</span> <span class="n">nto_chk</span></div>
-
-
-<div class="viewcode-block" id="spec_or_task">
-<a class="viewcode-back" href="../../../d3tales_api.Workflows.html#d3tales_api.Workflows.utils.spec_or_task">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">spec_or_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""fw_spec value if set, else task value if set, else default. Explicit False/0 are respected."""</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">val</span></div>
-
 
 
 <div class="viewcode-block" id="resolve_charge_multiplicity">

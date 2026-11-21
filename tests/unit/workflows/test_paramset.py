@@ -54,3 +54,30 @@ def test_missing_file_raises(tmp_path):
 
 def test_test_data_file_exists():
     assert PARAM_FILE.is_file()
+
+
+def test_zero_charge_and_invalid_zero_multiplicity_are_not_treated_as_missing():
+    parameters = GaussianParameters(charge=0, multiplicity=0)
+
+    assert parameters.charge == 0
+    assert parameters.multiplicity == 0
+
+
+def test_paramset_uses_safe_attribute_assignment():
+    parameter_set = GausParamSet(opt_groundState={"charge": 0, "multiplicity": 3})
+
+    assert parameter_set.opt_groundState.charge == 0
+    assert parameter_set.opt_groundState.multiplicity == 3
+
+
+@pytest.mark.parametrize("name", ["as_dict", "opt_groundState; __import__('os')", "not-an-identifier"])
+def test_paramset_rejects_reserved_or_invalid_calculation_names(name):
+    with pytest.raises(ValueError, match="calculation name"):
+        GausParamSet(**{name: {}})
+
+
+def test_vasp_paramset_is_deprecated():
+    from d3tales_api.Workflows.ParamSet import VaspParamSet
+
+    with pytest.warns(DeprecationWarning, match="not supported"):
+        VaspParamSet(opt={"incar": {"encut": 300}})

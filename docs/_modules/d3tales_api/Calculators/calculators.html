@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../Processors.html">Processors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Calculators.html">Calculators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Workflows.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Package-Streamlining.html">Package streamlining changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../d3tales_api.html">d3tales_api package</a></li>
 </ul>
 
@@ -74,8 +75,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for d3tales_api.Calculators.calculators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">periodictable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">d3tales_api.Calculators.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_electrode_potential</span><span class="p">,</span>
+    <span class="n">periodictable</span><span class="p">,</span>
+    <span class="n">rgetattr</span><span class="p">,</span>
+    <span class="n">rgetkeys</span><span class="p">,</span>
+    <span class="n">unit_conversion</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">cclib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
