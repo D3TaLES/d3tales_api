@@ -2,9 +2,10 @@ import python_jsonschema_objects as pjs
 from urllib import request
 from urllib.parse import urlsplit
 from functools import lru_cache
+from copy import deepcopy
 import json
 
-from referencing import Resource
+from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT4
 
 
@@ -51,9 +52,12 @@ class Schema2Class:
         # print(schema_url)
         self.schema = _fetch_schema(schema_url)
         # Resolve external $refs from the same versioned schema repository.
-        builder = pjs.ObjectBuilder(self.schema, resolver=_retrieve_schema)
+        # python_jsonschema_objects may replace JSON Schema values with TypeProxy
+        # instances while generating classes. Never pass that mutated schema to
+        # jsonschema validation, or cache it for subsequent Schema2Class calls.
+        builder = pjs.ObjectBuilder(deepcopy(self.schema), resolver=_retrieve_schema)
         ns = builder.build_classes(named_only=named_only)
-        self.registry = builder.registry
+        self.registry = Registry(retrieve=_retrieve_schema)
 
         # get all name space
         for name_space in dir(ns):
