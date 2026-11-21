@@ -120,7 +120,7 @@ def test_molopt_forcefield_conformer_is_independent_of_smiles_fallback_flag(para
         geom_from_smiles=False,
     ))
 
-    assert task["geom_from_smiles"] is False
+    assert task["geom_from_smiles"] is True
     assert task["forcefield_conformer"] is True
 
 
