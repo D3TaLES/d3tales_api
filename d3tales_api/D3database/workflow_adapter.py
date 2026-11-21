@@ -6,6 +6,8 @@ credentials at import time.
 """
 
 import os
+import copy
+import math
 import zipfile
 
 D3TALES_URL = os.environ.get("D3TALES_URL", "https://d3tales.as.uky.edu")
@@ -27,6 +29,7 @@ __all__ = [
     "d3t_direct_get_omega",
     "d3t_direct_get_raw_computation",
     "d3t_direct_register_molecule",
+    "d3t_direct_update_frontend",
     "d3t_direct_store_calculation",
 ]
 
@@ -219,6 +222,62 @@ def d3t_direct_register_molecule(smiles, names=None, origin_group="Risko", publi
     return identifier, info.get("groundState_charge"), info.get("groundState_spin")
 
 
+def d3t_direct_update_frontend(record):
+    """Derive frontend characterization from a direct Gaussian computation."""
+    data = record.get("data") or {}
+    conditions = data.get("conditions") or {}
+    identifier = record.get("mol_id")
+    calculation_type = record.get("calculation_type")
+
+    if calculation_type == "wtuning":
+        if not identifier:
+            raise ValueError("A direct w-tuning frontend update requires mol_id.")
+        omega = data.get("omega")
+        try:
+            omega = float(omega)
+        except (TypeError, ValueError):
+            raise ValueError("A direct w-tuning record must contain a finite omega value.")
+        if not math.isfinite(omega):
+            raise ValueError("A direct w-tuning record must contain a finite omega value.")
+        omega_conditions = copy.deepcopy(conditions)
+        omega_conditions.pop("tuning_parameter", None)
+        from d3tales_api.D3database.d3database import D3Database
+
+        frontend = D3Database(
+            database="d3tales",
+            collection_name=FRONT_COLL,
+            instance={
+                "mol_characterization": {
+                    "omega": {
+                        "source_hash_ids": [record["_id"]],
+                        "conditions": omega_conditions,
+                        "value": math.floor(omega * 10000) / 10000,
+                        "unit": "",
+                    }
+                }
+            },
+            validate_schema=False,
+        )
+        frontend.insert(identifier, nested=True)
+        return
+
+    if conditions.get("code_name") != "Gaussian":
+        return
+    if not identifier or not calculation_type:
+        raise ValueError("A direct Gaussian frontend update requires mol_id and calculation_type.")
+
+    from d3tales_api.D3database.back2front import Gaus2FrontCharacterization
+
+    Gaus2FrontCharacterization(
+        identifier,
+        calculation_type=calculation_type,
+        conditions=conditions,
+        rmsd=False,
+        insert=True,
+        verbose=0,
+    )
+
+
 def d3t_direct_store_calculation(record, files=None, archive_path=None):
     """Insert a processed computation document and optionally archive worker files locally."""
     if not isinstance(record, dict) or not record.get("_id"):
@@ -237,6 +296,7 @@ def d3t_direct_store_calculation(record, files=None, archive_path=None):
         validate_schema=False,
     )
     database.insert(record["_id"])
+    d3t_direct_update_frontend(record)
 
     existing_files = [path for path in (files or []) if os.path.isfile(path)]
     if not existing_files or not archive_path:

@@ -172,7 +172,7 @@ for new code.
 | Store | Network location | Molecule reads | Calculation result handling |
 | --- | --- | --- | --- |
 | `d3tales_web` | Workers can reach the D3TaLES website but are outside the DB firewall. | Website REST API. Molecules must be pre-registered; this API does not expose a workflow registration endpoint. | Gaussian files are zipped and uploaded for website-side processing. ORCA is rejected because the website upload endpoint expects Gaussian output. PySCF remains local because website processing expects Gaussian logs. |
-| `d3tales_direct` | Workers are inside the DB firewall and have direct MongoDB write access. | `base` and `computation` collections in the configured `d3tales` database; no REST calls. New molecule registration is supported. | Results are processed on the worker and inserted into `computation`. Engine output/checkpoint files are zipped and retained locally; no website upload is performed. |
+| `d3tales_direct` | Workers are inside the DB firewall and have direct MongoDB write access. | `base` and `computation` collections in the configured `d3tales` database; no REST calls. New molecule registration is supported. | Results are inserted into `computation`; Gaussian records also run through `Gaus2FrontCharacterization` to update species/molecule fields in `base`, and w-tuning updates the molecule's omega value. ORCA/PySCF records are stored but do not use this Gaussian-specific transformer. Engine output/checkpoint files are zipped and retained locally. |
 | `local` | No database or website access required. | Local molecule data/results, with explicit SMILES-based starting geometry fallback. | Processed results are stored as per-calculation JSON files. |
 
 Website uploads in `d3tales_web` are always enabled; selecting

@@ -152,6 +152,99 @@ def test_direct_result_storage_inserts_record_and_archives_existing_worker_files
 
 
 @pytest.mark.unit
+def test_direct_computation_runs_gaussian_back_to_front_after_computation_insert(monkeypatch):
+    calls = []
+
+    class FakeDatabase:
+        def __init__(self, **kwargs):
+            calls.append(("database_init", kwargs["collection_name"]))
+
+        def insert(self, identifier):
+            calls.append(("database_insert", identifier))
+
+    monkeypatch.setattr("d3tales_api.D3database.d3database.D3Database", FakeDatabase)
+    monkeypatch.setattr(
+        workflow_adapter,
+        "d3t_direct_update_frontend",
+        lambda record: calls.append(("frontend_update", record["_id"])),
+    )
+    workflow_adapter.d3t_direct_store_calculation({
+        "_id": "HASH",
+        "mol_id": "M1",
+        "calculation_type": "opt_groundState",
+        "data": {"conditions": {"code_name": "Gaussian"}},
+    })
+
+    assert calls == [
+        ("database_init", "computation"),
+        ("database_insert", "HASH"),
+        ("frontend_update", "HASH"),
+    ]
+
+
+@pytest.mark.unit
+def test_direct_frontend_update_runs_gaussian_characterization(monkeypatch):
+    calls = []
+
+    class Characterization:
+        def __init__(self, identifier, **kwargs):
+            calls.append((identifier, kwargs))
+
+    monkeypatch.setattr(
+        "d3tales_api.D3database.back2front.Gaus2FrontCharacterization",
+        Characterization,
+    )
+    workflow_adapter.d3t_direct_update_frontend({
+        "_id": "HASH",
+        "mol_id": "M1",
+        "calculation_type": "opt_groundState",
+        "data": {"conditions": {"code_name": "Gaussian", "functional": "B3LYP"}},
+    })
+
+    assert calls == [("M1", {
+        "calculation_type": "opt_groundState",
+        "conditions": {"code_name": "Gaussian", "functional": "B3LYP"},
+        "rmsd": False,
+        "insert": True,
+        "verbose": 0,
+    })]
+
+
+@pytest.mark.unit
+def test_direct_wtuning_updates_molecule_omega_without_gaussian_characterization(monkeypatch):
+    calls = []
+
+    class FakeDatabase:
+        def __init__(self, **kwargs):
+            calls.append(("init", kwargs))
+
+        def insert(self, identifier, nested=False):
+            calls.append(("insert", identifier, nested))
+
+    monkeypatch.setattr("d3tales_api.D3database.d3database.D3Database", FakeDatabase)
+    workflow_adapter.d3t_direct_update_frontend({
+        "_id": "W-HASH",
+        "mol_id": "M1",
+        "calculation_type": "wtuning",
+        "data": {
+            "conditions": {"code_name": "Gaussian", "tuning_parameter": 0.1234},
+            "omega": 0.12349,
+        },
+    })
+
+    init_kwargs = calls[0][1]
+    assert init_kwargs["database"] == "d3tales"
+    assert init_kwargs["collection_name"] == "base"
+    assert init_kwargs["instance"]["mol_characterization"]["omega"] == {
+        "source_hash_ids": ["W-HASH"],
+        "conditions": {"code_name": "Gaussian"},
+        "value": 0.1234,
+        "unit": "",
+    }
+    assert calls[1] == ("insert", "M1", True)
+
+
+@pytest.mark.unit
 def test_engine_post_jobs_route_direct_results_to_database_not_website(monkeypatch, tmp_path):
     stored = []
     monkeypatch.chdir(tmp_path)

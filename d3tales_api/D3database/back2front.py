@@ -27,7 +27,7 @@ from d3tales_api.Calculators.calculators import (
 )
 from d3tales_api.Calculators.ocelot_transform import pmgmol_to_rdmol
 from d3tales_api.Calculators.utils import unit_conversion
-from d3tales_api.D3database.d3database import DBconnector, FrontDB
+from d3tales_api.D3database.d3database import DBconnector, D3Database, FrontDB
 from d3tales_api.Processors.info_from_smiles import GenerateMolInfo
 
 DEFAULT_SOLV = {"name": "Acetonitrile", "model": "implicit_solvent", "dielectric_constant": 35.688}
@@ -123,8 +123,7 @@ class Gaus2FrontCharacterization:
                 f"No data for {self.id} inserted because no calculation type specified.") if self.verbose > 1 else None
             return None
         species_dict = self.species_descriptors(self.calculation_type, **kwargs)
-        FrontDB(schema_layer="species_characterization", instance=species_dict, _id=self.id,
-                verbose=self.verbose, schema_version=self.schema_version)
+        self._insert_frontend("species_characterization", species_dict)
 
         # Get and insert mol data
         mol_char_dict = {}
@@ -133,8 +132,21 @@ class Gaus2FrontCharacterization:
                 mol_char_dict.update(prop())
             except ValueError as e:
                 print(e) if self.verbose > 1 else None
-        FrontDB(schema_layer="mol_characterization", instance=mol_char_dict, _id=self.id,
-                verbose=self.verbose, schema_version=self.schema_version)
+        self._insert_frontend("mol_characterization", mol_char_dict)
+
+    def _insert_frontend(self, schema_layer, instance):
+        frontend = D3Database(
+            database="d3tales",
+            collection_name=FRONT_COLL,
+            instance=instance,
+            schema_layer=schema_layer,
+            schema_db="frontend",
+            default_id=self.id,
+            validate_schema=True,
+            verbose=self.verbose,
+            schema_version=self.schema_version,
+        )
+        frontend.insert(self.id, nested=True)
 
     def insert_all_species(self, **kwargs):
         # Get and insert all species data
@@ -146,8 +158,7 @@ class Gaus2FrontCharacterization:
                 for species, s_data in species_dict.items():
                     all_species_data[species].update(s_data)
 
-        FrontDB(schema_layer="species_characterization", instance=all_species_data, _id=self.id,
-                verbose=self.verbose, schema_version=self.schema_version)
+        self._insert_frontend("species_characterization", all_species_data)
         [print(s, ':\t', list(s_data.keys())) for s, s_data in all_species_data.items()] if self.verbose > 1 else None
 
     def insert_all_mol(self):
@@ -159,8 +170,7 @@ class Gaus2FrontCharacterization:
                 mol_char_dict.update(prop())
             except ValueError as e:
                 print(e) if self.verbose > 1 else None
-        FrontDB(schema_layer="mol_characterization", instance=mol_char_dict, _id=self.id,
-                verbose=self.verbose, schema_version=self.schema_version)
+        self._insert_frontend("mol_characterization", mol_char_dict)
 
     def species_descriptors(self, calculation_type, skip_geom=False):
         """Descriptor dict for species descriptors"""

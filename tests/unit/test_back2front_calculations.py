@@ -154,8 +154,9 @@ def test_gaussian_oxidation_and_reduction_potentials_use_solvent_conditions():
 def test_gaussian_insert_methods_dispatch_frontend_records(monkeypatch):
     insertions = []
     monkeypatch.setattr(
-        "d3tales_api.D3database.back2front.FrontDB",
-        lambda **kwargs: insertions.append(kwargs),
+        Gaus2FrontCharacterization,
+        "_insert_frontend",
+        lambda self, schema_layer, instance: insertions.append((schema_layer, instance)),
     )
     obj = _gaus_characterization()
     obj.calculation_type = None
@@ -169,12 +170,38 @@ def test_gaussian_insert_methods_dispatch_frontend_records(monkeypatch):
     obj.insert()
     obj.insert_all_species()
     obj.insert_all_mol()
-    assert [entry["schema_layer"] for entry in insertions] == [
+    assert [entry[0] for entry in insertions] == [
         "species_characterization",
         "mol_characterization",
         "species_characterization",
         "mol_characterization",
     ]
+
+
+@pytest.mark.unit
+def test_gaussian_frontend_insertion_uses_unified_database(monkeypatch):
+    calls = []
+
+    class Database:
+        def __init__(self, **kwargs):
+            calls.append(("init", kwargs))
+
+        def insert(self, identifier, nested):
+            calls.append(("insert", identifier, nested))
+
+    monkeypatch.setattr("d3tales_api.D3database.back2front.D3Database", Database)
+    obj = _gaus_characterization()
+    obj.id = "M1"
+    obj.verbose = 0
+    obj._insert_frontend("species_characterization", {"groundState": {"charge": 0}})
+
+    kwargs = calls[0][1]
+    assert kwargs["database"] == "d3tales"
+    assert kwargs["collection_name"] == "base"
+    assert kwargs["schema_db"] == "frontend"
+    assert kwargs["schema_layer"] == "species_characterization"
+    assert kwargs["default_id"] == "M1"
+    assert calls[1] == ("insert", "M1", True)
 
 
 @pytest.mark.unit
