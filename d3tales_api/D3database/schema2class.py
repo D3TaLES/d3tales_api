@@ -1,6 +1,31 @@
 import python_jsonschema_objects as pjs
 from urllib import request
+from urllib.parse import urlsplit
+from functools import lru_cache
 import json
+
+from referencing import Resource
+from referencing.jsonschema import DRAFT4
+
+
+_SCHEMA_HOST = "raw.githubusercontent.com"
+_SCHEMA_PREFIX = "/D3TaLES/schema/"
+
+
+@lru_cache(maxsize=256)
+def _fetch_schema(url):
+    """Download a D3TaLES schema once per process, with a network timeout."""
+    parts = urlsplit(url)
+    if parts.scheme != "https" or parts.netloc != _SCHEMA_HOST or not parts.path.startswith(_SCHEMA_PREFIX):
+        raise ValueError("Refusing to load schema from unexpected URL: {}".format(url))
+    with request.urlopen(url, timeout=30) as response:
+        return json.load(response)
+
+
+def _retrieve_schema(uri):
+    """Provide referenced JSON schemas to python-jsonschema-objects."""
+    schema = _fetch_schema(uri)
+    return Resource.from_contents(schema, default_specification=DRAFT4)
 
 
 class Schema2Class:
@@ -24,11 +49,11 @@ class Schema2Class:
         schema_url = "https://raw.githubusercontent.com/D3TaLES/schema/{}/schema_{}/{}.schema.json".format(
             self.branch, self.database, self.schema_name).replace("robotics_", "")
         # print(schema_url)
-        response = request.urlopen(schema_url)
-        self.schema = json.loads(response.read().decode())
-        # generating classes
-        builder = pjs.ObjectBuilder(self.schema)
+        self.schema = _fetch_schema(schema_url)
+        # Resolve external $refs from the same versioned schema repository.
+        builder = pjs.ObjectBuilder(self.schema, resolver=_retrieve_schema)
         ns = builder.build_classes(named_only=named_only)
+        self.registry = builder.registry
 
         # get all name space
         for name_space in dir(ns):
